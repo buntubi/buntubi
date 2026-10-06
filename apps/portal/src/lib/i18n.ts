@@ -193,9 +193,14 @@ export const { t, locale, setLocale } = i18n;
 type Key = keyof typeof fr;
 
 /** The words for a refusal the developer API sent back. */
+/** The code a refusal carries: a server function's failure arrives as `server function "id" failed: 500 <code>`. */
+export function codeOf(error: unknown): string {
+  const raw = error instanceof Error ? error.message : String(error);
+  return /failed: \d+ (\S+)$/.exec(raw)?.[1] ?? raw;
+}
+
 export function errorText(error: unknown): string {
-  const code = error instanceof Error ? error.message : String(error);
-  const key = `error.${code}` as Key;
+  const key = `error.${codeOf(error)}` as Key;
   return key in fr ? t(key) : t('error.generic');
 }
 

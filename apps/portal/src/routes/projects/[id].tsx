@@ -19,6 +19,7 @@ import {
   revokeKey,
   updateProject,
 } from '../../server/developer.js';
+import { settle } from '../../lib/settle.js';
 
 const project = cache((id: string) => loadProject(id), 'project');
 export const routeData = (args: RouteDataArgs) => project(paramOf(args, 'id'));
@@ -105,7 +106,7 @@ function Apps(props: { id: string }) {
           class="form-row"
           onSubmit={(event: SubmitEvent) => {
             event.preventDefault();
-            void submit();
+            settle(submit());
           }}
         >
           <Field label={t('project.appName')}>
@@ -177,7 +178,7 @@ function Keys(props: { id: string }) {
                   </span>
                   <EnvBadge environment={key.environment} />
                   <Show when={key.active}>
-                    <Button variant="ghost" onPress={() => dropKey(props.id, key.id)}>
+                    <Button variant="ghost" onPress={() => settle(dropKey(props.id, key.id))}>
                       {() => t('common.revoke')}
                     </Button>
                   </Show>
@@ -190,7 +191,7 @@ function Keys(props: { id: string }) {
           class="form-row"
           onSubmit={(event: SubmitEvent) => {
             event.preventDefault();
-            void submit();
+            settle(submit());
           }}
         >
           <Field label={t('project.keyName')}>
@@ -245,7 +246,7 @@ function TestUsers(props: { id: string }) {
             {(user) => (
               <li>
                 <span class="row-text">{user.email}</span>
-                <Button variant="ghost" onPress={() => dropTester(props.id, user.email)}>
+                <Button variant="ghost" onPress={() => settle(dropTester(props.id, user.email))}>
                   {() => t('common.remove')}
                 </Button>
               </li>
@@ -256,7 +257,7 @@ function TestUsers(props: { id: string }) {
           class="form-row"
           onSubmit={(event: SubmitEvent) => {
             event.preventDefault();
-            void submit();
+            settle(submit());
           }}
         >
           <Field label={t('project.testUserEmail')}>
@@ -287,7 +288,7 @@ function Settings(props: { id: string }) {
           class="form-row"
           onSubmit={(event: SubmitEvent) => {
             event.preventDefault();
-            void saveProject(props.id, { name: name().trim(), support_email: supportEmail().trim() || null });
+            settle(saveProject(props.id, { name: name().trim(), support_email: supportEmail().trim() || null }));
           }}
         >
           <Field label={t('projects.name')}>

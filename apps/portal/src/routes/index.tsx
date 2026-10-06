@@ -8,6 +8,7 @@ import { errorText, t } from '../lib/i18n.js';
 import type { Home } from '../lib/types.js';
 import { acceptTerms, createProject, loadHome } from '../server/developer.js';
 import { auth } from '../services/auth.js';
+import { settle } from '../lib/settle.js';
 
 const home = cache(() => loadHome(), 'home');
 export const routeData = () => home();
@@ -49,7 +50,7 @@ function Terms() {
       <Show when={submission()?.error}>
         {() => <p class="alert" role="alert">{errorText(submission()?.error)}</p>}
       </Show>
-      <Button variant="solid" disabled={submission()?.pending} onPress={() => accept()}>
+      <Button variant="solid" disabled={submission()?.pending} onPress={() => settle(accept())}>
         {() => t('terms.accept')}
       </Button>
     </section>
@@ -89,7 +90,7 @@ function Projects() {
             class="form-row"
             onSubmit={(event: SubmitEvent) => {
               event.preventDefault();
-              void submit();
+              settle(submit());
             }}
           >
             <Field label={t('projects.name')}>

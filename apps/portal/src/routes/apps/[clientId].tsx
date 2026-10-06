@@ -11,6 +11,7 @@ import { errorText, t } from '../../lib/i18n.js';
 import { paramOf } from '../../lib/params.js';
 import type { App } from '../../lib/types.js';
 import { loadApp, publishApp, revokeSecret, rotateSecret, updateApp } from '../../server/developer.js';
+import { settle } from '../../lib/settle.js';
 
 const app = cache((clientId: string) => loadApp(clientId), 'app');
 export const routeData = (args: RouteDataArgs) => app(paramOf(args, 'clientId'));
@@ -79,7 +80,7 @@ function Credentials() {
                     </Show>
                   </span>
                   <Show when={secret.active}>
-                    <Button variant="ghost" onPress={() => revoke(data()!.client_id, secret.id)}>
+                    <Button variant="ghost" onPress={() => settle(revoke(data()!.client_id, secret.id))}>
                       {() => t('common.revoke')}
                     </Button>
                   </Show>
@@ -87,7 +88,7 @@ function Credentials() {
               )}
             </For>
           </ul>
-          <Button variant="outline" disabled={rotating()?.pending} onPress={() => void newSecret()}>
+          <Button variant="outline" disabled={rotating()?.pending} onPress={() => settle(newSecret())}>
             {() => t('app.newSecret')}
           </Button>
           <Show when={rotating()?.error}>
@@ -127,7 +128,7 @@ function Details() {
           class="form-stack"
           onSubmit={(event: SubmitEvent) => {
             event.preventDefault();
-            void submit();
+            settle(submit());
           }}
         >
           <Field label={t('app.redirectUris')}>
@@ -184,7 +185,7 @@ function Publishing() {
         </p>
         <Show when={data()?.review_note}>{() => <p class="muted">{data()?.review_note}</p>}</Show>
         <Show when={state() === 'sandbox'}>
-          <Button variant="solid" disabled={submission()?.pending} onPress={() => publish(data()!.client_id)}>
+          <Button variant="solid" disabled={submission()?.pending} onPress={() => settle(publish(data()!.client_id))}>
             {() => t('app.publishButton')}
           </Button>
         </Show>
