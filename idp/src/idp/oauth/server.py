@@ -45,7 +45,12 @@ def key_ring() -> KeyRing:
 
 def query_client(client_id: str) -> Client | None:
     client = db().scalar(select(Client).where(Client.client_id == client_id))
-    return client if client is not None and client.disabled_at is None else None
+    if client is None or client.disabled_at is not None:
+        return None
+    # A suspended project's apps stop at once: no sign-in, no token, no refresh.
+    if client.project is not None and client.project.is_suspended:
+        return None
+    return client
 
 
 def _access_token(client: Client, grant_type: str, user: User | None, scope: str) -> str:

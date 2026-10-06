@@ -29,6 +29,9 @@ class Project(IdMixin, TimestampMixin, Base):
     support_email: Mapped[str | None] = mapped_column(String(320))
     suspended_at: Mapped[datetime | None]
     suspended_reason: Mapped[str | None] = mapped_column(String(500))
+    # Sensitive scopes the owner approved for this project, in a review: its live apps and
+    # live keys may carry them without asking again.
+    approved_scopes: Mapped[list[str]] = mapped_column(ARRAY(String(64)), default=list, server_default="{}")
 
     test_users: Mapped[list["ProjectTestUser"]] = relationship(
         back_populates="project", cascade="all, delete-orphan"

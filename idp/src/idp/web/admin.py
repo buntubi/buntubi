@@ -1,26 +1,31 @@
 """
-The admin API: clients, users and the audit trail. Callers present an access token with the
-`admin` scope, issued to a user with the admin role; both are checked on every request.
+The admin API, which the owner console calls: an overview, app reviews, projects and their
+suspension, the scope catalog, clients, users and the audit trail. Callers present an access
+token with the `admin` scope, issued to a user with the admin role who signed in with a second
+factor; all three are checked on every request.
 """
 
+import json
 import uuid
 from collections.abc import Callable
 from datetime import datetime
 from functools import wraps
-from typing import Any, Literal, TypeVar
+from typing import Any, Literal, NoReturn, TypeVar
 
 from authlib.integrations.flask_oauth2 import current_token
 from flask import Blueprint, Response, abort, jsonify, request
 from pydantic import BaseModel, Field, HttpUrl
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from idp.db import db, utcnow
-from idp.models import AuditEvent, Client, User
+from idp.models import AuditEvent, Client, Project, Scope, User
 from idp.models.clients import GRANT_TYPES
 from idp.oauth.server import require_token
-from idp.services import audit
+from idp.services import audit, mfa
+from idp.services import platform as p
 from idp.services.accounts import sign_out_everywhere
 from idp.services.credentials import issue_client_secret, rotate_client_secret
+from idp.services.platform import PlatformError
 from idp.web.validation import parse
 
 bp = Blueprint("admin", __name__, url_prefix="/admin/api")
@@ -29,16 +34,27 @@ F = TypeVar("F", bound=Callable[..., Any])
 PAGE_SIZE = 50
 
 
+def refuse(code: str, status: int, **details: Any) -> NoReturn:
+    """Stops the request with a JSON refusal the console can word."""
+    abort(Response(json.dumps({"error": code, **details}), status=status, mimetype="application/json"))
+
+
+@bp.errorhandler(PlatformError)
+def _platform_refusal(error: PlatformError) -> tuple[Response, int]:
+    db().rollback()
+    return jsonify(error=error.code, **error.details), error.status
+
+
 def admin_only(view: F) -> F:
     @require_token("admin")
     @wraps(view)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         user = current_token.user
         if user is None or not user.is_admin or user.disabled_at is not None:
-            abort(403)
+            refuse("not_admin", 403)
         # The console is held to a second factor at sign-in, whatever the client asked for.
         if "mfa" not in (current_token.claims.claims.get("amr") or []):
-            abort(403)
+            refuse("mfa_required", 403)
         return view(*args, admin=user, **kwargs)
 
     return wrapper
@@ -85,6 +101,9 @@ def _client_json(client: Client) -> dict[str, Any]:
         "first_party": client.first_party,
         "brand": client.brand,
         "disabled": client.disabled_at is not None,
+        "project_id": str(client.project_id) if client.project_id else None,
+        "environment": client.environment,
+        "review_status": client.review_status,
         "created_at": client.created_at.isoformat(),
     }
 
@@ -97,6 +116,8 @@ def _user_json(user: User) -> dict[str, Any]:
         "given_name": user.given_name,
         "family_name": user.family_name,
         "roles": user.roles,
+        "developer": user.developer_since is not None,
+        "mfa": mfa.is_enabled(user),
         "disabled": user.disabled_at is not None,
         "created_at": user.created_at.isoformat(),
     }
@@ -258,3 +279,211 @@ def audit_trail(admin: User) -> Response:
             for e in events
         ]
     )
+
+
+# ── Overview ──────────────────────────────────────────────────────────────────────────────────
+
+
+def _count(model: Any, *where: Any) -> int:
+    return int(db().scalar(select(func.count()).select_from(model).where(*where)) or 0)
+
+
+@bp.get("/overview")
+@admin_only
+def overview(admin: User) -> Response:
+    return jsonify(
+        users=_count(User),
+        developers=_count(User, User.developer_since.is_not(None)),
+        projects=_count(Project),
+        suspended_projects=_count(Project, Project.suspended_at.is_not(None)),
+        live_apps=_count(Client, Client.project_id.is_not(None), Client.environment == "live"),
+        sandbox_apps=_count(Client, Client.project_id.is_not(None), Client.environment == "sandbox"),
+        pending_reviews=_count(Client, Client.review_status == "pending"),
+    )
+
+
+# ── Reviews ───────────────────────────────────────────────────────────────────────────────────
+
+
+def _review_json(client: Client) -> dict[str, Any]:
+    project = client.project
+    owner = db().get(User, project.owner_id) if project else None
+    return {
+        **_client_json(client),
+        "homepage_url": client.homepage_url,
+        "privacy_url": client.privacy_url,
+        "terms_url": client.terms_url,
+        "sensitive_scopes": [
+            name
+            for name in client.scope.split()
+            if (scope := db().get(Scope, name)) is not None and scope.sensitivity == "sensitive"
+        ],
+        "project": {"id": str(project.id), "name": project.name, "support_email": project.support_email}
+        if project
+        else None,
+        "owner": {"email": owner.email, "name": owner.name} if owner else None,
+        "requested_at": client.updated_at.isoformat(),
+    }
+
+
+class ReviewIn(BaseModel):
+    approve: bool
+    note: str = Field(default="", max_length=1000)
+
+
+@bp.get("/reviews")
+@admin_only
+def list_reviews(admin: User) -> Response:
+    return jsonify(items=[_review_json(c) for c in p.pending_reviews()])
+
+
+@bp.post("/apps/<client_id>/review")
+@admin_only
+def review_app(client_id: str, admin: User) -> Response:
+    client = _client_or_404(client_id)
+    data = parse(ReviewIn)
+    if not data.approve and not data.note.strip():
+        refuse("note_required", 422)
+    p.review(client, admin, data.approve, data.note.strip())
+    audit.record("admin.app_reviewed", user=admin, client=client, approved=data.approve)
+    db().commit()
+    return jsonify(app=_review_json(client))
+
+
+# ── Projects ──────────────────────────────────────────────────────────────────────────────────
+
+
+def _project_json(project: Project) -> dict[str, Any]:
+    owner = db().get(User, project.owner_id)
+    return {
+        "id": str(project.id),
+        "name": project.name,
+        "owner": {"id": str(project.owner_id), "email": owner.email if owner else None},
+        "support_email": project.support_email,
+        "approved_scopes": project.approved_scopes,
+        "apps": _count(Client, Client.project_id == project.id),
+        "suspended": project.is_suspended,
+        "suspended_reason": project.suspended_reason,
+        "created_at": project.created_at.isoformat(),
+    }
+
+
+def _project_or_404(project_id: str) -> Project:
+    try:
+        project = db().get(Project, uuid.UUID(project_id))
+    except ValueError:
+        project = None
+    if project is None:
+        refuse("not_found", 404)
+    return project
+
+
+class SuspendIn(BaseModel):
+    reason: str = Field(min_length=1, max_length=500)
+
+
+@bp.get("/projects")
+@admin_only
+def list_projects(admin: User) -> Response:
+    query = select(Project).order_by(Project.created_at.desc()).limit(PAGE_SIZE)
+    if search := request.args.get("q", "").strip():
+        query = query.where(func.lower(Project.name).contains(search.lower(), autoescape=True))
+    return jsonify(items=[_project_json(x) for x in db().scalars(query)])
+
+
+@bp.post("/projects/<project_id>/suspend")
+@admin_only
+def suspend_project(project_id: str, admin: User) -> Response:
+    project = _project_or_404(project_id)
+    p.suspend(project, parse(SuspendIn).reason)
+    audit.record("admin.project_suspended", user=admin, project=str(project.id))
+    db().commit()
+    return jsonify(project=_project_json(project))
+
+
+@bp.post("/projects/<project_id>/restore")
+@admin_only
+def restore_project(project_id: str, admin: User) -> Response:
+    project = _project_or_404(project_id)
+    p.restore(project)
+    audit.record("admin.project_restored", user=admin, project=str(project.id))
+    db().commit()
+    return jsonify(project=_project_json(project))
+
+
+# ── Scope catalog ─────────────────────────────────────────────────────────────────────────────
+
+
+class Descriptions(BaseModel):
+    fr: str = Field(min_length=1, max_length=200)
+    en: str = Field(min_length=1, max_length=200)
+
+
+class ScopeIn(BaseModel):
+    name: str = Field(pattern=r"^[a-z][a-z0-9_.:-]{1,63}$")
+    sensitivity: Literal["public", "sensitive", "restricted"] = "public"
+    descriptions: Descriptions
+    resource: str = Field(default="", max_length=64)
+    notes: str = Field(default="", max_length=2000)
+
+
+class ScopePatch(BaseModel):
+    sensitivity: Literal["public", "sensitive", "restricted"] | None = None
+    descriptions: Descriptions | None = None
+    resource: str | None = Field(default=None, max_length=64)
+    notes: str | None = Field(default=None, max_length=2000)
+
+
+def _scope_json(scope: Scope) -> dict[str, Any]:
+    return {
+        "name": scope.name,
+        "sensitivity": scope.sensitivity,
+        "descriptions": scope.descriptions,
+        "resource": scope.resource,
+        "notes": scope.notes,
+    }
+
+
+@bp.get("/scopes")
+@admin_only
+def list_scopes(admin: User) -> Response:
+    return jsonify(items=[_scope_json(s) for s in db().scalars(select(Scope).order_by(Scope.name))])
+
+
+@bp.post("/scopes")
+@admin_only
+def create_scope(admin: User) -> tuple[Response, int]:
+    data = parse(ScopeIn)
+    if db().get(Scope, data.name) is not None:
+        refuse("scope_exists", 409)
+    scope = Scope(
+        name=data.name,
+        sensitivity=data.sensitivity,
+        descriptions=data.descriptions.model_dump(),
+        resource=data.resource,
+        notes=data.notes,
+    )
+    db().add(scope)
+    audit.record("admin.scope_created", user=admin, scope=data.name)
+    db().commit()
+    return jsonify(scope=_scope_json(scope)), 201
+
+
+@bp.patch("/scopes/<name>")
+@admin_only
+def update_scope(name: str, admin: User) -> Response:
+    scope = db().get(Scope, name)
+    if scope is None:
+        refuse("not_found", 404)
+    patch = parse(ScopePatch)
+    if patch.sensitivity is not None:
+        scope.sensitivity = patch.sensitivity
+    if patch.descriptions is not None:
+        scope.descriptions = patch.descriptions.model_dump()
+    if patch.resource is not None:
+        scope.resource = patch.resource
+    if patch.notes is not None:
+        scope.notes = patch.notes
+    audit.record("admin.scope_updated", user=admin, scope=name, fields=sorted(patch.model_fields_set))
+    db().commit()
+    return jsonify(scope=_scope_json(scope))

@@ -1,6 +1,5 @@
 """The developer API: terms, ownership, apps and their way to live, test users, API keys."""
 
-from collections.abc import Iterator
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlparse
 
@@ -9,7 +8,6 @@ from flask import Flask
 from flask.testing import FlaskClient
 
 from idp.db import db
-from idp.models import Scope
 from idp.services import mail
 
 from conftest import REDIRECT, add_client, authorize_query, pkce, sign_up
@@ -20,18 +18,6 @@ LIVE_FIELDS = {
     "terms_url": "https://shop.example/terms",
     "brand": {"logo": "https://shop.example/logo.png"},
 }
-
-
-@pytest.fixture
-def platform_scopes(app: Flask) -> Iterator[None]:
-    with app.app_context():
-        db().add(Scope(name="billing.read", sensitivity="public", resource="billing", descriptions={}))
-        db().add(Scope(name="billing.write", sensitivity="sensitive", resource="billing", descriptions={}))
-        db().commit()
-    yield
-    with app.app_context():
-        db().query(Scope).filter(Scope.name.in_(["billing.read", "billing.write"])).delete()
-        db().commit()
 
 
 def developer_token(

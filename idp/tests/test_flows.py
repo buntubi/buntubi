@@ -258,13 +258,21 @@ def sign_in(browser: FlaskClient) -> None:
 
 
 def admin_token(
-    app: Flask, browser: FlaskClient, outbox: list[mail.Message], *, make_admin: bool, with_mfa: bool = True
+    app: Flask,
+    browser: FlaskClient,
+    outbox: list[mail.Message],
+    *,
+    make_admin: bool,
+    with_mfa: bool = True,
+    email: str = "root@example.test",
 ) -> str:
-    add_client(app, client_id="console", first_party=True, scope="openid admin")
-    sign_up(browser, outbox, email="root@example.test")
+    with app.app_context():
+        if db().query(Client).filter_by(client_id="console").first() is None:
+            add_client(app, client_id="console", first_party=True, scope="openid admin")
+    sign_up(browser, outbox, email=email)
     if make_admin:
         with app.app_context():
-            user = db().query(User).filter_by(email="root@example.test").one()
+            user = db().query(User).filter_by(email=email).one()
             user.roles = ["admin"]
             db().commit()
     if with_mfa:
@@ -280,7 +288,7 @@ def admin_token(
         )
         api(browser, "DELETE", "/api/session", None, csrf)
         csrf = page_config(browser, "/signin")["csrf"]
-        api(browser, "POST", "/api/session", {"email": "root@example.test", "password": PASSWORD}, csrf)
+        api(browser, "POST", "/api/session", {"email": email, "password": PASSWORD}, csrf)
         code = totp.code_at(secret, totp.current_step() + 1)
         assert api(browser, "POST", "/api/mfa/verify", {"code": code}, csrf).status_code == 200
     verifier, challenge = pkce()

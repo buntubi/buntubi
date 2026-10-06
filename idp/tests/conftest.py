@@ -39,7 +39,7 @@ email_validator.TEST_ENVIRONMENT = True
 
 from idp.app import create_app  # noqa: E402
 from idp.db import db  # noqa: E402
-from idp.models import Client  # noqa: E402
+from idp.models import Client, Scope  # noqa: E402
 from idp.security.keys import generate_key  # noqa: E402
 from idp.services import mail  # noqa: E402
 
@@ -154,3 +154,15 @@ def authorize_query(challenge: str, **extra: str) -> dict[str, str]:
         "code_challenge_method": "S256",
         **extra,
     }
+
+
+@pytest.fixture
+def platform_scopes(app: Flask) -> Iterator[None]:
+    with app.app_context():
+        db().add(Scope(name="billing.read", sensitivity="public", resource="billing", descriptions={}))
+        db().add(Scope(name="billing.write", sensitivity="sensitive", resource="billing", descriptions={}))
+        db().commit()
+    yield
+    with app.app_context():
+        db().query(Scope).filter(Scope.name.in_(["billing.read", "billing.write"])).delete()
+        db().commit()

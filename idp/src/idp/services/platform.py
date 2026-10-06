@@ -192,10 +192,10 @@ def create_app(project: Project, data: NewApp) -> tuple[Client, str | None]:
 
 def set_app_scopes(client: Client, scopes: list[str]) -> None:
     checked = check_scopes(["openid", *scopes], for_key=False)
-    newly_sensitive = set(checked.sensitive) - set(scope_to_list(client.scope) or [])
     client.scope = list_to_scope(checked.granted)
-    # A live app that adds a sensitive scope goes back to review for it.
-    if client.is_live and newly_sensitive:
+    # A live app that adds a sensitive scope its project was not approved for goes back to review.
+    unapproved = set(checked.sensitive) - set(client.project.approved_scopes if client.project else [])
+    if client.is_live and unapproved:
         client.environment = "sandbox"
         client.review_status = "pending"
 
@@ -227,11 +227,45 @@ def publish(client: Client, project: Project) -> str:
     if missing:
         raise PlatformError("missing_for_live", 422, fields=missing)
     sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
-    if sensitive and client.review_status != "approved":
+    if set(sensitive) - set(project.approved_scopes):
         client.review_status = "pending"
         return "pending"
     client.environment = "live"
     return "live"
+
+
+# ── Reviews and suspensions (the owner's side) ────────────────────────────────────────────────
+
+
+def pending_reviews() -> list[Client]:
+    return list(
+        db().scalars(select(Client).where(Client.review_status == "pending").order_by(Client.updated_at))
+    )
+
+
+def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
+    """The owner's answer. Approving puts the app live and approves its sensitive scopes for the project."""
+    if client.review_status != "pending" or client.project is None:
+        raise PlatformError("not_pending", 409)
+    client.review_status = "approved" if approve else "rejected"
+    client.review_note = note
+    client.reviewed_at = utcnow()
+    client.reviewed_by_id = reviewer.id
+    if approve:
+        sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
+        project = client.project
+        project.approved_scopes = sorted(set(project.approved_scopes) | set(sensitive))
+        client.environment = "live"
+
+
+def suspend(project: Project, reason: str) -> None:
+    project.suspended_at = project.suspended_at or utcnow()
+    project.suspended_reason = reason
+
+
+def restore(project: Project) -> None:
+    project.suspended_at = None
+    project.suspended_reason = None
 
 
 # ── Test users ────────────────────────────────────────────────────────────────────────────────
@@ -273,9 +307,10 @@ def create_key(
     if len(active) >= MAX_KEYS:
         raise PlatformError("too_many_keys", 409, limit=MAX_KEYS)
     checked = check_scopes(scopes, for_key=True)
-    # Sensitive scopes on a live key wait for the review flow; until then, sandbox only.
-    if environment == "live" and checked.sensitive:
-        raise PlatformError("review_required", 422, scopes=checked.sensitive)
+    # A live key carries a sensitive scope only once the project was approved for it.
+    unapproved = sorted(set(checked.sensitive) - set(project.approved_scopes))
+    if environment == "live" and unapproved:
+        raise PlatformError("review_required", 422, scopes=unapproved)
     return issue_api_key(project, environment, name, checked.granted, user.id)
 
 
