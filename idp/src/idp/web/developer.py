@@ -1,0 +1,399 @@
+"""
+The developer API, which the developer portal calls: projects, their apps, secrets, test users
+and API keys. A bearer token with the `developer` scope; every rule lives in services/platform.py.
+Secrets and keys come back in full once, in the answer that creates them.
+"""
+
+from collections.abc import Callable
+from functools import wraps
+from typing import Any, Literal, TypeVar
+
+from authlib.integrations.flask_oauth2 import current_token
+from authlib.oauth2.rfc6749 import scope_to_list
+from flask import Blueprint, Response, abort, jsonify
+from pydantic import BaseModel, EmailStr, Field, HttpUrl
+
+from idp.db import db, utcnow
+from idp.models import ApiKey, Client, ClientSecret, Project, User
+from idp.oauth.server import require_token
+from idp.services import audit
+from idp.services import platform as p
+from idp.services.credentials import rotate_client_secret
+from idp.web.admin import Brand
+from idp.web.validation import parse
+
+bp = Blueprint("developer", __name__, url_prefix="/developer/api")
+
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+@bp.errorhandler(p.PlatformError)
+def _refused(error: p.PlatformError) -> tuple[Response, int]:
+    db().rollback()
+    return jsonify(error=error.code, **error.details), error.status
+
+
+def developer(*, terms: bool = True) -> Callable[[F], F]:
+    """The caller, as a signed-in user with the `developer` scope (and, by default, the terms)."""
+
+    def decorate(view: F) -> F:
+        @require_token("developer")
+        @wraps(view)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            user = current_token.user
+            if user is None or user.disabled_at is not None:
+                abort(403)
+            if terms:
+                p.require_developer(user)
+            return view(*args, me=user, **kwargs)
+
+        return wrapper
+
+    return decorate
+
+
+# ── Shapes ────────────────────────────────────────────────────────────────────────────────────
+
+Name = Field(min_length=1, max_length=80)
+
+
+class ProjectIn(BaseModel):
+    name: str = Name
+    description: str = Field(default="", max_length=500)
+    support_email: EmailStr | None = None
+
+
+class ProjectPatch(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=80)
+    description: str | None = Field(default=None, max_length=500)
+    support_email: EmailStr | None = None
+
+
+class AppIn(BaseModel):
+    name: str = Name
+    client_type: Literal["public", "confidential"] = "public"
+    redirect_uris: list[HttpUrl] = Field(default=[], max_length=10)
+    post_logout_redirect_uris: list[HttpUrl] = Field(default=[], max_length=10)
+    scopes: list[str] = ["profile", "email"]
+    grant_types: list[str] = ["authorization_code", "refresh_token"]
+    homepage_url: HttpUrl | None = None
+    privacy_url: HttpUrl | None = None
+    terms_url: HttpUrl | None = None
+    brand: Brand = Brand()
+
+
+class AppPatch(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=80)
+    redirect_uris: list[HttpUrl] | None = Field(default=None, max_length=10)
+    post_logout_redirect_uris: list[HttpUrl] | None = Field(default=None, max_length=10)
+    scopes: list[str] | None = None
+    homepage_url: HttpUrl | None = None
+    privacy_url: HttpUrl | None = None
+    terms_url: HttpUrl | None = None
+    brand: Brand | None = None
+
+
+class TestUserIn(BaseModel):
+    email: EmailStr
+
+
+class KeyIn(BaseModel):
+    name: str = Name
+    environment: Literal["sandbox", "live"] = "sandbox"
+    scopes: list[str] = []
+
+
+def _url(value: HttpUrl | None) -> str | None:
+    return str(value) if value is not None else None
+
+
+def project_json(project: Project) -> dict[str, Any]:
+    return {
+        "id": str(project.id),
+        "name": project.name,
+        "description": project.description,
+        "support_email": project.support_email,
+        "suspended": project.is_suspended,
+        "created_at": project.created_at.isoformat(),
+    }
+
+
+def secret_json(secret: ClientSecret) -> dict[str, Any]:
+    return {
+        "id": str(secret.id),
+        "prefix": secret.prefix,
+        "created_at": secret.created_at.isoformat(),
+        "last_used_at": secret.last_used_at.isoformat() if secret.last_used_at else None,
+        "expires_at": secret.expires_at.isoformat() if secret.expires_at else None,
+        "active": secret.is_active(utcnow()),
+    }
+
+
+def app_json(client: Client) -> dict[str, Any]:
+    return {
+        "client_id": client.client_id,
+        "project_id": str(client.project_id),
+        "name": client.name,
+        "client_type": client.client_type,
+        "environment": client.environment,
+        "review_status": client.review_status,
+        "review_note": client.review_note,
+        "redirect_uris": client.redirect_uris,
+        "post_logout_redirect_uris": client.post_logout_redirect_uris,
+        "scopes": scope_to_list(client.scope) or [],
+        "grant_types": client.grant_types,
+        "homepage_url": client.homepage_url,
+        "privacy_url": client.privacy_url,
+        "terms_url": client.terms_url,
+        "brand": client.brand,
+        "disabled": client.disabled_at is not None,
+        "secrets": [secret_json(s) for s in client.secrets] if not client.is_public else [],
+        "created_at": client.created_at.isoformat(),
+    }
+
+
+def key_json(key: ApiKey) -> dict[str, Any]:
+    return {
+        "id": str(key.id),
+        "name": key.name,
+        "environment": key.environment,
+        "prefix": key.prefix,
+        "scopes": key.scopes,
+        "created_at": key.created_at.isoformat(),
+        "last_used_at": key.last_used_at.isoformat() if key.last_used_at else None,
+        "active": key.is_active(utcnow()),
+    }
+
+
+# ── Developer ─────────────────────────────────────────────────────────────────────────────────
+
+
+@bp.get("/me")
+@developer(terms=False)
+def me_view(me: User) -> Response:
+    return jsonify(
+        email=me.email,
+        name=me.name,
+        developer=me.developer_since is not None,
+        developer_since=me.developer_since.isoformat() if me.developer_since else None,
+    )
+
+
+@bp.post("/terms")
+@developer(terms=False)
+def accept_terms(me: User) -> Response:
+    p.become_developer(me)
+    audit.record("developer.terms_accepted", user=me)
+    db().commit()
+    return jsonify(developer=True)
+
+
+# ── Projects ──────────────────────────────────────────────────────────────────────────────────
+
+
+@bp.get("/projects")
+@developer()
+def list_projects(me: User) -> Response:
+    return jsonify(items=[project_json(x) for x in p.projects_of(me)])
+
+
+@bp.post("/projects")
+@developer()
+def create_project(me: User) -> tuple[Response, int]:
+    data = parse(ProjectIn)
+    project = p.create_project(me, data.name, data.description, data.support_email)
+    audit.record("developer.project_created", user=me, project=str(project.id))
+    db().commit()
+    return jsonify(project=project_json(project)), 201
+
+
+@bp.get("/projects/<project_id>")
+@developer()
+def get_project(project_id: str, me: User) -> Response:
+    project = p.project_of(me, project_id)
+    return jsonify(
+        project=project_json(project),
+        apps=[app_json(c) for c in p.apps_of(project)],
+        keys=[key_json(k) for k in p.keys_of(project)],
+        test_users=[{"email": t.email, "added_at": t.added_at.isoformat()} for t in project.test_users],
+    )
+
+
+@bp.patch("/projects/<project_id>")
+@developer()
+def update_project(project_id: str, me: User) -> Response:
+    project = p.writable(p.project_of(me, project_id))
+    patch = parse(ProjectPatch)
+    if patch.name is not None:
+        project.name = patch.name
+    if patch.description is not None:
+        project.description = patch.description
+    if "support_email" in patch.model_fields_set:
+        project.support_email = str(patch.support_email).lower() if patch.support_email else None
+    db().commit()
+    return jsonify(project=project_json(project))
+
+
+@bp.delete("/projects/<project_id>")
+@developer()
+def delete_project(project_id: str, me: User) -> Response:
+    project = p.project_of(me, project_id)
+    audit.record("developer.project_deleted", user=me, project=str(project.id), name=project.name)
+    db().delete(project)
+    db().commit()
+    return jsonify(deleted=True)
+
+
+# ── Apps ──────────────────────────────────────────────────────────────────────────────────────
+
+
+@bp.post("/projects/<project_id>/apps")
+@developer()
+def create_app(project_id: str, me: User) -> tuple[Response, int]:
+    project = p.writable(p.project_of(me, project_id))
+    data = parse(AppIn)
+    client, secret = p.create_app(
+        project,
+        p.NewApp(
+            name=data.name,
+            client_type=data.client_type,
+            redirect_uris=[str(u) for u in data.redirect_uris],
+            post_logout_redirect_uris=[str(u) for u in data.post_logout_redirect_uris],
+            scopes=data.scopes,
+            grant_types=data.grant_types,
+            homepage_url=_url(data.homepage_url),
+            privacy_url=_url(data.privacy_url),
+            terms_url=_url(data.terms_url),
+            brand=data.brand.model_dump(mode="json", exclude_none=True),
+        ),
+    )
+    audit.record("developer.app_created", user=me, client=client)
+    db().commit()
+    return jsonify(app=app_json(client), client_secret=secret), 201
+
+
+@bp.get("/apps/<client_id>")
+@developer()
+def get_app(client_id: str, me: User) -> Response:
+    return jsonify(app=app_json(p.app_of(me, client_id)))
+
+
+@bp.patch("/apps/<client_id>")
+@developer()
+def update_app(client_id: str, me: User) -> Response:
+    client = p.app_of(me, client_id)
+    assert client.project is not None
+    p.writable(client.project)
+    patch = parse(AppPatch)
+    fields = patch.model_fields_set
+    if patch.name is not None:
+        client.name = patch.name
+    if patch.redirect_uris is not None:
+        client.redirect_uris = [str(u) for u in patch.redirect_uris]
+    if patch.post_logout_redirect_uris is not None:
+        client.post_logout_redirect_uris = [str(u) for u in patch.post_logout_redirect_uris]
+    for name in ("homepage_url", "privacy_url", "terms_url"):
+        if name in fields:
+            setattr(client, name, _url(getattr(patch, name)))
+    if patch.brand is not None:
+        client.brand = patch.brand.model_dump(mode="json", exclude_none=True)
+    if patch.scopes is not None:
+        p.set_app_scopes(client, patch.scopes)
+    audit.record("developer.app_updated", user=me, client=client, fields=sorted(fields))
+    db().commit()
+    return jsonify(app=app_json(client))
+
+
+@bp.delete("/apps/<client_id>")
+@developer()
+def delete_app(client_id: str, me: User) -> Response:
+    client = p.app_of(me, client_id)
+    audit.record("developer.app_deleted", user=me, client_id=client.client_id)
+    db().delete(client)
+    db().commit()
+    return jsonify(deleted=True)
+
+
+@bp.post("/apps/<client_id>/publish")
+@developer()
+def publish_app(client_id: str, me: User) -> Response:
+    client = p.app_of(me, client_id)
+    assert client.project is not None
+    state = p.publish(client, p.writable(client.project))
+    audit.record("developer.app_publish", user=me, client=client, state=state)
+    db().commit()
+    return jsonify(state=state, app=app_json(client))
+
+
+@bp.post("/apps/<client_id>/secrets")
+@developer()
+def new_secret(client_id: str, me: User) -> Response:
+    client = p.app_of(me, client_id)
+    assert client.project is not None
+    p.writable(client.project)
+    if client.is_public:
+        raise p.PlatformError("public_client_has_no_secret", 422)
+    secret = rotate_client_secret(client)
+    audit.record("developer.secret_rotated", user=me, client=client)
+    db().commit()
+    return jsonify(client_secret=secret, app=app_json(client))
+
+
+@bp.delete("/apps/<client_id>/secrets/<secret_id>")
+@developer()
+def revoke_secret(client_id: str, secret_id: str, me: User) -> Response:
+    client = p.app_of(me, client_id)
+    found = next((s for s in client.secrets if str(s.id) == secret_id), None)
+    if found is None:
+        raise p.PlatformError("not_found", 404)
+    found.revoked_at = found.revoked_at or utcnow()
+    audit.record("developer.secret_revoked", user=me, client=client, prefix=found.prefix)
+    db().commit()
+    return jsonify(app=app_json(client))
+
+
+# ── Test users ────────────────────────────────────────────────────────────────────────────────
+
+
+@bp.post("/projects/<project_id>/test-users")
+@developer()
+def add_test_user(project_id: str, me: User) -> tuple[Response, int]:
+    project = p.writable(p.project_of(me, project_id))
+    row = p.add_test_user(project, str(parse(TestUserIn).email))
+    db().commit()
+    return jsonify(email=row.email), 201
+
+
+@bp.delete("/projects/<project_id>/test-users/<path:email>")
+@developer()
+def remove_test_user(project_id: str, email: str, me: User) -> Response:
+    project = p.project_of(me, project_id)
+    project.test_users = [t for t in project.test_users if t.email != email.strip().lower()]
+    db().commit()
+    return jsonify(removed=True)
+
+
+# ── API keys ──────────────────────────────────────────────────────────────────────────────────
+
+
+@bp.post("/projects/<project_id>/keys")
+@developer()
+def create_key(project_id: str, me: User) -> tuple[Response, int]:
+    project = p.writable(p.project_of(me, project_id))
+    data = parse(KeyIn)
+    row, key = p.create_key(project, me, data.name, data.environment, data.scopes)
+    db().flush()
+    audit.record("developer.key_created", user=me, project=str(project.id), prefix=row.prefix)
+    db().commit()
+    return jsonify(key=key_json(row), api_key=key), 201
+
+
+@bp.delete("/projects/<project_id>/keys/<key_id>")
+@developer()
+def revoke_key(project_id: str, key_id: str, me: User) -> Response:
+    project = p.project_of(me, project_id)
+    row = p.key_of(project, key_id)
+    row.revoked_at = row.revoked_at or utcnow()
+    audit.record("developer.key_revoked", user=me, project=str(project.id), prefix=row.prefix)
+    db().commit()
+    return jsonify(key=key_json(row))

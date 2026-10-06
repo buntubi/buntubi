@@ -9,6 +9,7 @@ same. Every secret sent by email is stored hashed, expires, and works once.
 from dataclasses import dataclass
 from datetime import timedelta
 
+from email_validator import EmailNotValidError, validate_email
 from sqlalchemy import select, update
 
 from idp.config import get_settings
@@ -80,6 +81,10 @@ def normalize_email(email: str) -> str:
 
 def register(data: NewAccount) -> User:
     email = normalize_email(data.email)
+    try:
+        email = validate_email(email, check_deliverability=False).normalized.lower()
+    except EmailNotValidError:
+        raise AccountError("invalid_email") from None
     if not passwords.is_acceptable(data.password):
         raise AccountError("weak_password")
     if db().scalar(select(User.id).where(User.email == email)) is not None:

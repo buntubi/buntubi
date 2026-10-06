@@ -102,7 +102,8 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     def check_endpoint_auth_method(self, method: str, endpoint: str) -> bool:
         if self.is_public:
             return method == "none"
-        return method == self.token_endpoint_auth_method
+        # Either way of sending the secret: in the Authorization header or in the form body.
+        return method in ("client_secret_basic", "client_secret_post")
 
     def check_response_type(self, response_type: str) -> bool:
         # The authorization code flow only: no implicit or hybrid responses.

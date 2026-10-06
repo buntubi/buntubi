@@ -32,6 +32,11 @@ os.environ.update(
     IDP_RATE_LIMIT_ENABLED="false",
 )
 
+import email_validator  # noqa: E402
+
+# Lets the reserved `.test` domain through, as the library documents for test suites.
+email_validator.TEST_ENVIRONMENT = True
+
 from idp.app import create_app  # noqa: E402
 from idp.db import db  # noqa: E402
 from idp.models import Client  # noqa: E402

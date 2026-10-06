@@ -7,7 +7,7 @@ from authlib.oauth2.rfc6749 import scope_to_list
 from idp.models import User
 
 # `admin` opens the admin API, and only for a user with the admin role.
-SCOPES = ("openid", "profile", "email", "phone", "offline_access", "admin")
+SCOPES = ("openid", "profile", "email", "phone", "offline_access", "admin", "developer")
 
 
 def user_claims(user: User, scope: str) -> dict[str, Any]:

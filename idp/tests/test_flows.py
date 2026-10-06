@@ -346,3 +346,9 @@ def test_admin_api_manages_clients_and_users(
     assert self_disable.json == {"error": "cannot_disable_yourself"}
     events = browser.get("/admin/api/audit", headers=bearer).json["items"]
     assert "admin.client_created" in [e["event"] for e in events]
+
+
+def test_sign_up_refuses_a_malformed_email(browser: FlaskClient) -> None:
+    csrf = page_config(browser, "/signup")["csrf"]
+    reply = api(browser, "POST", "/api/signup", {"email": "not an email", "password": PASSWORD}, csrf)
+    assert reply.json == {"error": "invalid_email"}

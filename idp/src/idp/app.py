@@ -10,7 +10,7 @@ from idp.config import Settings, get_settings
 from idp.db import init_db
 from idp.extensions import limiter
 from idp.oauth.server import init_oauth
-from idp.web import admin, api, oidc, pages
+from idp.web import admin, api, developer, oidc, pages
 
 # Endpoints a browser application (SPA) calls cross-origin.
 _CORS_PATHS = ("/oauth/token", "/oauth/revoke", "/oauth/userinfo")
@@ -41,6 +41,7 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.register_blueprint(api.bp)
     app.register_blueprint(pages.bp)
     app.register_blueprint(admin.bp)
+    app.register_blueprint(developer.bp)
     cli.register(app)
 
     @app.after_request

@@ -11,7 +11,7 @@ from typing import Any, Literal, TypeVar
 
 from authlib.integrations.flask_oauth2 import current_token
 from flask import Blueprint, Response, abort, jsonify, request
-from pydantic import BaseModel, Field, HttpUrl, ValidationError
+from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy import select
 
 from idp.db import db, utcnow
@@ -21,6 +21,7 @@ from idp.oauth.server import require_token
 from idp.services import audit
 from idp.services.accounts import sign_out_everywhere
 from idp.services.credentials import issue_client_secret, rotate_client_secret
+from idp.web.validation import parse
 
 bp = Blueprint("admin", __name__, url_prefix="/admin/api")
 
@@ -70,13 +71,6 @@ class ClientPatch(BaseModel):
     first_party: bool | None = None
     brand: Brand | None = None
     disabled: bool | None = None
-
-
-def _parse(model: type[BaseModel]) -> Any:
-    try:
-        return model.model_validate(request.get_json(silent=True) or {})
-    except ValidationError as error:
-        abort(Response(error.json(include_url=False), status=422, mimetype="application/json"))
 
 
 def _client_json(client: Client) -> dict[str, Any]:
@@ -135,7 +129,7 @@ def list_clients(admin: User) -> Response:
 @bp.post("/clients")
 @admin_only
 def create_client(admin: User) -> Any:
-    data: ClientIn = _parse(ClientIn)
+    data = parse(ClientIn)
     if db().scalar(select(Client.id).where(Client.client_id == data.client_id)) is not None:
         return jsonify(error="client_id_taken"), 409
     if data.client_type == "public" and "client_credentials" in data.grant_types:
@@ -168,7 +162,7 @@ def create_client(admin: User) -> Any:
 @admin_only
 def update_client(client_id: str, admin: User) -> Response:
     client = _client_or_404(client_id)
-    patch: ClientPatch = _parse(ClientPatch)
+    patch = parse(ClientPatch)
     if patch.name is not None:
         client.name = patch.name
     if patch.redirect_uris is not None:
