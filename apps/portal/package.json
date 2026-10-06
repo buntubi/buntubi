@@ -1,0 +1,36 @@
+{
+  "name": "portal",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "fluixi dev",
+    "build": "fluixi build",
+    "start": "fluixi start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fluixi-ui/badge": "link:../../../../fluixi-ui/packages/badge",
+    "@fluixi-ui/button": "link:../../../../fluixi-ui/packages/button",
+    "@fluixi-ui/card": "link:../../../../fluixi-ui/packages/card",
+    "@fluixi-ui/field": "link:../../../../fluixi-ui/packages/field",
+    "@fluixi-ui/form": "link:../../../../fluixi-ui/packages/form",
+    "@fluixi-ui/input": "link:../../../../fluixi-ui/packages/input",
+    "@fluixi-ui/select": "link:../../../../fluixi-ui/packages/select",
+    "@fluixi-ui/tokens": "link:../../../../fluixi-ui/packages/tokens",
+    "@fluixi/cli": "link:../../../../fluixi-core/packages/cli",
+    "@fluixi/core": "link:../../../../fluixi-core/packages/core",
+    "@fluixi/dom": "link:../../../../fluixi-core/packages/dom",
+    "@fluixi/jsx": "link:../../../../fluixi-core/packages/jsx",
+    "@fluixi/oauth2": "link:../../../../fluixi-core/packages/oauth2",
+    "@fluixi/reactive": "link:../../../../fluixi-core/packages/reactive",
+    "@fluixi/server": "link:../../../../fluixi-core/packages/server",
+    "@fluixi/session": "link:../../../../fluixi-core/packages/session",
+    "@fluixi/start": "link:../../../../fluixi-core/packages/start"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
+  }
+}
