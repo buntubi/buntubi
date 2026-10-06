@@ -3,9 +3,15 @@
 from idp.models.account import AuditEvent, BackupCode, DeviceCode, EmailToken, TotpCredential
 from idp.models.clients import Client
 from idp.models.grants import AccessTokenRecord, AuthorizationCode, Consent, LoginSession, RefreshToken
+from idp.models.platform import ApiKey, ClientSecret, Project, ProjectTestUser, Scope
 from idp.models.users import Identity, User
 
 __all__ = [
+    "Scope",
+    "ProjectTestUser",
+    "Project",
+    "ClientSecret",
+    "ApiKey",
     "AccessTokenRecord",
     "AuditEvent",
     "AuthorizationCode",

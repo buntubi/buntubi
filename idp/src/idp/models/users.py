@@ -28,6 +28,8 @@ class User(IdMixin, TimestampMixin, Base):
     # "admin" opens the admin API; more roles can come later.
     roles: Mapped[list[str]] = mapped_column(ARRAY(String(32)), default=list)
     disabled_at: Mapped[datetime | None]
+    # When the user accepted the developer terms, which opens the developer portal.
+    developer_since: Mapped[datetime | None]
 
     identities: Mapped[list["Identity"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 

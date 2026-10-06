@@ -9,7 +9,7 @@ from flask import Flask
 from flask.testing import FlaskClient
 
 from idp.db import db
-from idp.models import Client, User
+from idp.models import Client, ClientSecret, User
 from idp.security import totp
 from idp.security.tokens import hash_token
 from idp.services import mail
@@ -36,7 +36,8 @@ def add_service(app: Flask) -> None:
                 client_id="service",
                 name="Resource server",
                 client_type="confidential",
-                secret_hash=hash_token(SECRET),
+                environment="live",
+                secrets=[ClientSecret(secret_hash=hash_token(SECRET), prefix=SECRET[:10])],
                 redirect_uris=[],
                 grant_types=["client_credentials"],
                 scope="read write",

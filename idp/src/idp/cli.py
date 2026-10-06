@@ -11,7 +11,7 @@ from idp.db import db
 from idp.models import Client, User
 from idp.models.clients import AUTH_METHODS, GRANT_TYPES
 from idp.security.keys import generate_key
-from idp.security.tokens import hash_token, new_token
+from idp.services.credentials import issue_client_secret
 
 
 def register(app: Flask) -> None:
@@ -53,23 +53,23 @@ def register(app: Flask) -> None:
         """Register a client. A confidential client's secret is shown once."""
         if db().scalar(select(Client.id).where(Client.client_id == client_id)) is not None:
             raise click.ClickException(f"{client_id} already exists")
-        secret = new_token() if client_type == "confidential" else None
-        method = "client_secret_basic" if secret else "none"
+        confidential = client_type == "confidential"
+        method = "client_secret_basic" if confidential else "none"
         assert method in AUTH_METHODS
-        db().add(
-            Client(
-                client_id=client_id,
-                name=name,
-                client_type=client_type,
-                secret_hash=hash_token(secret) if secret else None,
-                redirect_uris=list(redirect_uris),
-                post_logout_redirect_uris=list(logout_uris),
-                grant_types=list(grant_types) or ["authorization_code", "refresh_token"],
-                scope=scope,
-                token_endpoint_auth_method=method,
-                first_party=first_party,
-            )
+        client = Client(
+            client_id=client_id,
+            name=name,
+            client_type=client_type,
+            environment="live",
+            redirect_uris=list(redirect_uris),
+            post_logout_redirect_uris=list(logout_uris),
+            grant_types=list(grant_types) or ["authorization_code", "refresh_token"],
+            scope=scope,
+            token_endpoint_auth_method=method,
+            first_party=first_party,
         )
+        db().add(client)
+        secret = issue_client_secret(client) if confidential else None
         db().commit()
         click.echo(f"Created {client_id} ({client_type}).")
         if secret:

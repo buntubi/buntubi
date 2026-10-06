@@ -18,9 +18,9 @@ from idp.db import db, utcnow
 from idp.models import AuditEvent, Client, User
 from idp.models.clients import GRANT_TYPES
 from idp.oauth.server import require_token
-from idp.security.tokens import hash_token, new_token
 from idp.services import audit
 from idp.services.accounts import sign_out_everywhere
+from idp.services.credentials import issue_client_secret, rotate_client_secret
 
 bp = Blueprint("admin", __name__, url_prefix="/admin/api")
 
@@ -140,21 +140,23 @@ def create_client(admin: User) -> Any:
         return jsonify(error="client_id_taken"), 409
     if data.client_type == "public" and "client_credentials" in data.grant_types:
         return jsonify(error="public_client_cannot_use_client_credentials"), 422
-    secret = new_token() if data.client_type == "confidential" else None
+    confidential = data.client_type == "confidential"
     client = Client(
         client_id=data.client_id,
         name=data.name,
         client_type=data.client_type,
-        secret_hash=hash_token(secret) if secret else None,
+        # The owner's own apps: no project, live from the start.
+        environment="live",
         redirect_uris=[str(u) for u in data.redirect_uris],
         post_logout_redirect_uris=[str(u) for u in data.post_logout_redirect_uris],
         grant_types=list(data.grant_types),
         scope=data.scope,
-        token_endpoint_auth_method="client_secret_basic" if secret else "none",
+        token_endpoint_auth_method="client_secret_basic" if confidential else "none",
         first_party=data.first_party,
         brand=data.brand.model_dump(mode="json", exclude_none=True),
     )
     db().add(client)
+    secret = issue_client_secret(client) if confidential else None
     db().flush()
     audit.record("admin.client_created", user=admin, client=client)
     db().commit()
@@ -192,8 +194,7 @@ def rotate_secret(client_id: str, admin: User) -> Any:
     client = _client_or_404(client_id)
     if client.is_public:
         return jsonify(error="public_client_has_no_secret"), 422
-    secret = new_token()
-    client.secret_hash = hash_token(secret)
+    secret = rotate_client_secret(client)
     audit.record("admin.client_secret_rotated", user=admin, client=client)
     db().commit()
     return jsonify(client_secret=secret)

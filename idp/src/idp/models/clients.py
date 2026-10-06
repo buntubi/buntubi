@@ -1,17 +1,22 @@
 """
 Applications that sign people in through the provider. Implements Authlib's ClientMixin, strictly:
 redirect URIs match exactly, public clients have no secret, a secret is only ever kept hashed.
+
+A developer's app belongs to a project and starts in the sandbox; the owner's own apps have no
+project and are live from the start.
 """
 
+import uuid
 from datetime import datetime
 from typing import Any, Literal
 
 from authlib.oauth2.rfc6749 import ClientMixin, list_to_scope, scope_to_list
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from idp.db import Base, IdMixin, TimestampMixin
+from idp.db import Base, IdMixin, TimestampMixin, utcnow
+from idp.models.platform import ClientSecret, Project
 from idp.security.tokens import matches
 
 ClientType = Literal["public", "confidential"]
@@ -29,8 +34,19 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     __tablename__ = "clients"
 
     client_id: Mapped[str] = mapped_column(String(64), unique=True)
-    # SHA-256 of the secret; None for a public client (a SPA or a mobile app cannot keep one).
-    secret_hash: Mapped[str | None] = mapped_column(String(64))
+    project_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    # "sandbox": only the project's test users can sign in; "live": anyone.
+    environment: Mapped[str] = mapped_column(String(8), default="sandbox", server_default="live")
+    # Going live with a sensitive scope waits for the owner: "none", "pending", "approved", "rejected".
+    review_status: Mapped[str] = mapped_column(String(10), default="none", server_default="none")
+    review_note: Mapped[str] = mapped_column(String(1000), default="", server_default="")
+    reviewed_at: Mapped[datetime | None]
+    reviewed_by_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    homepage_url: Mapped[str | None] = mapped_column(String(2048))
+    privacy_url: Mapped[str | None] = mapped_column(String(2048))
+    terms_url: Mapped[str | None] = mapped_column(String(2048))
     client_type: Mapped[str] = mapped_column(String(16), default="public")
     name: Mapped[str] = mapped_column(String(120))
     redirect_uris: Mapped[list[str]] = mapped_column(ARRAY(String(2048)), default=list)
@@ -45,6 +61,14 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     # How the sign-in screens look for this client: {"name", "logo", "accent", "skin"}.
     brand: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     disabled_at: Mapped[datetime | None]
+
+    # Confidential clients only; a public client (a SPA or a mobile app) cannot keep a secret.
+    secrets: Mapped[list[ClientSecret]] = relationship(cascade="all, delete-orphan")
+    project: Mapped[Project | None] = relationship()
+
+    @property
+    def is_live(self) -> bool:
+        return self.environment == "live"
 
     @property
     def is_public(self) -> bool:
@@ -68,7 +92,12 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
         return redirect_uri in self.redirect_uris
 
     def check_client_secret(self, client_secret: str) -> bool:
-        return self.secret_hash is not None and matches(client_secret, self.secret_hash)
+        now = utcnow()
+        for secret in self.secrets:
+            if secret.is_active(now) and matches(client_secret, secret.secret_hash):
+                secret.last_used_at = now
+                return True
+        return False
 
     def check_endpoint_auth_method(self, method: str, endpoint: str) -> bool:
         if self.is_public:

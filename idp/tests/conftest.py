@@ -1,6 +1,6 @@
 """
 Tests run against a real Postgres database (IDP_TEST_DATABASE_URL, default the local idp_test),
-migrated once, emptied before each test. Emails are captured instead of sent.
+migrated once, emptied before each test (the seeded scope catalog stays). Emails are captured instead of sent.
 """
 
 import base64
@@ -56,7 +56,7 @@ def clean_database() -> Iterator[None]:
             connection.execute(
                 text(
                     "select tablename from pg_tables"
-                    " where schemaname = 'public' and tablename <> 'alembic_version'"
+                    " where schemaname = 'public' and tablename not in ('alembic_version', 'scopes')"
                 )
             )
             .scalars()
@@ -110,6 +110,7 @@ def add_client(app: Flask, **overrides: Any) -> None:
             "client_id": "spa",
             "name": "Test app",
             "client_type": "public",
+            "environment": "live",
             "redirect_uris": [REDIRECT],
             "grant_types": ["authorization_code", "refresh_token"],
             "scope": "openid profile email offline_access",
