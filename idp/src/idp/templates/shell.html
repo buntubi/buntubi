@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{ locale }}"{% if config.brand.skin %} data-ui="{{ config.brand.skin }}"{% endif %}>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <title>{{ config.brand.name or "Sign in" }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='idp/idp.css') }}">
+  </head>
+  <body>
+    <main id="idp-root"></main>
+    <script type="application/json" id="idp-config">{{ config | tojson }}</script>
+    <script type="module" src="{{ url_for('static', filename='idp/idp.js') }}"></script>
+  </body>
+</html>

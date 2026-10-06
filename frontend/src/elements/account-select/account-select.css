@@ -1,0 +1,36 @@
+.idp-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.idp-account {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  height: auto;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-align: left;
+}
+.idp-account-avatar {
+  flex: none;
+  width: 38px;
+  height: 38px;
+}
+.idp-account-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.idp-account-name {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+.idp-account-email {
+  color: var(--flx-ui-color-fg-muted);
+  font-size: 13.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

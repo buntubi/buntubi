@@ -1,0 +1,40 @@
+.idp-consent-app {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.idp-consent-app p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.idp-consent-logo {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+.idp-consent-scopes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.idp-consent-scopes li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+.idp-consent-scopes li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--flx-ui-color-primary);
+}

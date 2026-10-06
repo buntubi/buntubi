@@ -1,0 +1,152 @@
+"""
+The screens: one shell page each, naming the custom element to mount and its configuration. All
+behaviour is in the elements (frontend/); these routes only decide which one, in which language,
+with which client's brand.
+"""
+
+from typing import Any
+from urllib.parse import parse_qs, urlparse
+
+from authlib.oauth2 import OAuth2Error
+from authlib.oauth2.rfc6749 import scope_to_list
+from flask import Blueprint, redirect, render_template, request, session, url_for
+from werkzeug.wrappers import Response
+
+from idp.config import get_settings
+from idp.db import db
+from idp.oauth.server import authorization, query_client
+from idp.security import csrf
+from idp.services import mfa, sessions
+
+bp = Blueprint("pages", __name__)
+
+LOCALES = ("fr", "en")
+
+
+def _locale() -> str:
+    chosen = request.args.get("lang") or session.get("lang")
+    if chosen in LOCALES:
+        session["lang"] = chosen
+        return chosen
+    return request.accept_languages.best_match(LOCALES) or "fr"
+
+
+def _brand() -> dict[str, Any]:
+    """The look of the client this sign-in is for, from the authorization request being resumed."""
+    return_to = session.get("return_to") or request.full_path
+    client_id = parse_qs(urlparse(return_to).query).get("client_id", [None])[0]
+    client = query_client(client_id) if client_id else None
+    if client is not None:
+        return {"name": client.name, **client.brand}
+    name = get_settings().provider_name
+    return {"name": name} if name else {}
+
+
+def shell(element: str, **props: Any) -> str:
+    config = {
+        "element": element,
+        "locale": _locale(),
+        "csrf": csrf.token(),
+        "brand": _brand(),
+        "props": props,
+    }
+    return render_template("shell.html", config=config, locale=config["locale"])
+
+
+@bp.get("/")
+def home() -> Response:
+    return redirect(url_for("pages.account"))
+
+
+@bp.get("/signin")
+def signin() -> str:
+    return shell("idp-sign-in")
+
+
+@bp.get("/signup")
+def signup() -> str:
+    return shell("idp-sign-up")
+
+
+@bp.get("/verify-email")
+def verify_email() -> Any:
+    pending = sessions.pending("verify_email")
+    if pending is None:
+        return redirect(url_for("pages.signin"))
+    return shell("idp-verify-email", email=pending.user.email)
+
+
+@bp.get("/mfa")
+def mfa_step() -> Any:
+    if sessions.pending("mfa") is None:
+        return redirect(url_for("pages.signin"))
+    return shell("idp-mfa-verify")
+
+
+@bp.get("/forgot-password")
+def forgot_password() -> str:
+    return shell("idp-forgot-password")
+
+
+@bp.get("/reset-password")
+def reset_password() -> str:
+    # The token stays in the page's own state; this response is not cached and sends no Referer.
+    return shell("idp-reset-password", token=request.args.get("token", ""))
+
+
+@bp.get("/consent")
+def consent() -> Any:
+    """What the authorization request in the query asks for; the answer goes to POST /oauth/authorize."""
+    login = sessions.current()
+    if login is None:
+        return redirect(url_for("pages.signin"))
+    try:
+        grant = authorization.get_consent_grant(end_user=login.user)
+    except OAuth2Error as error:
+        return authorization.handle_error_response(request, error)
+    client = grant.client
+    return shell(
+        "idp-consent",
+        client={"name": client.name, "logo": client.brand.get("logo")},
+        scopes=scope_to_list(grant.request.payload.scope or "") or [],
+        email=login.user.email,
+    )
+
+
+@bp.get("/accounts")
+def accounts() -> str:
+    logins = sessions.all_signed_in()
+    db().commit()
+    return shell(
+        "idp-account-select",
+        accounts=[{"id": str(a.id), "email": a.user.email, "name": a.user.name} for a in logins],
+    )
+
+
+@bp.get("/account")
+def account() -> Any:
+    login = sessions.current()
+    db().commit()
+    if login is None:
+        return redirect(url_for("pages.signin"))
+    return shell(
+        "idp-account",
+        email=login.user.email,
+        name=login.user.name,
+        mfa=mfa.is_enabled(login.user),
+        backup_codes_left=mfa.remaining_backup_codes(login.user),
+    )
+
+
+@bp.get("/device")
+def device() -> Any:
+    if sessions.current() is None:
+        sessions.remember_return_to(request.full_path)
+        return redirect(url_for("pages.signin"))
+    db().commit()
+    return shell("idp-device-activate", user_code=request.args.get("user_code", ""))
+
+
+@bp.get("/signed-out")
+def signed_out() -> str:
+    return shell("idp-signed-out")

@@ -1,0 +1,230 @@
+"""
+The grants this provider supports, on Authlib: authorization code (PKCE S256 required, OpenID
+Connect), refresh token (rotated, reuse revokes the family), client credentials, device code.
+No implicit grant, no password grant.
+"""
+
+import time
+import uuid
+from datetime import datetime, timedelta
+from typing import Any
+
+from authlib.oauth2.rfc6749 import grants
+from authlib.oauth2.rfc7636 import CodeChallenge
+from authlib.oauth2.rfc8628 import DeviceCodeGrant as _DeviceCodeGrant
+from authlib.oidc.core import OpenIDCode as _OpenIDCode
+from authlib.oidc.core import UserInfo
+from flask import g
+from sqlalchemy import select, update
+
+from idp.config import get_settings
+from idp.db import db, utcnow
+from idp.models import AccessTokenRecord, AuthorizationCode, Client, DeviceCode, RefreshToken, User
+from idp.oauth.claims import user_claims
+from idp.security.keys import ALGORITHM
+from idp.security.tokens import hash_token
+
+PUBLIC_AND_CONFIDENTIAL = ["client_secret_basic", "client_secret_post", "none"]
+GRANT_TYPES_SUPPORTED = (
+    "authorization_code",
+    "refresh_token",
+    "client_credentials",
+    "urn:ietf:params:oauth:grant-type:device_code",
+)
+
+
+class AuthContext:
+    """How and when the user signed in, carried from the code or refresh token into new tokens."""
+
+    def __init__(
+        self,
+        session_id: uuid.UUID | None,
+        auth_time: datetime,
+        methods: list[str],
+        family_id: uuid.UUID | None = None,
+    ):
+        self.session_id = session_id
+        self.auth_time = auth_time
+        self.methods = methods
+        self.family_id = family_id
+
+
+def attach(user: User, context: AuthContext) -> User:
+    user._auth = context  # type: ignore[attr-defined]
+    return user
+
+
+def context_of(user: User | None) -> AuthContext | None:
+    return getattr(user, "_auth", None)
+
+
+class S256CodeChallenge(CodeChallenge):  # type: ignore[misc]
+    """PKCE with S256 only: `plain` gives no protection if the code is intercepted."""
+
+    SUPPORTED_CODE_CHALLENGE_METHOD = ["S256"]
+
+
+class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[misc]
+    TOKEN_ENDPOINT_AUTH_METHODS = PUBLIC_AND_CONFIDENTIAL
+
+    def save_authorization_code(self, code: str, request: Any) -> None:
+        login = g.login  # set by the authorize view: the session that approved this request
+        data = request.payload.data
+        db().add(
+            AuthorizationCode(
+                code_hash=hash_token(code),
+                client_id=request.client.id,
+                user_id=request.user.id,
+                session_id=login.id,
+                redirect_uri=request.payload.redirect_uri,
+                scope=request.payload.scope or "",
+                nonce=data.get("nonce"),
+                code_challenge=data["code_challenge"],
+                code_challenge_method=data.get("code_challenge_method", "S256"),
+                auth_time=login.created_at,
+                auth_methods=login.auth_methods,
+                expires_at=utcnow() + timedelta(seconds=get_settings().authorization_code_ttl),
+            )
+        )
+
+    def query_authorization_code(self, code: str, client: Client) -> AuthorizationCode | None:
+        row = db().scalar(select(AuthorizationCode).where(AuthorizationCode.code_hash == hash_token(code)))
+        if row is None or row.client_id != client.id or row.expires_at <= utcnow():
+            return None
+        return row
+
+    def delete_authorization_code(self, authorization_code: AuthorizationCode) -> None:
+        db().delete(authorization_code)
+
+    def authenticate_user(self, authorization_code: AuthorizationCode) -> User | None:
+        user = authorization_code.user
+        if user.disabled_at is not None:
+            return None
+        return attach(
+            user,
+            AuthContext(
+                authorization_code.session_id, authorization_code.auth_time, authorization_code.auth_methods
+            ),
+        )
+
+
+ID_TOKEN_TTL = 3600
+
+
+class OpenIDCode(_OpenIDCode):  # type: ignore[misc]
+    def exists_nonce(self, nonce: str, request: Any) -> bool:
+        found = db().scalar(
+            select(AuthorizationCode.id).where(
+                AuthorizationCode.client_id == request.client.id, AuthorizationCode.nonce == nonce
+            )
+        )
+        return found is not None
+
+    # ID tokens: signed with the current key and naming it, so clients pick it from the JWKS.
+    def resolve_client_private_key(self, client: Any) -> Any:
+        from idp.oauth.server import key_ring
+
+        return key_ring().current.key
+
+    def get_client_algorithm(self, client: Any) -> str:
+        return ALGORITHM
+
+    def get_encode_header(self, client: Any) -> dict[str, str]:
+        from idp.oauth.server import key_ring
+
+        return {"alg": ALGORITHM, "kid": key_ring().current.kid}
+
+    def get_client_claims(self, client: Any) -> dict[str, Any]:
+        now = int(time.time())
+        return {
+            "iss": get_settings().issuer,
+            "aud": [client.get_client_id()],
+            "iat": now,
+            "exp": now + ID_TOKEN_TTL,
+        }
+
+    def generate_user_info(self, user: User, scope: str) -> UserInfo:
+        return UserInfo(user_claims(user, scope))
+
+
+class RefreshTokenGrant(grants.RefreshTokenGrant):  # type: ignore[misc]
+    TOKEN_ENDPOINT_AUTH_METHODS = PUBLIC_AND_CONFIDENTIAL
+    INCLUDE_NEW_REFRESH_TOKEN = True
+
+    def authenticate_refresh_token(self, refresh_token: str) -> RefreshToken | None:
+        row = db().scalar(select(RefreshToken).where(RefreshToken.token_hash == hash_token(refresh_token)))
+        if row is None:
+            return None
+        if row.rotated_at is not None and row.revoked_at is None:
+            # Already exchanged once: this copy was stolen, or the first one was. End them all.
+            revoke_family(row.family_id)
+            return None
+        if row.revoked_at is not None or row.is_expired():
+            return None
+        return row
+
+    def authenticate_user(self, refresh_token: RefreshToken) -> User | None:
+        user = refresh_token.user
+        if user.disabled_at is not None:
+            return None
+        return attach(
+            user,
+            AuthContext(
+                refresh_token.session_id, refresh_token.auth_time, [], family_id=refresh_token.family_id
+            ),
+        )
+
+    def revoke_old_credential(self, refresh_token: RefreshToken) -> None:
+        refresh_token.rotated_at = utcnow()
+
+
+class ClientCredentialsGrant(grants.ClientCredentialsGrant):  # type: ignore[misc]
+    TOKEN_ENDPOINT_AUTH_METHODS = ["client_secret_basic", "client_secret_post"]
+
+
+class DeviceCodeGrant(_DeviceCodeGrant):  # type: ignore[misc]
+    TOKEN_ENDPOINT_AUTH_METHODS = PUBLIC_AND_CONFIDENTIAL
+
+    def query_device_credential(self, device_code: str) -> DeviceCode | None:
+        # A used code is gone: polling again is an invalid request, not a pending one.
+        return db().scalar(
+            select(DeviceCode).where(
+                DeviceCode.device_code_hash == hash_token(device_code), DeviceCode.status != "used"
+            )
+        )
+
+    def query_user_grant(self, user_code: str) -> tuple[User, bool] | None:
+        row = db().scalar(select(DeviceCode).where(DeviceCode.user_code == user_code))
+        if row is None or row.status == "pending" or row.user_id is None:
+            return None
+        user = db().get(User, row.user_id)
+        if user is None:
+            return None
+        approved = row.status == "approved"
+        if approved:
+            row.status = "used"
+            attach(user, AuthContext(None, utcnow(), ["device"]))
+        return user, approved
+
+    def should_slow_down(self, credential: DeviceCode) -> bool:
+        now = utcnow()
+        too_soon = (
+            credential.last_polled_at is not None
+            and (now - credential.last_polled_at).total_seconds() < credential.interval
+        )
+        credential.last_polled_at = now
+        return too_soon
+
+
+def revoke_family(family_id: uuid.UUID) -> None:
+    now = utcnow()
+    db().execute(
+        update(RefreshToken)
+        .where(RefreshToken.family_id == family_id, RefreshToken.revoked_at.is_(None))
+        .values(revoked_at=now)
+    )
+    db().execute(
+        update(AccessTokenRecord)
+        .where(AccessTokenRecord.refresh_family_id == family_id, AccessTokenRecord.revoked_at.is_(None))
+        .values(revoked_at=now)
+    )

@@ -1,0 +1,252 @@
+/* Layer order first, then fluixi-ui's tokens and the skins a client can pick with `data-ui`.
+   Without one the page keeps the neutral default look. */
+@layer flx.reset, flx.base, flx.tokens, flx.components, flx.skin, flx.fx;
+@import '@fluixi-ui/tokens/tokens.css';
+@import '@fluixi-ui/skin-paper/styles.css';
+@import '@fluixi-ui/skin-soft/styles.css';
+@import '@fluixi-ui/skin-material/styles.css';
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--flx-ui-color-bg);
+  color: var(--flx-ui-color-fg);
+  font-family: var(--flx-ui-font-sans, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Neutral ink by default: the hero, the buttons and the links share it. A client's brand
+   replaces all three with its accent (brand.ts, inline, so it wins). */
+:root {
+  --idp-hero: #161615;
+  --idp-hero-fg: #fafaf9;
+  --flx-ui-color-primary: var(--flx-ui-color-fg);
+  --flx-ui-color-primary-fg: var(--flx-ui-color-bg);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --idp-hero: #222220;
+  }
+}
+
+.idp-shell {
+  display: grid;
+  grid-template-columns: minmax(360px, 44%) 1fr;
+  min-height: 100dvh;
+}
+
+/* Hero: one flat colour field, the brand, a headline, three plain shapes. */
+.idp-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 48px;
+  overflow: hidden;
+  background: var(--idp-hero);
+  color: var(--idp-hero-fg);
+}
+.idp-hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+}
+.idp-hero-title {
+  margin: 0 0 14px;
+  font-size: clamp(30px, 3.2vw, 44px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+.idp-hero-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  opacity: 0.72;
+}
+/* The shapes fill the hero behind the brand and the copy, which then sit top and bottom. */
+.idp-hero-art {
+  position: absolute;
+  inset: 0;
+}
+.idp-hero-art span {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+}
+.idp-hero-art span:nth-child(1) {
+  width: 420px;
+  height: 420px;
+  top: -140px;
+  right: -160px;
+  opacity: 0.06;
+}
+.idp-hero-art span:nth-child(2) {
+  width: 220px;
+  height: 220px;
+  top: 22%;
+  right: 40px;
+  opacity: 0.08;
+}
+.idp-hero-art span:nth-child(3) {
+  width: 90px;
+  height: 90px;
+  top: 40%;
+  right: 230px;
+  border-radius: 24px;
+  opacity: 0.1;
+}
+
+.idp-mark {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+.idp-mark-logo {
+  max-height: 32px;
+  max-width: 180px;
+}
+.idp-mark-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.idp-mark-compact {
+  display: none;
+}
+
+/* The form stands on the page: no card, no border, no shadow. */
+.idp-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 28px;
+}
+.idp-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  max-width: 380px;
+  margin: auto 0;
+}
+.idp-heading h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.idp-heading p {
+  margin: 8px 0 0;
+  color: var(--flx-ui-color-fg-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.idp-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--flx-ui-color-fg-muted);
+}
+.idp-footer:empty {
+  display: none;
+}
+.idp-footer-line {
+  margin: 0;
+}
+
+.idp-link {
+  color: var(--flx-ui-color-primary);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+.idp-link:hover {
+  text-decoration: underline;
+}
+.idp-language {
+  margin-top: 32px;
+  color: var(--flx-ui-color-fg-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+.idp-language:hover {
+  text-decoration: underline;
+}
+
+.idp-code {
+  justify-content: flex-start;
+  gap: 6px;
+}
+.idp-code input {
+  width: 100%;
+  max-width: 46px;
+  min-width: 0;
+}
+
+.idp-done {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.idp-done p {
+  margin: 0;
+}
+.idp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 0;
+  border-top: 1px solid var(--flx-ui-color-border, rgba(127, 127, 127, 0.2));
+  border-bottom: 1px solid var(--flx-ui-color-border, rgba(127, 127, 127, 0.2));
+}
+.idp-section h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+.idp-wide {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+}
+
+/* Phone and narrow windows: the hero folds into a brand row. */
+@media (max-width: 860px) {
+  .idp-shell {
+    grid-template-columns: 1fr;
+  }
+  .idp-hero {
+    display: none;
+  }
+  .idp-mark-compact {
+    display: flex;
+    align-self: stretch;
+    margin-bottom: 36px;
+  }
+  .idp-mark-compact:has(.idp-mark-name:empty) {
+    display: none;
+  }
+  .idp-main {
+    align-items: stretch;
+    padding: 24px 20px;
+  }
+  .idp-form-column {
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  .idp-heading h1 {
+    font-size: 26px;
+  }
+}

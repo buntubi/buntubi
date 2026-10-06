@@ -1,0 +1,245 @@
+"""
+The OAuth 2.1 / OpenID Connect endpoints: discovery, keys, authorize, token, revocation,
+introspection, userinfo, device authorization and logout.
+"""
+
+from typing import Any
+from urllib.parse import urlencode
+
+from authlib.oauth2 import OAuth2Error
+from authlib.oauth2.rfc6749 import scope_to_list
+from flask import Blueprint, Response, abort, g, jsonify, redirect, request, url_for
+from joserfc import jwt as jose_jwt
+from joserfc.errors import JoseError
+
+from idp.config import get_settings
+from idp.db import db, utcnow
+from idp.extensions import limiter
+from idp.oauth.claims import SCOPES, user_claims
+from idp.oauth.grants import GRANT_TYPES_SUPPORTED
+from idp.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
+from idp.security import csrf
+from idp.services import audit, consent, sessions
+
+bp = Blueprint("oidc", __name__)
+
+
+@bp.get("/.well-known/openid-configuration")
+def discovery() -> Response:
+    issuer = get_settings().issuer
+    return jsonify(
+        issuer=issuer,
+        authorization_endpoint=f"{issuer}/oauth/authorize",
+        token_endpoint=f"{issuer}/oauth/token",
+        userinfo_endpoint=f"{issuer}/oauth/userinfo",
+        jwks_uri=f"{issuer}/.well-known/jwks.json",
+        revocation_endpoint=f"{issuer}/oauth/revoke",
+        introspection_endpoint=f"{issuer}/oauth/introspect",
+        device_authorization_endpoint=f"{issuer}/oauth/device_authorization",
+        end_session_endpoint=f"{issuer}/oauth/logout",
+        scopes_supported=list(SCOPES),
+        response_types_supported=["code"],
+        response_modes_supported=["query"],
+        grant_types_supported=list(GRANT_TYPES_SUPPORTED),
+        subject_types_supported=["public"],
+        id_token_signing_alg_values_supported=["RS256"],
+        token_endpoint_auth_methods_supported=["client_secret_basic", "client_secret_post", "none"],
+        revocation_endpoint_auth_methods_supported=["client_secret_basic", "client_secret_post", "none"],
+        introspection_endpoint_auth_methods_supported=["client_secret_basic", "client_secret_post"],
+        code_challenge_methods_supported=["S256"],
+        prompt_values_supported=["none", "login", "consent", "select_account"],
+        claims_supported=[
+            "sub",
+            "iss",
+            "aud",
+            "exp",
+            "iat",
+            "auth_time",
+            "nonce",
+            "amr",
+            "sid",
+            "name",
+            "given_name",
+            "family_name",
+            "locale",
+            "picture",
+            "updated_at",
+            "email",
+            "email_verified",
+            "phone_number",
+            "phone_number_verified",
+        ],
+    )
+
+
+@bp.get("/.well-known/jwks.json")
+def jwks() -> Response:
+    response = jsonify(key_ring().jwks())
+    response.cache_control.max_age = 300
+    response.cache_control.public = True
+    return response
+
+
+@bp.get("/oauth/authorize")
+def authorize() -> Any:
+    login = sessions.current()
+    prompt = set((request.args.get("prompt") or "").split())
+    try:
+        grant = authorization.get_consent_grant(end_user=login.user if login else None)
+    except OAuth2Error as error:
+        return authorization.handle_error_response(request, error)
+
+    if login is None or "login" in prompt or _too_old(login):
+        if "none" in prompt:
+            return _error_redirect(grant, "login_required")
+        sessions.remember_return_to(_authorize_path(drop_prompt=True))
+        return redirect(url_for("pages.signin"))
+
+    if "select_account" in prompt:
+        sessions.remember_return_to(_authorize_path(drop_prompt=True))
+        return redirect(url_for("pages.accounts"))
+
+    if "consent" in prompt or consent.is_needed(login.user, grant.client, grant.request.payload.scope or ""):
+        if "none" in prompt:
+            return _error_redirect(grant, "consent_required")
+        return redirect(url_for("pages.consent") + "?" + urlencode(_query(drop_prompt=True)))
+
+    g.login = login
+    response = authorization.create_authorization_response(grant_user=login.user, grant=grant)
+    audit.record("authorize", user=login.user, client=grant.client)
+    db().commit()
+    return response
+
+
+@bp.post("/oauth/authorize")
+def authorize_decision() -> Any:
+    """The consent screen's answer, as JSON: {"approve": true|false}. Replies with where to go."""
+    csrf.protect()
+    login = sessions.current()
+    if login is None:
+        abort(401)
+    approve = bool((request.get_json(silent=True) or {}).get("approve"))
+    try:
+        grant = authorization.get_consent_grant(end_user=login.user)
+    except OAuth2Error as error:
+        return jsonify(error=error.error), 400
+    if approve:
+        consent.record(login.user, grant.client, grant.request.payload.scope or "")
+        g.login = login
+        response = authorization.create_authorization_response(grant_user=login.user, grant=grant)
+    else:
+        response = authorization.create_authorization_response(grant_user=None, grant=grant)
+    audit.record("consent", user=login.user, client=grant.client, approved=approve)
+    db().commit()
+    return jsonify(redirect=response.headers["Location"])
+
+
+@bp.post("/oauth/token")
+@limiter.limit("60 per minute")
+def token() -> Response:
+    response = authorization.create_token_response()
+    # Committed even for a refused request: a detected refresh-token reuse revokes its family.
+    db().commit()
+    return response
+
+
+@bp.post("/oauth/revoke")
+def revoke() -> Response:
+    response = authorization.create_endpoint_response("revocation")
+    db().commit()
+    return response
+
+
+@bp.post("/oauth/introspect")
+def introspect() -> Response:
+    return authorization.create_endpoint_response("introspection")
+
+
+@bp.post("/oauth/device_authorization")
+@limiter.limit("20 per minute")
+def device_authorization() -> Response:
+    response = authorization.create_endpoint_response("device_authorization")
+    db().commit()
+    return response
+
+
+@bp.route("/oauth/userinfo", methods=["GET", "POST"])
+@require_token("openid")
+def userinfo() -> Response:
+    from authlib.integrations.flask_oauth2 import current_token
+
+    user = current_token.user
+    if user is None or user.disabled_at is not None:
+        abort(401)
+    return jsonify(user_claims(user, " ".join(scopes_of(current_token))))
+
+
+@bp.get("/oauth/logout")
+def logout() -> Any:
+    """RP-initiated logout: ends this browser's session, then returns to a registered address."""
+    target = request.args.get("post_logout_redirect_uri")
+    client = _client_from_id_token_hint(request.args.get("id_token_hint"))
+    login = sessions.current()
+    if login is not None:
+        audit.record("logout", user=login.user, client=client)
+        sessions.end(login)
+        db().commit()
+    if target and client is not None and target in client.post_logout_redirect_uris:
+        state = request.args.get("state")
+        return redirect(
+            target + (("&" if "?" in target else "?") + urlencode({"state": state}) if state else "")
+        )
+    return redirect(url_for("pages.signed_out"))
+
+
+def _too_old(login: Any) -> bool:
+    max_age = request.args.get("max_age")
+    if max_age is None or not max_age.isdigit():
+        return False
+    return (utcnow() - login.created_at).total_seconds() > int(max_age)
+
+
+def _query(drop_prompt: bool) -> dict[str, str]:
+    query = request.args.to_dict()
+    if drop_prompt:
+        query.pop("prompt", None)
+    return query
+
+
+def _authorize_path(drop_prompt: bool) -> str:
+    return url_for("oidc.authorize") + "?" + urlencode(_query(drop_prompt))
+
+
+def _error_redirect(grant: Any, error: str) -> Any:
+    params = {"error": error}
+    if state := grant.request.payload.state:
+        params["state"] = state
+    params["iss"] = get_settings().issuer
+    uri = grant.request.payload.redirect_uri
+    return redirect(uri + ("&" if "?" in uri else "?") + urlencode(params))
+
+
+def _client_from_id_token_hint(hint: str | None) -> Any:
+    """The client an ID token we issued was for. Expired is fine here; a bad signature is not."""
+    if not hint:
+        return None
+    try:
+        token = jose_jwt.decode(hint, lambda obj: _key_for(obj.headers().get("kid")))
+    except (JoseError, ValueError):
+        return None
+    if token.claims.get("iss") != get_settings().issuer:
+        return None
+    audience = token.claims.get("aud")
+    client_id = audience[0] if isinstance(audience, list) else audience
+    return query_client(client_id) if isinstance(client_id, str) else None
+
+
+def _key_for(kid: str | None) -> Any:
+    found = key_ring().find(kid) if kid else None
+    if found is None:
+        raise ValueError("unknown key")
+    return found.key
+
+
+def supported_scopes(scope: str) -> list[str]:
+    return [s for s in (scope_to_list(scope) or []) if s in SCOPES]

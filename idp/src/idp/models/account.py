@@ -1,0 +1,100 @@
+"""
+One-time proofs sent by email (a code to verify the address, a link to reset the password), the
+device flow's pending requests, two-factor settings, and the audit trail. Secrets are kept hashed;
+a TOTP seed, which has to be read back, is kept encrypted.
+"""
+
+import uuid
+from datetime import datetime
+from typing import Any
+
+from sqlalchemy import ForeignKey, Integer, LargeBinary, String
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from idp.db import Base, IdMixin, utcnow
+from idp.models.clients import Client
+
+
+class EmailToken(IdMixin, Base):
+    """A code to verify an address, or a link to reset a password. Single use, short-lived."""
+
+    __tablename__ = "email_tokens"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    # "verify_email" (a 6-digit code typed by the user) or "reset_password" (a link).
+    purpose: Mapped[str] = mapped_column(String(32))
+    token_hash: Mapped[str] = mapped_column(String(64), index=True)
+    # A 6-digit code can be guessed: after a few wrong tries it stops working.
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    expires_at: Mapped[datetime]
+    used_at: Mapped[datetime | None]
+
+
+class DeviceCode(IdMixin, Base):
+    """RFC 8628: a device asks, a person approves on another screen with the user code."""
+
+    __tablename__ = "device_codes"
+
+    device_code_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    user_code: Mapped[str] = mapped_column(String(16), unique=True)
+    client_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"))
+    scope: Mapped[str] = mapped_column(String(1000))
+    # "pending", then "approved" or "denied" by the person; "used" once a token was issued.
+    status: Mapped[str] = mapped_column(String(16), default="pending")
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    expires_at: Mapped[datetime]
+    interval: Mapped[int] = mapped_column(Integer, default=5)
+    last_polled_at: Mapped[datetime | None]
+
+    client: Mapped[Client] = relationship()
+
+    # ── Authlib DeviceCredentialMixin ───────────────────────────────────────────────────────────
+    def get_client_id(self) -> str:
+        return self.client.client_id
+
+    def get_scope(self) -> str:
+        return self.scope
+
+    def get_user_code(self) -> str:
+        return self.user_code
+
+    def is_expired(self) -> bool:
+        return self.expires_at <= utcnow()
+
+
+class TotpCredential(IdMixin, Base):
+    """An authenticator app. Confirmed once the user typed a first valid code."""
+
+    __tablename__ = "totp_credentials"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True)
+    secret_encrypted: Mapped[bytes] = mapped_column(LargeBinary)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    confirmed_at: Mapped[datetime | None]
+    # The last time step accepted, so one code cannot be used twice.
+    last_used_step: Mapped[int | None] = mapped_column(Integer)
+
+
+class BackupCode(IdMixin, Base):
+    __tablename__ = "backup_codes"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    code_hash: Mapped[str] = mapped_column(String(64))
+    used_at: Mapped[datetime | None]
+
+
+class AuditEvent(IdMixin, Base):
+    """Who did what, when, from where. Never a secret in `details`."""
+
+    __tablename__ = "audit_events"
+
+    at: Mapped[datetime] = mapped_column(default=utcnow, index=True)
+    event: Mapped[str] = mapped_column(String(64), index=True)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), index=True)
+    client_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("clients.id", ondelete="SET NULL"))
+    ip: Mapped[str | None] = mapped_column(String(45))
+    details: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    tags: Mapped[list[str]] = mapped_column(ARRAY(String(32)), default=list)

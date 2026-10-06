@@ -1,0 +1,59 @@
+/* Shared by the account forms: spacing, sizes and shape; the controls' look is the skin's. */
+.idp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.idp-form [data-field] {
+  gap: 7px;
+}
+.idp-form [data-field-label] {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.idp-form [data-input] {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+.idp-form .idp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.idp-form .idp-alert {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--flx-ui-radius-md);
+  background: var(--flx-ui-color-danger-subtle);
+  color: var(--flx-ui-color-danger-text);
+  font-size: 14px;
+}
+.idp-form .idp-note {
+  margin: 0;
+  color: var(--flx-ui-color-fg-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.idp-form [data-part='submit'] {
+  width: 100%;
+  height: 46px;
+  margin-top: 4px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+.idp-form .idp-actions {
+  display: flex;
+  gap: 10px;
+}
+.idp-form .idp-actions > * {
+  flex: 1;
+  height: 46px;
+  border-radius: 12px;
+}
+@media (max-width: 420px) {
+  .idp-form .idp-row {
+    grid-template-columns: 1fr;
+  }
+}

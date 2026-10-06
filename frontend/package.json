@@ -1,0 +1,35 @@
+{
+  "name": "idp-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fluixi-ui/avatar": "link:../../../fluixi-ui/packages/avatar",
+    "@fluixi-ui/button": "link:../../../fluixi-ui/packages/button",
+    "@fluixi-ui/field": "link:../../../fluixi-ui/packages/field",
+    "@fluixi-ui/form": "link:../../../fluixi-ui/packages/form",
+    "@fluixi-ui/input": "link:../../../fluixi-ui/packages/input",
+    "@fluixi-ui/pin-input": "link:../../../fluixi-ui/packages/pin-input",
+    "@fluixi-ui/skin-material": "link:../../../fluixi-ui/packages/skin-material",
+    "@fluixi-ui/skin-paper": "link:../../../fluixi-ui/packages/skin-paper",
+    "@fluixi-ui/skin-soft": "link:../../../fluixi-ui/packages/skin-soft",
+    "@fluixi-ui/tokens": "link:../../../fluixi-ui/packages/tokens",
+    "@fluixi/core": "link:../../../fluixi-core/packages/core",
+    "@fluixi/dom": "link:../../../fluixi-core/packages/dom",
+    "@fluixi/forms": "alpha",
+    "@fluixi/jsx": "link:../../../fluixi-core/packages/jsx",
+    "@fluixi/reactive": "link:../../../fluixi-core/packages/reactive",
+    "@fluixi/web-components": "link:../../../fluixi-core/packages/web-components",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@fluixi/vite-plugin": "link:../../../fluixi-core/packages/vite-plugin",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
+  }
+}
