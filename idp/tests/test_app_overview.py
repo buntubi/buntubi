@@ -156,3 +156,20 @@ def test_products_group_scopes_and_apps_choose_them(app: Flask, outbox: list[mai
     ).json["app"]
     assert made["products"] == ["content", "identity"]
     assert admin_call(owner_browser, owner, "PATCH", "/scopes/email", {"product": "nope"}).status_code == 422
+
+
+def test_a_code_flow_app_keeps_a_redirect_uri(app: Flask, outbox: list[mail.Message]) -> None:
+    _, _, browser, dev = setup_people(app, outbox)
+    organization_id = new_organization(browser, dev)
+    client_id = call(
+        browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {"name": "Web", "redirect_uris": ["https://web.example/cb"]},
+    ).json["app"]["client_id"]
+    emptied = call(browser, dev, "PATCH", f"/apps/{client_id}", {"redirect_uris": []})
+    assert emptied.status_code == 422 and emptied.json == {"error": "redirect_uri_required"}
+    assert call(browser, dev, "GET", f"/apps/{client_id}").json["app"]["redirect_uris"] == [
+        "https://web.example/cb"
+    ]

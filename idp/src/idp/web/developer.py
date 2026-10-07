@@ -436,7 +436,7 @@ def update_app(client_id: str, me: User) -> Response:
     if patch.name is not None:
         client.name = patch.name
     if patch.redirect_uris is not None:
-        client.redirect_uris = [str(u) for u in patch.redirect_uris]
+        p.set_redirect_uris(client, [str(u) for u in patch.redirect_uris])
     if patch.post_logout_redirect_uris is not None:
         client.post_logout_redirect_uris = [str(u) for u in patch.post_logout_redirect_uris]
     for name in ("homepage_url", "privacy_url", "terms_url"):

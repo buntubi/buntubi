@@ -413,6 +413,13 @@ def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | 
     return client, secret
 
 
+def set_redirect_uris(client: Client, uris: list[str]) -> None:
+    """The authorization code flow needs somewhere to send the code back to."""
+    if "authorization_code" in client.grant_types and not uris:
+        raise PlatformError("redirect_uri_required", 422)
+    client.redirect_uris = uris
+
+
 def set_app_scopes(client: Client, scopes: list[str]) -> None:
     checked = check_scopes(["openid", *scopes], for_key=False)
     client.scope = list_to_scope(checked.granted)
