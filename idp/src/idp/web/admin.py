@@ -1,5 +1,5 @@
 """
-The admin API, which the owner console calls: an overview, app reviews, projects and their
+The admin API, which the owner console calls: an overview, app reviews, organizations and their
 suspension, the scope catalog, clients, users and the audit trail. Callers present an access
 token with the `admin` scope, issued to a user with the admin role who signed in with a second
 factor; all three are checked on every request.
@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy import func, select
 
 from idp.db import db, utcnow
-from idp.models import AuditEvent, Client, Project, Scope, User
+from idp.models import AuditEvent, Client, Organization, Scope, User
 from idp.models.clients import GRANT_TYPES
 from idp.oauth.server import require_token
 from idp.services import audit, mfa
@@ -101,7 +101,7 @@ def _client_json(client: Client) -> dict[str, Any]:
         "first_party": client.first_party,
         "brand": client.brand,
         "disabled": client.disabled_at is not None,
-        "project_id": str(client.project_id) if client.project_id else None,
+        "organization_id": str(client.organization_id) if client.organization_id else None,
         "environment": client.environment,
         "review_status": client.review_status,
         "created_at": client.created_at.isoformat(),
@@ -160,7 +160,7 @@ def create_client(admin: User) -> Any:
         client_id=data.client_id,
         name=data.name,
         client_type=data.client_type,
-        # The owner's own apps: no project, live from the start.
+        # The owner's own apps: no organization, live from the start.
         environment="live",
         redirect_uris=[str(u) for u in data.redirect_uris],
         post_logout_redirect_uris=[str(u) for u in data.post_logout_redirect_uris],
@@ -294,10 +294,10 @@ def overview(admin: User) -> Response:
     return jsonify(
         users=_count(User),
         developers=_count(User, User.developer_since.is_not(None)),
-        projects=_count(Project),
-        suspended_projects=_count(Project, Project.suspended_at.is_not(None)),
-        live_apps=_count(Client, Client.project_id.is_not(None), Client.environment == "live"),
-        sandbox_apps=_count(Client, Client.project_id.is_not(None), Client.environment == "sandbox"),
+        organizations=_count(Organization),
+        suspended_organizations=_count(Organization, Organization.suspended_at.is_not(None)),
+        live_apps=_count(Client, Client.organization_id.is_not(None), Client.environment == "live"),
+        sandbox_apps=_count(Client, Client.organization_id.is_not(None), Client.environment == "sandbox"),
         pending_reviews=_count(Client, Client.review_status == "pending"),
     )
 
@@ -306,8 +306,8 @@ def overview(admin: User) -> Response:
 
 
 def _review_json(client: Client) -> dict[str, Any]:
-    project = client.project
-    owner = db().get(User, project.owner_id) if project else None
+    organization = client.organization
+    owner = _first_owner(organization) if organization else None
     return {
         **_client_json(client),
         "homepage_url": client.homepage_url,
@@ -318,8 +318,12 @@ def _review_json(client: Client) -> dict[str, Any]:
             for name in client.scope.split()
             if (scope := db().get(Scope, name)) is not None and scope.sensitivity == "sensitive"
         ],
-        "project": {"id": str(project.id), "name": project.name, "support_email": project.support_email}
-        if project
+        "organization": {
+            "id": str(organization.id),
+            "name": organization.name,
+            "support_email": organization.support_email,
+        }
+        if organization
         else None,
         "owner": {"email": owner.email, "name": owner.name} if owner else None,
         "requested_at": client.updated_at.isoformat(),
@@ -350,65 +354,72 @@ def review_app(client_id: str, admin: User) -> Response:
     return jsonify(app=_review_json(client))
 
 
-# ── Projects ──────────────────────────────────────────────────────────────────────────────────
+# ── Organizations ──────────────────────────────────────────────────────────────────────────────────
 
 
-def _project_json(project: Project) -> dict[str, Any]:
-    owner = db().get(User, project.owner_id)
+def _first_owner(organization: Organization) -> User | None:
+    """The organization's earliest owner, who answers for it in the console."""
+    owners = sorted(p.owners_of(organization), key=lambda m: m.added_at)
+    return owners[0].user if owners else None
+
+
+def _organization_json(organization: Organization) -> dict[str, Any]:
+    owner = _first_owner(organization)
     return {
-        "id": str(project.id),
-        "name": project.name,
-        "owner": {"id": str(project.owner_id), "email": owner.email if owner else None},
-        "support_email": project.support_email,
-        "approved_scopes": project.approved_scopes,
-        "apps": _count(Client, Client.project_id == project.id),
-        "suspended": project.is_suspended,
-        "suspended_reason": project.suspended_reason,
-        "created_at": project.created_at.isoformat(),
+        "id": str(organization.id),
+        "name": organization.name,
+        "owner": {"id": str(owner.id), "email": owner.email} if owner else None,
+        "members": len(organization.members),
+        "support_email": organization.support_email,
+        "approved_scopes": organization.approved_scopes,
+        "apps": _count(Client, Client.organization_id == organization.id),
+        "suspended": organization.is_suspended,
+        "suspended_reason": organization.suspended_reason,
+        "created_at": organization.created_at.isoformat(),
     }
 
 
-def _project_or_404(project_id: str) -> Project:
+def _organization_or_404(organization_id: str) -> Organization:
     try:
-        project = db().get(Project, uuid.UUID(project_id))
+        organization = db().get(Organization, uuid.UUID(organization_id))
     except ValueError:
-        project = None
-    if project is None:
+        organization = None
+    if organization is None:
         refuse("not_found", 404)
-    return project
+    return organization
 
 
 class SuspendIn(BaseModel):
     reason: str = Field(min_length=1, max_length=500)
 
 
-@bp.get("/projects")
+@bp.get("/organizations")
 @admin_only
-def list_projects(admin: User) -> Response:
-    query = select(Project).order_by(Project.created_at.desc()).limit(PAGE_SIZE)
+def list_organizations(admin: User) -> Response:
+    query = select(Organization).order_by(Organization.created_at.desc()).limit(PAGE_SIZE)
     if search := request.args.get("q", "").strip():
-        query = query.where(func.lower(Project.name).contains(search.lower(), autoescape=True))
-    return jsonify(items=[_project_json(x) for x in db().scalars(query)])
+        query = query.where(func.lower(Organization.name).contains(search.lower(), autoescape=True))
+    return jsonify(items=[_organization_json(x) for x in db().scalars(query)])
 
 
-@bp.post("/projects/<project_id>/suspend")
+@bp.post("/organizations/<organization_id>/suspend")
 @admin_only
-def suspend_project(project_id: str, admin: User) -> Response:
-    project = _project_or_404(project_id)
-    p.suspend(project, parse(SuspendIn).reason)
-    audit.record("admin.project_suspended", user=admin, project=str(project.id))
+def suspend_organization(organization_id: str, admin: User) -> Response:
+    organization = _organization_or_404(organization_id)
+    p.suspend(organization, parse(SuspendIn).reason)
+    audit.record("admin.organization_suspended", user=admin, organization=str(organization.id))
     db().commit()
-    return jsonify(project=_project_json(project))
+    return jsonify(organization=_organization_json(organization))
 
 
-@bp.post("/projects/<project_id>/restore")
+@bp.post("/organizations/<organization_id>/restore")
 @admin_only
-def restore_project(project_id: str, admin: User) -> Response:
-    project = _project_or_404(project_id)
-    p.restore(project)
-    audit.record("admin.project_restored", user=admin, project=str(project.id))
+def restore_organization(organization_id: str, admin: User) -> Response:
+    organization = _organization_or_404(organization_id)
+    p.restore(organization)
+    audit.record("admin.organization_restored", user=admin, organization=str(organization.id))
     db().commit()
-    return jsonify(project=_project_json(project))
+    return jsonify(organization=_organization_json(organization))
 
 
 # ── Scope catalog ─────────────────────────────────────────────────────────────────────────────

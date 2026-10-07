@@ -71,7 +71,7 @@ a private window, or **Se déconnecter** first (it ends the provider session too
    printed by the provider. Signed in: you come straight back.
 2. Accept the developer terms (**J'accepte**). This is the portal's own page, not a consent
    screen: the provider asks no consent for its own first-party apps.
-3. Create a project with a support email.
+3. Create an organization with a support email. You are its owner.
 4. Create an app: type **Confidentielle**, redirect URI `http://localhost:3000/callback`. Copy
    the secret, shown once.
 5. On the app page:
@@ -80,7 +80,7 @@ a private window, or **Se déconnecter** first (it ends the provider session too
    - **Nouveau secret**: the previous secret gets a 24 hour expiry. **Révoquer** ends one at
      once.
    - Add `phone` to the scopes, save, publish again: the app goes to review (section 5).
-6. On the project page: create an API key (`sk_test_...`) and copy it, add a test user, try
+6. On the organization page: create an API key (`sk_test_...`) and copy it, add a test user, try
    **English / Français** in the header.
 
 ## 4. Sandbox gate and consent
@@ -93,7 +93,7 @@ a private window, or **Se déconnecter** first (it ends the provider session too
    http://localhost:5010/oauth/authorize?response_type=code&client_id=APP_ID&redirect_uri=http://localhost:3000/callback&scope=openid%20profile%20email&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256
    ```
 
-   Expected: **Accès bloqué**, with the project's support email.
+   Expected: **Accès bloqué**, with the organization's support email.
 4. Add the third account as a test user in the portal and reload the URL. Expected: the consent
    screen, with the "not verified" warning and the app's links.
 5. **Autoriser** redirects to `http://localhost:3000/callback?code=...`. Nothing listens there,
@@ -108,8 +108,8 @@ a private window, or **Se déconnecter** first (it ends the provider session too
    - **Refuser** without a note is refused.
    - Refuse with a note: the developer sees it on the app page in the portal.
    - Publish again from the portal, then **Approuver**: the app goes live.
-3. **Projets**: suspend a project with a reason. Its apps stop and the portal refuses changes
-   to it. **Rétablir** brings it back.
+3. **Organisations**: suspend an organization with a reason. Its apps stop and the portal
+   refuses changes to it. **Rétablir** brings it back.
 4. **Utilisateurs**: search, read the badges, disable and enable an account.
 5. **Portées**: add a platform scope, for example name `orders.read`, resource `orders`, with a
    French and an English text. Developers can then put it on API keys.
@@ -140,7 +140,7 @@ curl -s localhost:5010/.well-known/jwks.json | python3 -m json.tool
 curl -s -u platform-api:$SECRET -d grant_type=client_credentials localhost:5010/oauth/token \
   | python3 -m json.tool
 
-# Check an API key from the portal: active, project_id, env, scope
+# Check an API key from the portal: active, organization_id, env, scope
 curl -s -u platform-api:$SECRET -d token=sk_test_PASTE_KEY localhost:5010/oauth/introspect \
   | python3 -m json.tool
 ```

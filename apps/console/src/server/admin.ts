@@ -3,7 +3,7 @@
  * the access token stays in the session cookie. Refusals the console words are returned as
  * values; anything else throws its code.
  */
-import type { Gate, Overview, ProjectRow, Review, ScopeRow, UserRow } from '../lib/types.js';
+import type { Gate, Overview, OrganizationRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH';
 
@@ -53,19 +53,19 @@ export const reviewApp = async (input: { clientId: string; approve: boolean; not
   await call('POST', `/apps/${encodeURIComponent(input.clientId)}/review`, { approve: input.approve, note: input.note });
 };
 
-export const loadProjects = async (q: string): Promise<ProjectRow[]> => {
+export const loadOrganizations = async (q: string): Promise<OrganizationRow[]> => {
   'use server';
-  return (await call<{ items: ProjectRow[] }>('GET', `/projects?q=${encodeURIComponent(q)}`)).items;
+  return (await call<{ items: OrganizationRow[] }>('GET', `/organizations?q=${encodeURIComponent(q)}`)).items;
 };
 
-export const suspendProject = async (input: { id: string; reason: string }): Promise<void> => {
+export const suspendOrganization = async (input: { id: string; reason: string }): Promise<void> => {
   'use server';
-  await call('POST', `/projects/${encodeURIComponent(input.id)}/suspend`, { reason: input.reason });
+  await call('POST', `/organizations/${encodeURIComponent(input.id)}/suspend`, { reason: input.reason });
 };
 
-export const restoreProject = async (id: string): Promise<void> => {
+export const restoreOrganization = async (id: string): Promise<void> => {
   'use server';
-  await call('POST', `/projects/${encodeURIComponent(id)}/restore`);
+  await call('POST', `/organizations/${encodeURIComponent(id)}/restore`);
 };
 
 export const loadUsers = async (q: string): Promise<UserRow[]> => {

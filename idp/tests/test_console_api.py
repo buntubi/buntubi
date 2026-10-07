@@ -31,19 +31,19 @@ def setup_people(
 def app_waiting_for_review(
     dev_browser: FlaskClient, dev: dict[str, str], scopes: list[str]
 ) -> tuple[str, str]:
-    project_id = call(
-        dev_browser, dev, "POST", "/projects", {"name": "Shop", "support_email": "help@shop.example"}
+    organization_id = call(
+        dev_browser, dev, "POST", "/organizations", {"name": "Shop", "support_email": "help@shop.example"}
     )
-    project_id = project_id.json["project"]["id"]
+    organization_id = organization_id.json["organization"]["id"]
     client_id = call(
         dev_browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {"name": "Web", "redirect_uris": ["https://shop.example/cb"], "scopes": scopes, **LIVE_FIELDS},
     ).json["app"]["client_id"]
     assert call(dev_browser, dev, "POST", f"/apps/{client_id}/publish").json["state"] == "pending"
-    return project_id, client_id
+    return organization_id, client_id
 
 
 def test_a_rejection_needs_a_note_and_reaches_the_developer(
@@ -78,12 +78,12 @@ def test_an_approval_puts_the_app_live_and_approves_the_scope_for_live_keys(
     app: Flask, outbox: list[mail.Message], platform_scopes: None
 ) -> None:
     owner_browser, owner, dev_browser, dev = setup_people(app, outbox)
-    project_id, client_id = app_waiting_for_review(dev_browser, dev, ["billing.write"])
+    organization_id, client_id = app_waiting_for_review(dev_browser, dev, ["billing.write"])
     refused = call(
         dev_browser,
         dev,
         "POST",
-        f"/projects/{project_id}/keys",
+        f"/organizations/{organization_id}/keys",
         {"name": "Prod", "environment": "live", "scopes": ["billing.write"]},
     )
     assert refused.json == {"error": "review_required", "scopes": ["billing.write"]}
@@ -91,27 +91,29 @@ def test_an_approval_puts_the_app_live_and_approves_the_scope_for_live_keys(
     approved = admin_call(owner_browser, owner, "POST", f"/apps/{client_id}/review", {"approve": True})
     assert approved.json["app"]["environment"] == "live"
     assert admin_call(owner_browser, owner, "GET", "/reviews").json["items"] == []
-    projects = admin_call(owner_browser, owner, "GET", "/projects").json["items"]
-    assert projects[0]["approved_scopes"] == ["billing.write"]
+    organizations = admin_call(owner_browser, owner, "GET", "/organizations").json["items"]
+    assert organizations[0]["approved_scopes"] == ["billing.write"]
 
     live_key = call(
         dev_browser,
         dev,
         "POST",
-        f"/projects/{project_id}/keys",
+        f"/organizations/{organization_id}/keys",
         {"name": "Prod", "environment": "live", "scopes": ["billing.write"]},
     )
     assert live_key.status_code == 201 and live_key.json["api_key"].startswith("sk_live_")
 
 
-def test_a_suspended_project_stops_working_at_once(app: Flask, outbox: list[mail.Message]) -> None:
+def test_a_suspended_organization_stops_working_at_once(app: Flask, outbox: list[mail.Message]) -> None:
     owner_browser, owner, dev_browser, dev = setup_people(app, outbox)
-    project_id = call(dev_browser, dev, "POST", "/projects", {"name": "Spam"}).json["project"]["id"]
+    organization_id = call(dev_browser, dev, "POST", "/organizations", {"name": "Spam"}).json["organization"][
+        "id"
+    ]
     created = call(
         dev_browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {
             "name": "Bot",
             "client_type": "confidential",
@@ -126,20 +128,22 @@ def test_a_suspended_project_stops_working_at_once(app: Flask, outbox: list[mail
     }
     assert dev_browser.post("/oauth/token", data=token).status_code == 200
 
-    reason = admin_call(owner_browser, owner, "POST", f"/projects/{project_id}/suspend", {"reason": ""})
+    reason = admin_call(
+        owner_browser, owner, "POST", f"/organizations/{organization_id}/suspend", {"reason": ""}
+    )
     assert reason.status_code == 422, "a suspension says why"
     suspended = admin_call(
-        owner_browser, owner, "POST", f"/projects/{project_id}/suspend", {"reason": "Abuse"}
+        owner_browser, owner, "POST", f"/organizations/{organization_id}/suspend", {"reason": "Abuse"}
     )
-    assert suspended.json["project"]["suspended"] is True
+    assert suspended.json["organization"]["suspended"] is True
     # 400, not 401: the secret came in the form body, not the Authorization header (RFC 6749 5.2).
     stopped = dev_browser.post("/oauth/token", data=token)
     assert stopped.status_code == 400 and stopped.json["error"] == "invalid_client"
-    assert call(dev_browser, dev, "POST", f"/projects/{project_id}/apps", {"name": "x"}).json == {
-        "error": "project_suspended"
+    assert call(dev_browser, dev, "POST", f"/organizations/{organization_id}/apps", {"name": "x"}).json == {
+        "error": "organization_suspended"
     }
 
-    admin_call(owner_browser, owner, "POST", f"/projects/{project_id}/restore")
+    admin_call(owner_browser, owner, "POST", f"/organizations/{organization_id}/restore")
     assert dev_browser.post("/oauth/token", data=token).status_code == 200
 
 
@@ -177,7 +181,7 @@ def test_refusals_say_why(app: Flask, browser: FlaskClient, outbox: list[mail.Me
 
 def test_the_overview_counts(app: Flask, outbox: list[mail.Message]) -> None:
     owner_browser, owner, dev_browser, dev = setup_people(app, outbox)
-    call(dev_browser, dev, "POST", "/projects", {"name": "Shop"})
+    call(dev_browser, dev, "POST", "/organizations", {"name": "Shop"})
     counts = admin_call(owner_browser, owner, "GET", "/overview").json
-    assert counts["users"] == 2 and counts["developers"] == 1 and counts["projects"] == 1
+    assert counts["users"] == 2 and counts["developers"] == 1 and counts["organizations"] == 1
     assert counts["pending_reviews"] == 0

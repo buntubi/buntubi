@@ -109,7 +109,7 @@ def authorize() -> Any:
         sessions.remember_return_to(_authorize_path(drop_prompt=True))
         return redirect(url_for("pages.accounts"))
 
-    # A sandbox app is open to its project's test users only; anyone else is told so here.
+    # A sandbox app is open to its organization's test users only; anyone else is told so here.
     if not platform.may_sign_in(grant.client, login.user):
         if "none" in prompt:
             return _error_redirect(grant, "access_denied")

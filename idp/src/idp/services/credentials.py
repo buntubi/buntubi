@@ -10,7 +10,7 @@ from datetime import timedelta
 from sqlalchemy import select
 
 from idp.db import db, utcnow
-from idp.models import ApiKey, Client, ClientSecret, Project
+from idp.models import ApiKey, Client, ClientSecret, Organization
 from idp.security.tokens import hash_token, new_token
 
 # After a rotation the previous secret keeps working this long, so deployments can catch up.
@@ -34,11 +34,11 @@ def rotate_client_secret(client: Client) -> str:
 
 
 def issue_api_key(
-    project: Project, environment: str, name: str, scopes: list[str], created_by: uuid.UUID | None
+    organization: Organization, environment: str, name: str, scopes: list[str], created_by: uuid.UUID | None
 ) -> tuple[ApiKey, str]:
     key = f"{KEY_PREFIX[environment]}{new_token()}"
     row = ApiKey(
-        project_id=project.id,
+        organization_id=organization.id,
         environment=environment,
         name=name,
         key_hash=hash_token(key),

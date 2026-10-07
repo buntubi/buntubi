@@ -1,4 +1,4 @@
-/** A project: its apps, its API keys, who may use its sandbox, its settings. */
+/** A organization: its apps, its API keys, who may use its sandbox, its settings. */
 import { action, cache, useNavigate, useRouteData, useSubmission } from '@fluixi/start/router';
 import type { RouteDataArgs } from '@fluixi/start/router';
 import { Button } from '@fluixi-ui/button';
@@ -10,59 +10,59 @@ import { RevealOnce } from '../../components/reveal-once.js';
 import { errorText, t } from '../../lib/i18n.js';
 import { handOverSecret } from '../../lib/one-time.js';
 import { paramOf } from '../../lib/params.js';
-import type { ProjectDetail } from '../../lib/types.js';
+import type { OrganizationDetail } from '../../lib/types.js';
 import {
   addTestUser,
   createApp,
   createKey,
-  loadProject,
+  loadOrganization,
   removeTestUser,
   revokeKey,
-  updateProject,
+  updateOrganization,
 } from '../../server/developer.js';
 import { settle } from '../../lib/settle.js';
 
-const project = cache((id: string) => loadProject(id), 'project');
-export const routeData = (args: RouteDataArgs) => project(paramOf(args, 'id'));
+const organization = cache((id: string) => loadOrganization(id), 'organization');
+export const routeData = (args: RouteDataArgs) => organization(paramOf(args, 'id'));
 
 const newApp = action(
-  (projectId: string, input: { name: string; client_type: 'public' | 'confidential'; redirect_uri: string }) =>
-    createApp(projectId, input),
+  (organizationId: string, input: { name: string; client_type: 'public' | 'confidential'; redirect_uri: string }) =>
+    createApp(organizationId, input),
   'app.create',
-  { invalidates: ['project'] },
+  { invalidates: ['organization'] },
 );
 const newKey = action(
-  (projectId: string, input: { name: string; environment: 'sandbox' | 'live'; scopes: string[] }) =>
-    createKey(projectId, input),
+  (organizationId: string, input: { name: string; environment: 'sandbox' | 'live'; scopes: string[] }) =>
+    createKey(organizationId, input),
   'key.create',
-  { invalidates: ['project'] },
+  { invalidates: ['organization'] },
 );
-const dropKey = action((projectId: string, keyId: string) => revokeKey(projectId, keyId), 'key.revoke', {
-  invalidates: ['project'],
+const dropKey = action((organizationId: string, keyId: string) => revokeKey(organizationId, keyId), 'key.revoke', {
+  invalidates: ['organization'],
 });
-const newTester = action((projectId: string, email: string) => addTestUser(projectId, email), 'tester.add', {
-  invalidates: ['project'],
+const newTester = action((organizationId: string, email: string) => addTestUser(organizationId, email), 'tester.add', {
+  invalidates: ['organization'],
 });
-const dropTester = action((projectId: string, email: string) => removeTestUser(projectId, email), 'tester.remove', {
-  invalidates: ['project'],
+const dropTester = action((organizationId: string, email: string) => removeTestUser(organizationId, email), 'tester.remove', {
+  invalidates: ['organization'],
 });
-const saveProject = action(
-  (projectId: string, patch: { name?: string; support_email?: string | null }) => updateProject(projectId, patch),
-  'project.update',
-  { invalidates: ['project', 'home'] },
+const saveOrganization = action(
+  (organizationId: string, patch: { name?: string; support_email?: string | null }) => updateOrganization(organizationId, patch),
+  'organization.update',
+  { invalidates: ['organization', 'home'] },
 );
 
 const words = (text: string) => text.split(/[\s,]+/).filter(Boolean);
 
-export default function ProjectPage() {
-  const data = useRouteData<ProjectDetail>();
-  const id = () => data()?.project.id ?? '';
+export default function OrganizationPage() {
+  const data = useRouteData<OrganizationDetail>();
+  const id = () => data()?.organization.id ?? '';
   return (
     <section>
       <Link href="/" class="back">
-        {() => t('project.back')}
+        {() => t('organization.back')}
       </Link>
-      <h1>{() => data()?.project.name ?? ''}</h1>
+      <h1>{() => data()?.organization.name ?? ''}</h1>
       <Apps id={id()} />
       <Keys id={id()} />
       <TestUsers id={id()} />
@@ -72,7 +72,7 @@ export default function ProjectPage() {
 }
 
 function Apps(props: { id: string }) {
-  const data = useRouteData<ProjectDetail>();
+  const data = useRouteData<OrganizationDetail>();
   const navigate = useNavigate();
   const name = $signal('');
   const kind = $signal<'public' | 'confidential'>('public');
@@ -87,8 +87,8 @@ function Apps(props: { id: string }) {
   return (
     <Card class="panel">
       <CardBody>
-        <h2>{() => t('project.apps')}</h2>
-        <Show when={(data()?.apps ?? []).length} fallback={<p class="muted">{() => t('project.appsEmpty')}</p>}>
+        <h2>{() => t('organization.apps')}</h2>
+        <Show when={(data()?.apps ?? []).length} fallback={<p class="muted">{() => t('organization.appsEmpty')}</p>}>
           <ul class="rows">
             <For each={data()?.apps ?? []}>
               {(app) => (
@@ -103,7 +103,7 @@ function Apps(props: { id: string }) {
             </For>
           </ul>
         </Show>
-        <h3>{() => t('project.newApp')}</h3>
+        <h3>{() => t('organization.newApp')}</h3>
         <form
           class="form-row"
           onSubmit={(event: SubmitEvent) => {
@@ -111,26 +111,26 @@ function Apps(props: { id: string }) {
             settle(submit());
           }}
         >
-          <Field label={t('project.appName')}>
+          <Field label={t('organization.appName')}>
             <Input value={name()} onInput={(e: InputEvent) => name.set(valueOf(e))} required />
           </Field>
-          <ChoiceField name="app-type" label={t('project.appType')} hint={t('project.typeHint')}>
+          <ChoiceField name="app-type" label={t('organization.appType')} hint={t('organization.typeHint')}>
               <Button
                 type="button"
                 variant={kind() === 'public' ? 'solid' : 'outline'}
                 onPress={() => kind.set('public')}
               >
-                {() => t('project.public')}
+                {() => t('organization.public')}
               </Button>
               <Button
                 type="button"
                 variant={kind() === 'confidential' ? 'solid' : 'outline'}
                 onPress={() => kind.set('confidential')}
               >
-                {() => t('project.confidential')}
+                {() => t('organization.confidential')}
               </Button>
           </ChoiceField>
-          <Field label={t('project.redirectUri')}>
+          <Field label={t('organization.redirectUri')}>
             <Input
               type="url"
               placeholder="https://"
@@ -151,7 +151,7 @@ function Apps(props: { id: string }) {
 }
 
 function Keys(props: { id: string }) {
-  const data = useRouteData<ProjectDetail>();
+  const data = useRouteData<OrganizationDetail>();
   const name = $signal('');
   const environment = $signal<'sandbox' | 'live'>('sandbox');
   const scopes = $signal('');
@@ -166,9 +166,9 @@ function Keys(props: { id: string }) {
   return (
     <Card class="panel">
       <CardBody>
-        <h2>{() => t('project.keys')}</h2>
+        <h2>{() => t('organization.keys')}</h2>
         <Show when={created()}>{() => <RevealOnce value={created() ?? ''} note={t('app.keyOnce')} />}</Show>
-        <Show when={(data()?.keys ?? []).length} fallback={<p class="muted">{() => t('project.keysEmpty')}</p>}>
+        <Show when={(data()?.keys ?? []).length} fallback={<p class="muted">{() => t('organization.keysEmpty')}</p>}>
           <ul class="rows">
             <For each={data()?.keys ?? []}>
               {(key) => (
@@ -196,10 +196,10 @@ function Keys(props: { id: string }) {
             settle(submit());
           }}
         >
-          <Field label={t('project.keyName')}>
+          <Field label={t('organization.keyName')}>
             <Input value={name()} onInput={(e: InputEvent) => name.set(valueOf(e))} required />
           </Field>
-          <ChoiceField name="key-env" label={t('project.keyEnv')}>
+          <ChoiceField name="key-env" label={t('organization.keyEnv')}>
               <Button
                 type="button"
                 variant={environment() === 'sandbox' ? 'solid' : 'outline'}
@@ -215,7 +215,7 @@ function Keys(props: { id: string }) {
                 {() => t('env.live')}
               </Button>
           </ChoiceField>
-          <Field label={t('project.keyScopes')}>
+          <Field label={t('organization.keyScopes')}>
             <Input value={scopes()} onInput={(e: InputEvent) => scopes.set(valueOf(e))} />
           </Field>
           <Button type="submit" variant="solid" disabled={submission()?.pending}>
@@ -231,7 +231,7 @@ function Keys(props: { id: string }) {
 }
 
 function TestUsers(props: { id: string }) {
-  const data = useRouteData<ProjectDetail>();
+  const data = useRouteData<OrganizationDetail>();
   const email = $signal('');
   const submission = useSubmission(newTester);
   const submit = async () => {
@@ -241,8 +241,8 @@ function TestUsers(props: { id: string }) {
   return (
     <Card class="panel">
       <CardBody>
-        <h2>{() => t('project.testUsers')}</h2>
-        <p class="muted">{() => t('project.testUsersText')}</p>
+        <h2>{() => t('organization.testUsers')}</h2>
+        <p class="muted">{() => t('organization.testUsersText')}</p>
         <ul class="rows">
           <For each={data()?.test_users ?? []}>
             {(user) => (
@@ -262,7 +262,7 @@ function TestUsers(props: { id: string }) {
             settle(submit());
           }}
         >
-          <Field label={t('project.testUserEmail')}>
+          <Field label={t('organization.testUserEmail')}>
             <Input type="email" value={email()} onInput={(e: InputEvent) => email.set(valueOf(e))} required />
           </Field>
           <Button type="submit" variant="outline" disabled={submission()?.pending}>
@@ -278,25 +278,25 @@ function TestUsers(props: { id: string }) {
 }
 
 function Settings(props: { id: string }) {
-  const data = useRouteData<ProjectDetail>();
-  const name = $signal(data()?.project.name ?? '');
-  const supportEmail = $signal(data()?.project.support_email ?? '');
-  const submission = useSubmission(saveProject);
+  const data = useRouteData<OrganizationDetail>();
+  const name = $signal(data()?.organization.name ?? '');
+  const supportEmail = $signal(data()?.organization.support_email ?? '');
+  const submission = useSubmission(saveOrganization);
   return (
     <Card class="panel">
       <CardBody>
-        <h2>{() => t('project.settings')}</h2>
+        <h2>{() => t('organization.settings')}</h2>
         <form
           class="form-row"
           onSubmit={(event: SubmitEvent) => {
             event.preventDefault();
-            settle(saveProject(props.id, { name: name().trim(), support_email: supportEmail().trim() || null }));
+            settle(saveOrganization(props.id, { name: name().trim(), support_email: supportEmail().trim() || null }));
           }}
         >
-          <Field label={t('projects.name')}>
+          <Field label={t('organizations.name')}>
             <Input value={name()} onInput={(e: InputEvent) => name.set(valueOf(e))} required />
           </Field>
-          <Field label={t('projects.supportEmail')}>
+          <Field label={t('organizations.supportEmail')}>
             <Input type="email" value={supportEmail()} onInput={(e: InputEvent) => supportEmail.set(valueOf(e))} />
           </Field>
           <Button type="submit" variant="outline" disabled={submission()?.pending}>

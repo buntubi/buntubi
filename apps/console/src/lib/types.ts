@@ -2,8 +2,8 @@
 export interface Overview {
   users: number;
   developers: number;
-  projects: number;
-  suspended_projects: number;
+  organizations: number;
+  suspended_organizations: number;
   live_apps: number;
   sandbox_apps: number;
   pending_reviews: number;
@@ -20,15 +20,16 @@ export interface Review {
   terms_url: string | null;
   brand: { logo?: string };
   redirect_uris: string[];
-  project: { id: string; name: string; support_email: string | null } | null;
+  organization: { id: string; name: string; support_email: string | null } | null;
   owner: { email: string; name: string } | null;
   requested_at: string;
 }
 
-export interface ProjectRow {
+export interface OrganizationRow {
   id: string;
   name: string;
-  owner: { id: string; email: string | null };
+  owner: { id: string; email: string } | null;
+  members: number;
   support_email: string | null;
   approved_scopes: string[];
   apps: number;

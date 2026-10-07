@@ -5,7 +5,7 @@ export interface Me {
   developer: boolean;
 }
 
-export interface Project {
+export interface Organization {
   id: string;
   name: string;
   description: string;
@@ -25,7 +25,7 @@ export interface Secret {
 
 export interface App {
   client_id: string;
-  project_id: string;
+  organization_id: string;
   name: string;
   client_type: 'public' | 'confidential';
   environment: 'sandbox' | 'live';
@@ -54,8 +54,8 @@ export interface ApiKey {
   active: boolean;
 }
 
-export interface ProjectDetail {
-  project: Project;
+export interface OrganizationDetail {
+  organization: Organization;
   apps: App[];
   keys: ApiKey[];
   test_users: { email: string; added_at: string }[];
@@ -63,5 +63,5 @@ export interface ProjectDetail {
 
 export interface Home {
   me: Me | null;
-  projects: Project[];
+  organizations: Organization[];
 }

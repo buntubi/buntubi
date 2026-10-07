@@ -4,7 +4,7 @@
  * browser. A refusal throws its code (`missing_for_live`, `restricted_scope`...), which the
  * page words.
  */
-import type { ApiKey, App, Home, Me, Project, ProjectDetail } from '../lib/types.js';
+import type { ApiKey, App, Home, Me, Organization, OrganizationDetail } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -40,10 +40,10 @@ export const loadHome = async (): Promise<Home> => {
   'use server';
   try {
     const me = await call<Me>('GET', '/me');
-    const projects = me.developer ? (await call<{ items: Project[] }>('GET', '/projects')).items : [];
-    return { me, projects };
+    const organizations = me.developer ? (await call<{ items: Organization[] }>('GET', '/organizations')).items : [];
+    return { me, organizations };
   } catch (error) {
-    if (error instanceof ApiRefusal && error.code === 'signed_out') return { me: null, projects: [] };
+    if (error instanceof ApiRefusal && error.code === 'signed_out') return { me: null, organizations: [] };
     throw error;
   }
 };
@@ -53,28 +53,28 @@ export const acceptTerms = async (): Promise<void> => {
   await call('POST', '/terms');
 };
 
-export const createProject = async (input: { name: string; support_email?: string }): Promise<Project> => {
+export const createOrganization = async (input: { name: string; support_email?: string }): Promise<Organization> => {
   'use server';
   const body = { name: input.name, support_email: input.support_email || undefined };
-  return (await call<{ project: Project }>('POST', '/projects', body)).project;
+  return (await call<{ organization: Organization }>('POST', '/organizations', body)).organization;
 };
 
-export const loadProject = async (id: string): Promise<ProjectDetail> => {
+export const loadOrganization = async (id: string): Promise<OrganizationDetail> => {
   'use server';
-  return call<ProjectDetail>('GET', `/projects/${encodeURIComponent(id)}`);
+  return call<OrganizationDetail>('GET', `/organizations/${encodeURIComponent(id)}`);
 };
 
-export const updateProject = async (id: string, patch: { name?: string; support_email?: string | null }) => {
+export const updateOrganization = async (id: string, patch: { name?: string; support_email?: string | null }) => {
   'use server';
-  return (await call<{ project: Project }>('PATCH', `/projects/${encodeURIComponent(id)}`, patch)).project;
+  return (await call<{ organization: Organization }>('PATCH', `/organizations/${encodeURIComponent(id)}`, patch)).organization;
 };
 
 export const createApp = async (
-  projectId: string,
+  organizationId: string,
   input: { name: string; client_type: 'public' | 'confidential'; redirect_uri: string },
 ): Promise<{ app: App; client_secret: string | null }> => {
   'use server';
-  return call('POST', `/projects/${encodeURIComponent(projectId)}/apps`, {
+  return call('POST', `/organizations/${encodeURIComponent(organizationId)}/apps`, {
     name: input.name,
     client_type: input.client_type,
     redirect_uris: input.redirect_uri ? [input.redirect_uri] : [],
@@ -117,24 +117,24 @@ export const revokeSecret = async (clientId: string, secretId: string): Promise<
 };
 
 export const createKey = async (
-  projectId: string,
+  organizationId: string,
   input: { name: string; environment: 'sandbox' | 'live'; scopes: string[] },
 ): Promise<{ key: ApiKey; api_key: string }> => {
   'use server';
-  return call('POST', `/projects/${encodeURIComponent(projectId)}/keys`, input);
+  return call('POST', `/organizations/${encodeURIComponent(organizationId)}/keys`, input);
 };
 
-export const revokeKey = async (projectId: string, keyId: string): Promise<void> => {
+export const revokeKey = async (organizationId: string, keyId: string): Promise<void> => {
   'use server';
-  await call('DELETE', `/projects/${encodeURIComponent(projectId)}/keys/${encodeURIComponent(keyId)}`);
+  await call('DELETE', `/organizations/${encodeURIComponent(organizationId)}/keys/${encodeURIComponent(keyId)}`);
 };
 
-export const addTestUser = async (projectId: string, email: string): Promise<void> => {
+export const addTestUser = async (organizationId: string, email: string): Promise<void> => {
   'use server';
-  await call('POST', `/projects/${encodeURIComponent(projectId)}/test-users`, { email });
+  await call('POST', `/organizations/${encodeURIComponent(organizationId)}/test-users`, { email });
 };
 
-export const removeTestUser = async (projectId: string, email: string): Promise<void> => {
+export const removeTestUser = async (organizationId: string, email: string): Promise<void> => {
   'use server';
-  await call('DELETE', `/projects/${encodeURIComponent(projectId)}/test-users/${encodeURIComponent(email)}`);
+  await call('DELETE', `/organizations/${encodeURIComponent(organizationId)}/test-users/${encodeURIComponent(email)}`);
 };

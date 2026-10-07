@@ -105,7 +105,7 @@ def consent() -> Any:
     except OAuth2Error as error:
         return authorization.handle_error_response(request, error)
     client = grant.client
-    project = client.project
+    organization = client.organization
     return shell(
         "idp-consent",
         client={
@@ -115,7 +115,7 @@ def consent() -> Any:
             "homepage": client.homepage_url,
             "privacy": client.privacy_url,
             "terms": client.terms_url,
-            "support_email": project.support_email if project is not None else None,
+            "support_email": organization.support_email if organization is not None else None,
         },
         scopes=scope_to_list(grant.request.payload.scope or "") or [],
         email=login.user.email,
@@ -124,12 +124,12 @@ def consent() -> Any:
 
 def blocked(client: Any) -> tuple[str, int]:
     """A sandbox app the signed-in person may not use: who to ask, rather than a bare error."""
-    project = client.project
+    organization = client.organization
     return (
         shell(
             "idp-blocked",
             client={"name": client.name},
-            support_email=project.support_email if project is not None else None,
+            support_email=organization.support_email if organization is not None else None,
         ),
         403,
     )

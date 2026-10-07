@@ -11,26 +11,28 @@ from test_developer_api import call, developer_token
 from test_flows import add_service, basic, secret_of
 
 from idp.db import db, utcnow
-from idp.models import ApiKey, Project
+from idp.models import ApiKey, Organization
 from idp.services import mail
 
 from conftest import REDIRECT, api, authorize_query, page_config, pkce, sign_up
 
 
 def sandbox_app(app: Flask, outbox: list[mail.Message]) -> tuple[FlaskClient, dict[str, str], str, str]:
-    """A developer (dev@example.test) with a project and a public sandbox app redirecting to REDIRECT."""
+    """A developer (dev@example.test), an org and a public sandbox app redirecting to REDIRECT."""
     dev_browser = app.test_client()
     dev = developer_token(app, dev_browser, outbox, "dev@example.test")
     call(dev_browser, dev, "POST", "/terms")
-    project_id = call(dev_browser, dev, "POST", "/projects", {"name": "Shop"}).json["project"]["id"]
+    organization_id = call(dev_browser, dev, "POST", "/organizations", {"name": "Shop"}).json["organization"][
+        "id"
+    ]
     client_id = call(
         dev_browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {"name": "Shop web", "redirect_uris": [REDIRECT], "scopes": ["profile", "email"]},
     ).json["app"]["client_id"]
-    return dev_browser, dev, project_id, client_id
+    return dev_browser, dev, organization_id, client_id
 
 
 def authorize(browser: FlaskClient, client_id: str, **extra: str) -> tuple[Any, str]:
@@ -49,7 +51,7 @@ def config_of(response: Any) -> dict[str, Any]:
 def test_a_sandbox_app_is_closed_to_everyone_but_its_test_users(
     app: Flask, outbox: list[mail.Message]
 ) -> None:
-    dev_browser, dev, project_id, client_id = sandbox_app(app, outbox)
+    dev_browser, dev, organization_id, client_id = sandbox_app(app, outbox)
     visitor = app.test_client()
     sign_up(visitor, outbox, email="visitor@example.test")
 
@@ -60,7 +62,13 @@ def test_a_sandbox_app_is_closed_to_everyone_but_its_test_users(
     silent, _ = authorize(visitor, client_id, prompt="none")
     assert parse_qs(urlparse(silent.location).query)["error"] == ["access_denied"]
 
-    call(dev_browser, dev, "POST", f"/projects/{project_id}/test-users", {"email": "visitor@example.test"})
+    call(
+        dev_browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/test-users",
+        {"email": "visitor@example.test"},
+    )
     allowed, _ = authorize(visitor, client_id)
     assert allowed.status_code == 302 and urlparse(allowed.location).path == "/consent"
     consent = visitor.get(allowed.location)
@@ -93,8 +101,10 @@ def test_the_owner_may_try_their_sandbox_app_and_tokens_say_sandbox(
 
 
 def test_platform_apis_check_api_keys_by_introspection(app: Flask, outbox: list[mail.Message]) -> None:
-    dev_browser, dev, project_id, _ = sandbox_app(app, outbox)
-    key = call(dev_browser, dev, "POST", f"/projects/{project_id}/keys", {"name": "CI"}).json["api_key"]
+    dev_browser, dev, organization_id, _ = sandbox_app(app, outbox)
+    key = call(dev_browser, dev, "POST", f"/organizations/{organization_id}/keys", {"name": "CI"}).json[
+        "api_key"
+    ]
     add_service(app)
     add_service(app, client_id="stranger", first_party=False)
     browser = app.test_client()
@@ -106,7 +116,7 @@ def test_platform_apis_check_api_keys_by_introspection(app: Flask, outbox: list[
 
     seen = check(key)
     assert seen["active"] is True and seen["token_type"] == "api_key"
-    assert seen["env"] == "sandbox" and seen["project_id"] == project_id
+    assert seen["env"] == "sandbox" and seen["organization_id"] == organization_id
     assert check(key, client="stranger") == {"active": False}, "only the owner's resource servers"
     assert check(key + "x") == {"active": False}
     with app.app_context():
@@ -119,13 +129,13 @@ def test_platform_apis_check_api_keys_by_introspection(app: Flask, outbox: list[
     assert check(key, client_ip="192.168.1.1") == {"active": False}
 
     with app.app_context():
-        db().get(Project, project_id).suspended_at = utcnow()  # type: ignore[union-attr]
+        db().get(Organization, organization_id).suspended_at = utcnow()  # type: ignore[union-attr]
         db().commit()
-    assert check(key, client_ip="10.1.2.3") == {"active": False}, "a suspended project's keys stop"
+    assert check(key, client_ip="10.1.2.3") == {"active": False}, "a suspended organization's keys stop"
     with app.app_context():
-        project = db().get(Project, project_id)
-        assert project is not None
-        project.suspended_at = None
+        organization = db().get(Organization, organization_id)
+        assert organization is not None
+        organization.suspended_at = None
         db().query(ApiKey).one().revoked_at = utcnow()
         db().commit()
     assert check(key, client_ip="10.1.2.3") == {"active": False}
@@ -134,12 +144,12 @@ def test_platform_apis_check_api_keys_by_introspection(app: Flask, outbox: list[
 def test_a_device_cannot_be_approved_for_a_sandbox_app_by_a_stranger(
     app: Flask, outbox: list[mail.Message]
 ) -> None:
-    dev_browser, dev, project_id, _ = sandbox_app(app, outbox)
+    dev_browser, dev, organization_id, _ = sandbox_app(app, outbox)
     tv = call(
         dev_browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {"name": "TV", "grant_types": ["urn:ietf:params:oauth:grant-type:device_code"]},
     ).json["app"]["client_id"]
     started = (
@@ -181,27 +191,33 @@ def refresh(browser: FlaskClient, client_id: str, token: str) -> Any:
 
 
 def signed_in_tester(app: Flask, outbox: list[mail.Message]) -> tuple[Any, ...]:
-    dev_browser, dev, project_id, client_id = sandbox_app(app, outbox)
+    dev_browser, dev, organization_id, client_id = sandbox_app(app, outbox)
     with app.app_context():
         from idp.models import Client
 
         db().query(Client).filter_by(client_id=client_id).one().scope = "openid profile email offline_access"
         db().commit()
-    call(dev_browser, dev, "POST", f"/projects/{project_id}/test-users", {"email": "tester@example.test"})
+    call(
+        dev_browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/test-users",
+        {"email": "tester@example.test"},
+    )
     tester = app.test_client()
     sign_up(tester, outbox, email="tester@example.test")
     tokens = tokens_through_consent(tester, client_id)
     assert "refresh_token" in tokens
-    return dev_browser, dev, project_id, client_id, tester, tokens
+    return dev_browser, dev, organization_id, client_id, tester, tokens
 
 
 def test_removing_a_test_user_ends_their_tokens_at_once(app: Flask, outbox: list[mail.Message]) -> None:
-    dev_browser, dev, project_id, client_id, tester, tokens = signed_in_tester(app, outbox)
+    dev_browser, dev, organization_id, client_id, tester, tokens = signed_in_tester(app, outbox)
     bearer = {"Authorization": f"Bearer {tokens['access_token']}"}
     assert tester.get("/oauth/userinfo", headers=bearer).status_code == 200
     add_service(app)
 
-    call(dev_browser, dev, "DELETE", f"/projects/{project_id}/test-users/tester@example.test")
+    call(dev_browser, dev, "DELETE", f"/organizations/{organization_id}/test-users/tester@example.test")
     assert tester.get("/oauth/userinfo", headers=bearer).status_code == 401
     seen = app.test_client().post(
         "/oauth/introspect",
@@ -213,26 +229,26 @@ def test_removing_a_test_user_ends_their_tokens_at_once(app: Flask, outbox: list
 
 
 def test_refresh_checks_the_sandbox_rule_by_itself(app: Flask, outbox: list[mail.Message]) -> None:
-    _, _, project_id, client_id, tester, tokens = signed_in_tester(app, outbox)
+    _, _, organization_id, client_id, tester, tokens = signed_in_tester(app, outbox)
     # Taken off without the revocation that normally comes with it: the refresh must still refuse.
     with app.app_context():
-        from idp.models import ProjectTestUser
+        from idp.models import OrganizationTestUser
 
-        db().query(ProjectTestUser).filter_by(email="tester@example.test").delete()
+        db().query(OrganizationTestUser).filter_by(email="tester@example.test").delete()
         db().commit()
     assert refresh(tester, client_id, tokens["refresh_token"]).status_code == 400
 
 
-def test_suspending_a_project_revokes_the_tokens_its_apps_hold(
+def test_suspending_an_organization_revokes_the_tokens_its_apps_hold(
     app: Flask, outbox: list[mail.Message]
 ) -> None:
-    _, _, project_id, _, tester, tokens = signed_in_tester(app, outbox)
+    _, _, organization_id, _, tester, tokens = signed_in_tester(app, outbox)
     with app.app_context():
         from idp.services import platform
 
-        project = db().get(Project, project_id)
-        assert project is not None
-        platform.suspend(project, "abuse")
+        organization = db().get(Organization, organization_id)
+        assert organization is not None
+        platform.suspend(organization, "abuse")
         db().commit()
     assert (
         tester.get(

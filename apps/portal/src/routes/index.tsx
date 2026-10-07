@@ -1,4 +1,4 @@
-/** Home: an invitation to sign in, the developer terms, or the developer's projects. */
+/** Home: an invitation to sign in, the developer terms, or the developer's organizations. */
 import { action, cache, useNavigate, useRouteData, useSubmission } from '@fluixi/start/router';
 import { Button } from '@fluixi-ui/button';
 import { Card, CardBody } from '@fluixi-ui/card';
@@ -6,7 +6,7 @@ import { Input } from '@fluixi-ui/input';
 import { Field, valueOf } from '../components/field.js';
 import { errorText, t } from '../lib/i18n.js';
 import type { Home } from '../lib/types.js';
-import { acceptTerms, createProject, loadHome } from '../server/developer.js';
+import { acceptTerms, createOrganization, loadHome } from '../server/developer.js';
 import { auth } from '../services/auth.js';
 import { settle } from '../lib/settle.js';
 
@@ -15,8 +15,8 @@ export const routeData = () => home();
 
 const accept = action(() => acceptTerms(), 'developer.terms', { invalidates: ['home'] });
 const create = action(
-  (input: { name: string; support_email: string }) => createProject(input),
-  'project.create',
+  (input: { name: string; support_email: string }) => createOrganization(input),
+  'organization.create',
   { invalidates: ['home'] },
 );
 
@@ -24,7 +24,7 @@ export default function HomePage() {
   const data = useRouteData<Home>();
   const me = () => data()?.me ?? null;
   return (
-    <Switch fallback={<Projects />}>
+    <Switch fallback={<Organizations />}>
       <Match when={!me()}>
         <section class="hero">
           <h1>{() => t('landing.title')}</h1>
@@ -57,7 +57,7 @@ function Terms() {
   );
 }
 
-function Projects() {
+function Organizations() {
   const data = useRouteData<Home>();
   const navigate = useNavigate();
   const name = $signal('');
@@ -65,19 +65,19 @@ function Projects() {
   const submission = useSubmission(create);
   const submit = async () => {
     if (!name().trim()) return;
-    const project = await create({ name: name().trim(), support_email: supportEmail().trim() });
-    navigate(`/projects/${project.id}`);
+    const organization = await create({ name: name().trim(), support_email: supportEmail().trim() });
+    navigate(`/organizations/${organization.id}`);
   };
   return (
     <section>
-      <h1>{() => t('projects.title')}</h1>
-      <Show when={(data()?.projects ?? []).length} fallback={<p class="muted">{() => t('projects.empty')}</p>}>
+      <h1>{() => t('organizations.title')}</h1>
+      <Show when={(data()?.organizations ?? []).length} fallback={<p class="muted">{() => t('organizations.empty')}</p>}>
         <div class="grid">
-          <For each={data()?.projects ?? []}>
-            {(project) => (
-              <Link href={`/projects/${project.id}`} class="tile">
-                <strong>{project.name}</strong>
-                <span class="muted">{project.support_email ?? ''}</span>
+          <For each={data()?.organizations ?? []}>
+            {(organization) => (
+              <Link href={`/organizations/${organization.id}`} class="tile">
+                <strong>{organization.name}</strong>
+                <span class="muted">{organization.support_email ?? ''}</span>
               </Link>
             )}
           </For>
@@ -85,7 +85,7 @@ function Projects() {
       </Show>
       <Card class="panel">
         <CardBody>
-          <h2>{() => t('projects.new')}</h2>
+          <h2>{() => t('organizations.new')}</h2>
           <form
             class="form-row"
             onSubmit={(event: SubmitEvent) => {
@@ -93,10 +93,10 @@ function Projects() {
               settle(submit());
             }}
           >
-            <Field label={t('projects.name')}>
+            <Field label={t('organizations.name')}>
               <Input value={name()} onInput={(e: InputEvent) => name.set(valueOf(e))} required />
             </Field>
-            <Field label={t('projects.supportEmail')}>
+            <Field label={t('organizations.supportEmail')}>
               <Input type="email" value={supportEmail()} onInput={(e: InputEvent) => supportEmail.set(valueOf(e))} />
             </Field>
             <Button type="submit" variant="solid" disabled={submission()?.pending}>

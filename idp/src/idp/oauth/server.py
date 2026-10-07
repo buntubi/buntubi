@@ -49,8 +49,8 @@ def query_client(client_id: str) -> Client | None:
     client = db().scalar(select(Client).where(Client.client_id == client_id))
     if client is None or client.disabled_at is not None:
         return None
-    # A suspended project's apps stop at once: no sign-in, no token, no refresh.
-    if client.project is not None and client.project.is_suspended:
+    # A suspended organization's apps stop at once: no sign-in, no token, no refresh.
+    if client.organization is not None and client.organization.is_suspended:
         return None
     return client
 
@@ -66,7 +66,7 @@ def _access_token(client: Client, grant_type: str, user: User | None, scope: str
             "sid": str(context.session_id) if context.session_id else None,
         }
     # A developer's app says which side it is on, so the platform APIs keep sandbox data apart.
-    if client.project_id is not None:
+    if client.organization_id is not None:
         extra["env"] = client.environment
     claims = access_token_claims(
         issuer=settings.issuer,
@@ -144,7 +144,7 @@ class AccessTokenView:
 class ApiKeyView:
     """
     An API key as introspection sees it. Active while the key is neither revoked nor expired,
-    its project not suspended, and the caller's address (`client_ip`, when the key is limited to
+    its organization not suspended, and the caller's address (`client_ip`, when the key is limited to
     some networks) inside one of them. A check that answers active counts as a use.
     """
 
@@ -162,7 +162,11 @@ class ApiKeyView:
         return self.key.expires_at is not None and self.key.expires_at <= utcnow()
 
     def is_revoked(self) -> bool:
-        return self.key.revoked_at is not None or self.key.project.is_suspended or not self._address_allowed()
+        return (
+            self.key.revoked_at is not None
+            or self.key.organization.is_suspended
+            or not self._address_allowed()
+        )
 
     def _address_allowed(self) -> bool:
         if not self.key.allowed_ips:
@@ -246,7 +250,7 @@ class IntrospectionEndpoint(_IntrospectionEndpoint):  # type: ignore[misc]
                 "active": True,
                 "token_type": "api_key",
                 "key_id": str(key.id),
-                "project_id": str(key.project_id),
+                "organization_id": str(key.organization_id),
                 "env": key.environment,
                 "scope": token.get_scope(),
                 "iat": int(key.created_at.timestamp()),

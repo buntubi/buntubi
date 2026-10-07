@@ -7,7 +7,7 @@ import { auth } from '../services/auth.js';
 const SECTIONS = [
   ['/', 'nav.overview'],
   ['/reviews', 'nav.reviews'],
-  ['/projects', 'nav.projects'],
+  ['/organizations', 'nav.organizations'],
   ['/users', 'nav.users'],
   ['/scopes', 'nav.scopes'],
 ] as const;

@@ -22,9 +22,9 @@ const revoke = action((clientId: string, secretId: string) => revokeSecret(clien
   invalidates: ['app'],
 });
 const save = action((clientId: string, patch: Record<string, unknown>) => updateApp(clientId, patch), 'app.update', {
-  invalidates: ['app', 'project'],
+  invalidates: ['app', 'organization'],
 });
-const publish = action((clientId: string) => publishApp(clientId), 'app.publish', { invalidates: ['app', 'project'] });
+const publish = action((clientId: string) => publishApp(clientId), 'app.publish', { invalidates: ['app', 'organization'] });
 
 const words = (text: string) => text.split(/\s+/).filter(Boolean);
 const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString() : t('common.never'));
@@ -33,7 +33,7 @@ export default function AppPage() {
   const data = useRouteData<App>();
   return (
     <section>
-      <Link href={`/projects/${data()?.project_id ?? ''}`} class="back">
+      <Link href={`/organizations/${data()?.organization_id ?? ''}`} class="back">
         {() => t('app.back')}
       </Link>
       <div class="title-row">
@@ -51,7 +51,7 @@ export default function AppPage() {
 
 function Credentials() {
   const data = useRouteData<App>();
-  // The secret from the creation answer, handed over by the project page for this one view.
+  // The secret from the creation answer, handed over by the organization page for this one view.
   const fresh = $signal<string | null>(takeSecret(data()?.client_id ?? ''));
   const rotating = useSubmission(rotate);
   const newSecret = async () => {

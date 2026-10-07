@@ -95,12 +95,14 @@ def test_developer_and_admin_answers_match_the_description(
         return check(method, template("/developer/api" + path), call(dev_browser, dev, method, path, body))
 
     dev_call("GET", "/me")
-    project = dev_call("POST", "/projects", {"name": "Shop", "support_email": "help@shop.example"})["project"]
-    dev_call("GET", "/projects")
-    dev_call("PATCH", f"/projects/{project['id']}", {"description": "A shop"})
+    organization = dev_call("POST", "/organizations", {"name": "Shop", "support_email": "help@shop.example"})[
+        "organization"
+    ]
+    dev_call("GET", "/organizations")
+    dev_call("PATCH", f"/organizations/{organization['id']}", {"description": "A shop"})
     created = dev_call(
         "POST",
-        f"/projects/{project['id']}/apps",
+        f"/organizations/{organization['id']}/apps",
         {
             "name": "Server",
             "client_type": "confidential",
@@ -115,12 +117,14 @@ def test_developer_and_admin_answers_match_the_description(
     rotated = dev_call("POST", f"/apps/{client_id}/secrets")
     dev_call("DELETE", f"/apps/{client_id}/secrets/{rotated['app']['secrets'][0]['id']}")
     dev_call("POST", f"/apps/{client_id}/publish")
-    key = dev_call("POST", f"/projects/{project['id']}/keys", {"name": "CI", "scopes": ["billing.read"]})
-    dev_call("POST", f"/projects/{project['id']}/test-users", {"email": "t@example.test"})
-    dev_call("GET", f"/projects/{project['id']}")
-    dev_call("DELETE", f"/projects/{project['id']}/test-users/t@example.test")
-    dev_call("DELETE", f"/projects/{project['id']}/keys/{key['key']['id']}")
-    dev_call("GET", "/projects/not-a-project")
+    key = dev_call(
+        "POST", f"/organizations/{organization['id']}/keys", {"name": "CI", "scopes": ["billing.read"]}
+    )
+    dev_call("POST", f"/organizations/{organization['id']}/test-users", {"email": "t@example.test"})
+    dev_call("GET", f"/organizations/{organization['id']}")
+    dev_call("DELETE", f"/organizations/{organization['id']}/test-users/t@example.test")
+    dev_call("DELETE", f"/organizations/{organization['id']}/keys/{key['key']['id']}")
+    dev_call("GET", "/organizations/not-a-organization")
 
     def admin(method: str, path: str, body: Any = None) -> Any:
         return check(
@@ -130,16 +134,16 @@ def test_developer_and_admin_answers_match_the_description(
     admin("GET", "/overview")
     admin("GET", "/reviews")
     admin("POST", f"/apps/{client_id}/review", {"approve": True})
-    admin("GET", "/projects")
-    admin("POST", f"/projects/{project['id']}/suspend", {"reason": "check"})
-    admin("POST", f"/projects/{project['id']}/restore")
+    admin("GET", "/organizations")
+    admin("POST", f"/organizations/{organization['id']}/suspend", {"reason": "check"})
+    admin("POST", f"/organizations/{organization['id']}/restore")
     users = admin("GET", "/users")["items"]
     admin("GET", f"/users/{users[0]['id']}")
     admin("GET", "/scopes")
     admin("GET", "/clients")
     admin("GET", "/audit")
     dev_call("DELETE", f"/apps/{client_id}")
-    dev_call("DELETE", f"/projects/{project['id']}")
+    dev_call("DELETE", f"/organizations/{organization['id']}")
     assert len(check.checked) >= 25
 
 

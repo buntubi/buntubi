@@ -25,12 +25,14 @@ INTERNAL = {("POST", "/oauth/authorize")}
 DESCRIBED_PREFIXES = ("/.well-known/", "/oauth/", "/developer/api/", "/admin/api/")
 
 REQUEST_MODELS: list[type[BaseModel]] = [
-    developer.ProjectIn,
-    developer.ProjectPatch,
+    developer.OrganizationIn,
+    developer.OrganizationPatch,
     developer.AppIn,
     developer.AppPatch,
     developer.TestUserIn,
     developer.KeyIn,
+    developer.MemberIn,
+    developer.MemberPatch,
     admin.ClientIn,
     admin.ClientPatch,
     admin.ReviewIn,
@@ -49,6 +51,7 @@ MAYBE_TIME: dict[str, Any] = {"type": ["string", "null"], "format": "date-time"}
 MAYBE_STRING: dict[str, Any] = {"type": ["string", "null"]}
 STRINGS: dict[str, Any] = {"type": "array", "items": STRING}
 ENVIRONMENT: dict[str, Any] = {"type": "string", "enum": ["sandbox", "live"]}
+ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "admin", "developer", "reviewer", "viewer"]}
 
 
 def ref(name: str) -> dict[str, str]:
@@ -124,21 +127,32 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "jti": STRING,
             "iss": STRING,
             "env": ENVIRONMENT,
-            "project_id": STRING,
+            "organization_id": STRING,
             "key_id": STRING,
         },
         ["active"],
     ),
     # Developer API
     "Me": obj({"email": STRING, "name": STRING, "developer": BOOL, "developer_since": MAYBE_TIME}),
-    "Project": obj(
+    "Organization": obj(
         {
             "id": STRING,
             "name": STRING,
             "description": STRING,
             "support_email": MAYBE_STRING,
             "suspended": BOOL,
+            "role": ROLE,
             "created_at": TIME,
+        }
+    ),
+    "Member": obj(
+        {
+            "id": STRING,
+            "email": STRING,
+            "name": STRING,
+            "role": ROLE,
+            "apps": STRINGS,
+            "added_at": TIME,
         }
     ),
     "Secret": obj(
@@ -154,7 +168,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
     "App": obj(
         {
             "client_id": STRING,
-            "project_id": STRING,
+            "organization_id": STRING,
             "name": STRING,
             "client_type": {"type": "string", "enum": ["public", "confidential"]},
             "environment": ENVIRONMENT,
@@ -185,12 +199,13 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "active": BOOL,
         }
     ),
-    "ProjectDetail": obj(
+    "OrganizationDetail": obj(
         {
-            "project": ref("Project"),
+            "organization": ref("Organization"),
             "apps": {"type": "array", "items": ref("App")},
             "keys": {"type": "array", "items": ref("ApiKey")},
             "test_users": {"type": "array", "items": obj({"email": STRING, "added_at": TIME})},
+            "members": {"type": "array", "items": ref("Member")},
         }
     ),
     # Admin API
@@ -200,8 +215,8 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             for name in (
                 "users",
                 "developers",
-                "projects",
-                "suspended_projects",
+                "organizations",
+                "suspended_organizations",
                 "live_apps",
                 "sandbox_apps",
                 "pending_reviews",
@@ -220,7 +235,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "first_party": BOOL,
             "brand": {"type": "object"},
             "disabled": BOOL,
-            "project_id": MAYBE_STRING,
+            "organization_id": MAYBE_STRING,
             "environment": ENVIRONMENT,
             "review_status": STRING,
             "created_at": TIME,
@@ -240,11 +255,12 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "created_at": TIME,
         }
     ),
-    "AdminProject": obj(
+    "AdminOrganization": obj(
         {
             "id": STRING,
             "name": STRING,
-            "owner": obj({"id": STRING, "email": MAYBE_STRING}),
+            "owner": {"anyOf": [obj({"id": STRING, "email": STRING}), {"type": "null"}]},
+            "members": INT,
             "support_email": MAYBE_STRING,
             "approved_scopes": STRINGS,
             "apps": INT,
@@ -283,7 +299,7 @@ RESPONSE_SCHEMAS["Review"] = obj(
         "privacy_url": MAYBE_STRING,
         "terms_url": MAYBE_STRING,
         "sensitive_scopes": STRINGS,
-        "project": {"type": ["object", "null"]},
+        "organization": {"type": ["object", "null"]},
         "owner": {"type": ["object", "null"]},
         "requested_at": TIME,
     }
@@ -500,51 +516,78 @@ def paths() -> dict[str, dict[str, Any]]:
         "/developer/api/terms": {
             "post": op("Accept the developer terms", d, DEVELOPER, {"200": answer(obj({"developer": BOOL}))})
         },
-        "/developer/api/projects": {
-            "get": op("Your projects", d, DEVELOPER, listing("Project")),
+        "/developer/api/organizations": {
+            "get": op("Your organizations", d, DEVELOPER, listing("Organization")),
             "post": op(
-                "Create a project",
+                "Create an organization",
                 d,
                 DEVELOPER,
-                one("project", "Project", "201"),
-                request=body(ref("ProjectIn")),
+                one("organization", "Organization", "201"),
+                request=body(ref("OrganizationIn")),
             ),
         },
-        "/developer/api/projects/{project_id}": {
+        "/developer/api/organizations/{organization_id}": {
             "get": op(
-                "A project with its apps, keys and test users",
+                "An organization with its apps, keys, test users and members",
                 d,
                 DEVELOPER,
-                ok("ProjectDetail"),
-                params=["project_id"],
+                ok("OrganizationDetail"),
+                params=["organization_id"],
             ),
             "patch": op(
-                "Change a project",
+                "Change an organization",
                 d,
                 DEVELOPER,
-                one("project", "Project"),
-                request=body(ref("ProjectPatch")),
-                params=["project_id"],
+                one("organization", "Organization"),
+                request=body(ref("OrganizationPatch")),
+                params=["organization_id"],
             ),
             "delete": op(
-                "Delete a project",
+                "Delete an organization",
                 d,
                 DEVELOPER,
                 {"200": answer(obj({"deleted": BOOL}))},
-                params=["project_id"],
+                params=["organization_id"],
             ),
         },
-        "/developer/api/projects/{project_id}/apps": {
+        "/developer/api/organizations/{organization_id}/members": {
+            "post": op(
+                "Add a member (an existing account)",
+                d,
+                DEVELOPER,
+                one("member", "Member", "201"),
+                request=body(ref("MemberIn")),
+                params=["organization_id"],
+            )
+        },
+        "/developer/api/organizations/{organization_id}/members/{member_id}": {
+            "patch": op(
+                "Change a member's role or apps",
+                d,
+                DEVELOPER,
+                one("member", "Member"),
+                request=body(ref("MemberPatch")),
+                params=["organization_id", "member_id"],
+            ),
+            "delete": op(
+                "Remove a member, or leave",
+                d,
+                DEVELOPER,
+                {"200": answer(obj({"removed": BOOL}))},
+                params=["organization_id", "member_id"],
+            ),
+        },
+        "/developer/api/organizations/{organization_id}/apps": {
             "post": op(
                 "Create an app (sandbox)",
                 d,
                 DEVELOPER,
                 with_secret("app", "App", "client_secret"),
                 request=body(ref("AppIn")),
-                params=["project_id"],
+                params=["organization_id"],
             )
         },
-        "/developer/api/projects/{project_id}/keys": {
+        "/developer/api/organizations/{organization_id}/keys": {
             "post": op(
                 "Create an API key",
                 d,
@@ -555,35 +598,41 @@ def paths() -> dict[str, dict[str, Any]]:
                     )
                 },
                 request=body(ref("KeyIn")),
-                params=["project_id"],
+                params=["organization_id"],
             )
         },
-        "/developer/api/projects/{project_id}/keys/{key_id}": {
+        "/developer/api/organizations/{organization_id}/keys/{key_id}": {
             "delete": op(
-                "Revoke an API key", d, DEVELOPER, one("key", "ApiKey"), params=["project_id", "key_id"]
+                "Revoke an API key", d, DEVELOPER, one("key", "ApiKey"), params=["organization_id", "key_id"]
             )
         },
-        "/developer/api/projects/{project_id}/test-users": {
+        "/developer/api/organizations/{organization_id}/test-users": {
             "post": op(
                 "Add a sandbox test user",
                 d,
                 DEVELOPER,
                 {"201": answer(obj({"email": STRING}))},
                 request=body(ref("TestUserIn")),
-                params=["project_id"],
+                params=["organization_id"],
             )
         },
-        "/developer/api/projects/{project_id}/test-users/{email}": {
+        "/developer/api/organizations/{organization_id}/test-users/{email}": {
             "delete": op(
                 "Remove a test user (their tokens for the sandbox apps end)",
                 d,
                 DEVELOPER,
                 {"200": answer(obj({"removed": BOOL}))},
-                params=["project_id", "email"],
+                params=["organization_id", "email"],
             )
         },
         "/developer/api/apps/{client_id}": {
-            "get": op("An app", d, DEVELOPER, one("app", "App"), params=["client_id"]),
+            "get": op(
+                "An app, with the caller's role in its organization",
+                d,
+                DEVELOPER,
+                {"200": answer(obj({"app": ref("App"), "role": ROLE}))},
+                params=["client_id"],
+            ),
             "patch": op(
                 "Change an app",
                 d,
@@ -640,20 +689,26 @@ def paths() -> dict[str, dict[str, Any]]:
                 params=["client_id"],
             )
         },
-        "/admin/api/projects": {"get": op("Projects", a, ADMIN, listing("AdminProject"), query=["q"])},
-        "/admin/api/projects/{project_id}/suspend": {
+        "/admin/api/organizations": {
+            "get": op("Organizations", a, ADMIN, listing("AdminOrganization"), query=["q"])
+        },
+        "/admin/api/organizations/{organization_id}/suspend": {
             "post": op(
-                "Suspend a project (its apps stop, their tokens are revoked)",
+                "Suspend an organization (its apps stop, their tokens are revoked)",
                 a,
                 ADMIN,
-                one("project", "AdminProject"),
+                one("organization", "AdminOrganization"),
                 request=body(ref("SuspendIn")),
-                params=["project_id"],
+                params=["organization_id"],
             )
         },
-        "/admin/api/projects/{project_id}/restore": {
+        "/admin/api/organizations/{organization_id}/restore": {
             "post": op(
-                "Restore a suspended project", a, ADMIN, one("project", "AdminProject"), params=["project_id"]
+                "Restore a suspended organization",
+                a,
+                ADMIN,
+                one("organization", "AdminOrganization"),
+                params=["organization_id"],
             )
         },
         "/admin/api/scopes": {

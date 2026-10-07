@@ -1,40 +1,48 @@
 """
-The developer platform: projects owned by developers, the secrets and API keys that belong to
+The developer platform: organizations and their members, the secrets and API keys that belong to
 them, the people allowed to try a sandbox app, and the catalog of scopes apps can ask for.
 """
 
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import ForeignKey, String, Text, UniqueConstraint
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from idp.db import Base, IdMixin, TimestampMixin, utcnow
 
+if TYPE_CHECKING:
+    from idp.models.users import User
+
 ENVIRONMENTS = ("sandbox", "live")
-# public: any app; sensitive: a live app needs the owner's review; restricted: owner's apps only.
+# public: any app; sensitive: a live app needs the platform owner's review;
+# restricted: the platform's own apps only.
 SENSITIVITIES = ("public", "sensitive", "restricted")
+# Strongest first. What each may do is decided in services/platform.py.
+ROLES = ("owner", "admin", "developer", "reviewer", "viewer")
 
 
-class Project(IdMixin, TimestampMixin, Base):
-    """What a developer builds: it holds their apps and API keys."""
+class Organization(IdMixin, TimestampMixin, Base):
+    """A team that builds on the platform: it holds the apps, API keys and test users, and its members."""
 
-    __tablename__ = "projects"
+    __tablename__ = "organizations"
 
-    owner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     name: Mapped[str] = mapped_column(String(80))
     description: Mapped[str] = mapped_column(String(500), default="")
     support_email: Mapped[str | None] = mapped_column(String(320))
     suspended_at: Mapped[datetime | None]
     suspended_reason: Mapped[str | None] = mapped_column(String(500))
-    # Sensitive scopes the owner approved for this project, in a review: its live apps and
+    # Sensitive scopes the platform owner approved for this organization, in a review: its live apps and
     # live keys may carry them without asking again.
     approved_scopes: Mapped[list[str]] = mapped_column(ARRAY(String(64)), default=list, server_default="{}")
 
-    test_users: Mapped[list["ProjectTestUser"]] = relationship(
-        back_populates="project", cascade="all, delete-orphan"
+    test_users: Mapped[list["OrganizationTestUser"]] = relationship(
+        back_populates="organization", cascade="all, delete-orphan"
+    )
+    members: Mapped[list["OrganizationMember"]] = relationship(
+        back_populates="organization", cascade="all, delete-orphan"
     )
 
     @property
@@ -42,17 +50,41 @@ class Project(IdMixin, TimestampMixin, Base):
         return self.suspended_at is not None
 
 
-class ProjectTestUser(IdMixin, Base):
-    """Someone allowed to sign in to the project's sandbox apps, by email."""
+class OrganizationMember(IdMixin, Base):
+    """Someone who works in an organization, with a role; there is always at least one owner."""
 
-    __tablename__ = "project_test_users"
-    __table_args__ = (UniqueConstraint("project_id", "email"),)
+    __tablename__ = "organization_members"
+    __table_args__ = (UniqueConstraint("organization_id", "user_id"),)
 
-    project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), index=True)
+    organization_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    role: Mapped[str] = mapped_column(String(12))
+    # The apps a developer, reviewer or viewer works on; empty means all of them. Owners and
+    # admins always see every app.
+    app_ids: Mapped[list[uuid.UUID]] = mapped_column(
+        ARRAY(UUID(as_uuid=True)), default=list, server_default="{}"
+    )
+    added_at: Mapped[datetime] = mapped_column(default=utcnow)
+
+    organization: Mapped[Organization] = relationship(back_populates="members")
+    user: Mapped["User"] = relationship()
+
+
+class OrganizationTestUser(IdMixin, Base):
+    """Someone allowed to sign in to the organization's sandbox apps, by email."""
+
+    __tablename__ = "organization_test_users"
+    __table_args__ = (UniqueConstraint("organization_id", "email"),)
+
+    organization_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE"), index=True
+    )
     email: Mapped[str] = mapped_column(String(320))
     added_at: Mapped[datetime] = mapped_column(default=utcnow)
 
-    project: Mapped[Project] = relationship(back_populates="test_users")
+    organization: Mapped[Organization] = relationship(back_populates="test_users")
 
 
 class ClientSecret(IdMixin, Base):
@@ -75,13 +107,15 @@ class ClientSecret(IdMixin, Base):
 
 class ApiKey(IdMixin, Base):
     """
-    A key a project's server sends to the platform APIs: `sk_test_...` in the sandbox,
+    A key an organization's server sends to the platform APIs: `sk_test_...` in the sandbox,
     `sk_live_...` live. Kept as a hash; the full key is shown once, at creation.
     """
 
     __tablename__ = "api_keys"
 
-    project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), index=True)
+    organization_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE"), index=True
+    )
     environment: Mapped[str] = mapped_column(String(8))
     name: Mapped[str] = mapped_column(String(80))
     key_hash: Mapped[str] = mapped_column(String(64), unique=True)
@@ -95,7 +129,7 @@ class ApiKey(IdMixin, Base):
     expires_at: Mapped[datetime | None]
     revoked_at: Mapped[datetime | None]
 
-    project: Mapped[Project] = relationship()
+    organization: Mapped[Organization] = relationship()
 
     def is_active(self, now: datetime) -> bool:
         return self.revoked_at is None and (self.expires_at is None or self.expires_at > now)

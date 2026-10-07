@@ -1,6 +1,7 @@
 """
-The developer API, which the developer portal calls: projects, their apps, secrets, test users
-and API keys. A bearer token with the `developer` scope; every rule lives in services/platform.py.
+The developer API, which the developer portal calls: organizations and their members, apps,
+secrets, test users and API keys. A bearer token with the `developer` scope; every rule lives in
+services/platform.py.
 Secrets and keys come back in full once, in the answer that creates them.
 """
 
@@ -14,7 +15,7 @@ from flask import Blueprint, Response, abort, jsonify
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 from idp.db import db, utcnow
-from idp.models import ApiKey, Client, ClientSecret, Project, User
+from idp.models import ApiKey, Client, ClientSecret, OrganizationMember, User
 from idp.oauth.server import require_token
 from idp.services import audit
 from idp.services import platform as p
@@ -57,13 +58,13 @@ def developer(*, terms: bool = True) -> Callable[[F], F]:
 Name = Field(min_length=1, max_length=80)
 
 
-class ProjectIn(BaseModel):
+class OrganizationIn(BaseModel):
     name: str = Name
     description: str = Field(default="", max_length=500)
     support_email: EmailStr | None = None
 
 
-class ProjectPatch(BaseModel):
+class OrganizationPatch(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=80)
     description: str | None = Field(default=None, max_length=500)
     support_email: EmailStr | None = None
@@ -103,18 +104,48 @@ class KeyIn(BaseModel):
     scopes: list[str] = []
 
 
+Role = Literal["owner", "admin", "developer", "reviewer", "viewer"]
+
+
+class MemberIn(BaseModel):
+    email: EmailStr
+    role: Role = "developer"
+    # Public client ids of the apps a developer, reviewer or viewer works on; empty for all.
+    apps: list[str] = Field(default=[], max_length=50)
+
+
+class MemberPatch(BaseModel):
+    role: Role | None = None
+    apps: list[str] | None = Field(default=None, max_length=50)
+
+
 def _url(value: HttpUrl | None) -> str | None:
     return str(value) if value is not None else None
 
 
-def project_json(project: Project) -> dict[str, Any]:
+def organization_json(member: OrganizationMember) -> dict[str, Any]:
+    """The organization as the caller sees it, with their role in it."""
+    organization = member.organization
     return {
-        "id": str(project.id),
-        "name": project.name,
-        "description": project.description,
-        "support_email": project.support_email,
-        "suspended": project.is_suspended,
-        "created_at": project.created_at.isoformat(),
+        "id": str(organization.id),
+        "name": organization.name,
+        "description": organization.description,
+        "support_email": organization.support_email,
+        "suspended": organization.is_suspended,
+        "role": member.role,
+        "created_at": organization.created_at.isoformat(),
+    }
+
+
+def member_json(member: OrganizationMember) -> dict[str, Any]:
+    by_id = {c.id: c.client_id for c in p.apps_of(member.organization)}
+    return {
+        "id": str(member.id),
+        "email": member.user.email,
+        "name": member.user.name,
+        "role": member.role,
+        "apps": [by_id[a] for a in member.app_ids if a in by_id],
+        "added_at": member.added_at.isoformat(),
     }
 
 
@@ -132,7 +163,7 @@ def secret_json(secret: ClientSecret) -> dict[str, Any]:
 def app_json(client: Client) -> dict[str, Any]:
     return {
         "client_id": client.client_id,
-        "project_id": str(client.project_id),
+        "organization_id": str(client.organization_id),
         "name": client.name,
         "client_type": client.client_type,
         "environment": client.environment,
@@ -188,72 +219,130 @@ def accept_terms(me: User) -> Response:
     return jsonify(developer=True)
 
 
-# ── Projects ──────────────────────────────────────────────────────────────────────────────────
+# ── Organizations ─────────────────────────────────────────────────────────────────────────────
 
 
-@bp.get("/projects")
+@bp.get("/organizations")
 @developer()
-def list_projects(me: User) -> Response:
-    return jsonify(items=[project_json(x) for x in p.projects_of(me)])
+def list_organizations(me: User) -> Response:
+    return jsonify(items=[organization_json(m) for m in p.memberships_of(me)])
 
 
-@bp.post("/projects")
+@bp.post("/organizations")
 @developer()
-def create_project(me: User) -> tuple[Response, int]:
-    data = parse(ProjectIn)
-    project = p.create_project(me, data.name, data.description, data.support_email)
-    audit.record("developer.project_created", user=me, project=str(project.id))
+def create_organization(me: User) -> tuple[Response, int]:
+    data = parse(OrganizationIn)
+    organization = p.create_organization(me, data.name, data.description, data.support_email)
+    audit.record("developer.organization_created", user=me, organization=str(organization.id))
     db().commit()
-    return jsonify(project=project_json(project)), 201
+    return jsonify(organization=organization_json(organization.members[0])), 201
 
 
-@bp.get("/projects/<project_id>")
+@bp.get("/organizations/<organization_id>")
 @developer()
-def get_project(project_id: str, me: User) -> Response:
-    project = p.project_of(me, project_id)
+def get_organization(organization_id: str, me: User) -> Response:
+    member = p.membership(me, organization_id)
+    organization = member.organization
     return jsonify(
-        project=project_json(project),
-        apps=[app_json(c) for c in p.apps_of(project)],
-        keys=[key_json(k) for k in p.keys_of(project)],
-        test_users=[{"email": t.email, "added_at": t.added_at.isoformat()} for t in project.test_users],
+        organization=organization_json(member),
+        apps=[app_json(c) for c in p.apps_of(organization, member)],
+        keys=[key_json(k) for k in p.keys_of(organization)],
+        test_users=[{"email": t.email, "added_at": t.added_at.isoformat()} for t in organization.test_users],
+        members=[member_json(m) for m in organization.members],
     )
 
 
-@bp.patch("/projects/<project_id>")
+@bp.patch("/organizations/<organization_id>")
 @developer()
-def update_project(project_id: str, me: User) -> Response:
-    project = p.writable(p.project_of(me, project_id))
-    patch = parse(ProjectPatch)
+def update_organization(organization_id: str, me: User) -> Response:
+    member = p.membership(me, organization_id, "settings")
+    organization = p.writable(member.organization)
+    patch = parse(OrganizationPatch)
     if patch.name is not None:
-        project.name = patch.name
+        organization.name = patch.name
     if patch.description is not None:
-        project.description = patch.description
+        organization.description = patch.description
     if "support_email" in patch.model_fields_set:
-        project.support_email = str(patch.support_email).lower() if patch.support_email else None
+        organization.support_email = str(patch.support_email).lower() if patch.support_email else None
     db().commit()
-    return jsonify(project=project_json(project))
+    return jsonify(organization=organization_json(member))
 
 
-@bp.delete("/projects/<project_id>")
+@bp.delete("/organizations/<organization_id>")
 @developer()
-def delete_project(project_id: str, me: User) -> Response:
-    project = p.project_of(me, project_id)
-    audit.record("developer.project_deleted", user=me, project=str(project.id), name=project.name)
-    db().delete(project)
+def delete_organization(organization_id: str, me: User) -> Response:
+    organization = p.organization_of(me, organization_id, "delete")
+    audit.record(
+        "developer.organization_deleted", user=me, organization=str(organization.id), name=organization.name
+    )
+    db().delete(organization)
     db().commit()
     return jsonify(deleted=True)
+
+
+# ── Members ───────────────────────────────────────────────────────────────────────────────────
+
+
+@bp.post("/organizations/<organization_id>/members")
+@developer()
+def add_member(organization_id: str, me: User) -> tuple[Response, int]:
+    actor = p.membership(me, organization_id, "members")
+    p.writable(actor.organization)
+    data = parse(MemberIn)
+    member = p.add_member(actor, str(data.email), data.role, data.apps)
+    audit.record(
+        "developer.member_added",
+        user=me,
+        organization=organization_id,
+        member=member.user.email,
+        role=member.role,
+    )
+    db().commit()
+    return jsonify(member=member_json(member)), 201
+
+
+@bp.patch("/organizations/<organization_id>/members/<member_id>")
+@developer()
+def change_member(organization_id: str, member_id: str, me: User) -> Response:
+    actor = p.membership(me, organization_id, "members")
+    p.writable(actor.organization)
+    member = p.member_of(actor.organization, member_id)
+    patch = parse(MemberPatch)
+    p.change_member(actor, member, patch.role, patch.apps)
+    audit.record(
+        "developer.member_changed",
+        user=me,
+        organization=organization_id,
+        member=member.user.email,
+        role=member.role,
+    )
+    db().commit()
+    return jsonify(member=member_json(member))
+
+
+@bp.delete("/organizations/<organization_id>/members/<member_id>")
+@developer()
+def remove_member(organization_id: str, member_id: str, me: User) -> Response:
+    actor = p.membership(me, organization_id)
+    member = p.member_of(actor.organization, member_id)
+    email = member.user.email
+    p.remove_member(actor, member)
+    audit.record("developer.member_removed", user=me, organization=organization_id, member=email)
+    db().commit()
+    return jsonify(removed=True)
 
 
 # ── Apps ──────────────────────────────────────────────────────────────────────────────────────
 
 
-@bp.post("/projects/<project_id>/apps")
+@bp.post("/organizations/<organization_id>/apps")
 @developer()
-def create_app(project_id: str, me: User) -> tuple[Response, int]:
-    project = p.writable(p.project_of(me, project_id))
+def create_app(organization_id: str, me: User) -> tuple[Response, int]:
+    member = p.membership(me, organization_id, "edit_apps")
+    p.writable(member.organization)
     data = parse(AppIn)
     client, secret = p.create_app(
-        project,
+        member,
         p.NewApp(
             name=data.name,
             client_type=data.client_type,
@@ -275,15 +364,15 @@ def create_app(project_id: str, me: User) -> tuple[Response, int]:
 @bp.get("/apps/<client_id>")
 @developer()
 def get_app(client_id: str, me: User) -> Response:
-    return jsonify(app=app_json(p.app_of(me, client_id)))
+    client, member = p.app_of(me, client_id)
+    return jsonify(app=app_json(client), role=member.role)
 
 
 @bp.patch("/apps/<client_id>")
 @developer()
 def update_app(client_id: str, me: User) -> Response:
-    client = p.app_of(me, client_id)
-    assert client.project is not None
-    p.writable(client.project)
+    client, member = p.app_of(me, client_id, "edit_apps")
+    p.writable(member.organization)
     patch = parse(AppPatch)
     fields = patch.model_fields_set
     if patch.name is not None:
@@ -307,7 +396,7 @@ def update_app(client_id: str, me: User) -> Response:
 @bp.delete("/apps/<client_id>")
 @developer()
 def delete_app(client_id: str, me: User) -> Response:
-    client = p.app_of(me, client_id)
+    client, _ = p.app_of(me, client_id, "publish")
     audit.record("developer.app_deleted", user=me, client_id=client.client_id)
     db().delete(client)
     db().commit()
@@ -317,9 +406,8 @@ def delete_app(client_id: str, me: User) -> Response:
 @bp.post("/apps/<client_id>/publish")
 @developer()
 def publish_app(client_id: str, me: User) -> Response:
-    client = p.app_of(me, client_id)
-    assert client.project is not None
-    state = p.publish(client, p.writable(client.project))
+    client, member = p.app_of(me, client_id, "publish")
+    state = p.publish(client, p.writable(member.organization))
     audit.record("developer.app_publish", user=me, client=client, state=state)
     db().commit()
     return jsonify(state=state, app=app_json(client))
@@ -328,9 +416,8 @@ def publish_app(client_id: str, me: User) -> Response:
 @bp.post("/apps/<client_id>/secrets")
 @developer()
 def new_secret(client_id: str, me: User) -> Response:
-    client = p.app_of(me, client_id)
-    assert client.project is not None
-    p.writable(client.project)
+    client, member = p.app_of(me, client_id, "edit_apps")
+    p.writable(member.organization)
     if client.is_public:
         raise p.PlatformError("public_client_has_no_secret", 422)
     secret = rotate_client_secret(client)
@@ -342,7 +429,7 @@ def new_secret(client_id: str, me: User) -> Response:
 @bp.delete("/apps/<client_id>/secrets/<secret_id>")
 @developer()
 def revoke_secret(client_id: str, secret_id: str, me: User) -> Response:
-    client = p.app_of(me, client_id)
+    client, _ = p.app_of(me, client_id, "edit_apps")
     found = next((s for s in client.secrets if str(s.id) == secret_id), None)
     if found is None:
         raise p.PlatformError("not_found", 404)
@@ -355,20 +442,20 @@ def revoke_secret(client_id: str, secret_id: str, me: User) -> Response:
 # ── Test users ────────────────────────────────────────────────────────────────────────────────
 
 
-@bp.post("/projects/<project_id>/test-users")
+@bp.post("/organizations/<organization_id>/test-users")
 @developer()
-def add_test_user(project_id: str, me: User) -> tuple[Response, int]:
-    project = p.writable(p.project_of(me, project_id))
-    row = p.add_test_user(project, str(parse(TestUserIn).email))
+def add_test_user(organization_id: str, me: User) -> tuple[Response, int]:
+    organization = p.writable(p.organization_of(me, organization_id, "test_users"))
+    row = p.add_test_user(organization, str(parse(TestUserIn).email))
     db().commit()
     return jsonify(email=row.email), 201
 
 
-@bp.delete("/projects/<project_id>/test-users/<path:email>")
+@bp.delete("/organizations/<organization_id>/test-users/<path:email>")
 @developer()
-def remove_test_user(project_id: str, email: str, me: User) -> Response:
-    project = p.project_of(me, project_id)
-    p.remove_test_user(project, email)
+def remove_test_user(organization_id: str, email: str, me: User) -> Response:
+    organization = p.organization_of(me, organization_id, "test_users")
+    p.remove_test_user(organization, email)
     db().commit()
     return jsonify(removed=True)
 
@@ -376,24 +463,27 @@ def remove_test_user(project_id: str, email: str, me: User) -> Response:
 # ── API keys ──────────────────────────────────────────────────────────────────────────────────
 
 
-@bp.post("/projects/<project_id>/keys")
+@bp.post("/organizations/<organization_id>/keys")
 @developer()
-def create_key(project_id: str, me: User) -> tuple[Response, int]:
-    project = p.writable(p.project_of(me, project_id))
+def create_key(organization_id: str, me: User) -> tuple[Response, int]:
+    member = p.membership(me, organization_id)
+    p.writable(member.organization)
     data = parse(KeyIn)
-    row, key = p.create_key(project, me, data.name, data.environment, data.scopes)
+    row, key = p.create_key(member, data.name, data.environment, data.scopes)
     db().flush()
-    audit.record("developer.key_created", user=me, project=str(project.id), prefix=row.prefix)
+    audit.record("developer.key_created", user=me, organization=organization_id, prefix=row.prefix)
     db().commit()
     return jsonify(key=key_json(row), api_key=key), 201
 
 
-@bp.delete("/projects/<project_id>/keys/<key_id>")
+@bp.delete("/organizations/<organization_id>/keys/<key_id>")
 @developer()
-def revoke_key(project_id: str, key_id: str, me: User) -> Response:
-    project = p.project_of(me, project_id)
-    row = p.key_of(project, key_id)
+def revoke_key(organization_id: str, key_id: str, me: User) -> Response:
+    member = p.membership(me, organization_id)
+    row = p.key_of(member.organization, key_id)
+    if not p.can(member, "live_keys" if row.environment == "live" else "sandbox_keys"):
+        raise p.PlatformError("forbidden", 403, role=member.role)
     row.revoked_at = row.revoked_at or utcnow()
-    audit.record("developer.key_revoked", user=me, project=str(project.id), prefix=row.prefix)
+    audit.record("developer.key_revoked", user=me, organization=organization_id, prefix=row.prefix)
     db().commit()
     return jsonify(key=key_json(row))

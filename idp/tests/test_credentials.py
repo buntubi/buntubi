@@ -5,7 +5,7 @@ from datetime import timedelta
 from flask import Flask
 
 from idp.db import db, utcnow
-from idp.models import ApiKey, Client, Project, Scope, User
+from idp.models import ApiKey, Client, Organization, OrganizationMember, Scope, User
 from idp.services.credentials import find_api_key, issue_api_key, issue_client_secret, rotate_client_secret
 
 
@@ -45,11 +45,11 @@ def test_api_keys_name_their_environment_and_are_found_by_hash(app: Flask) -> No
         owner = User(email="dev@example.test")
         db().add(owner)
         db().flush()
-        project = Project(owner_id=owner.id, name="Shop")
-        db().add(project)
+        organization = Organization(name="Shop", members=[OrganizationMember(user_id=owner.id, role="owner")])
+        db().add(organization)
         db().flush()
-        row, key = issue_api_key(project, "sandbox", "CI", ["read"], owner.id)
-        live_row, live_key = issue_api_key(project, "live", "Prod", [], owner.id)
+        row, key = issue_api_key(organization, "sandbox", "CI", ["read"], owner.id)
+        live_row, live_key = issue_api_key(organization, "live", "Prod", [], owner.id)
         db().flush()
         assert key.startswith("sk_test_") and live_key.startswith("sk_live_")
         assert row.prefix == key[:14] and row.key_hash != key

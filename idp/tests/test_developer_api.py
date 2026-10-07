@@ -1,4 +1,4 @@
-"""The developer API: terms, ownership, apps and their way to live, test users, API keys."""
+"""The developer API: terms, membership, apps and their way to live, test users, API keys."""
 
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlparse
@@ -57,19 +57,19 @@ def dev(app: Flask, browser: FlaskClient, outbox: list[mail.Message]) -> dict[st
     return bearer
 
 
-def new_project(browser: FlaskClient, bearer: dict[str, str], **extra: Any) -> str:
-    reply = call(browser, bearer, "POST", "/projects", {"name": "Shop", **extra})
+def new_organization(browser: FlaskClient, bearer: dict[str, str], **extra: Any) -> str:
+    reply = call(browser, bearer, "POST", "/organizations", {"name": "Shop", **extra})
     assert reply.status_code == 201, reply.json
-    project_id: str = reply.json["project"]["id"]
-    return project_id
+    organization_id: str = reply.json["organization"]["id"]
+    return organization_id
 
 
 def test_terms_come_first(app: Flask, browser: FlaskClient, outbox: list[mail.Message]) -> None:
     bearer = developer_token(app, browser, outbox, "new@example.test")
     assert call(browser, bearer, "GET", "/me").json["developer"] is False
-    assert call(browser, bearer, "GET", "/projects").json == {"error": "terms_required"}
+    assert call(browser, bearer, "GET", "/organizations").json == {"error": "terms_required"}
     assert call(browser, bearer, "POST", "/terms").status_code == 200
-    assert call(browser, bearer, "GET", "/projects").json == {"items": []}
+    assert call(browser, bearer, "GET", "/organizations").json == {"items": []}
 
 
 def test_the_api_needs_the_developer_scope(
@@ -94,29 +94,29 @@ def test_the_api_needs_the_developer_scope(
     assert call(browser, {"Authorization": f"Bearer {token}"}, "GET", "/me").status_code == 403
 
 
-def test_a_project_is_its_owners_alone(
+def test_an_organization_is_closed_to_outsiders(
     app: Flask, browser: FlaskClient, outbox: list[mail.Message], dev: dict[str, str]
 ) -> None:
-    project_id = new_project(browser, dev)
+    organization_id = new_organization(browser, dev)
     other_browser = app.test_client()
     other = developer_token(app, other_browser, outbox, "other@example.test")
     call(other_browser, other, "POST", "/terms")
     for method, path in (("GET", ""), ("PATCH", ""), ("DELETE", ""), ("POST", "/apps"), ("POST", "/keys")):
-        reply = call(other_browser, other, method, f"/projects/{project_id}{path}", {"name": "x"})
+        reply = call(other_browser, other, method, f"/organizations/{organization_id}{path}", {"name": "x"})
         assert reply.status_code == 404, (method, path, reply.json)
-    assert call(other_browser, other, "GET", "/projects").json == {"items": []}
-    assert call(browser, dev, "GET", "/projects/not-a-uuid").status_code == 404
+    assert call(other_browser, other, "GET", "/organizations").json == {"items": []}
+    assert call(browser, dev, "GET", "/organizations/not-a-uuid").status_code == 404
 
 
 def test_an_app_starts_in_the_sandbox_and_goes_live(
     app: Flask, browser: FlaskClient, dev: dict[str, str]
 ) -> None:
-    project_id = new_project(browser, dev)
+    organization_id = new_organization(browser, dev)
     created = call(
         browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {"name": "Web", "redirect_uris": ["https://shop.example/cb"], "scopes": ["profile", "email"]},
     )
     assert created.status_code == 201, created.json
@@ -136,18 +136,18 @@ def test_an_app_starts_in_the_sandbox_and_goes_live(
     }
 
     call(browser, dev, "PATCH", f"/apps/{client_id}", LIVE_FIELDS)
-    call(browser, dev, "PATCH", f"/projects/{project_id}", {"support_email": "help@shop.example"})
+    call(browser, dev, "PATCH", f"/organizations/{organization_id}", {"support_email": "help@shop.example"})
     published = call(browser, dev, "POST", f"/apps/{client_id}/publish")
     assert published.json["state"] == "live" and published.json["app"]["environment"] == "live"
 
 
 def test_a_sensitive_scope_waits_for_review(app: Flask, browser: FlaskClient, dev: dict[str, str]) -> None:
-    project_id = new_project(browser, dev, support_email="help@shop.example")
+    organization_id = new_organization(browser, dev, support_email="help@shop.example")
     client_id = call(
         browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {"name": "Web", "redirect_uris": ["https://shop.example/cb"], "scopes": ["phone"], **LIVE_FIELDS},
     ).json["app"]["client_id"]
     published = call(browser, dev, "POST", f"/apps/{client_id}/publish")
@@ -159,29 +159,33 @@ def test_a_sensitive_scope_waits_for_review(app: Flask, browser: FlaskClient, de
 def test_restricted_and_unknown_scopes_are_refused(
     app: Flask, browser: FlaskClient, dev: dict[str, str]
 ) -> None:
-    project_id = new_project(browser, dev)
+    organization_id = new_organization(browser, dev)
     base = {"name": "Web", "redirect_uris": ["https://shop.example/cb"]}
-    admin = call(browser, dev, "POST", f"/projects/{project_id}/apps", {**base, "scopes": ["admin"]})
+    admin = call(
+        browser, dev, "POST", f"/organizations/{organization_id}/apps", {**base, "scopes": ["admin"]}
+    )
     assert admin.status_code == 422 and admin.json == {"error": "restricted_scope", "scopes": ["admin"]}
-    unknown = call(browser, dev, "POST", f"/projects/{project_id}/apps", {**base, "scopes": ["nope"]})
+    unknown = call(
+        browser, dev, "POST", f"/organizations/{organization_id}/apps", {**base, "scopes": ["nope"]}
+    )
     assert unknown.json["error"] == "unknown_scope"
     public_cc = call(
         browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {**base, "grant_types": ["client_credentials"]},
     )
     assert public_cc.json["error"] == "grant_not_allowed"
 
 
 def test_a_confidential_app_rotates_its_secret(app: Flask, browser: FlaskClient, dev: dict[str, str]) -> None:
-    project_id = new_project(browser, dev)
+    organization_id = new_organization(browser, dev)
     created = call(
         browser,
         dev,
         "POST",
-        f"/projects/{project_id}/apps",
+        f"/organizations/{organization_id}/apps",
         {
             "name": "Server",
             "client_type": "confidential",
@@ -213,12 +217,12 @@ def test_a_confidential_app_rotates_its_secret(app: Flask, browser: FlaskClient,
 
 
 def test_api_keys(app: Flask, browser: FlaskClient, dev: dict[str, str], platform_scopes: None) -> None:
-    project_id = new_project(browser, dev)
+    organization_id = new_organization(browser, dev)
     sandbox = call(
         browser,
         dev,
         "POST",
-        f"/projects/{project_id}/keys",
+        f"/organizations/{organization_id}/keys",
         {"name": "CI", "scopes": ["billing.read", "billing.write"]},
     )
     assert sandbox.status_code == 201, sandbox.json
@@ -227,7 +231,7 @@ def test_api_keys(app: Flask, browser: FlaskClient, dev: dict[str, str], platfor
         browser,
         dev,
         "POST",
-        f"/projects/{project_id}/keys",
+        f"/organizations/{organization_id}/keys",
         {"name": "Prod", "environment": "live", "scopes": ["billing.write"]},
     )
     assert live_sensitive.json == {"error": "review_required", "scopes": ["billing.write"]}
@@ -235,34 +239,36 @@ def test_api_keys(app: Flask, browser: FlaskClient, dev: dict[str, str], platfor
         browser,
         dev,
         "POST",
-        f"/projects/{project_id}/keys",
+        f"/organizations/{organization_id}/keys",
         {"name": "Prod", "environment": "live", "scopes": ["billing.read"]},
     )
     assert live.json["api_key"].startswith("sk_live_")
     not_platform = call(
-        browser, dev, "POST", f"/projects/{project_id}/keys", {"name": "x", "scopes": ["email"]}
+        browser, dev, "POST", f"/organizations/{organization_id}/keys", {"name": "x", "scopes": ["email"]}
     )
     assert not_platform.json["error"] == "not_a_platform_scope"
 
-    listed = call(browser, dev, "GET", f"/projects/{project_id}").json["keys"]
+    listed = call(browser, dev, "GET", f"/organizations/{organization_id}").json["keys"]
     assert len(listed) == 2 and all("api_key" not in k and "hash" not in str(k.keys()) for k in listed)
-    revoked = call(browser, dev, "DELETE", f"/projects/{project_id}/keys/{listed[0]['id']}").json
+    revoked = call(browser, dev, "DELETE", f"/organizations/{organization_id}/keys/{listed[0]['id']}").json
     assert revoked["key"]["active"] is False
 
 
-def test_test_users_and_the_project_limit(app: Flask, browser: FlaskClient, dev: dict[str, str]) -> None:
-    project_id = new_project(browser, dev)
+def test_test_users_and_the_organization_limit(app: Flask, browser: FlaskClient, dev: dict[str, str]) -> None:
+    organization_id = new_organization(browser, dev)
     assert (
-        call(browser, dev, "POST", f"/projects/{project_id}/test-users", {"email": "A@x.test"}).status_code
+        call(
+            browser, dev, "POST", f"/organizations/{organization_id}/test-users", {"email": "A@x.test"}
+        ).status_code
         == 201
     )
-    call(browser, dev, "POST", f"/projects/{project_id}/test-users", {"email": "a@x.test"})
-    users = call(browser, dev, "GET", f"/projects/{project_id}").json["test_users"]
+    call(browser, dev, "POST", f"/organizations/{organization_id}/test-users", {"email": "a@x.test"})
+    users = call(browser, dev, "GET", f"/organizations/{organization_id}").json["test_users"]
     assert [u["email"] for u in users] == ["a@x.test"]
-    call(browser, dev, "DELETE", f"/projects/{project_id}/test-users/a@x.test")
-    assert call(browser, dev, "GET", f"/projects/{project_id}").json["test_users"] == []
+    call(browser, dev, "DELETE", f"/organizations/{organization_id}/test-users/a@x.test")
+    assert call(browser, dev, "GET", f"/organizations/{organization_id}").json["test_users"] == []
 
     for _ in range(9):
-        new_project(browser, dev)
-    over = call(browser, dev, "POST", "/projects", {"name": "One too many"})
-    assert over.status_code == 409 and over.json == {"error": "too_many_projects", "limit": 10}
+        new_organization(browser, dev)
+    over = call(browser, dev, "POST", "/organizations", {"name": "One too many"})
+    assert over.status_code == 409 and over.json == {"error": "too_many_organizations", "limit": 10}

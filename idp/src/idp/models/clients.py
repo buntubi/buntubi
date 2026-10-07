@@ -2,8 +2,8 @@
 Applications that sign people in through the provider. Implements Authlib's ClientMixin, strictly:
 redirect URIs match exactly, public clients have no secret, a secret is only ever kept hashed.
 
-A developer's app belongs to a project and starts in the sandbox; the owner's own apps have no
-project and are live from the start.
+A developer's app belongs to an organization and starts in the sandbox; the owner's own apps have no
+organization and are live from the start.
 """
 
 import uuid
@@ -16,7 +16,7 @@ from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from idp.db import Base, IdMixin, TimestampMixin, utcnow
-from idp.models.platform import ClientSecret, Project
+from idp.models.platform import ClientSecret, Organization
 from idp.security.tokens import matches
 
 ClientType = Literal["public", "confidential"]
@@ -34,10 +34,10 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     __tablename__ = "clients"
 
     client_id: Mapped[str] = mapped_column(String(64), unique=True)
-    project_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    organization_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE"), index=True
     )
-    # "sandbox": only the project's test users can sign in; "live": anyone.
+    # "sandbox": only the organization's test users can sign in; "live": anyone.
     environment: Mapped[str] = mapped_column(String(8), default="sandbox", server_default="live")
     # Going live with a sensitive scope waits for the owner: "none", "pending", "approved", "rejected".
     review_status: Mapped[str] = mapped_column(String(10), default="none", server_default="none")
@@ -64,7 +64,7 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
 
     # Confidential clients only; a public client (a SPA or a mobile app) cannot keep a secret.
     secrets: Mapped[list[ClientSecret]] = relationship(cascade="all, delete-orphan")
-    project: Mapped[Project | None] = relationship()
+    organization: Mapped[Organization | None] = relationship()
 
     @property
     def is_live(self) -> bool:

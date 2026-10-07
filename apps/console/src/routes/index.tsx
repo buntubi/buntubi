@@ -51,10 +51,10 @@ function Dashboard() {
     ['overview.pending', () => counts()?.pending_reviews ?? 0, '/reviews'],
     ['overview.users', () => counts()?.users ?? 0, '/users'],
     ['overview.developers', () => counts()?.developers ?? 0, '/users'],
-    ['overview.projects', () => counts()?.projects ?? 0, '/projects'],
-    ['overview.suspended', () => counts()?.suspended_projects ?? 0, '/projects'],
-    ['overview.live', () => counts()?.live_apps ?? 0, '/projects'],
-    ['overview.sandbox', () => counts()?.sandbox_apps ?? 0, '/projects'],
+    ['overview.organizations', () => counts()?.organizations ?? 0, '/organizations'],
+    ['overview.suspended', () => counts()?.suspended_organizations ?? 0, '/organizations'],
+    ['overview.live', () => counts()?.live_apps ?? 0, '/organizations'],
+    ['overview.sandbox', () => counts()?.sandbox_apps ?? 0, '/organizations'],
   ] as const;
   return (
     <section>
@@ -79,7 +79,7 @@ function Dashboard() {
                   <li>
                     <Link href="/reviews" class="row-link">
                       <strong>{review.name}</strong>
-                      <span class="muted">{`${review.project?.name ?? ''} · ${review.owner?.email ?? ''}`}</span>
+                      <span class="muted">{`${review.organization?.name ?? ''} · ${review.owner?.email ?? ''}`}</span>
                     </Link>
                     <span class="muted">{review.sensitive_scopes.join(' ')}</span>
                   </li>

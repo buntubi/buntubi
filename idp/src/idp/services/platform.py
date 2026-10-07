@@ -3,7 +3,7 @@ The developer platform's rules: who owns what, how much of it, which scopes an a
 carry, and what an app needs before it goes live. The HTTP layer (web/developer.py) only parses
 and answers; every decision is here.
 
-Ownership is checked by query: a project that is not the caller's is not found, the same answer
+Ownership is checked by query: an organization that is not the caller's is not found, the same answer
 as one that does not exist.
 """
 
@@ -14,15 +14,26 @@ from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from sqlalchemy import func, select, update
 
 from idp.db import db, utcnow
-from idp.models import AccessTokenRecord, ApiKey, Client, Project, ProjectTestUser, RefreshToken, Scope, User
+from idp.models import (
+    AccessTokenRecord,
+    ApiKey,
+    Client,
+    Organization,
+    OrganizationMember,
+    OrganizationTestUser,
+    RefreshToken,
+    Scope,
+    User,
+)
 from idp.security.tokens import new_token
 from idp.services.accounts import AccountError, normalize_email
 from idp.services.credentials import issue_api_key, issue_client_secret
 
-MAX_PROJECTS = 10
+MAX_ORGANIZATIONS = 10
 MAX_APPS = 20
 MAX_TEST_USERS = 100
 MAX_KEYS = 20
+MAX_MEMBERS = 50
 
 # What a developer's app may do. The device flow suits TVs and terminals; client credentials
 # only a confidential app, which can keep a secret.
@@ -54,43 +65,193 @@ def require_developer(user: User) -> None:
         raise PlatformError("terms_required", 403)
 
 
-# ── Projects ──────────────────────────────────────────────────────────────────────────────────
+# ── Organizations and members ─────────────────────────────────────────────────────────────────
+
+# What each role may do. Owners and admins act on every app of the organization; developers,
+# reviewers and viewers on the apps their membership lists, or all of them when it lists none.
+ABILITIES: dict[str, frozenset[str]] = {
+    "owner": frozenset(
+        {
+            "read",
+            "edit_apps",
+            "test_users",
+            "sandbox_keys",
+            "live_keys",
+            "publish",
+            "members",
+            "settings",
+            "delete",
+        }
+    ),
+    "admin": frozenset(
+        {"read", "edit_apps", "test_users", "sandbox_keys", "live_keys", "publish", "members", "settings"}
+    ),
+    "developer": frozenset({"read", "edit_apps", "test_users", "sandbox_keys"}),
+    "reviewer": frozenset({"read"}),
+    "viewer": frozenset({"read"}),
+}
+ALL_APPS_ROLES = ("owner", "admin")
 
 
-def projects_of(user: User) -> list[Project]:
-    return list(db().scalars(select(Project).where(Project.owner_id == user.id).order_by(Project.created_at)))
+def can(member: OrganizationMember, ability: str) -> bool:
+    return ability in ABILITIES[member.role]
 
 
-def project_of(user: User, project_id: str) -> Project:
+def sees_app(member: OrganizationMember, client: Client) -> bool:
+    return member.role in ALL_APPS_ROLES or not member.app_ids or client.id in member.app_ids
+
+
+def _uuid(value: str) -> uuid.UUID:
     try:
-        key = uuid.UUID(project_id)
+        return uuid.UUID(value)
     except ValueError:
         raise PlatformError("not_found", 404) from None
-    project = db().scalar(select(Project).where(Project.id == key, Project.owner_id == user.id))
-    if project is None:
+
+
+def memberships_of(user: User) -> list[OrganizationMember]:
+    return list(
+        db().scalars(
+            select(OrganizationMember)
+            .join(Organization, OrganizationMember.organization_id == Organization.id)
+            .where(OrganizationMember.user_id == user.id)
+            .order_by(Organization.created_at)
+        )
+    )
+
+
+def membership(user: User, organization_id: str, ability: str = "read") -> OrganizationMember:
+    """
+    The caller's place in the organization. Someone outside it gets `not_found`, the same answer
+    as an organization that does not exist; a member without the ability, `forbidden`.
+    """
+    member = db().scalar(
+        select(OrganizationMember).where(
+            OrganizationMember.organization_id == _uuid(organization_id),
+            OrganizationMember.user_id == user.id,
+        )
+    )
+    if member is None:
         raise PlatformError("not_found", 404)
-    return project
+    if not can(member, ability):
+        raise PlatformError("forbidden", 403, role=member.role)
+    return member
 
 
-def writable(project: Project) -> Project:
-    if project.is_suspended:
-        raise PlatformError("project_suspended", 403)
-    return project
+def organization_of(user: User, organization_id: str, ability: str = "read") -> Organization:
+    return membership(user, organization_id, ability).organization
 
 
-def create_project(user: User, name: str, description: str, support_email: str | None) -> Project:
-    count = db().scalar(select(func.count()).select_from(Project).where(Project.owner_id == user.id)) or 0
-    if count >= MAX_PROJECTS:
-        raise PlatformError("too_many_projects", 409, limit=MAX_PROJECTS)
-    project = Project(
-        owner_id=user.id,
+def writable(organization: Organization) -> Organization:
+    if organization.is_suspended:
+        raise PlatformError("organization_suspended", 403)
+    return organization
+
+
+def create_organization(user: User, name: str, description: str, support_email: str | None) -> Organization:
+    owned = db().scalar(
+        select(func.count())
+        .select_from(OrganizationMember)
+        .where(OrganizationMember.user_id == user.id, OrganizationMember.role == "owner")
+    )
+    if (owned or 0) >= MAX_ORGANIZATIONS:
+        raise PlatformError("too_many_organizations", 409, limit=MAX_ORGANIZATIONS)
+    organization = Organization(
         name=name,
         description=description,
         support_email=normalize_email(support_email) if support_email else None,
     )
-    db().add(project)
+    organization.members.append(OrganizationMember(user_id=user.id, role="owner"))
+    db().add(organization)
     db().flush()
-    return project
+    return organization
+
+
+def owners_of(organization: Organization) -> list[OrganizationMember]:
+    return [m for m in organization.members if m.role == "owner"]
+
+
+def _app_ids(organization: Organization, client_ids: list[str]) -> list[uuid.UUID]:
+    """The apps a membership is limited to, from their public client ids; all must be this organization's."""
+    if not client_ids:
+        return []
+    found = {
+        c.client_id: c.id
+        for c in db().scalars(
+            select(Client).where(Client.organization_id == organization.id, Client.client_id.in_(client_ids))
+        )
+    }
+    unknown = sorted(set(client_ids) - set(found))
+    if unknown:
+        raise PlatformError("unknown_app", 422, apps=unknown)
+    return [found[c] for c in client_ids]
+
+
+def _check_role_change(actor: OrganizationMember, role: str) -> None:
+    """Only an owner makes or unmakes an owner."""
+    if role == "owner" and actor.role != "owner":
+        raise PlatformError("forbidden", 403, role=actor.role)
+
+
+def add_member(actor: OrganizationMember, email: str, role: str, client_ids: list[str]) -> OrganizationMember:
+    """Adds someone who already has an account, by email."""
+    organization = actor.organization
+    _check_role_change(actor, role)
+    if len(organization.members) >= MAX_MEMBERS:
+        raise PlatformError("too_many_members", 409, limit=MAX_MEMBERS)
+    user = db().scalar(select(User).where(User.email == normalize_email(email)))
+    if user is None or user.disabled_at is not None:
+        raise PlatformError("no_such_account", 422)
+    if any(m.user_id == user.id for m in organization.members):
+        raise PlatformError("already_member", 409)
+    member = OrganizationMember(user_id=user.id, role=role, app_ids=_app_ids(organization, client_ids))
+    organization.members.append(member)
+    db().flush()
+    return member
+
+
+def member_of(organization: Organization, member_id: str) -> OrganizationMember:
+    key = _uuid(member_id)
+    member = next((m for m in organization.members if m.id == key), None)
+    if member is None:
+        raise PlatformError("not_found", 404)
+    return member
+
+
+def change_member(
+    actor: OrganizationMember, member: OrganizationMember, role: str | None, client_ids: list[str] | None
+) -> None:
+    if role is not None and role != member.role:
+        _check_role_change(actor, role)
+        if member.role == "owner":
+            _check_role_change(actor, "owner")
+            if len(owners_of(member.organization)) == 1:
+                raise PlatformError("last_owner", 409)
+        member.role = role
+    if client_ids is not None:
+        member.app_ids = _app_ids(member.organization, client_ids)
+    db().flush()
+    _cut_member_access(member.organization)
+
+
+def remove_member(actor: OrganizationMember, member: OrganizationMember) -> None:
+    """Takes someone out; anyone may leave, except the last owner."""
+    organization = member.organization
+    if member.id != actor.id:
+        if not can(actor, "members"):
+            raise PlatformError("forbidden", 403, role=actor.role)
+        if member.role == "owner":
+            _check_role_change(actor, "owner")
+    if member.role == "owner" and len(owners_of(organization)) == 1:
+        raise PlatformError("last_owner", 409)
+    organization.members.remove(member)
+    db().flush()
+    _cut_member_access(organization)
+
+
+def _cut_member_access(organization: Organization) -> None:
+    """Someone who left, or lost an app, keeps nothing for the organization's sandbox apps."""
+    for client in apps_of(organization):
+        cut_sandbox_access(client)
 
 
 # ── Scopes ────────────────────────────────────────────────────────────────────────────────────
@@ -139,25 +300,41 @@ class NewApp:
     brand: dict[str, object] = field(default_factory=dict)
 
 
-def apps_of(project: Project) -> list[Client]:
-    return list(
-        db().scalars(select(Client).where(Client.project_id == project.id).order_by(Client.created_at))
+def apps_of(organization: Organization, member: OrganizationMember | None = None) -> list[Client]:
+    """The organization's apps; with a member, only those the member works on."""
+    apps = db().scalars(
+        select(Client).where(Client.organization_id == organization.id).order_by(Client.created_at)
     )
+    return [c for c in apps if member is None or sees_app(member, c)]
 
 
-def app_of(user: User, client_id: str) -> Client:
-    client: Client | None = db().scalar(
-        select(Client)
-        .join(Project, Client.project_id == Project.id)
-        .where(Client.client_id == client_id, Project.owner_id == user.id)
+def app_of(user: User, client_id: str, ability: str = "read") -> tuple[Client, OrganizationMember]:
+    """An app the caller works on, and their membership; any other app is not found."""
+    found = (
+        db()
+        .execute(
+            select(Client, OrganizationMember)
+            .join(OrganizationMember, OrganizationMember.organization_id == Client.organization_id)
+            .where(Client.client_id == client_id, OrganizationMember.user_id == user.id)
+        )
+        .first()
     )
-    if client is None:
+    if found is None:
         raise PlatformError("not_found", 404)
-    return client
+    client, member = found[0], found[1]
+    if not sees_app(member, client):
+        raise PlatformError("not_found", 404)
+    if not can(member, ability):
+        raise PlatformError("forbidden", 403, role=member.role)
+    return client, member
 
 
-def create_app(project: Project, data: NewApp) -> tuple[Client, str | None]:
-    count = db().scalar(select(func.count()).select_from(Client).where(Client.project_id == project.id)) or 0
+def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | None]:
+    organization = member.organization
+    count = (
+        db().scalar(select(func.count()).select_from(Client).where(Client.organization_id == organization.id))
+        or 0
+    )
     if count >= MAX_APPS:
         raise PlatformError("too_many_apps", 409, limit=MAX_APPS)
     scopes = check_scopes(["openid", *data.scopes], for_key=False)
@@ -169,7 +346,7 @@ def create_app(project: Project, data: NewApp) -> tuple[Client, str | None]:
         raise PlatformError("redirect_uri_required", 422)
     client = Client(
         client_id=f"app_{new_token()[:22]}",
-        project_id=project.id,
+        organization_id=organization.id,
         name=data.name,
         client_type=data.client_type,
         environment="sandbox",
@@ -187,21 +364,26 @@ def create_app(project: Project, data: NewApp) -> tuple[Client, str | None]:
     db().add(client)
     secret = issue_client_secret(client) if confidential else None
     db().flush()
+    # A member limited to some apps keeps the one they just made.
+    if member.app_ids and member.role not in ALL_APPS_ROLES:
+        member.app_ids = [*member.app_ids, client.id]
     return client, secret
 
 
 def set_app_scopes(client: Client, scopes: list[str]) -> None:
     checked = check_scopes(["openid", *scopes], for_key=False)
     client.scope = list_to_scope(checked.granted)
-    # A live app that adds a sensitive scope its project was not approved for goes back to review.
-    unapproved = set(checked.sensitive) - set(client.project.approved_scopes if client.project else [])
+    # A live app that adds a sensitive scope its organization was not approved for goes back to review.
+    unapproved = set(checked.sensitive) - set(
+        client.organization.approved_scopes if client.organization else []
+    )
     if client.is_live and unapproved:
         client.environment = "sandbox"
         client.review_status = "pending"
         cut_sandbox_access(client)
 
 
-def missing_for_live(client: Client, project: Project) -> list[str]:
+def missing_for_live(client: Client, organization: Organization) -> list[str]:
     """What a live app must show its users: where it lives, its policies, its face, a contact."""
     missing = [
         name
@@ -210,32 +392,32 @@ def missing_for_live(client: Client, project: Project) -> list[str]:
             ("privacy_url", client.privacy_url),
             ("terms_url", client.terms_url),
             ("logo", client.brand.get("logo")),
-            ("support_email", project.support_email),
+            ("support_email", organization.support_email),
         )
         if not value
     ]
     return missing
 
 
-def publish(client: Client, project: Project) -> str:
+def publish(client: Client, organization: Organization) -> str:
     """
     Asks for the app to go live. Public scopes only: live at once. A sensitive scope: pending,
-    until the owner approves it. Returns the app's state afterwards.
+    until the platform owner approves it. Returns the app's state afterwards.
     """
     if client.is_live:
         return "live"
-    missing = missing_for_live(client, project)
+    missing = missing_for_live(client, organization)
     if missing:
         raise PlatformError("missing_for_live", 422, fields=missing)
     sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
-    if set(sensitive) - set(project.approved_scopes):
+    if set(sensitive) - set(organization.approved_scopes):
         client.review_status = "pending"
         return "pending"
     client.environment = "live"
     return "live"
 
 
-# ── Reviews and suspensions (the owner's side) ────────────────────────────────────────────────
+# ── Reviews and suspensions (the platform owner's side) ────────────────────────────────────────────────
 
 
 def pending_reviews() -> list[Client]:
@@ -245,8 +427,11 @@ def pending_reviews() -> list[Client]:
 
 
 def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
-    """The owner's answer. Approving puts the app live and approves its sensitive scopes for the project."""
-    if client.review_status != "pending" or client.project is None:
+    """
+    The platform owner's answer. Approving puts the app live and approves its sensitive scopes
+    for the organization.
+    """
+    if client.review_status != "pending" or client.organization is None:
         raise PlatformError("not_pending", 409)
     client.review_status = "approved" if approve else "rejected"
     client.review_note = note
@@ -254,62 +439,66 @@ def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
     client.reviewed_by_id = reviewer.id
     if approve:
         sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
-        project = client.project
-        project.approved_scopes = sorted(set(project.approved_scopes) | set(sensitive))
+        organization = client.organization
+        organization.approved_scopes = sorted(set(organization.approved_scopes) | set(sensitive))
         client.environment = "live"
 
 
-def suspend(project: Project, reason: str) -> None:
-    """Stops the project at once: its apps get no new tokens, and the ones they hold are revoked."""
-    project.suspended_at = project.suspended_at or utcnow()
-    project.suspended_reason = reason
-    for client in apps_of(project):
+def suspend(organization: Organization, reason: str) -> None:
+    """Stops the organization at once: its apps get no new tokens, and the ones they hold are revoked."""
+    organization.suspended_at = organization.suspended_at or utcnow()
+    organization.suspended_reason = reason
+    for client in apps_of(organization):
         _revoke_tokens(client)
 
 
-def remove_test_user(project: Project, email: str) -> None:
+def remove_test_user(organization: Organization, email: str) -> None:
     """Takes someone off the sandbox; whatever they hold for its sandbox apps ends now."""
     address = normalize_email(email)
-    project.test_users = [row for row in project.test_users if row.email != address]
+    organization.test_users = [row for row in organization.test_users if row.email != address]
     db().flush()
-    for client in apps_of(project):
+    for client in apps_of(organization):
         cut_sandbox_access(client)
 
 
-def restore(project: Project) -> None:
-    project.suspended_at = None
-    project.suspended_reason = None
+def restore(organization: Organization) -> None:
+    organization.suspended_at = None
+    organization.suspended_reason = None
 
 
 # ── Test users ────────────────────────────────────────────────────────────────────────────────
 
 
-def add_test_user(project: Project, email: str) -> ProjectTestUser:
+def add_test_user(organization: Organization, email: str) -> OrganizationTestUser:
     address = normalize_email(email)
     existing = db().scalar(
-        select(ProjectTestUser).where(
-            ProjectTestUser.project_id == project.id, ProjectTestUser.email == address
+        select(OrganizationTestUser).where(
+            OrganizationTestUser.organization_id == organization.id, OrganizationTestUser.email == address
         )
     )
     if existing is not None:
         return existing
-    if len(project.test_users) >= MAX_TEST_USERS:
+    if len(organization.test_users) >= MAX_TEST_USERS:
         raise PlatformError("too_many_test_users", 409, limit=MAX_TEST_USERS)
-    row = ProjectTestUser(email=address)
-    project.test_users.append(row)
+    row = OrganizationTestUser(email=address)
+    organization.test_users.append(row)
     return row
 
 
-def is_test_user(project: Project, user: User) -> bool:
-    return any(row.email == user.email for row in project.test_users)
+def is_test_user(organization: Organization, user: User) -> bool:
+    return any(row.email == user.email for row in organization.test_users)
 
 
 def may_sign_in(client: Client, user: User) -> bool:
-    """A sandbox app is for its project's owner and test users; a live app, or the owner's own, for anyone."""
-    project = client.project
-    if project is None or client.is_live:
+    """
+    A sandbox app is for the members who work on it and the organization's test users; a live app,
+    or one of the platform's own, for anyone.
+    """
+    organization = client.organization
+    if organization is None or client.is_live:
         return True
-    return user.id == project.owner_id or is_test_user(project, user)
+    member = next((m for m in organization.members if m.user_id == user.id), None)
+    return (member is not None and sees_app(member, client)) or is_test_user(organization, user)
 
 
 def cut_sandbox_access(client: Client) -> None:
@@ -318,7 +507,7 @@ def cut_sandbox_access(client: Client) -> None:
     back in the sandbox): their refresh tokens and access tokens for it, revoked now. An API that
     introspects sees it at once; one that only checks signatures, when the access token expires.
     """
-    if client.project is None or client.is_live:
+    if client.organization is None or client.is_live:
         return
     holders = set(
         db().scalars(
@@ -355,39 +544,44 @@ def _revoke_tokens(client: Client, user_ids: list[uuid.UUID] | None = None) -> N
 
 
 def is_verified(client: Client) -> bool:
-    """What consent tells the user: live, so reviewed where its scopes needed it. The owner's apps are."""
-    return client.project is None or client.is_live
+    """What consent tells the user: live, so reviewed where its scopes needed it. Platform apps are."""
+    return client.organization is None or client.is_live
 
 
 # ── API keys ──────────────────────────────────────────────────────────────────────────────────
 
 
-def keys_of(project: Project) -> list[ApiKey]:
+def keys_of(organization: Organization) -> list[ApiKey]:
     return list(
-        db().scalars(select(ApiKey).where(ApiKey.project_id == project.id).order_by(ApiKey.created_at))
+        db().scalars(
+            select(ApiKey).where(ApiKey.organization_id == organization.id).order_by(ApiKey.created_at)
+        )
     )
 
 
 def create_key(
-    project: Project, user: User, name: str, environment: str, scopes: list[str]
+    member: OrganizationMember, name: str, environment: str, scopes: list[str]
 ) -> tuple[ApiKey, str]:
-    active = [key for key in keys_of(project) if key.is_active(utcnow())]
+    if not can(member, "live_keys" if environment == "live" else "sandbox_keys"):
+        raise PlatformError("forbidden", 403, role=member.role)
+    organization = member.organization
+    active = [key for key in keys_of(organization) if key.is_active(utcnow())]
     if len(active) >= MAX_KEYS:
         raise PlatformError("too_many_keys", 409, limit=MAX_KEYS)
     checked = check_scopes(scopes, for_key=True)
-    # A live key carries a sensitive scope only once the project was approved for it.
-    unapproved = sorted(set(checked.sensitive) - set(project.approved_scopes))
+    # A live key carries a sensitive scope only once the organization was approved for it.
+    unapproved = sorted(set(checked.sensitive) - set(organization.approved_scopes))
     if environment == "live" and unapproved:
         raise PlatformError("review_required", 422, scopes=unapproved)
-    return issue_api_key(project, environment, name, checked.granted, user.id)
+    return issue_api_key(organization, environment, name, checked.granted, member.user_id)
 
 
-def key_of(project: Project, key_id: str) -> ApiKey:
+def key_of(organization: Organization, key_id: str) -> ApiKey:
     try:
         key = uuid.UUID(key_id)
     except ValueError:
         raise PlatformError("not_found", 404) from None
-    row = db().scalar(select(ApiKey).where(ApiKey.id == key, ApiKey.project_id == project.id))
+    row = db().scalar(select(ApiKey).where(ApiKey.id == key, ApiKey.organization_id == organization.id))
     if row is None:
         raise PlatformError("not_found", 404)
     return row

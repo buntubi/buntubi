@@ -45,8 +45,8 @@ function ReviewCard(props: { review: Review }) {
           <code class="mono muted">{review.client_id}</code>
         </div>
         <p class="muted">
-          {`${review.project?.name ?? ''} ${t('reviews.by')} ${review.owner?.name || review.owner?.email || ''}`}
-          {review.project?.support_email ? ` · ${review.project.support_email}` : ''}
+          {`${review.organization?.name ?? ''} ${t('reviews.by')} ${review.owner?.name || review.owner?.email || ''}`}
+          {review.organization?.support_email ? ` · ${review.organization.support_email}` : ''}
         </p>
         <Field label={t('reviews.sensitive')}>
           <span class="badges">
