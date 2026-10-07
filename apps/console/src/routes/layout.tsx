@@ -10,6 +10,7 @@ const SECTIONS = [
   ['/organizations', 'nav.organizations'],
   ['/users', 'nav.users'],
   ['/scopes', 'nav.scopes'],
+  ['/products', 'nav.products'],
 ] as const;
 
 export default function RootLayout() {

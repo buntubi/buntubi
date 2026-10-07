@@ -1,0 +1,19 @@
+{
+  "name": "@idp/theme",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tokens.css": "./src/tokens.css",
+    "./document": "./src/document.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fluixi/core": "link:../../../../fluixi-core/packages/core"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

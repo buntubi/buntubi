@@ -1,0 +1,31 @@
+{
+  "name": "@idp/elements",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./view": "./src/view.ts",
+    "./product-catalog": "./src/product-catalog/product-catalog.tsx",
+    "./product-catalog/view": "./src/product-catalog/view.tsx",
+    "./product-catalog/logic": "./src/product-catalog/logic.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fluixi-ui/badge": "link:../../../../fluixi-ui/packages/badge",
+    "@fluixi-ui/button": "link:../../../../fluixi-ui/packages/button",
+    "@fluixi-ui/input": "link:../../../../fluixi-ui/packages/input",
+    "@fluixi-ui/select": "link:../../../../fluixi-ui/packages/select",
+    "@fluixi/core": "link:../../../../fluixi-core/packages/core",
+    "@fluixi/dom": "link:../../../../fluixi-core/packages/dom",
+    "@fluixi/jsx": "link:../../../../fluixi-core/packages/jsx",
+    "@fluixi/reactive": "link:../../../../fluixi-core/packages/reactive",
+    "@fluixi/start": "link:../../../../fluixi-core/packages/start",
+    "@fluixi/web-components": "link:../../../../fluixi-core/packages/web-components",
+    "@idp/sdk": "link:../sdk"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

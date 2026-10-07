@@ -1,0 +1,44 @@
+/**
+ * What elements may ask of the developer API. The token has no default: the app provides the
+ * implementation in its module (the portal maps it to its server functions), so an element
+ * never knows where the calls go.
+ */
+import { injectionToken } from '@fluixi/start/di';
+import type { ApiKey, App, AppKind, Member, Organization, Platform, Role } from './types.js';
+
+export interface NewApp {
+  name: string;
+  client_type: 'public' | 'confidential';
+  kind: AppKind;
+  description?: string;
+  category?: string;
+  platforms?: Platform[];
+  products?: string[];
+  redirect_uris?: string[];
+  homepage_url?: string;
+  privacy_url?: string;
+  terms_url?: string;
+}
+
+export interface DeveloperService {
+  createOrganization(input: { name: string; support_email?: string }): Promise<Organization>;
+  createApp(input: { organization: string; app: NewApp }): Promise<{ app: App; client_secret: string | null }>;
+  updateApp(input: { client_id: string; patch: Partial<NewApp> & { scopes?: string[] } }): Promise<App>;
+  publishApp(client_id: string): Promise<{ state: 'live' | 'pending'; missing: string[] }>;
+  rotateSecret(client_id: string): Promise<{ app: App; client_secret: string }>;
+  revokeSecret(input: { client_id: string; secret: string }): Promise<App>;
+  createKey(input: {
+    organization: string;
+    name: string;
+    environment: 'sandbox' | 'live';
+    scopes: string[];
+  }): Promise<{ key: ApiKey; api_key: string }>;
+  revokeKey(input: { organization: string; key: string }): Promise<ApiKey>;
+  addTestUser(input: { organization: string; email: string }): Promise<void>;
+  removeTestUser(input: { organization: string; email: string }): Promise<void>;
+  addMember(input: { organization: string; email: string; role: Role; apps?: string[] }): Promise<Member>;
+  changeMember(input: { organization: string; member: string; role?: Role; apps?: string[] }): Promise<Member>;
+  removeMember(input: { organization: string; member: string }): Promise<void>;
+}
+
+export const Developer = injectionToken<DeveloperService>('Developer');

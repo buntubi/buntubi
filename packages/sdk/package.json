@@ -1,0 +1,20 @@
+{
+  "name": "@idp/sdk",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./types": "./src/types.ts",
+    "./developer": "./src/developer.ts",
+    "./admin": "./src/admin.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fluixi/start": "link:../../../../fluixi-core/packages/start"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

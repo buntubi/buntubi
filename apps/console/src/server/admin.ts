@@ -3,7 +3,7 @@
  * the access token stays in the session cookie. Refusals the console words are returned as
  * values; anything else throws its code.
  */
-import type { Gate, Overview, OrganizationRow, Review, ScopeRow, UserRow } from '../lib/types.js';
+import type { Gate, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH';
 
@@ -86,4 +86,27 @@ export const loadScopes = async (): Promise<ScopeRow[]> => {
 export const createScope = async (input: ScopeRow): Promise<void> => {
   'use server';
   await call('POST', '/scopes', input);
+};
+
+export const loadProducts = async (): Promise<ProductRow[]> => {
+  'use server';
+  return (await call<{ items: ProductRow[] }>('GET', '/products')).items;
+};
+
+export const createProduct = async (
+  input: Pick<ProductRow, 'slug' | 'names' | 'descriptions' | 'category' | 'availability'>,
+): Promise<void> => {
+  'use server';
+  await call('POST', '/products', input);
+};
+
+export const setAvailability = async (input: { slug: string; availability: ProductRow['availability'] }): Promise<void> => {
+  'use server';
+  await call('PATCH', `/products/${encodeURIComponent(input.slug)}`, { availability: input.availability });
+};
+
+/** Puts a scope in a product, or takes it out with `null`. */
+export const setScopeProduct = async (input: { scope: string; product: string | null }): Promise<void> => {
+  'use server';
+  await call('PATCH', `/scopes/${encodeURIComponent(input.scope)}`, { product: input.product });
 };

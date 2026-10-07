@@ -26,9 +26,14 @@
     "@fluixi/reactive": "link:../../../../fluixi-core/packages/reactive",
     "@fluixi/server": "link:../../../../fluixi-core/packages/server",
     "@fluixi/session": "link:../../../../fluixi-core/packages/session",
-    "@fluixi/start": "link:../../../../fluixi-core/packages/start"
+    "@fluixi/start": "link:../../../../fluixi-core/packages/start",
+    "@idp/elements": "link:../../packages/elements",
+    "@idp/sdk": "link:../../packages/sdk",
+    "@idp/theme": "link:../../packages/theme"
   },
   "devDependencies": {
+    "@fluixi-css/core": "1.0.0-next.5",
+    "@fluixi-css/vite": "1.0.0-next.5",
     "@types/node": "^22.0.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.2"

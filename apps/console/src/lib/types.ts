@@ -57,6 +57,20 @@ export interface ScopeRow {
   descriptions: { fr?: string; en?: string };
   resource: string;
   notes: string;
+  product?: string | null;
+}
+
+export interface ProductRow {
+  slug: string;
+  names: { fr?: string; en?: string };
+  descriptions: { fr?: string; en?: string };
+  category: string;
+  auth: ('oauth2' | 'oidc' | 'api_key' | 'webhooks')[];
+  availability: 'ga' | 'beta' | 'sandbox';
+  docs_url: string | null;
+  position: number;
+  approval: 'none' | 'review' | 'restricted';
+  scopes: string[];
 }
 
 /** Why the console cannot be used yet, when it cannot: not signed in, no admin role, no second factor. */
