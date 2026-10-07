@@ -3,7 +3,7 @@
  * signed-in user and the requested scopes already worded; `action` receives the answer.
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import { For } from '@fluixi/core';
+import { For, Show } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
 import { Button } from '@fluixi-ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@fluixi-ui/avatar';
@@ -16,6 +16,11 @@ import './consent.css';
 export interface ConsentScope {
   id: string;
   text: string;
+}
+
+export interface ConsentLink {
+  label: string;
+  href: string;
 }
 
 export interface ConsentDecision {
@@ -47,6 +52,10 @@ const props = {
   clientName: prop.string(''),
   clientLogo: prop.string(''),
   userEmail: prop.string(''),
+  /** Shown above the scopes when set: an app not yet reviewed, in the host's words. */
+  warning: prop.string(''),
+  /** The app's policies, shown under the scopes. */
+  links: prop.object<ConsentLink[]>([]),
   scopes: prop.object<ConsentScope[]>([]),
   action: prop.any<ElementAction<ConsentDecision> | undefined>(undefined),
   labels: prop.object<ConsentLabels>(consentLabels),
@@ -81,9 +90,21 @@ export class IdpConsent extends typedElement(props) {
             <strong>{() => this.clientName}</strong> {() => label().wants}
           </p>
         </div>
+        {() => (this.warning ? <p class="idp-consent-warning" role="note">{this.warning}</p> : null)}
         <ul class="idp-consent-scopes">
           <For each={this.scopes}>{(scope) => <li data-scope={scope.id}>{scope.text}</li>}</For>
         </ul>
+        <Show when={this.links.length}>
+          <p class="idp-consent-links">
+            <For each={this.links}>
+              {(link) => (
+                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                  {link.label}
+                </a>
+              )}
+            </For>
+          </p>
+        </Show>
         <p class="idp-note">
           {() => label().signedInAs} <strong>{() => this.userEmail}</strong>
         </p>

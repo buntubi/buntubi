@@ -19,7 +19,8 @@ from idp.oauth.claims import SCOPES, user_claims
 from idp.oauth.grants import GRANT_TYPES_SUPPORTED
 from idp.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
 from idp.security import csrf
-from idp.services import audit, consent, sessions
+from idp.services import audit, consent, platform, sessions
+from idp.web import pages
 
 bp = Blueprint("oidc", __name__)
 
@@ -99,6 +100,14 @@ def authorize() -> Any:
         sessions.remember_return_to(_authorize_path(drop_prompt=True))
         return redirect(url_for("pages.accounts"))
 
+    # A sandbox app is open to its project's test users only; anyone else is told so here.
+    if not platform.may_sign_in(grant.client, login.user):
+        if "none" in prompt:
+            return _error_redirect(grant, "access_denied")
+        audit.record("authorize_blocked", user=login.user, client=grant.client)
+        db().commit()
+        return pages.blocked(grant.client)
+
     if "consent" in prompt or consent.is_needed(login.user, grant.client, grant.request.payload.scope or ""):
         if "none" in prompt:
             return _error_redirect(grant, "consent_required")
@@ -123,6 +132,8 @@ def authorize_decision() -> Any:
         grant = authorization.get_consent_grant(end_user=login.user)
     except OAuth2Error as error:
         return jsonify(error=error.error), 400
+    if not platform.may_sign_in(grant.client, login.user):
+        return jsonify(error="app_in_sandbox"), 403
     if approve:
         consent.record(login.user, grant.client, grant.request.payload.scope or "")
         g.login = login
@@ -152,7 +163,10 @@ def revoke() -> Response:
 
 @bp.post("/oauth/introspect")
 def introspect() -> Response:
-    return authorization.create_endpoint_response("introspection")
+    response = authorization.create_endpoint_response("introspection")
+    # An API key check records when the key was last used.
+    db().commit()
+    return response
 
 
 @bp.post("/oauth/device_authorization")

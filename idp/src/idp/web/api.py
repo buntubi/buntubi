@@ -14,7 +14,7 @@ from idp.extensions import limiter
 from idp.models import DeviceCode, User
 from idp.security import csrf
 from idp.security.tokens import normalize_user_code
-from idp.services import accounts, audit, mfa, sessions
+from idp.services import accounts, audit, mfa, platform, sessions
 from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -251,6 +251,8 @@ def device_decision() -> Any:
     )
     if row is None:
         return jsonify(error="invalid_code"), 400
+    if not platform.may_sign_in(row.client, login.user):
+        return jsonify(error="app_in_sandbox"), 403
     approve = data.get("approve") is True
     row.status = "approved" if approve else "denied"
     row.user_id = login.user.id

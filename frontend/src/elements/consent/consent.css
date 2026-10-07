@@ -38,3 +38,22 @@
   border-radius: 50%;
   background: var(--flx-ui-color-primary);
 }
+.idp-consent-warning {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--flx-ui-color-warning-subtle, rgba(234, 179, 8, 0.14));
+  color: var(--flx-ui-color-warning-text, inherit);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.idp-consent-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0;
+  font-size: 13.5px;
+}
+.idp-consent-links a {
+  color: var(--flx-ui-color-fg-muted);
+}

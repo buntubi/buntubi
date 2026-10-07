@@ -29,15 +29,22 @@ from conftest import (
 SECRET = "a-long-random-test-secret"
 
 
-def add_service(app: Flask) -> None:
+def secret_of(client_id: str) -> str:
+    """Each test client its own secret: a secret's hash is unique."""
+    return SECRET if client_id == "service" else f"{SECRET}-{client_id}"
+
+
+def add_service(app: Flask, client_id: str = "service", first_party: bool = True) -> None:
+    """A confidential client: by default the owner's own resource server, which may introspect."""
     with app.app_context():
         db().add(
             Client(
-                client_id="service",
+                client_id=client_id,
                 name="Resource server",
+                first_party=first_party,
                 client_type="confidential",
                 environment="live",
-                secrets=[ClientSecret(secret_hash=hash_token(SECRET), prefix=SECRET[:10])],
+                secrets=[ClientSecret(secret_hash=hash_token(secret_of(client_id)), prefix=client_id[:10])],
                 redirect_uris=[],
                 grant_types=["client_credentials"],
                 scope="read write",
@@ -115,6 +122,14 @@ def test_introspection_is_for_confidential_clients(
     assert seen.status_code == 200 and seen.json["active"] is True and seen.json["client_id"] == "spa"
     junk = browser.post("/oauth/introspect", data={"token": "not-a-token"}, headers=basic("service", SECRET))
     assert junk.json == {"active": False}
+    # Another confidential client sees only its own tokens: someone else's answers inactive.
+    add_service(app, client_id="stranger", first_party=False)
+    stranger = browser.post(
+        "/oauth/introspect",
+        data={"token": tokens["access_token"]},
+        headers=basic("stranger", secret_of("stranger")),
+    )
+    assert stranger.json == {"active": False}
 
 
 def test_revoking_a_refresh_token_ends_its_access_tokens(

@@ -291,6 +291,19 @@ def is_test_user(project: Project, user: User) -> bool:
     return any(row.email == user.email for row in project.test_users)
 
 
+def may_sign_in(client: Client, user: User) -> bool:
+    """A sandbox app is for its project's owner and test users; a live app, or the owner's own, for anyone."""
+    project = client.project
+    if project is None or client.is_live:
+        return True
+    return user.id == project.owner_id or is_test_user(project, user)
+
+
+def is_verified(client: Client) -> bool:
+    """What consent tells the user: live, so reviewed where its scopes needed it. The owner's apps are."""
+    return client.project is None or client.is_live
+
+
 # ── API keys ──────────────────────────────────────────────────────────────────────────────────
 
 

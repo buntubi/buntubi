@@ -149,7 +149,21 @@ const screens: Record<string, () => Screen> = {
   }),
 
   'idp-consent': () => {
-    const client = (props.client ?? {}) as { name?: string; logo?: string };
+    const client = (props.client ?? {}) as {
+      name?: string;
+      logo?: string;
+      verified?: boolean;
+      homepage?: string | null;
+      privacy?: string | null;
+      terms?: string | null;
+    };
+    const links = [
+      [t.notes.homepage, client.homepage],
+      [t.notes.privacy, client.privacy],
+      [t.notes.terms, client.terms],
+    ]
+      .filter((pair): pair is [string, string] => typeof pair[1] === 'string' && pair[1].length > 0)
+      .map(([label, href]) => ({ label, href }));
     const scopes = (props.scopes as string[] | undefined) ?? [];
     return {
       key: 'consent',
@@ -158,6 +172,8 @@ const screens: Record<string, () => Screen> = {
           clientName={client.name ?? ''}
           clientLogo={client.logo ?? ''}
           userEmail={str('email')}
+          warning={client.verified === false ? t.notes.unverified : ''}
+          links={links}
           scopes={scopes.map((id) => ({ id, text: t.scopes[id] ?? id }))}
           action={(input) => api<Redirect>('POST', `/oauth/authorize${window.location.search}`, input)}
           labels={t.consent}
@@ -241,6 +257,24 @@ const screens: Record<string, () => Screen> = {
     ),
     footer: () => <FooterLink href="/accounts">{t.links.switchAccount}</FooterLink>,
   }),
+
+  'idp-blocked': () => {
+    const contact = str('support_email');
+    return {
+      key: 'blocked',
+      body: () => (
+        <div class="idp-done" role="alert">
+          <p>{t.notes.blocked}</p>
+          <Show when={contact}>
+            <p>
+              {t.notes.blockedContact} <a class="idp-link" href={`mailto:${contact}`}>{contact}</a>
+            </p>
+          </Show>
+        </div>
+      ),
+      footer: () => <FooterLink href="/accounts">{t.links.switchAccount}</FooterLink>,
+    };
+  },
 
   'idp-signed-out': () => ({
     key: 'signedOut',

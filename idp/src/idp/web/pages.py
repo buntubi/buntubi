@@ -16,7 +16,7 @@ from idp.config import get_settings
 from idp.db import db
 from idp.oauth.server import authorization, query_client
 from idp.security import csrf
-from idp.services import mfa, sessions
+from idp.services import mfa, platform, sessions
 
 bp = Blueprint("pages", __name__)
 
@@ -105,11 +105,33 @@ def consent() -> Any:
     except OAuth2Error as error:
         return authorization.handle_error_response(request, error)
     client = grant.client
+    project = client.project
     return shell(
         "idp-consent",
-        client={"name": client.name, "logo": client.brand.get("logo")},
+        client={
+            "name": client.name,
+            "logo": client.brand.get("logo"),
+            "verified": platform.is_verified(client),
+            "homepage": client.homepage_url,
+            "privacy": client.privacy_url,
+            "terms": client.terms_url,
+            "support_email": project.support_email if project is not None else None,
+        },
         scopes=scope_to_list(grant.request.payload.scope or "") or [],
         email=login.user.email,
+    )
+
+
+def blocked(client: Any) -> tuple[str, int]:
+    """A sandbox app the signed-in person may not use: who to ask, rather than a bare error."""
+    project = client.project
+    return (
+        shell(
+            "idp-blocked",
+            client={"name": client.name},
+            support_email=project.support_email if project is not None else None,
+        ),
+        403,
     )
 
 

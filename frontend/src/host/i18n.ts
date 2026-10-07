@@ -26,6 +26,7 @@ export interface Text {
     deviceDone: string;
     deviceRefused: string;
     signedOut: string;
+    blocked: string;
     mfa: string;
     twoStep: string;
   };
@@ -47,6 +48,12 @@ export interface Text {
     deviceRefused: string;
     signedOut: string;
     signedInAs: string;
+    blocked: string;
+    blockedContact: string;
+    unverified: string;
+    privacy: string;
+    terms: string;
+    homepage: string;
   };
   signIn: SignInLabels;
   signUp: SignUpLabels;
@@ -76,6 +83,7 @@ const fr: Text = {
     deviceDone: 'Appareil connecté',
     deviceRefused: 'Connexion refusée',
     signedOut: 'Vous êtes déconnecté',
+    blocked: 'Accès bloqué',
     mfa: 'Validation en deux étapes',
     twoStep: 'Validation en deux étapes',
   },
@@ -104,6 +112,12 @@ const fr: Text = {
     deviceRefused: 'L’appareil n’a pas été connecté.',
     signedOut: 'Votre session est terminée sur ce navigateur.',
     signedInAs: 'Connecté en tant que',
+    blocked: 'Cette application est encore en développement : seules les personnes que son développeur a ajoutées peuvent s’y connecter.',
+    blockedContact: 'Pour y accéder, écrivez à',
+    unverified: 'Cette application n’a pas encore été vérifiée. Ne continuez que si vous connaissez son développeur.',
+    privacy: 'Confidentialité',
+    terms: 'Conditions',
+    homepage: 'Site',
   },
   signIn: {
     email: 'Adresse e-mail',
@@ -237,6 +251,7 @@ const en: Text = {
     deviceDone: 'Device connected',
     deviceRefused: 'Connection refused',
     signedOut: 'You are signed out',
+    blocked: 'Access blocked',
     mfa: 'Two-step sign-in',
     twoStep: 'Two-step sign-in',
   },
@@ -265,6 +280,12 @@ const en: Text = {
     deviceRefused: 'The device was not connected.',
     signedOut: 'Your session on this browser has ended.',
     signedInAs: 'Signed in as',
+    blocked: 'This app is still in development: only people its developer added can sign in.',
+    blockedContact: 'To get access, write to',
+    unverified: 'This app has not been verified yet. Only continue if you know its developer.',
+    privacy: 'Privacy',
+    terms: 'Terms',
+    homepage: 'Website',
   },
   signIn: {
     email: 'Email address',
