@@ -81,6 +81,15 @@ def jwks() -> Response:
     return response
 
 
+@bp.get("/.well-known/brand.json")
+def brand() -> Response:
+    """Name, accent, logo and contact links of the platform, for the portal and the console."""
+    response = jsonify(get_settings().brand())
+    response.cache_control.max_age = 300
+    response.cache_control.public = True
+    return response
+
+
 @bp.get("/oauth/authorize")
 def authorize() -> Any:
     login = sessions.current()

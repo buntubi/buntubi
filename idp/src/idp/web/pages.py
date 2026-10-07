@@ -38,8 +38,8 @@ def _brand() -> dict[str, Any]:
     client = query_client(client_id) if client_id else None
     if client is not None:
         return {"name": client.name, **client.brand}
-    name = get_settings().provider_name
-    return {"name": name} if name else {}
+    platform = get_settings().brand()
+    return {key: platform[key] for key in ("name", "accent", "logo") if key in platform}
 
 
 def shell(element: str, **props: Any) -> str:

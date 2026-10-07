@@ -78,6 +78,16 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
     # OpenID Connect and OAuth
     "Discovery": obj({"issuer": STRING, "jwks_uri": STRING}, closed=False),
     "Jwks": obj({"keys": {"type": "array", "items": {"type": "object"}}}),
+    "Brand": obj(
+        {
+            "name": STRING,
+            "accent": STRING,
+            "logo": STRING,
+            "support_email": STRING,
+            "privacy_url": STRING,
+            "terms_url": STRING,
+        }
+    ),
     "TokenResponse": obj(
         {
             "access_token": STRING,
@@ -368,6 +378,7 @@ def paths() -> dict[str, dict[str, Any]]:
         # OpenID Connect and OAuth
         "/.well-known/openid-configuration": {"get": op("Discovery document", oidc, None, ok("Discovery"))},
         "/.well-known/jwks.json": {"get": op("Public signing keys", oidc, None, ok("Jwks"))},
+        "/.well-known/brand.json": {"get": op("The platform's brand", oidc, None, ok("Brand"))},
         "/oauth/authorize": {
             "get": op(
                 "Start an authorization (code flow, PKCE S256 required)",
@@ -724,7 +735,7 @@ def build() -> dict[str, Any]:
     }
     return {
         "openapi": "3.1.0",
-        "info": {"title": f"{get_settings().provider_name or 'Identity provider'} API", "version": "1"},
+        "info": {"title": f"{get_settings().brand_name or 'Identity provider'} API", "version": "1"},
         "servers": [{"url": issuer}],
         "tags": [
             {"name": "OAuth and OpenID Connect"},

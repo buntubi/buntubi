@@ -50,7 +50,7 @@ def begin(user: User) -> Enrolment:
     else:
         found.secret_encrypted = seal(secret)
         found.last_used_step = None
-    uri = totp.provisioning_uri(secret, user.email, get_settings().provider_name)
+    uri = totp.provisioning_uri(secret, user.email, get_settings().brand_name)
     qr = segno.make(uri, error="m").svg_data_uri(scale=5, border=2)
     return Enrolment(secret=secret, uri=uri, qr=qr)
 
