@@ -35,7 +35,7 @@ def sandbox_app(app: Flask, outbox: list[mail.Message]) -> tuple[FlaskClient, di
 
 def authorize(browser: FlaskClient, client_id: str, **extra: str) -> tuple[Any, str]:
     verifier, challenge = pkce()
-    query = authorize_query(challenge, client_id=client_id, scope="openid profile email", **extra)
+    query = authorize_query(challenge, client_id=client_id, **{"scope": "openid profile email", **extra})
     return browser.get("/oauth/authorize?" + urlencode(query)), verifier
 
 
@@ -149,3 +149,94 @@ def test_a_device_cannot_be_approved_for_a_sandbox_app_by_a_stranger(
     csrf = sign_up(visitor, outbox, email="visitor@example.test")
     refused = api(visitor, "POST", "/api/device", {"user_code": started["user_code"], "approve": True}, csrf)
     assert refused.status_code == 403 and refused.json == {"error": "app_in_sandbox"}
+
+
+def tokens_through_consent(browser: FlaskClient, client_id: str) -> dict[str, Any]:
+    """Signs a signed-in browser through consent for the app and returns its tokens."""
+    first, verifier = authorize(browser, client_id, scope="openid profile email offline_access")
+    csrf = page_config(browser, first.location)["csrf"]
+    decision = api(
+        browser, "POST", f"/oauth/authorize?{urlparse(first.location).query}", {"approve": True}, csrf
+    )
+    code = parse_qs(urlparse(decision.json["redirect"]).query)["code"][0]
+    reply = browser.post(
+        "/oauth/token",
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": REDIRECT,
+            "client_id": client_id,
+            "code_verifier": verifier,
+        },
+    )
+    assert reply.status_code == 200, reply.json
+    tokens: dict[str, Any] = reply.json
+    return tokens
+
+
+def refresh(browser: FlaskClient, client_id: str, token: str) -> Any:
+    return browser.post(
+        "/oauth/token", data={"grant_type": "refresh_token", "refresh_token": token, "client_id": client_id}
+    )
+
+
+def signed_in_tester(app: Flask, outbox: list[mail.Message]) -> tuple[Any, ...]:
+    dev_browser, dev, project_id, client_id = sandbox_app(app, outbox)
+    with app.app_context():
+        from idp.models import Client
+
+        db().query(Client).filter_by(client_id=client_id).one().scope = "openid profile email offline_access"
+        db().commit()
+    call(dev_browser, dev, "POST", f"/projects/{project_id}/test-users", {"email": "tester@example.test"})
+    tester = app.test_client()
+    sign_up(tester, outbox, email="tester@example.test")
+    tokens = tokens_through_consent(tester, client_id)
+    assert "refresh_token" in tokens
+    return dev_browser, dev, project_id, client_id, tester, tokens
+
+
+def test_removing_a_test_user_ends_their_tokens_at_once(app: Flask, outbox: list[mail.Message]) -> None:
+    dev_browser, dev, project_id, client_id, tester, tokens = signed_in_tester(app, outbox)
+    bearer = {"Authorization": f"Bearer {tokens['access_token']}"}
+    assert tester.get("/oauth/userinfo", headers=bearer).status_code == 200
+    add_service(app)
+
+    call(dev_browser, dev, "DELETE", f"/projects/{project_id}/test-users/tester@example.test")
+    assert tester.get("/oauth/userinfo", headers=bearer).status_code == 401
+    seen = app.test_client().post(
+        "/oauth/introspect",
+        data={"token": tokens["access_token"]},
+        headers=basic("service", secret_of("service")),
+    )
+    assert seen.json == {"active": False}
+    assert refresh(tester, client_id, tokens["refresh_token"]).status_code == 400
+
+
+def test_refresh_checks_the_sandbox_rule_by_itself(app: Flask, outbox: list[mail.Message]) -> None:
+    _, _, project_id, client_id, tester, tokens = signed_in_tester(app, outbox)
+    # Taken off without the revocation that normally comes with it: the refresh must still refuse.
+    with app.app_context():
+        from idp.models import ProjectTestUser
+
+        db().query(ProjectTestUser).filter_by(email="tester@example.test").delete()
+        db().commit()
+    assert refresh(tester, client_id, tokens["refresh_token"]).status_code == 400
+
+
+def test_suspending_a_project_revokes_the_tokens_its_apps_hold(
+    app: Flask, outbox: list[mail.Message]
+) -> None:
+    _, _, project_id, _, tester, tokens = signed_in_tester(app, outbox)
+    with app.app_context():
+        from idp.services import platform
+
+        project = db().get(Project, project_id)
+        assert project is not None
+        platform.suspend(project, "abuse")
+        db().commit()
+    assert (
+        tester.get(
+            "/oauth/userinfo", headers={"Authorization": f"Bearer {tokens['access_token']}"}
+        ).status_code
+        == 401
+    )

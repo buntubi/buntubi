@@ -368,7 +368,7 @@ def add_test_user(project_id: str, me: User) -> tuple[Response, int]:
 @developer()
 def remove_test_user(project_id: str, email: str, me: User) -> Response:
     project = p.project_of(me, project_id)
-    project.test_users = [t for t in project.test_users if t.email != email.strip().lower()]
+    p.remove_test_user(project, email)
     db().commit()
     return jsonify(removed=True)
 

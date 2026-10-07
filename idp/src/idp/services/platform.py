@@ -11,10 +11,10 @@ import uuid
 from dataclasses import dataclass, field
 
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from idp.db import db, utcnow
-from idp.models import ApiKey, Client, Project, ProjectTestUser, Scope, User
+from idp.models import AccessTokenRecord, ApiKey, Client, Project, ProjectTestUser, RefreshToken, Scope, User
 from idp.security.tokens import new_token
 from idp.services.accounts import AccountError, normalize_email
 from idp.services.credentials import issue_api_key, issue_client_secret
@@ -198,6 +198,7 @@ def set_app_scopes(client: Client, scopes: list[str]) -> None:
     if client.is_live and unapproved:
         client.environment = "sandbox"
         client.review_status = "pending"
+        cut_sandbox_access(client)
 
 
 def missing_for_live(client: Client, project: Project) -> list[str]:
@@ -259,8 +260,20 @@ def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
 
 
 def suspend(project: Project, reason: str) -> None:
+    """Stops the project at once: its apps get no new tokens, and the ones they hold are revoked."""
     project.suspended_at = project.suspended_at or utcnow()
     project.suspended_reason = reason
+    for client in apps_of(project):
+        _revoke_tokens(client)
+
+
+def remove_test_user(project: Project, email: str) -> None:
+    """Takes someone off the sandbox; whatever they hold for its sandbox apps ends now."""
+    address = normalize_email(email)
+    project.test_users = [row for row in project.test_users if row.email != address]
+    db().flush()
+    for client in apps_of(project):
+        cut_sandbox_access(client)
 
 
 def restore(project: Project) -> None:
@@ -297,6 +310,48 @@ def may_sign_in(client: Client, user: User) -> bool:
     if project is None or client.is_live:
         return True
     return user.id == project.owner_id or is_test_user(project, user)
+
+
+def cut_sandbox_access(client: Client) -> None:
+    """
+    Ends what a sandbox app holds for people it no longer admits (a test user removed, a live app
+    back in the sandbox): their refresh tokens and access tokens for it, revoked now. An API that
+    introspects sees it at once; one that only checks signatures, when the access token expires.
+    """
+    if client.project is None or client.is_live:
+        return
+    holders = set(
+        db().scalars(
+            select(RefreshToken.user_id).where(
+                RefreshToken.client_id == client.id, RefreshToken.revoked_at.is_(None)
+            )
+        )
+    ) | set(
+        db().scalars(
+            select(AccessTokenRecord.user_id).where(
+                AccessTokenRecord.client_id == client.id,
+                AccessTokenRecord.revoked_at.is_(None),
+                AccessTokenRecord.user_id.is_not(None),
+            )
+        )
+    )
+    refused = [
+        user.id
+        for user in db().scalars(select(User).where(User.id.in_(holders)))
+        if not may_sign_in(client, user)
+    ]
+    if refused:
+        _revoke_tokens(client, refused)
+
+
+def _revoke_tokens(client: Client, user_ids: list[uuid.UUID] | None = None) -> None:
+    """Revokes a client's refresh and access tokens: everyone's, or these users'."""
+    now = utcnow()
+    for model in (RefreshToken, AccessTokenRecord):
+        query = update(model).where(model.client_id == client.id, model.revoked_at.is_(None))
+        if user_ids is not None:
+            query = query.where(model.user_id.in_(user_ids))
+        db().execute(query.values(revoked_at=now))
 
 
 def is_verified(client: Client) -> bool:

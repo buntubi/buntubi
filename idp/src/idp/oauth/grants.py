@@ -167,6 +167,11 @@ class RefreshTokenGrant(grants.RefreshTokenGrant):  # type: ignore[misc]
         user = refresh_token.user
         if user.disabled_at is not None:
             return None
+        # The sandbox rule again: someone taken off a sandbox app's test users cannot renew.
+        from idp.services.platform import may_sign_in
+
+        if not may_sign_in(refresh_token.client, user):
+            return None
         return attach(
             user,
             AuthContext(
