@@ -62,9 +62,15 @@ idp users admins      # now "two-step on"
 
 ## 3. Developer portal (http://localhost:3410)
 
-1. **Se connecter**, then "Créer un compte" with a second email: this is the developer. Type
-   the 6-digit code printed by the provider.
-2. Accept the developer terms.
+The provider keeps one session per browser. Already signed in there (through the console or
+`/account`), **Se connecter** in the portal comes straight back without a form: single sign-on.
+One account can be admin and developer at once. To test with a separate developer account, use
+a private window, or **Se déconnecter** first (it ends the provider session too).
+
+1. **Se connecter**. Signed out: "Créer un compte" with a second email, then the 6-digit code
+   printed by the provider. Signed in: you come straight back.
+2. Accept the developer terms (**J'accepte**). This is the portal's own page, not a consent
+   screen: the provider asks no consent for its own first-party apps.
 3. Create a project with a support email.
 4. Create an app: type **Confidentielle**, redirect URI `http://localhost:3000/callback`. Copy
    the secret, shown once.
