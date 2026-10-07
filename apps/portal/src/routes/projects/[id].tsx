@@ -8,6 +8,7 @@ import { EnvBadge } from '../../components/env-badge.js';
 import { ChoiceField, Field, valueOf } from '../../components/field.js';
 import { RevealOnce } from '../../components/reveal-once.js';
 import { errorText, t } from '../../lib/i18n.js';
+import { handOverSecret } from '../../lib/one-time.js';
 import { paramOf } from '../../lib/params.js';
 import type { ProjectDetail } from '../../lib/types.js';
 import {
@@ -80,7 +81,8 @@ function Apps(props: { id: string }) {
   const submit = async () => {
     const created = await newApp(props.id, { name: name().trim(), client_type: kind(), redirect_uri: redirect().trim() });
     // A confidential app's secret is shown on the app page, once, from the creation answer.
-    navigate(`/apps/${created.app.client_id}`, { state: { secret: created.client_secret } });
+    handOverSecret(created.app.client_id, created.client_secret);
+    navigate(`/apps/${created.app.client_id}`);
   };
   return (
     <Card class="panel">

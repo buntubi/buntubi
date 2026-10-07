@@ -1,5 +1,5 @@
 /** An app: its credentials, its details, and the way to live. */
-import { action, cache, useLocation, useRouteData, useSubmission } from '@fluixi/start/router';
+import { action, cache, useRouteData, useSubmission } from '@fluixi/start/router';
 import type { RouteDataArgs } from '@fluixi/start/router';
 import { Button } from '@fluixi-ui/button';
 import { Card, CardBody } from '@fluixi-ui/card';
@@ -8,6 +8,7 @@ import { EnvBadge } from '../../components/env-badge.js';
 import { Field, valueOf } from '../../components/field.js';
 import { RevealOnce } from '../../components/reveal-once.js';
 import { errorText, t } from '../../lib/i18n.js';
+import { takeSecret } from '../../lib/one-time.js';
 import { paramOf } from '../../lib/params.js';
 import type { App } from '../../lib/types.js';
 import { loadApp, publishApp, revokeSecret, rotateSecret, updateApp } from '../../server/developer.js';
@@ -50,9 +51,8 @@ export default function AppPage() {
 
 function Credentials() {
   const data = useRouteData<App>();
-  const location = useLocation();
   // The secret from the creation answer, handed over by the project page for this one view.
-  const fresh = $signal<string | null>((location.state as { secret?: string | null } | undefined)?.secret ?? null);
+  const fresh = $signal<string | null>(takeSecret(data()?.client_id ?? ''));
   const rotating = useSubmission(rotate);
   const newSecret = async () => {
     const answer = await rotate(data()!.client_id);
