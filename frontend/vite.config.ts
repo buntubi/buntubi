@@ -6,6 +6,11 @@ import { fluixi } from '@fluixi/vite-plugin';
 // fixed names the page shell links directly. Fonts stay files: the CSP allows no data: URLs.
 export default defineConfig({
   plugins: [fluixi()],
+  // fluixi-ui is linked from its own checkout, whose node_modules hold a published runtime; one
+  // copy only, the one this app links, or two builds of @fluixi/reactive drive one graph.
+  resolve: {
+    dedupe: ['@fluixi/core', '@fluixi/reactive', '@fluixi/jsx', '@fluixi/dom', '@fluixi/web-components'],
+  },
   base: '/static/idp/',
   build: {
     outDir: fileURLToPath(new URL('../idp/src/idp/static/idp', import.meta.url)),
