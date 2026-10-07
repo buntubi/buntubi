@@ -5,6 +5,7 @@ from idp.models.clients import Client
 from idp.models.grants import AccessTokenRecord, AuthorizationCode, Consent, LoginSession, RefreshToken
 from idp.models.platform import (
     ApiKey,
+    ApiProduct,
     ClientSecret,
     Organization,
     OrganizationMember,
@@ -20,6 +21,7 @@ __all__ = [
     "Organization",
     "ClientSecret",
     "ApiKey",
+    "ApiProduct",
     "AccessTokenRecord",
     "AuditEvent",
     "AuthorizationCode",

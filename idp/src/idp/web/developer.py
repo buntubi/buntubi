@@ -16,7 +16,7 @@ from flask import Blueprint, Response, abort, jsonify
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 from idp.db import db, utcnow
-from idp.models import ApiKey, Client, ClientSecret, OrganizationMember, User
+from idp.models import ApiKey, ApiProduct, Client, ClientSecret, OrganizationMember, Scope, User
 from idp.oauth.server import require_token
 from idp.services import audit
 from idp.services import platform as p
@@ -90,6 +90,7 @@ class AppIn(BaseModel):
     description: str = Field(default="", max_length=500)
     category: str = Field(default="", max_length=40)
     platforms: list[Platform] = Field(default=[], max_length=4)
+    products: list[str] = Field(default=[], max_length=50)
 
 
 class AppPatch(BaseModel):
@@ -105,6 +106,7 @@ class AppPatch(BaseModel):
     description: str | None = Field(default=None, max_length=500)
     category: str | None = Field(default=None, max_length=40)
     platforms: list[Platform] | None = Field(default=None, max_length=4)
+    products: list[str] | None = Field(default=None, max_length=50)
 
 
 class TestUserIn(BaseModel):
@@ -194,9 +196,26 @@ def app_json(client: Client) -> dict[str, Any]:
         "description": client.description,
         "category": client.category,
         "platforms": client.platforms,
+        "products": client.products,
         "disabled": client.disabled_at is not None,
         "secrets": [secret_json(s) for s in client.secrets] if not client.is_public else [],
         "created_at": client.created_at.isoformat(),
+    }
+
+
+def product_json(product: ApiProduct, scopes: list[Scope]) -> dict[str, Any]:
+    return {
+        "slug": product.slug,
+        "names": product.names,
+        "descriptions": product.descriptions,
+        "category": product.category,
+        "auth": product.auth,
+        "availability": product.availability,
+        "docs_url": product.docs_url,
+        "approval": p.approval_of(scopes),
+        "scopes": [
+            {"name": s.name, "sensitivity": s.sensitivity, "descriptions": s.descriptions} for s in scopes
+        ],
     }
 
 
@@ -234,6 +253,16 @@ def accept_terms(me: User) -> Response:
     audit.record("developer.terms_accepted", user=me)
     db().commit()
     return jsonify(developer=True)
+
+
+# ── API products ──────────────────────────────────────────────────────────────────────────────
+
+
+@bp.get("/products")
+@developer()
+def list_products(me: User) -> Response:
+    grouped = p.scopes_by_product()
+    return jsonify(items=[product_json(x, grouped.get(x.slug, [])) for x in p.products()])
 
 
 # ── Organizations ─────────────────────────────────────────────────────────────────────────────
@@ -375,6 +404,7 @@ def create_app(organization_id: str, me: User) -> tuple[Response, int]:
             description=data.description,
             category=data.category,
             platforms=list(data.platforms),
+            products=data.products,
         ),
     )
     audit.record("developer.app_created", user=me, client=client)
@@ -419,6 +449,8 @@ def update_app(client_id: str, me: User) -> Response:
             setattr(client, name, getattr(patch, name))
     if patch.platforms is not None:
         client.platforms = sorted(set(patch.platforms))
+    if patch.products is not None:
+        client.products = p.checked_products(patch.products)
     if patch.scopes is not None:
         p.set_app_scopes(client, patch.scopes)
     audit.record("developer.app_updated", user=me, client=client, fields=sorted(fields))

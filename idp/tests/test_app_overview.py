@@ -48,6 +48,7 @@ def test_details_are_kept_and_the_checklist_follows_the_app(app: Flask, outbox: 
     assert states(first) == {
         "basic_info": "todo",
         "redirect_uri": "done",
+        "products": "todo",
         "policies": "todo",
         "support_email": "todo",
         "permissions": "done",
@@ -69,7 +70,7 @@ def test_details_are_kept_and_the_checklist_follows_the_app(app: Flask, outbox: 
         dev,
         "PATCH",
         f"/apps/{client_id}",
-        {"description": "Book a session", **LIVE_FIELDS},
+        {"description": "Book a session", "products": ["identity"], **LIVE_FIELDS},
     )
     call(browser, dev, "POST", f"/apps/{client_id}/publish")
     live = call(browser, dev, "GET", f"/apps/{client_id}/overview").json
@@ -99,3 +100,59 @@ def test_a_sensitive_scope_shows_as_waiting_until_reviewed(app: Flask, outbox: l
     rejected = call(dev_browser, dev, "GET", f"/apps/{client_id}/overview").json
     assert rejected["stage"] == "changes_requested"
     assert next(c for c in rejected["checks"] if c["key"] == "review")["items"] == ["rejected"]
+
+
+def test_products_group_scopes_and_apps_choose_them(app: Flask, outbox: list[mail.Message]) -> None:
+    owner_browser, owner, dev_browser, dev = setup_people(app, outbox)
+    catalog = call(dev_browser, dev, "GET", "/products").json["items"]
+    identity = next(p for p in catalog if p["slug"] == "identity")
+    assert identity["names"]["en"] == "Identity API" and identity["auth"] == ["oauth2", "oidc"]
+    assert [s["name"] for s in identity["scopes"]] == [
+        "email",
+        "offline_access",
+        "openid",
+        "phone",
+        "profile",
+    ]
+    assert identity["approval"] == "review"
+
+    created = admin_call(
+        owner_browser,
+        owner,
+        "POST",
+        "/products",
+        {
+            "slug": "content",
+            "names": {"fr": "API Contenu", "en": "Content API"},
+            "descriptions": {"fr": "Contenu", "en": "Content"},
+            "availability": "beta",
+        },
+    )
+    assert created.status_code == 201 and created.json["product"]["approval"] == "none"
+    duplicate = {"slug": "content", "names": {"fr": "A", "en": "A"}, "descriptions": {"fr": "A", "en": "A"}}
+    assert admin_call(owner_browser, owner, "POST", "/products", duplicate).json == {
+        "error": "product_exists"
+    }
+
+    organization_id = new_organization(dev_browser, dev)
+    refused = call(
+        dev_browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {"name": "x", "redirect_uris": ["https://x.example/cb"], "products": ["content", "nope"]},
+    )
+    assert refused.json == {"error": "unknown_product", "products": ["nope"]}
+    made = call(
+        dev_browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {
+            "name": "x",
+            "redirect_uris": ["https://x.example/cb"],
+            "products": ["identity", "content", "identity"],
+        },
+    ).json["app"]
+    assert made["products"] == ["content", "identity"]
+    assert admin_call(owner_browser, owner, "PATCH", "/scopes/email", {"product": "nope"}).status_code == 422

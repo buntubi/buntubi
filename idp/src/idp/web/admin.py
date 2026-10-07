@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy import func, select
 
 from idp.db import db, utcnow
-from idp.models import AuditEvent, Client, Organization, Scope, User
+from idp.models import ApiProduct, AuditEvent, Client, Organization, Scope, User
 from idp.models.clients import GRANT_TYPES
 from idp.oauth.server import require_token
 from idp.services import audit, mfa
@@ -436,6 +436,7 @@ class ScopeIn(BaseModel):
     descriptions: Descriptions
     resource: str = Field(default="", max_length=64)
     notes: str = Field(default="", max_length=2000)
+    product: str | None = Field(default=None, max_length=40)
 
 
 class ScopePatch(BaseModel):
@@ -443,6 +444,14 @@ class ScopePatch(BaseModel):
     descriptions: Descriptions | None = None
     resource: str | None = Field(default=None, max_length=64)
     notes: str | None = Field(default=None, max_length=2000)
+    # A product slug, or null to take the scope out of its product.
+    product: str | None = Field(default=None, max_length=40)
+
+
+def _product_or_422(slug: str | None) -> str | None:
+    if slug is not None and db().get(ApiProduct, slug) is None:
+        refuse("unknown_product", 422)
+    return slug
 
 
 def _scope_json(scope: Scope) -> dict[str, Any]:
@@ -452,6 +461,7 @@ def _scope_json(scope: Scope) -> dict[str, Any]:
         "descriptions": scope.descriptions,
         "resource": scope.resource,
         "notes": scope.notes,
+        "product": scope.product,
     }
 
 
@@ -473,6 +483,7 @@ def create_scope(admin: User) -> tuple[Response, int]:
         descriptions=data.descriptions.model_dump(),
         resource=data.resource,
         notes=data.notes,
+        product=_product_or_422(data.product),
     )
     db().add(scope)
     audit.record("admin.scope_created", user=admin, scope=data.name)
@@ -495,6 +506,98 @@ def update_scope(name: str, admin: User) -> Response:
         scope.resource = patch.resource
     if patch.notes is not None:
         scope.notes = patch.notes
+    if "product" in patch.model_fields_set:
+        scope.product = _product_or_422(patch.product)
     audit.record("admin.scope_updated", user=admin, scope=name, fields=sorted(patch.model_fields_set))
     db().commit()
     return jsonify(scope=_scope_json(scope))
+
+
+# ── API products ──────────────────────────────────────────────────────────────────────────────
+
+
+class ProductIn(BaseModel):
+    slug: str = Field(pattern=r"^[a-z][a-z0-9-]{1,39}$")
+    names: Descriptions
+    descriptions: Descriptions
+    category: str = Field(default="", max_length=40)
+    auth: list[Literal["oauth2", "oidc", "api_key", "webhooks"]] = Field(default=[], max_length=4)
+    availability: Literal["ga", "beta", "sandbox"] = "ga"
+    docs_url: HttpUrl | None = None
+    position: int = Field(default=0, ge=0, le=10_000)
+
+
+class ProductPatch(BaseModel):
+    names: Descriptions | None = None
+    descriptions: Descriptions | None = None
+    category: str | None = Field(default=None, max_length=40)
+    auth: list[Literal["oauth2", "oidc", "api_key", "webhooks"]] | None = Field(default=None, max_length=4)
+    availability: Literal["ga", "beta", "sandbox"] | None = None
+    docs_url: HttpUrl | None = None
+    position: int | None = Field(default=None, ge=0, le=10_000)
+
+
+def _product_json(product: ApiProduct) -> dict[str, Any]:
+    scopes = p.scopes_by_product().get(product.slug, [])
+    return {
+        "slug": product.slug,
+        "names": product.names,
+        "descriptions": product.descriptions,
+        "category": product.category,
+        "auth": product.auth,
+        "availability": product.availability,
+        "docs_url": product.docs_url,
+        "position": product.position,
+        "approval": p.approval_of(scopes),
+        "scopes": [s.name for s in scopes],
+    }
+
+
+@bp.get("/products")
+@admin_only
+def list_products(admin: User) -> Response:
+    return jsonify(items=[_product_json(x) for x in p.products()])
+
+
+@bp.post("/products")
+@admin_only
+def create_product(admin: User) -> tuple[Response, int]:
+    data = parse(ProductIn)
+    if db().get(ApiProduct, data.slug) is not None:
+        refuse("product_exists", 409)
+    product = ApiProduct(
+        slug=data.slug,
+        names=data.names.model_dump(),
+        descriptions=data.descriptions.model_dump(),
+        category=data.category,
+        auth=list(data.auth),
+        availability=data.availability,
+        docs_url=str(data.docs_url) if data.docs_url else None,
+        position=data.position,
+    )
+    db().add(product)
+    audit.record("admin.product_created", user=admin, product=data.slug)
+    db().commit()
+    return jsonify(product=_product_json(product)), 201
+
+
+@bp.patch("/products/<slug>")
+@admin_only
+def update_product(slug: str, admin: User) -> Response:
+    product = db().get(ApiProduct, slug)
+    if product is None:
+        refuse("not_found", 404)
+    patch = parse(ProductPatch)
+    for name in ("names", "descriptions"):
+        if (value := getattr(patch, name)) is not None:
+            setattr(product, name, value.model_dump())
+    for name in ("category", "availability", "position"):
+        if (value := getattr(patch, name)) is not None:
+            setattr(product, name, value)
+    if patch.auth is not None:
+        product.auth = list(patch.auth)
+    if "docs_url" in patch.model_fields_set:
+        product.docs_url = str(patch.docs_url) if patch.docs_url else None
+    audit.record("admin.product_updated", user=admin, product=slug, fields=sorted(patch.model_fields_set))
+    db().commit()
+    return jsonify(product=_product_json(product))

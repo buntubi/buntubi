@@ -39,6 +39,8 @@ REQUEST_MODELS: list[type[BaseModel]] = [
     admin.SuspendIn,
     admin.ScopeIn,
     admin.ScopePatch,
+    admin.ProductIn,
+    admin.ProductPatch,
 ]
 
 # ── Schemas ───────────────────────────────────────────────────────────────────────────────────
@@ -56,6 +58,17 @@ KIND: dict[str, Any] = {
     "enum": ["consumer", "business", "web", "mobile", "backend", "internal"],
 }
 PLATFORM: dict[str, Any] = {"type": "string", "enum": ["web", "ios", "android", "backend"]}
+SENSITIVITY: dict[str, Any] = {"type": "string", "enum": ["public", "sensitive", "restricted"]}
+PRODUCT_FIELDS: dict[str, Any] = {
+    "slug": STRING,
+    "names": {"type": "object"},
+    "descriptions": {"type": "object"},
+    "category": STRING,
+    "auth": {"type": "array", "items": {"type": "string", "enum": ["oauth2", "oidc", "api_key", "webhooks"]}},
+    "availability": {"type": "string", "enum": ["ga", "beta", "sandbox"]},
+    "docs_url": MAYBE_STRING,
+    "approval": {"type": "string", "enum": ["none", "review", "restricted"]},
+}
 ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "admin", "developer", "reviewer", "viewer"]}
 
 
@@ -162,6 +175,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                             "enum": [
                                 "basic_info",
                                 "redirect_uri",
+                                "products",
                                 "policies",
                                 "support_email",
                                 "permissions",
@@ -175,6 +189,17 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                 ),
             },
             "scopes": obj({"live": STRINGS, "waiting": STRINGS, "sandbox": STRINGS}),
+        }
+    ),
+    "Product": obj(
+        {
+            **PRODUCT_FIELDS,
+            "scopes": {
+                "type": "array",
+                "items": obj(
+                    {"name": STRING, "sensitivity": SENSITIVITY, "descriptions": {"type": "object"}}
+                ),
+            },
         }
     ),
     "Member": obj(
@@ -218,6 +243,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "description": STRING,
             "category": STRING,
             "platforms": {"type": "array", "items": PLATFORM},
+            "products": STRINGS,
             "disabled": BOOL,
             "secrets": {"type": "array", "items": ref("Secret")},
             "created_at": TIME,
@@ -312,6 +338,14 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "descriptions": {"type": "object"},
             "resource": STRING,
             "notes": STRING,
+            "product": MAYBE_STRING,
+        }
+    ),
+    "AdminProduct": obj(
+        {
+            **PRODUCT_FIELDS,
+            "position": INT,
+            "scopes": STRINGS,
         }
     ),
     "AuditEvent": obj(
@@ -552,6 +586,9 @@ def paths() -> dict[str, dict[str, Any]]:
         "/developer/api/terms": {
             "post": op("Accept the developer terms", d, DEVELOPER, {"200": answer(obj({"developer": BOOL}))})
         },
+        "/developer/api/products": {
+            "get": op("The API products apps can use, with their scopes", d, DEVELOPER, listing("Product"))
+        },
         "/developer/api/organizations": {
             "get": op("Your organizations", d, DEVELOPER, listing("Organization")),
             "post": op(
@@ -768,6 +805,26 @@ def paths() -> dict[str, dict[str, Any]]:
                 one("scope", "Scope"),
                 request=body(ref("ScopePatch")),
                 params=["name"],
+            )
+        },
+        "/admin/api/products": {
+            "get": op("The API product catalog", a, ADMIN, listing("AdminProduct")),
+            "post": op(
+                "Add an API product",
+                a,
+                ADMIN,
+                one("product", "AdminProduct", "201"),
+                request=body(ref("ProductIn")),
+            ),
+        },
+        "/admin/api/products/{slug}": {
+            "patch": op(
+                "Change an API product",
+                a,
+                ADMIN,
+                one("product", "AdminProduct"),
+                request=body(ref("ProductPatch")),
+                params=["slug"],
             )
         },
         "/admin/api/clients": {

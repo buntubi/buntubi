@@ -53,6 +53,8 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     description: Mapped[str] = mapped_column(String(500), default="", server_default="")
     category: Mapped[str] = mapped_column(String(40), default="", server_default="")
     platforms: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list, server_default="{}")
+    # Slugs of the API products the app uses.
+    products: Mapped[list[str]] = mapped_column(ARRAY(String(40)), default=list, server_default="{}")
     client_type: Mapped[str] = mapped_column(String(16), default="public")
     name: Mapped[str] = mapped_column(String(120))
     redirect_uris: Mapped[list[str]] = mapped_column(ARRAY(String(2048)), default=list)

@@ -114,6 +114,7 @@ def test_developer_and_admin_answers_match_the_description(
     client_id = created["app"]["client_id"]
     dev_call("GET", f"/apps/{client_id}")
     dev_call("GET", f"/apps/{client_id}/overview")
+    dev_call("GET", "/products")
     dev_call("PATCH", f"/apps/{client_id}", {"name": "Server app"})
     rotated = dev_call("POST", f"/apps/{client_id}/secrets")
     dev_call("DELETE", f"/apps/{client_id}/secrets/{rotated['app']['secrets'][0]['id']}")
@@ -149,6 +150,18 @@ def test_developer_and_admin_answers_match_the_description(
     users = admin("GET", "/users")["items"]
     admin("GET", f"/users/{users[0]['id']}")
     admin("GET", "/scopes")
+    admin("GET", "/products")
+    admin(
+        "POST",
+        "/products",
+        {
+            "slug": "billing",
+            "names": {"fr": "Facturation", "en": "Billing"},
+            "descriptions": {"fr": "F", "en": "B"},
+        },
+    )
+    admin("PATCH", "/products/billing", {"availability": "beta"})
+    admin("PATCH", "/scopes/billing.write", {"product": "billing"})
     admin("GET", "/clients")
     admin("GET", "/audit")
     dev_call("DELETE", f"/apps/{client_id}")

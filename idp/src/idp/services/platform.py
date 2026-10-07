@@ -17,6 +17,7 @@ from idp.db import db, utcnow
 from idp.models import (
     AccessTokenRecord,
     ApiKey,
+    ApiProduct,
     Client,
     Organization,
     OrganizationMember,
@@ -283,6 +284,38 @@ def check_scopes(requested: list[str], *, for_key: bool) -> ScopeCheck:
     return ScopeCheck(wanted, [name for name in wanted if rows[name].sensitivity == "sensitive"])
 
 
+# ── API products ──────────────────────────────────────────────────────────────────────────────
+
+
+def products() -> list[ApiProduct]:
+    return list(db().scalars(select(ApiProduct).order_by(ApiProduct.position, ApiProduct.slug)))
+
+
+def scopes_by_product() -> dict[str, list[Scope]]:
+    grouped: dict[str, list[Scope]] = {}
+    for scope in db().scalars(select(Scope).where(Scope.product.is_not(None)).order_by(Scope.name)):
+        assert scope.product is not None
+        grouped.setdefault(scope.product, []).append(scope)
+    return grouped
+
+
+def approval_of(scopes: list[Scope]) -> str:
+    """What adding a product takes: `none`, an app `review` for a sensitive scope, or `restricted`."""
+    sensitivities = {scope.sensitivity for scope in scopes}
+    if "restricted" in sensitivities:
+        return "restricted"
+    return "review" if "sensitive" in sensitivities else "none"
+
+
+def checked_products(slugs: list[str]) -> list[str]:
+    wanted = sorted(set(slugs))
+    known = set(db().scalars(select(ApiProduct.slug).where(ApiProduct.slug.in_(wanted))))
+    unknown = [slug for slug in wanted if slug not in known]
+    if unknown:
+        raise PlatformError("unknown_product", 422, products=unknown)
+    return wanted
+
+
 # ── Apps ──────────────────────────────────────────────────────────────────────────────────────
 
 
@@ -302,6 +335,7 @@ class NewApp:
     description: str = ""
     category: str = ""
     platforms: list[str] = field(default_factory=list)
+    products: list[str] = field(default_factory=list)
 
 
 def apps_of(organization: Organization, member: OrganizationMember | None = None) -> list[Client]:
@@ -368,6 +402,7 @@ def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | 
         description=data.description,
         category=data.category,
         platforms=sorted(set(data.platforms)),
+        products=checked_products(data.products),
     )
     db().add(client)
     secret = issue_client_secret(client) if confidential else None
@@ -457,6 +492,7 @@ def overview(client: Client, organization: Organization) -> Overview:
         ),
         _check("support_email", [n for n in ("support_email",) if n in live_missing], required=True),
     ]
+    checks.insert(1, _check("products", [] if client.products else ["products"]))
     if "authorization_code" in client.grant_types:
         checks.insert(
             1, _check("redirect_uri", [] if client.redirect_uris else ["redirect_uris"], required=True)

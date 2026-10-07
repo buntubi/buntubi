@@ -1,6 +1,7 @@
 """
 Tests run against a real Postgres database (IDP_TEST_DATABASE_URL, default the local idp_test),
-migrated once, emptied before each test (the seeded scope catalog stays). Emails are captured instead of sent.
+migrated once, emptied before each test (the seeded scope and product catalogs stay). Emails are
+captured instead of sent.
 """
 
 import base64
@@ -11,6 +12,7 @@ import re
 import secrets
 import tempfile
 from collections.abc import Iterator
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +23,7 @@ from sqlalchemy import create_engine, text
 
 TEST_DB = os.environ.get("IDP_TEST_DATABASE_URL", "postgresql+psycopg://postgres@localhost:5432/idp_test")
 ISSUER = "http://localhost:5002"
+STARTED = datetime.now(UTC)
 
 os.environ.update(
     IDP_ISSUER=ISSUER,
@@ -65,14 +68,18 @@ def clean_database() -> Iterator[None]:
         tables = (
             connection.execute(
                 text(
-                    "select tablename from pg_tables"
-                    " where schemaname = 'public' and tablename not in ('alembic_version', 'scopes')"
+                    "select tablename from pg_tables where schemaname = 'public'"
+                    " and tablename not in ('alembic_version', 'scopes', 'api_products')"
                 )
             )
             .scalars()
             .all()
         )
         connection.execute(text(f"truncate {', '.join(tables)} restart identity cascade"))
+        # The seeded products stay; any a test added goes.
+        connection.execute(
+            text("delete from api_products where created_at >= :started"), {"started": STARTED}
+        )
     engine.dispose()
     yield
 

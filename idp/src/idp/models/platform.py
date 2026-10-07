@@ -22,6 +22,9 @@ ENVIRONMENTS = ("sandbox", "live")
 SENSITIVITIES = ("public", "sensitive", "restricted")
 # Strongest first. What each may do is decided in services/platform.py.
 ROLES = ("owner", "admin", "developer", "reviewer", "viewer")
+# ga: generally available; beta: live, may still change; sandbox: not live yet.
+AVAILABILITIES = ("ga", "beta", "sandbox")
+PRODUCT_AUTH = ("oauth2", "oidc", "api_key", "webhooks")
 APP_KINDS = ("consumer", "business", "web", "mobile", "backend", "internal")
 PLATFORMS = ("web", "ios", "android", "backend")
 
@@ -137,6 +140,27 @@ class ApiKey(IdMixin, Base):
         return self.revoked_at is None and (self.expires_at is None or self.expires_at > now)
 
 
+class ApiProduct(Base):
+    """
+    An API developers add to their apps, as the catalog presents it: a name, what it does, how
+    to call it, and the scopes it brings. Its approval rule follows from those scopes.
+    """
+
+    __tablename__ = "api_products"
+
+    slug: Mapped[str] = mapped_column(String(40), primary_key=True)
+    # {"fr": "...", "en": "..."}
+    names: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    descriptions: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    category: Mapped[str] = mapped_column(String(40), default="", server_default="")
+    auth: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list, server_default="{}")
+    availability: Mapped[str] = mapped_column(String(8), default="ga", server_default="ga")
+    docs_url: Mapped[str | None] = mapped_column(String(2048))
+    # Catalog order, smallest first.
+    position: Mapped[int] = mapped_column(default=0, server_default="0")
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+
+
 class Scope(Base):
     """A permission an app can ask for, with the words the consent screen shows for it."""
 
@@ -148,5 +172,9 @@ class Scope(Base):
     descriptions: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     # For platform API scopes: which API it opens. Empty for the OpenID Connect scopes.
     resource: Mapped[str] = mapped_column(String(64), default="")
+    # The product this scope belongs to; none for the platform's own scopes.
+    product: Mapped[str | None] = mapped_column(
+        ForeignKey("api_products.slug", ondelete="SET NULL"), index=True
+    )
     notes: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
