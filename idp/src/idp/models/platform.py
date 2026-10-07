@@ -22,6 +22,8 @@ ENVIRONMENTS = ("sandbox", "live")
 SENSITIVITIES = ("public", "sensitive", "restricted")
 # Strongest first. What each may do is decided in services/platform.py.
 ROLES = ("owner", "admin", "developer", "reviewer", "viewer")
+APP_KINDS = ("consumer", "business", "web", "mobile", "backend", "internal")
+PLATFORMS = ("web", "ios", "android", "backend")
 
 
 class Organization(IdMixin, TimestampMixin, Base):

@@ -298,6 +298,10 @@ class NewApp:
     privacy_url: str | None = None
     terms_url: str | None = None
     brand: dict[str, object] = field(default_factory=dict)
+    kind: str = "web"
+    description: str = ""
+    category: str = ""
+    platforms: list[str] = field(default_factory=list)
 
 
 def apps_of(organization: Organization, member: OrganizationMember | None = None) -> list[Client]:
@@ -360,6 +364,10 @@ def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | 
         privacy_url=data.privacy_url,
         terms_url=data.terms_url,
         brand=data.brand,
+        kind=data.kind,
+        description=data.description,
+        category=data.category,
+        platforms=sorted(set(data.platforms)),
     )
     db().add(client)
     secret = issue_client_secret(client) if confidential else None
@@ -397,6 +405,82 @@ def missing_for_live(client: Client, organization: Organization) -> list[str]:
         if not value
     ]
     return missing
+
+
+@dataclass(frozen=True)
+class Check:
+    """One line of an app's way to live: `done`, `warn` (needs attention) or `todo`."""
+
+    key: str
+    state: str
+    # What is missing, or the scopes concerned.
+    items: list[str] = field(default_factory=list)
+    # Publishing refuses while it is not done.
+    required: bool = False
+
+
+def _check(key: str, missing: list[str], *, required: bool = False) -> Check:
+    return Check(key, "todo" if missing else "done", missing, required)
+
+
+@dataclass(frozen=True)
+class Overview:
+    # draft, in_review, changes_requested or live
+    stage: str
+    checks: list[Check]
+    # live: approved for live users; waiting: sensitive, until a review; sandbox: all of them
+    scopes: dict[str, list[str]]
+
+
+def overview(client: Client, organization: Organization) -> Overview:
+    """
+    Where an app stands and what it needs before going live: its stage, the checklist, and its
+    scopes split into those approved for live, those still waiting for a review, and the sandbox.
+    """
+    live_missing = missing_for_live(client, organization)
+    scopes = scope_to_list(client.scope) or []
+    sensitive = check_scopes(scopes, for_key=False).sensitive
+    waiting = sorted(set(sensitive) - set(organization.approved_scopes))
+    checks = [
+        _check(
+            "basic_info",
+            [
+                n
+                for n, v in (("description", client.description), ("logo", client.brand.get("logo")))
+                if not v
+            ],
+        ),
+        _check(
+            "policies",
+            [n for n in ("homepage_url", "privacy_url", "terms_url") if n in live_missing],
+            required=True,
+        ),
+        _check("support_email", [n for n in ("support_email",) if n in live_missing], required=True),
+    ]
+    if "authorization_code" in client.grant_types:
+        checks.insert(
+            1, _check("redirect_uri", [] if client.redirect_uris else ["redirect_uris"], required=True)
+        )
+    if waiting:
+        checks.append(Check("permissions", "warn", waiting))
+    else:
+        checks.append(Check("permissions", "done"))
+    review = {"pending": "warn", "rejected": "warn", "approved": "done"}.get(client.review_status, "todo")
+    checks.append(Check("review", "done" if client.is_live else review, [client.review_status]))
+    stage = (
+        "live"
+        if client.is_live
+        else {"pending": "in_review", "rejected": "changes_requested"}.get(client.review_status, "draft")
+    )
+    return Overview(
+        stage,
+        checks,
+        {
+            "live": [s for s in scopes if s not in waiting] if client.is_live else [],
+            "waiting": waiting,
+            "sandbox": scopes,
+        },
+    )
 
 
 def publish(client: Client, organization: Organization) -> str:

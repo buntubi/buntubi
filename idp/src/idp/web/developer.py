@@ -6,6 +6,7 @@ Secrets and keys come back in full once, in the answer that creates them.
 """
 
 from collections.abc import Callable
+from dataclasses import asdict
 from functools import wraps
 from typing import Any, Literal, TypeVar
 
@@ -70,6 +71,10 @@ class OrganizationPatch(BaseModel):
     support_email: EmailStr | None = None
 
 
+Kind = Literal["consumer", "business", "web", "mobile", "backend", "internal"]
+Platform = Literal["web", "ios", "android", "backend"]
+
+
 class AppIn(BaseModel):
     name: str = Name
     client_type: Literal["public", "confidential"] = "public"
@@ -81,6 +86,10 @@ class AppIn(BaseModel):
     privacy_url: HttpUrl | None = None
     terms_url: HttpUrl | None = None
     brand: Brand = Brand()
+    kind: Kind = "web"
+    description: str = Field(default="", max_length=500)
+    category: str = Field(default="", max_length=40)
+    platforms: list[Platform] = Field(default=[], max_length=4)
 
 
 class AppPatch(BaseModel):
@@ -92,6 +101,10 @@ class AppPatch(BaseModel):
     privacy_url: HttpUrl | None = None
     terms_url: HttpUrl | None = None
     brand: Brand | None = None
+    kind: Kind | None = None
+    description: str | None = Field(default=None, max_length=500)
+    category: str | None = Field(default=None, max_length=40)
+    platforms: list[Platform] | None = Field(default=None, max_length=4)
 
 
 class TestUserIn(BaseModel):
@@ -177,6 +190,10 @@ def app_json(client: Client) -> dict[str, Any]:
         "privacy_url": client.privacy_url,
         "terms_url": client.terms_url,
         "brand": client.brand,
+        "kind": client.kind,
+        "description": client.description,
+        "category": client.category,
+        "platforms": client.platforms,
         "disabled": client.disabled_at is not None,
         "secrets": [secret_json(s) for s in client.secrets] if not client.is_public else [],
         "created_at": client.created_at.isoformat(),
@@ -354,6 +371,10 @@ def create_app(organization_id: str, me: User) -> tuple[Response, int]:
             privacy_url=_url(data.privacy_url),
             terms_url=_url(data.terms_url),
             brand=data.brand.model_dump(mode="json", exclude_none=True),
+            kind=data.kind,
+            description=data.description,
+            category=data.category,
+            platforms=list(data.platforms),
         ),
     )
     audit.record("developer.app_created", user=me, client=client)
@@ -366,6 +387,13 @@ def create_app(organization_id: str, me: User) -> tuple[Response, int]:
 def get_app(client_id: str, me: User) -> Response:
     client, member = p.app_of(me, client_id)
     return jsonify(app=app_json(client), role=member.role)
+
+
+@bp.get("/apps/<client_id>/overview")
+@developer()
+def app_overview(client_id: str, me: User) -> Response:
+    client, member = p.app_of(me, client_id)
+    return jsonify(asdict(p.overview(client, member.organization)))
 
 
 @bp.patch("/apps/<client_id>")
@@ -386,6 +414,11 @@ def update_app(client_id: str, me: User) -> Response:
             setattr(client, name, _url(getattr(patch, name)))
     if patch.brand is not None:
         client.brand = patch.brand.model_dump(mode="json", exclude_none=True)
+    for name in ("kind", "description", "category"):
+        if getattr(patch, name) is not None:
+            setattr(client, name, getattr(patch, name))
+    if patch.platforms is not None:
+        client.platforms = sorted(set(patch.platforms))
     if patch.scopes is not None:
         p.set_app_scopes(client, patch.scopes)
     audit.record("developer.app_updated", user=me, client=client, fields=sorted(fields))

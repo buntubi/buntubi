@@ -51,6 +51,11 @@ MAYBE_TIME: dict[str, Any] = {"type": ["string", "null"], "format": "date-time"}
 MAYBE_STRING: dict[str, Any] = {"type": ["string", "null"]}
 STRINGS: dict[str, Any] = {"type": "array", "items": STRING}
 ENVIRONMENT: dict[str, Any] = {"type": "string", "enum": ["sandbox", "live"]}
+KIND: dict[str, Any] = {
+    "type": "string",
+    "enum": ["consumer", "business", "web", "mobile", "backend", "internal"],
+}
+PLATFORM: dict[str, Any] = {"type": "string", "enum": ["web", "ios", "android", "backend"]}
 ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "admin", "developer", "reviewer", "viewer"]}
 
 
@@ -145,6 +150,33 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "created_at": TIME,
         }
     ),
+    "AppOverview": obj(
+        {
+            "stage": {"type": "string", "enum": ["draft", "in_review", "changes_requested", "live"]},
+            "checks": {
+                "type": "array",
+                "items": obj(
+                    {
+                        "key": {
+                            "type": "string",
+                            "enum": [
+                                "basic_info",
+                                "redirect_uri",
+                                "policies",
+                                "support_email",
+                                "permissions",
+                                "review",
+                            ],
+                        },
+                        "state": {"type": "string", "enum": ["done", "warn", "todo"]},
+                        "items": STRINGS,
+                        "required": BOOL,
+                    }
+                ),
+            },
+            "scopes": obj({"live": STRINGS, "waiting": STRINGS, "sandbox": STRINGS}),
+        }
+    ),
     "Member": obj(
         {
             "id": STRING,
@@ -182,6 +214,10 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "privacy_url": MAYBE_STRING,
             "terms_url": MAYBE_STRING,
             "brand": {"type": "object"},
+            "kind": KIND,
+            "description": STRING,
+            "category": STRING,
+            "platforms": {"type": "array", "items": PLATFORM},
             "disabled": BOOL,
             "secrets": {"type": "array", "items": ref("Secret")},
             "created_at": TIME,
@@ -644,6 +680,15 @@ def paths() -> dict[str, dict[str, Any]]:
             "delete": op(
                 "Delete an app", d, DEVELOPER, {"200": answer(obj({"deleted": BOOL}))}, params=["client_id"]
             ),
+        },
+        "/developer/api/apps/{client_id}/overview": {
+            "get": op(
+                "Where an app stands: its stage, what it needs before going live, its scopes",
+                d,
+                DEVELOPER,
+                ok("AppOverview"),
+                params=["client_id"],
+            )
         },
         "/developer/api/apps/{client_id}/publish": {
             "post": op(

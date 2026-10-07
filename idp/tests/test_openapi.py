@@ -18,7 +18,7 @@ from test_flows import add_service, basic, secret_of
 from idp.services import mail
 from idp.web.openapi import DESCRIBED_PREFIXES, INTERNAL
 
-from conftest import REDIRECT, add_client, authorize_query, pkce
+from conftest import REDIRECT, add_client, authorize_query, pkce, sign_up
 
 
 @pytest.fixture
@@ -113,6 +113,7 @@ def test_developer_and_admin_answers_match_the_description(
     )
     client_id = created["app"]["client_id"]
     dev_call("GET", f"/apps/{client_id}")
+    dev_call("GET", f"/apps/{client_id}/overview")
     dev_call("PATCH", f"/apps/{client_id}", {"name": "Server app"})
     rotated = dev_call("POST", f"/apps/{client_id}/secrets")
     dev_call("DELETE", f"/apps/{client_id}/secrets/{rotated['app']['secrets'][0]['id']}")
@@ -121,6 +122,14 @@ def test_developer_and_admin_answers_match_the_description(
         "POST", f"/organizations/{organization['id']}/keys", {"name": "CI", "scopes": ["billing.read"]}
     )
     dev_call("POST", f"/organizations/{organization['id']}/test-users", {"email": "t@example.test"})
+    sign_up(app.test_client(), outbox, email="member@example.test")
+    member = dev_call(
+        "POST",
+        f"/organizations/{organization['id']}/members",
+        {"email": "member@example.test", "role": "viewer"},
+    )["member"]
+    dev_call("PATCH", f"/organizations/{organization['id']}/members/{member['id']}", {"apps": [client_id]})
+    dev_call("DELETE", f"/organizations/{organization['id']}/members/{member['id']}")
     dev_call("GET", f"/organizations/{organization['id']}")
     dev_call("DELETE", f"/organizations/{organization['id']}/test-users/t@example.test")
     dev_call("DELETE", f"/organizations/{organization['id']}/keys/{key['key']['id']}")

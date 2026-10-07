@@ -37,9 +37,10 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     organization_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("organizations.id", ondelete="CASCADE"), index=True
     )
-    # "sandbox": only the organization's test users can sign in; "live": anyone.
+    # "sandbox": only the organization's members and test users can sign in; "live": anyone.
     environment: Mapped[str] = mapped_column(String(8), default="sandbox", server_default="live")
-    # Going live with a sensitive scope waits for the owner: "none", "pending", "approved", "rejected".
+    # Going live with a sensitive scope waits for the platform owner: "none", "pending", "approved",
+    # "rejected".
     review_status: Mapped[str] = mapped_column(String(10), default="none", server_default="none")
     review_note: Mapped[str] = mapped_column(String(1000), default="", server_default="")
     reviewed_at: Mapped[datetime | None]
@@ -47,6 +48,11 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     homepage_url: Mapped[str | None] = mapped_column(String(2048))
     privacy_url: Mapped[str | None] = mapped_column(String(2048))
     terms_url: Mapped[str | None] = mapped_column(String(2048))
+    # What the developer said they are building, shown in the portal and to reviewers.
+    kind: Mapped[str] = mapped_column(String(16), default="web", server_default="web")
+    description: Mapped[str] = mapped_column(String(500), default="", server_default="")
+    category: Mapped[str] = mapped_column(String(40), default="", server_default="")
+    platforms: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list, server_default="{}")
     client_type: Mapped[str] = mapped_column(String(16), default="public")
     name: Mapped[str] = mapped_column(String(120))
     redirect_uris: Mapped[list[str]] = mapped_column(ARRAY(String(2048)), default=list)
