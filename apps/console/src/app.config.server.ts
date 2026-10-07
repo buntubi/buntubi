@@ -15,6 +15,8 @@ export default defineApp({
       redirectUri: `${appUrl}/auth/callback`,
       scopes: SCOPES,
       defaultReturnTo: '/',
+      // Nothing here is for a stranger: a signed-out visit goes straight to the provider.
+      signIn: 'required',
       secureCookie: appUrl.startsWith('https://'),
     }),
   ],

@@ -15,6 +15,8 @@ export default defineApp({
       redirectUri: `${appUrl}/auth/callback`,
       scopes: SCOPES,
       defaultReturnTo: '/',
+      // Someone already signed in at the provider arrives signed in; a stranger sees the landing.
+      signIn: 'silent',
       secureCookie: appUrl.startsWith('https://'),
     }),
   ],
