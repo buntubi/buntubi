@@ -1,16 +1,23 @@
 """
-Operator commands: `flask keys generate`, `flask clients create`, `flask users promote`.
-A client secret is printed once, at creation, and never stored in the clear.
+Operator commands: `flask keys generate`, `flask clients create`, `flask admin create`,
+`flask users admins | promote | demote`. A client secret is printed once, at creation, and never
+stored in the clear.
+
+The admin role is granted here and nowhere else: no screen can make anyone an admin, so the
+person who controls the server is the root of trust.
 """
 
+from email_validator import EmailNotValidError, validate_email
 from flask import Flask
 from sqlalchemy import select
 
 from idp.config import get_settings
-from idp.db import db
+from idp.db import db, utcnow
 from idp.models import Client, User
 from idp.models.clients import AUTH_METHODS, GRANT_TYPES
+from idp.security import passwords
 from idp.security.keys import generate_key
+from idp.services import audit, mfa
 from idp.services.credentials import issue_client_secret
 
 
@@ -79,14 +86,85 @@ def register(app: Flask) -> None:
     def users() -> None:
         """Accounts."""
 
+    def account(email: str) -> User:
+        user = db().scalar(select(User).where(User.email == email.strip().lower()))
+        if user is None:
+            raise click.ClickException("no account with that email")
+        return user
+
+    def admins() -> list[User]:
+        return [u for u in db().scalars(select(User).order_by(User.created_at)) if u.is_admin]
+
+    @users.command("admins")
+    def users_admins() -> None:
+        """List the accounts with the admin role, and whether they use two-step sign-in."""
+        found = admins()
+        if not found:
+            click.echo("No admin. Create one with `flask admin create`.")
+        for user in found:
+            two_step = "two-step on" if mfa.is_enabled(user) else "two-step OFF: the console stays closed"
+            state = ", disabled" if user.disabled_at is not None else ""
+            click.echo(f"{user.email}  ({two_step}{state})")
+
     @users.command("promote")
     @click.argument("email")
     def users_promote(email: str) -> None:
         """Give an existing account the admin role."""
-        user = db().scalar(select(User).where(User.email == email.strip().lower()))
-        if user is None:
-            raise click.ClickException("no account with that email")
+        user = account(email)
         if "admin" not in user.roles:
             user.roles = [*user.roles, "admin"]
+            audit.record("admin.role_granted", user=user, source="cli")
         db().commit()
         click.echo(f"{user.email} is an admin.")
+        if not mfa.is_enabled(user):
+            click.echo("Turn on two-step sign-in for this account before using the console.")
+
+    @users.command("demote")
+    @click.argument("email")
+    def users_demote(email: str) -> None:
+        """Take the admin role away. The admin API refuses the account from its next request."""
+        user = account(email)
+        if "admin" in user.roles:
+            user.roles = [role for role in user.roles if role != "admin"]
+            audit.record("admin.role_removed", user=user, source="cli")
+        db().commit()
+        click.echo(f"{user.email} is no longer an admin.")
+        if not admins():
+            click.echo("No admin remains. Create one with `flask admin create` when you need the console.")
+
+    @app.cli.group("admin")
+    def admin_group() -> None:
+        """The owner's account."""
+
+    @admin_group.command("create")
+    @click.option("--email", prompt=True)
+    @click.option("--given-name", prompt="First name")
+    @click.option("--family-name", prompt="Last name")
+    @click.password_option(prompt="Password (at least 10 characters)")
+    def admin_create(email: str, given_name: str, family_name: str, password: str) -> None:
+        """Create the owner's account: email verified, admin role. Two-step sign-in comes next."""
+        try:
+            address = validate_email(email.strip(), check_deliverability=False).normalized.lower()
+        except EmailNotValidError as error:
+            raise click.ClickException(f"not a valid email: {error}") from None
+        if db().scalar(select(User.id).where(User.email == address)) is not None:
+            raise click.ClickException(
+                f"{address} already has an account: use `flask users promote {address}`"
+            )
+        if not passwords.is_acceptable(password):
+            raise click.ClickException("the password needs 10 to 256 characters")
+        user = User(
+            email=address,
+            password_hash=passwords.hash_password(password),
+            given_name=given_name.strip()[:100],
+            family_name=family_name.strip()[:100],
+            email_verified_at=utcnow(),
+            roles=["admin"],
+        )
+        db().add(user)
+        db().flush()
+        audit.record("admin.account_created", user=user, source="cli")
+        db().commit()
+        issuer = get_settings().issuer
+        click.echo(f"Created {address} with the admin role.")
+        click.echo(f"Next: sign in at {issuer}/account and turn on two-step sign-in; the console needs it.")
