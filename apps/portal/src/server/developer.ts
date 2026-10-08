@@ -4,16 +4,21 @@
  * browser. A refusal throws its code (`missing_for_live`, `restricted_scope`...), which the
  * page words.
  */
-import type { AppPatch } from '@idp/sdk/developer';
+import type { AppPatch, NewApp } from '@idp/sdk/developer';
 import type { ApiKey, App, AppOverview, AppWorkspace, Brand, Home, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-/** A refusal from the developer API, with whatever detail it gave (missing fields, scopes). */
+/**
+ * A refusal from the developer API, with whatever detail it gave (missing fields, scopes).
+ * Its `status` is the provider's, so the browser gets a 4xx it can word, never a 500; a
+ * provider fault has none and stays a server error.
+ */
 export class ApiRefusal extends Error {
   constructor(
     readonly code: string,
     readonly details: Record<string, unknown> = {},
+    readonly status?: number,
   ) {
     super(code);
   }
@@ -23,7 +28,7 @@ async function call<T>(method: Method, path: string, body?: unknown): Promise<T>
   const { requestAuth } = await import('@fluixi/oauth2/server');
   const { publicEnv } = await import('@fluixi/start/env');
   const { fetch } = await requestAuth();
-  if (!fetch) throw new ApiRefusal('signed_out');
+  if (!fetch) throw new ApiRefusal('signed_out', {}, 401);
   const response = await fetch(`${publicEnv().IDP_URL}/developer/api${path}`, {
     method,
     headers: body === undefined ? {} : { 'content-type': 'application/json' },
@@ -32,7 +37,8 @@ async function call<T>(method: Method, path: string, body?: unknown): Promise<T>
   const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
   if (!response.ok) {
     const { error, ...details } = data;
-    throw new ApiRefusal(typeof error === 'string' ? error : response.status === 401 ? 'signed_out' : 'generic', details);
+    const code = typeof error === 'string' ? error : response.status === 401 ? 'signed_out' : 'generic';
+    throw new ApiRefusal(code, details, response.status < 500 ? response.status : undefined);
   }
   return data as T;
 }
@@ -95,21 +101,25 @@ export const loadOrganization = async (id: string): Promise<OrganizationDetail> 
   return call<OrganizationDetail>('GET', `/organizations/${encodeURIComponent(id)}`);
 };
 
-export const updateOrganization = async (id: string, patch: { name?: string; support_email?: string | null }) => {
+export const updateOrganization = async (
+  id: string,
+  patch: { name?: string; description?: string; support_email?: string | null },
+): Promise<Organization> => {
   'use server';
   return (await call<{ organization: Organization }>('PATCH', `/organizations/${encodeURIComponent(id)}`, patch)).organization;
 };
 
+export const deleteOrganization = async (id: string): Promise<void> => {
+  'use server';
+  await call('DELETE', `/organizations/${encodeURIComponent(id)}`);
+};
+
 export const createApp = async (
   organizationId: string,
-  input: { name: string; client_type: 'public' | 'confidential'; redirect_uri: string },
+  input: NewApp,
 ): Promise<{ app: App; client_secret: string | null }> => {
   'use server';
-  return call('POST', `/organizations/${encodeURIComponent(organizationId)}/apps`, {
-    name: input.name,
-    client_type: input.client_type,
-    redirect_uris: input.redirect_uri ? [input.redirect_uri] : [],
-  });
+  return call('POST', `/organizations/${encodeURIComponent(organizationId)}/apps`, input);
 };
 
 export const loadApp = async (clientId: string): Promise<App> => {

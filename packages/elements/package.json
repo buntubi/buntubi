@@ -28,7 +28,19 @@
     "./permissions/logic": "./src/permissions/logic.ts",
     "./app-settings": "./src/app-settings/app-settings.tsx",
     "./app-settings/view": "./src/app-settings/view.tsx",
-    "./app-settings/logic": "./src/app-settings/logic.ts"
+    "./app-settings/logic": "./src/app-settings/logic.ts",
+    "./create-app": "./src/create-app/create-app.tsx",
+    "./create-app/view": "./src/create-app/view.tsx",
+    "./create-app/logic": "./src/create-app/logic.ts",
+    "./team": "./src/team/team.tsx",
+    "./team/view": "./src/team/view.tsx",
+    "./team/logic": "./src/team/logic.ts",
+    "./organization-settings": "./src/organization-settings/organization-settings.tsx",
+    "./organization-settings/view": "./src/organization-settings/view.tsx",
+    "./organization-settings/logic": "./src/organization-settings/logic.ts",
+    "./product-browser": "./src/product-browser/product-browser.tsx",
+    "./product-browser/view": "./src/product-browser/view.tsx",
+    "./product-browser/logic": "./src/product-browser/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

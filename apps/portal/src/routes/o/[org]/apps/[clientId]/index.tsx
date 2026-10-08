@@ -19,8 +19,7 @@ export default function AppOverviewPage() {
     redirect_uri: section('credentials'),
     products: section('permissions'),
     permissions: section('permissions'),
-    // The organization's support email is set on its own page, until the workspace has one.
-    support_email: `/organizations/${app()?.organization_id ?? ''}`,
+    support_email: `/o/${app()?.organization_id ?? ''}/settings`,
   });
   const access = () => {
     const scopes = overview()?.scopes;

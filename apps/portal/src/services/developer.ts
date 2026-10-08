@@ -12,6 +12,7 @@ import {
   createApp,
   createKey,
   createOrganization,
+  deleteOrganization,
   publishApp,
   removeMember,
   removeTestUser,
@@ -19,6 +20,7 @@ import {
   revokeSecret,
   rotateSecret,
   updateApp,
+  updateOrganization,
 } from '../server/developer.js';
 
 const app = { invalidates: ['workspace', 'app'] };
@@ -26,12 +28,9 @@ const organization = { invalidates: ['workspace'] };
 
 const service: DeveloperService = {
   createOrganization: action(createOrganization, 'organization.create', organization),
-  createApp: action(
-    ({ organization: id, app: input }) =>
-      createApp(id, { name: input.name, client_type: input.client_type, redirect_uri: input.redirect_uris?.[0] ?? '' }),
-    'app.create',
-    organization,
-  ),
+  updateOrganization: action(({ organization: id, patch }) => updateOrganization(id, patch), 'organization.update', organization),
+  deleteOrganization: action((id: string) => deleteOrganization(id), 'organization.delete', { invalidates: ['workspace', 'home'] }),
+  createApp: action(({ organization: id, app: input }) => createApp(id, input), 'app.create', organization),
   updateApp: action(({ client_id, patch }) => updateApp(client_id, patch), 'app.update', app),
   publishApp: action(async (clientId: string) => {
     const answer = await publishApp(clientId);

@@ -18,10 +18,12 @@ export interface NewApp {
   homepage_url?: string;
   privacy_url?: string;
   terms_url?: string;
+  grant_types?: string[];
+  brand?: { logo?: string };
 }
 
 /** A change to an app: a link set to null is removed. */
-export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'terms_url'>> & {
+export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'terms_url' | 'brand' | 'grant_types'>> & {
   scopes?: string[];
   homepage_url?: string | null;
   privacy_url?: string | null;
@@ -31,6 +33,12 @@ export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'te
 
 export interface DeveloperService {
   createOrganization(input: { name: string; support_email?: string }): Promise<Organization>;
+  updateOrganization(input: {
+    organization: string;
+    patch: { name?: string; description?: string; support_email?: string | null };
+  }): Promise<Organization>;
+  /** Removes the organization and everything in it: its apps, keys, members and test users. */
+  deleteOrganization(organization: string): Promise<void>;
   createApp(input: { organization: string; app: NewApp }): Promise<{ app: App; client_secret: string | null }>;
   updateApp(input: { client_id: string; patch: AppPatch }): Promise<App>;
   publishApp(client_id: string): Promise<{ state: 'live' | 'pending'; missing: string[] }>;

@@ -1,6 +1,10 @@
 /** Element words, built from the catalogue in one place so a language change reaches them all. */
 import type { AppListLabels } from '@idp/elements/app-list/logic';
 import type { AppSettingsLabels } from '@idp/elements/app-settings/logic';
+import type { CreateAppLabels } from '@idp/elements/create-app/logic';
+import type { OrganizationSettingsLabels } from '@idp/elements/organization-settings/logic';
+import type { ProductBrowserLabels } from '@idp/elements/product-browser/logic';
+import type { TeamLabels } from '@idp/elements/team/logic';
 import type { CredentialsLabels } from '@idp/elements/credentials/logic';
 import type { LaunchPathLabels } from '@idp/elements/launch-path/logic';
 import type { PermissionsLabels } from '@idp/elements/permissions/logic';
@@ -150,4 +154,108 @@ export const appSettingsLabels = (): AppSettingsLabels => ({
   saved: t('st.saved'),
   nameRequired: t('st.nameRequired'),
   error: t('error.generic'),
+});
+
+export const createAppLabels = (): CreateAppLabels => ({
+  steps: { 1: t('ca.step1'), 2: t('ca.step2'), 3: t('ca.step3') },
+  kindTitle: t('ca.kindTitle'),
+  kindIntro: t('ca.kindIntro'),
+  kinds: {
+    web: { title: t('ca.kind.web'), text: t('ca.kind.webText') },
+    mobile: { title: t('ca.kind.mobile'), text: t('ca.kind.mobileText') },
+    consumer: { title: t('ca.kind.consumer'), text: t('ca.kind.consumerText') },
+    business: { title: t('ca.kind.business'), text: t('ca.kind.businessText') },
+    backend: { title: t('ca.kind.backend'), text: t('ca.kind.backendText') },
+    internal: { title: t('ca.kind.internal'), text: t('ca.kind.internalText') },
+  },
+  infoTitle: t('ca.infoTitle'),
+  fields: {
+    name: t('st.name'),
+    description: t('st.description'),
+    redirect_uri: t('ca.redirect'),
+    homepage_url: t('st.homepage'),
+    privacy_url: t('st.privacy'),
+    terms_url: t('st.terms'),
+    logo: t('st.logo'),
+  },
+  hints: { redirect_uri: t('ca.redirectHint'), logo: t('st.logoHint') },
+  clientType: t('ca.clientType'),
+  clientTypes: {
+    confidential: { title: t('ca.confidential'), text: t('ca.confidentialText') },
+    public: { title: t('ca.public'), text: t('ca.publicText') },
+  },
+  platforms: t('ca.platforms'),
+  platformNames: { web: 'Web', ios: 'iOS', android: 'Android', backend: t('ca.platform.server') },
+  preview: t('ca.preview'),
+  previewText: t('ca.previewText'),
+  previewLinks: t('ca.previewLinks'),
+  previewNote: t('ca.previewNote'),
+  productsTitle: t('ca.productsTitle'),
+  productsIntro: t('ca.productsIntro'),
+  approvals: { none: t('ca.approval.none'), review: t('ca.approval.review'), restricted: t('ca.approval.restricted') },
+  noProducts: t('pm.empty'),
+  back: t('ca.back'),
+  next: t('ca.next'),
+  create: t('ca.create'),
+  sandboxNote: t('ca.sandboxNote'),
+  nameRequired: t('st.nameRequired'),
+  invalidUrl: t('cr.invalidUri'),
+  error: t('error.generic'),
+});
+
+const role = (name: 'owner' | 'admin' | 'developer' | 'reviewer' | 'viewer') => ({
+  name: t(`tm.role.${name}`),
+  text: t(`tm.role.${name}Text`),
+});
+
+export const teamLabels = (): TeamLabels => ({
+  members: t('tm.members'),
+  membersIntro: t('tm.membersIntro'),
+  member: t('tm.member'),
+  role: t('tm.role'),
+  access: t('tm.access'),
+  allApps: t('tm.allApps'),
+  you: t('tm.you'),
+  roles: { owner: role('owner'), admin: role('admin'), developer: role('developer'), reviewer: role('reviewer'), viewer: role('viewer') },
+  invite: t('tm.invite'),
+  inviteEmail: t('tm.inviteEmail'),
+  inviteHint: t('tm.inviteHint'),
+  editAccess: t('tm.editAccess'),
+  accessHint: t('tm.accessHint'),
+  saveAccess: t('tm.saveAccess'),
+  cancel: t('tm.cancel'),
+  remove: t('common.remove'),
+  testers: t('tm.testers'),
+  testersIntro: t('tm.testersIntro'),
+  testerEmail: t('tm.inviteEmail'),
+  addTester: t('common.add'),
+  noTesters: t('tm.noTesters'),
+  added: t('tm.added'),
+  error: t('error.generic'),
+});
+
+export const organizationSettingsLabels = (): OrganizationSettingsLabels => ({
+  title: t('os.title'),
+  intro: t('os.intro'),
+  fields: { name: t('os.name'), description: t('os.description'), support_email: t('os.supportEmail') },
+  hints: { support_email: t('os.supportHint') },
+  save: t('common.save'),
+  saved: t('st.saved'),
+  nameRequired: t('os.nameRequired'),
+  danger: t('os.danger'),
+  dangerText: t('os.dangerText'),
+  confirm: t('os.confirm'),
+  delete: t('os.delete'),
+  error: t('error.generic'),
+});
+
+export const productBrowserLabels = (): ProductBrowserLabels => ({
+  search: t('pb.search'),
+  all: t('pb.all'),
+  auth: { oauth2: t('pb.auth.oauth2'), oidc: t('pb.auth.oidc'), api_key: t('pb.auth.api_key'), webhooks: t('pb.auth.webhooks') },
+  availability: { ga: t('pb.ga'), beta: t('pb.beta'), sandbox: t('pb.sandboxOnly') },
+  approval: { none: t('pb.approval.none'), review: t('ca.approval.review'), restricted: t('ca.approval.restricted') },
+  docs: t('pb.docs'),
+  empty: t('pm.empty'),
+  noMatch: t('pb.noMatch'),
 });

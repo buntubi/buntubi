@@ -35,7 +35,7 @@ export default function DeveloperHome() {
           <h1>{() => (firstName() ? t('home.welcome', { name: firstName() }) : t('home.welcomeAnon'))}</h1>
         </div>
         <div class="page-actions">
-          <Link class="action primary" href={`/organizations/${organization()?.id ?? ''}`}>
+          <Link class="action primary" href={`/o/${organization()?.id ?? ''}/apps/new`}>
             {() => t('home.create')}
           </Link>
         </div>

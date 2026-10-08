@@ -342,6 +342,11 @@ body {
   justify-content: space-between;
   gap: 16px;
 }
+.page-intro {
+  margin: 6px 0 0;
+  max-width: 64ch;
+  color: var(--dp-muted);
+}
 .page-head h1 {
   margin: 0;
   font-size: 26px;

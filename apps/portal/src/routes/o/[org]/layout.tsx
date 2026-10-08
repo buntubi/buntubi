@@ -65,11 +65,13 @@ export default function WorkspaceLayout() {
       ];
     }
     return [
-      { label: t('shell.build'), items: [item(t('shell.home'), base(), icons.home)] },
+      {
+        label: t('shell.build'),
+        items: [item(t('shell.home'), base(), icons.home), item(t('shell.products'), `${base()}/products`, icons.box)],
+      },
       {
         label: t('shell.operate'),
-        // The organization's settings still live on the page from before the workspace.
-        items: [item(t('shell.settings'), `/organizations/${organization()?.id ?? ''}`, icons.sliders)],
+        items: [item(t('shell.team'), `${base()}/team`, icons.users), item(t('shell.settings'), `${base()}/settings`, icons.sliders)],
       },
     ];
   };
@@ -77,8 +79,12 @@ export default function WorkspaceLayout() {
   const schemeIcon = () => (scheme.value() === 'system' ? icons.monitor : scheme.value() === 'dark' ? icons.moon : icons.sun);
   const initials = () => markOf(data()?.me.name || data()?.me.email);
 
+  // Creating an app is a focused flow: the page alone, with a way out.
+  const focused = () => location.pathname === `${base()}/apps/new`;
+
   return (
     <Show when={organization()} fallback={<NotFound />}>
+      <Show when={!focused()} fallback={<Focused brand={brand().name ?? ''} close={base()} />}>
       <div class="shell" data-collapsed={() => (collapsed() ? '' : undefined)}>
         <dp-sidebar
           class="shell-sidebar"
@@ -127,7 +133,31 @@ export default function WorkspaceLayout() {
           </main>
         </div>
       </div>
+      </Show>
     </Show>
+  );
+}
+
+function Focused(props: { brand: string; close: string }) {
+  return (
+    <div class="focused">
+      <style scoped>{`
+        .focused { min-height: 100vh; display: flex; flex-direction: column; }
+        header { display: flex; align-items: center; gap: 12px; padding: 12px 28px; border-bottom: 1px solid var(--dp-border); background: var(--dp-surface); }
+        .mark { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--dp-accent); color: var(--dp-accent-fg); font-weight: 700; font-size: 14px; }
+        .title { flex: 1; font-weight: 600; }
+        header :deep(a) { color: var(--dp-muted); text-decoration: none; font-size: 13.5px; }
+        main { width: 100%; max-width: 1040px; box-sizing: border-box; margin: 0 auto; padding: 32px 28px 56px; }
+      `}</style>
+      <header>
+        <span class="mark" aria-hidden="true">{() => markOf(props.brand)}</span>
+        <span class="title">{() => t('shell.newApp')}</span>
+        <Link href={props.close}>{() => t('shell.close')}</Link>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </div>
   );
 }
 

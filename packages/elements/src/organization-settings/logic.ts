@@ -1,0 +1,60 @@
+/** An organization's settings and its deletion, apart from how they look. */
+
+export type OrganizationField = 'name' | 'description' | 'support_email';
+export const ORGANIZATION_FIELDS: OrganizationField[] = ['name', 'support_email', 'description'];
+
+export interface OrganizationSettingsLabels {
+  title: string;
+  intro: string;
+  fields: Record<OrganizationField, string>;
+  hints: Partial<Record<OrganizationField, string>>;
+  save: string;
+  saved: string;
+  nameRequired: string;
+  danger: string;
+  dangerText: string;
+  /** "Type {name} to confirm". */
+  confirm: string;
+  delete: string;
+  error: string;
+}
+
+export const organizationSettingsLabels: OrganizationSettingsLabels = {
+  title: 'Organization',
+  intro: 'How the organization appears to the people who sign in to its apps.',
+  fields: { name: 'Name', description: 'Description', support_email: 'Support email' },
+  hints: { support_email: 'Shown on consent screens; required before an app goes live.' },
+  save: 'Save',
+  saved: 'Saved',
+  nameRequired: 'The organization needs a name.',
+  danger: 'Delete the organization',
+  dangerText: 'Deletes its apps, keys, members and test users. People signed in to its apps lose access. This cannot be undone.',
+  confirm: 'Type {name} to confirm',
+  delete: 'Delete organization',
+  error: 'Something went wrong. Try again.',
+};
+
+export interface OrganizationSettingsLogic {
+  labels: () => OrganizationSettingsLabels;
+  fields: () => OrganizationField[];
+  value: (field: OrganizationField) => string;
+  edit: (field: OrganizationField, value: string) => void;
+  changed: () => boolean;
+  canEdit: () => boolean;
+  save: () => Promise<void>;
+  saved: () => boolean;
+  canDelete: () => boolean;
+  name: () => string;
+  confirmation: () => string;
+  confirm: (value: string) => void;
+  /** Whether the typed name matches, so deleting is allowed. */
+  confirmed: () => boolean;
+  remove: () => Promise<void>;
+  busy: () => string | null;
+  error: () => string | null;
+}
+
+export interface OrganizationSettingsEvents {
+  /** The organization is gone; the host leaves its pages. */
+  deleted: { id: string };
+}
