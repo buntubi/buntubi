@@ -21,6 +21,7 @@ import {
   updateOrganization,
 } from '../../server/developer.js';
 import { settle } from '../../lib/settle.js';
+import { PublicFrame } from '../../components/public-frame.js';
 
 const organization = cache((id: string) => loadOrganization(id), 'organization');
 export const routeData = (args: RouteDataArgs) => organization(paramOf(args, 'id'));
@@ -54,7 +55,16 @@ const saveOrganization = action(
 
 const words = (text: string) => text.split(/[\s,]+/).filter(Boolean);
 
+/** Until the workspace replaces it, this page keeps the public frame. */
 export default function OrganizationPage() {
+  return (
+    <PublicFrame>
+      <OrganizationPageBody />
+    </PublicFrame>
+  );
+}
+
+function OrganizationPageBody() {
   const data = useRouteData<OrganizationDetail>();
   const id = () => data()?.organization.id ?? '';
   return (

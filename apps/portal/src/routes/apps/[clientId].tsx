@@ -13,6 +13,7 @@ import { paramOf } from '../../lib/params.js';
 import type { App } from '../../lib/types.js';
 import { loadApp, publishApp, revokeSecret, rotateSecret, updateApp } from '../../server/developer.js';
 import { settle } from '../../lib/settle.js';
+import { PublicFrame } from '../../components/public-frame.js';
 
 const app = cache((clientId: string) => loadApp(clientId), 'app');
 export const routeData = (args: RouteDataArgs) => app(paramOf(args, 'clientId'));
@@ -29,7 +30,16 @@ const publish = action((clientId: string) => publishApp(clientId), 'app.publish'
 const words = (text: string) => text.split(/\s+/).filter(Boolean);
 const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString() : t('common.never'));
 
+/** Until the workspace replaces it, this page keeps the public frame. */
 export default function AppPage() {
+  return (
+    <PublicFrame>
+      <AppPageBody />
+    </PublicFrame>
+  );
+}
+
+function AppPageBody() {
   const data = useRouteData<App>();
   return (
     <section>

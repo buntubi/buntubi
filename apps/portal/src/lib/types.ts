@@ -1,67 +1,22 @@
-/** What the provider's developer API answers with. */
-export interface Me {
-  email: string;
-  name: string;
-  developer: boolean;
-}
+/**
+ * The developer API's answers come from @idp/sdk, shared with the elements; this file adds
+ * only the shapes the portal itself assembles.
+ */
+import type { Me, Organization, OrganizationDetail, Product } from '@idp/sdk/types';
 
-export interface Organization {
-  id: string;
-  name: string;
-  description: string;
-  support_email: string | null;
-  suspended: boolean;
-  created_at: string;
-}
-
-export interface Secret {
-  id: string;
-  prefix: string;
-  created_at: string;
-  last_used_at: string | null;
-  expires_at: string | null;
-  active: boolean;
-}
-
-export interface App {
-  client_id: string;
-  organization_id: string;
-  name: string;
-  client_type: 'public' | 'confidential';
-  environment: 'sandbox' | 'live';
-  review_status: 'none' | 'pending' | 'approved' | 'rejected';
-  review_note: string;
-  redirect_uris: string[];
-  post_logout_redirect_uris: string[];
-  scopes: string[];
-  grant_types: string[];
-  homepage_url: string | null;
-  privacy_url: string | null;
-  terms_url: string | null;
-  brand: { logo?: string; accent?: string };
-  secrets: Secret[];
-  created_at: string;
-}
-
-export interface ApiKey {
-  id: string;
-  name: string;
-  environment: 'sandbox' | 'live';
-  prefix: string;
-  scopes: string[];
-  created_at: string;
-  last_used_at: string | null;
-  active: boolean;
-}
-
-export interface OrganizationDetail {
-  organization: Organization;
-  apps: App[];
-  keys: ApiKey[];
-  test_users: { email: string; added_at: string }[];
-}
+export type { ApiKey, App, AppOverview, Brand, Me, Member, Organization, OrganizationDetail, Product, Secret } from '@idp/sdk/types';
 
 export interface Home {
   me: Me | null;
   organizations: Organization[];
+}
+
+/** What the workspace shell shows around a page. */
+export interface Workspace {
+  me: Me;
+  organizations: Organization[];
+  /** The API products, to name the ones an app uses. */
+  products: Product[];
+  /** The organization in the address, or null when it is not one of theirs. */
+  current: OrganizationDetail | null;
 }

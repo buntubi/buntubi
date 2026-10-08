@@ -17,6 +17,8 @@ export default defineApp({
       defaultReturnTo: '/',
       // Someone already signed in at the provider arrives signed in; a stranger sees the landing.
       signIn: 'silent',
+      // A workspace is private: a signed-out visit there goes to sign in.
+      protectedPaths: ['/o'],
       secureCookie: appUrl.startsWith('https://'),
     }),
   ],

@@ -5,12 +5,18 @@
   "type": "module",
   "exports": {
     "./view": "./src/view.ts",
+    "./sidebar": "./src/sidebar/sidebar.tsx",
+    "./sidebar/view": "./src/sidebar/view.tsx",
+    "./app-list": "./src/app-list/app-list.tsx",
+    "./app-list/view": "./src/app-list/view.tsx",
     "./product-catalog": "./src/product-catalog/product-catalog.tsx",
     "./product-catalog/view": "./src/product-catalog/view.tsx",
     "./product-catalog/logic": "./src/product-catalog/logic.ts",
     "./auth-notice": "./src/auth-notice/auth-notice.tsx",
     "./auth-notice/logic": "./src/auth-notice/logic.ts",
-    "./auth-notice/view": "./src/auth-notice/view.tsx"
+    "./auth-notice/view": "./src/auth-notice/view.tsx",
+    "./sidebar/logic": "./src/sidebar/logic.ts",
+    "./app-list/logic": "./src/app-list/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

@@ -4,7 +4,7 @@
  * browser. A refusal throws its code (`missing_for_live`, `restricted_scope`...), which the
  * page words.
  */
-import type { ApiKey, App, Home, Me, Organization, OrganizationDetail } from '../lib/types.js';
+import type { ApiKey, App, Brand, Home, Me, Organization, OrganizationDetail, Product, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -44,6 +44,36 @@ export const loadHome = async (): Promise<Home> => {
     return { me, organizations };
   } catch (error) {
     if (error instanceof ApiRefusal && error.code === 'signed_out') return { me: null, organizations: [] };
+    throw error;
+  }
+};
+
+/** The platform's brand: public, the same for everyone, so no session is needed. */
+export const loadBrand = async (): Promise<Brand> => {
+  'use server';
+  const { publicEnv } = await import('@fluixi/start/env');
+  const response = await fetch(`${publicEnv().IDP_URL}/.well-known/brand.json`).catch(() => null);
+  return response?.ok ? ((await response.json()) as Brand) : {};
+};
+
+/**
+ * Everything the workspace shell shows around a page: who is signed in, the organizations
+ * they belong to, and the one in the address with its apps. `organization` is null when the
+ * address names one they are not in.
+ */
+export const loadWorkspace = async (organizationId: string): Promise<Workspace> => {
+  'use server';
+  const [me, list, products] = await Promise.all([
+    call<Me>('GET', '/me'),
+    call<{ items: Organization[] }>('GET', '/organizations'),
+    call<{ items: Product[] }>('GET', '/products'),
+  ]);
+  const base = { me, organizations: list.items, products: products.items };
+  try {
+    const detail = await call<OrganizationDetail>('GET', `/organizations/${encodeURIComponent(organizationId)}`);
+    return { ...base, current: detail };
+  } catch (error) {
+    if (error instanceof ApiRefusal && error.code === 'not_found') return { ...base, current: null };
     throw error;
   }
 };

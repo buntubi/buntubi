@@ -1,3 +1,4 @@
+import '@idp/theme/tokens.css';
 import './styles.css';
 import { startClient } from '@fluixi/core/client';
 import App, { appRoutes } from './app.js';

@@ -1,9 +1,13 @@
-/** Home: an invitation to sign in, the developer terms, or the developer's organizations. */
-import { action, cache, useNavigate, useRouteData, useSubmission } from '@fluixi/start/router';
+/**
+ * The way in: an invitation to sign in, the developer terms, a first organization, or for a
+ * developer with organizations, their first workspace.
+ */
+import { action, cache, Redirect, useNavigate, useRouteData, useSubmission } from '@fluixi/start/router';
 import { Button } from '@fluixi-ui/button';
 import { Card, CardBody } from '@fluixi-ui/card';
 import { Input } from '@fluixi-ui/input';
 import { Field, valueOf } from '../components/field.js';
+import { PublicFrame } from '../components/public-frame.js';
 import { errorText, t } from '../lib/i18n.js';
 import type { Home } from '../lib/types.js';
 import { acceptTerms, createOrganization, loadHome } from '../server/developer.js';
@@ -23,7 +27,9 @@ const create = action(
 export default function HomePage() {
   const data = useRouteData<Home>();
   const me = () => data()?.me ?? null;
+  const first = () => data()?.organizations[0]?.id;
   return (
+    <PublicFrame>
     <Switch fallback={<Organizations />}>
       <Match when={!me()}>
         <section class="hero">
@@ -37,7 +43,11 @@ export default function HomePage() {
       <Match when={me() && !me()?.developer}>
         <Terms />
       </Match>
+      <Match when={first()}>
+        {(id: string) => <Redirect to={`/o/${id}`} />}
+      </Match>
     </Switch>
+    </PublicFrame>
   );
 }
 
@@ -66,7 +76,7 @@ function Organizations() {
   const submit = async () => {
     if (!name().trim()) return;
     const organization = await create({ name: name().trim(), support_email: supportEmail().trim() });
-    navigate(`/organizations/${organization.id}`);
+    navigate(`/o/${organization.id}`);
   };
   return (
     <section>

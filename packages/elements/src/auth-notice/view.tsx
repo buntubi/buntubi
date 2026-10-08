@@ -8,7 +8,7 @@ export const authNoticeView = (n: AuthNoticeLogic) => (
   <Show when={n.error()}>
     <div part="notice" class="notice" role="alert">
       <style scoped>{`
-        .notice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--dp-warn) 40%, var(--dp-border)); border-radius: var(--dp-radius-sm); background: color-mix(in srgb, var(--dp-warn) 9%, var(--dp-surface)); color: var(--dp-text); }
+        .notice { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--dp-warn) 40%, var(--dp-border)); border-radius: var(--dp-radius-sm); background: color-mix(in srgb, var(--dp-warn) 9%, var(--dp-surface)); color: var(--dp-text); }
         .message { flex: 1 1 240px; margin: 0; }
         .actions { display: flex; gap: 6px; }
       `}</style>

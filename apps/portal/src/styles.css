@@ -1,18 +1,12 @@
-/* Layer order first, then fluixi-ui's tokens. Flat and ink, like the sign-in pages. */
+/* Layer order first, then fluixi-ui's tokens. Colours come from @idp/theme's --dp-* tokens. */
 @layer flx.reset, flx.base, flx.tokens, flx.components, flx.skin, flx.fx;
 @import '@fluixi-ui/tokens/tokens.css';
 
-:root {
-  color-scheme: light dark;
-  --flx-ui-color-primary: var(--flx-ui-color-fg);
-  --flx-ui-color-primary-fg: var(--flx-ui-color-bg);
-}
-
 body {
   margin: 0;
-  background: var(--flx-ui-color-bg);
-  color: var(--flx-ui-color-fg);
-  font-family: var(--flx-ui-font-sans, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  background: var(--dp-bg);
+  color: var(--dp-text);
+  font-family: var(--dp-font);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -20,7 +14,8 @@ body {
   position: fixed;
   inset: 0 0 auto;
   height: 2px;
-  background: var(--flx-ui-color-fg);
+  z-index: 10;
+  background: var(--dp-accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s;
@@ -47,10 +42,14 @@ body {
   text-decoration: none;
 }
 .brand-mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  background: var(--flx-ui-color-fg);
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--dp-accent);
+  color: var(--dp-accent-fg);
+  font-size: 13px;
 }
 .bar-links {
   display: flex;
@@ -247,5 +246,126 @@ h3 {
   .bar {
     padding-left: 16px;
     padding-right: 16px;
+  }
+}
+
+/* The workspace shell: sidebar, top bar, page. Layout only; the elements draw themselves. */
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+.shell-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex: none;
+}
+.shell-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 28px;
+  border-bottom: 1px solid var(--dp-border);
+  background: var(--dp-surface);
+}
+.crumbs {
+  flex: 1;
+  color: var(--dp-muted);
+  font-size: 13px;
+}
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar-link {
+  color: var(--dp-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+.topbar-link:hover {
+  color: var(--dp-text);
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--dp-accent-soft);
+  color: var(--dp-accent-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+.workspace {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 28px 56px;
+  box-sizing: border-box;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.page-head h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--dp-muted);
+  font-size: 13px;
+}
+.page-actions {
+  display: flex;
+  gap: 8px;
+}
+.action {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--dp-border-2);
+  border-radius: 9px;
+  color: var(--dp-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+.action.primary {
+  border-color: transparent;
+  background: var(--dp-accent);
+  color: var(--dp-accent-fg);
+}
+.auth-notice {
+  display: block;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px;
+  box-sizing: border-box;
+}
+@media (max-width: 720px) {
+  .shell-sidebar {
+    position: static;
+    height: auto;
+  }
+  .shell {
+    flex-direction: column;
   }
 }
