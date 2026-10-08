@@ -16,7 +16,19 @@
     "./auth-notice/logic": "./src/auth-notice/logic.ts",
     "./auth-notice/view": "./src/auth-notice/view.tsx",
     "./sidebar/logic": "./src/sidebar/logic.ts",
-    "./app-list/logic": "./src/app-list/logic.ts"
+    "./app-list/logic": "./src/app-list/logic.ts",
+    "./launch-path": "./src/launch-path/launch-path.tsx",
+    "./launch-path/view": "./src/launch-path/view.tsx",
+    "./launch-path/logic": "./src/launch-path/logic.ts",
+    "./credentials": "./src/credentials/credentials.tsx",
+    "./credentials/view": "./src/credentials/view.tsx",
+    "./credentials/logic": "./src/credentials/logic.ts",
+    "./permissions": "./src/permissions/permissions.tsx",
+    "./permissions/view": "./src/permissions/view.tsx",
+    "./permissions/logic": "./src/permissions/logic.ts",
+    "./app-settings": "./src/app-settings/app-settings.tsx",
+    "./app-settings/view": "./src/app-settings/view.tsx",
+    "./app-settings/logic": "./src/app-settings/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

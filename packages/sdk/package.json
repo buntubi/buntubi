@@ -6,7 +6,8 @@
   "exports": {
     "./types": "./src/types.ts",
     "./developer": "./src/developer.ts",
-    "./admin": "./src/admin.ts"
+    "./admin": "./src/admin.ts",
+    "./roles": "./src/roles.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

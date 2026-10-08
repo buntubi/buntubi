@@ -4,7 +4,8 @@
  * browser. A refusal throws its code (`missing_for_live`, `restricted_scope`...), which the
  * page words.
  */
-import type { ApiKey, App, Brand, Home, Me, Organization, OrganizationDetail, Product, Workspace } from '../lib/types.js';
+import type { AppPatch } from '@idp/sdk/developer';
+import type { ApiKey, App, AppOverview, AppWorkspace, Brand, Home, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -116,16 +117,37 @@ export const loadApp = async (clientId: string): Promise<App> => {
   return (await call<{ app: App }>('GET', `/apps/${encodeURIComponent(clientId)}`)).app;
 };
 
-export const updateApp = async (clientId: string, patch: Record<string, unknown>): Promise<App> => {
+/**
+ * One app as its workspace shows it: the app, the reader's role on it, and its way to live.
+ * `app` is null when the address names an app the reader cannot see.
+ */
+export const loadAppWorkspace = async (clientId: string): Promise<AppWorkspace> => {
+  'use server';
+  const { publicEnv } = await import('@fluixi/start/env');
+  const issuer = publicEnv().IDP_URL ?? '';
+  const id = encodeURIComponent(clientId);
+  try {
+    const [{ app, role }, overview] = await Promise.all([
+      call<{ app: App; role: Role }>('GET', `/apps/${id}`),
+      call<AppOverview>('GET', `/apps/${id}/overview`),
+    ]);
+    return { issuer, app, role, overview };
+  } catch (error) {
+    if (error instanceof ApiRefusal && error.code === 'not_found') return { issuer, app: null, role: null, overview: null };
+    throw error;
+  }
+};
+
+export const updateApp = async (clientId: string, patch: AppPatch): Promise<App> => {
   'use server';
   return (await call<{ app: App }>('PATCH', `/apps/${encodeURIComponent(clientId)}`, patch)).app;
 };
 
 /** `missing` lists what the app still lacks to go live, when that is why it is not live. */
-export const publishApp = async (clientId: string): Promise<{ state: string; missing: string[] }> => {
+export const publishApp = async (clientId: string): Promise<{ state: 'live' | 'pending' | 'sandbox'; missing: string[] }> => {
   'use server';
   try {
-    const answer = await call<{ state: string }>('POST', `/apps/${encodeURIComponent(clientId)}/publish`);
+    const answer = await call<{ state: 'live' | 'pending' }>('POST', `/apps/${encodeURIComponent(clientId)}/publish`);
     return { state: answer.state, missing: [] };
   } catch (error) {
     if (error instanceof ApiRefusal && error.code === 'missing_for_live') {
@@ -154,9 +176,10 @@ export const createKey = async (
   return call('POST', `/organizations/${encodeURIComponent(organizationId)}/keys`, input);
 };
 
-export const revokeKey = async (organizationId: string, keyId: string): Promise<void> => {
+export const revokeKey = async (organizationId: string, keyId: string): Promise<ApiKey> => {
   'use server';
-  await call('DELETE', `/organizations/${encodeURIComponent(organizationId)}/keys/${encodeURIComponent(keyId)}`);
+  const path = `/organizations/${encodeURIComponent(organizationId)}/keys/${encodeURIComponent(keyId)}`;
+  return (await call<{ key: ApiKey }>('DELETE', path)).key;
 };
 
 export const addTestUser = async (organizationId: string, email: string): Promise<void> => {
@@ -167,4 +190,27 @@ export const addTestUser = async (organizationId: string, email: string): Promis
 export const removeTestUser = async (organizationId: string, email: string): Promise<void> => {
   'use server';
   await call('DELETE', `/organizations/${encodeURIComponent(organizationId)}/test-users/${encodeURIComponent(email)}`);
+};
+
+export const addMember = async (
+  organizationId: string,
+  input: { email: string; role: Role; apps?: string[] },
+): Promise<Member> => {
+  'use server';
+  return (await call<{ member: Member }>('POST', `/organizations/${encodeURIComponent(organizationId)}/members`, input)).member;
+};
+
+export const changeMember = async (
+  organizationId: string,
+  memberId: string,
+  patch: { role?: Role; apps?: string[] },
+): Promise<Member> => {
+  'use server';
+  const path = `/organizations/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(memberId)}`;
+  return (await call<{ member: Member }>('PATCH', path, patch)).member;
+};
+
+export const removeMember = async (organizationId: string, memberId: string): Promise<void> => {
+  'use server';
+  await call('DELETE', `/organizations/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(memberId)}`);
 };

@@ -2,9 +2,21 @@
  * The developer API's answers come from @idp/sdk, shared with the elements; this file adds
  * only the shapes the portal itself assembles.
  */
-import type { Me, Organization, OrganizationDetail, Product } from '@idp/sdk/types';
+import type { App, AppOverview, Me, Organization, OrganizationDetail, Product, Role } from '@idp/sdk/types';
 
-export type { ApiKey, App, AppOverview, Brand, Me, Member, Organization, OrganizationDetail, Product, Secret } from '@idp/sdk/types';
+export type {
+  ApiKey,
+  App,
+  AppOverview,
+  Brand,
+  Me,
+  Member,
+  Organization,
+  OrganizationDetail,
+  Product,
+  Role,
+  Secret,
+} from '@idp/sdk/types';
 
 export interface Home {
   me: Me | null;
@@ -19,4 +31,13 @@ export interface Workspace {
   products: Product[];
   /** The organization in the address, or null when it is not one of theirs. */
   current: OrganizationDetail | null;
+}
+
+/** One app's workspace: null throughout when the address names an app the reader cannot see. */
+export interface AppWorkspace {
+  /** The provider's address, for its published key set. */
+  issuer: string;
+  app: App | null;
+  role: Role | null;
+  overview: AppOverview | null;
 }

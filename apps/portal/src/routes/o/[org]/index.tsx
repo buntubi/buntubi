@@ -21,8 +21,7 @@ export default function DeveloperHome() {
     (data()?.current?.apps ?? []).map((app) => ({
       client_id: app.client_id,
       name: app.name,
-      // The app pages still live where they were before the workspace.
-      href: `/apps/${app.client_id}`,
+      href: `/o/${organization()?.id ?? ''}/apps/${app.client_id}`,
       environment: app.environment,
       review_status: app.review_status,
       apis: app.products.map(productName),

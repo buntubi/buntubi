@@ -12,7 +12,7 @@ export function PublicFrame(props: { children?: ComponentChild }): ComponentChil
   const { switchLanguage } = usePreferences();
   const children = props.children;
   return (
-    <>
+    <div class="public">
       <header class="bar">
         <Link href="/" class="brand">
           <span class="brand-mark" aria-hidden="true">
@@ -32,6 +32,6 @@ export function PublicFrame(props: { children?: ComponentChild }): ComponentChil
         </nav>
       </header>
       <main class="page">{children}</main>
-    </>
+    </div>
   );
 }

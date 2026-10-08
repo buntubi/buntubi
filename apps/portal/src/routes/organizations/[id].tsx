@@ -22,6 +22,7 @@ import {
 } from '../../server/developer.js';
 import { settle } from '../../lib/settle.js';
 import { PublicFrame } from '../../components/public-frame.js';
+import { appPath } from '../../lib/paths.js';
 
 const organization = cache((id: string) => loadOrganization(id), 'organization');
 export const routeData = (args: RouteDataArgs) => organization(paramOf(args, 'id'));
@@ -30,27 +31,27 @@ const newApp = action(
   (organizationId: string, input: { name: string; client_type: 'public' | 'confidential'; redirect_uri: string }) =>
     createApp(organizationId, input),
   'app.create',
-  { invalidates: ['organization'] },
+  { invalidates: ['organization', 'workspace'] },
 );
 const newKey = action(
   (organizationId: string, input: { name: string; environment: 'sandbox' | 'live'; scopes: string[] }) =>
     createKey(organizationId, input),
   'key.create',
-  { invalidates: ['organization'] },
+  { invalidates: ['organization', 'workspace'] },
 );
 const dropKey = action((organizationId: string, keyId: string) => revokeKey(organizationId, keyId), 'key.revoke', {
-  invalidates: ['organization'],
+  invalidates: ['organization', 'workspace'],
 });
 const newTester = action((organizationId: string, email: string) => addTestUser(organizationId, email), 'tester.add', {
-  invalidates: ['organization'],
+  invalidates: ['organization', 'workspace'],
 });
 const dropTester = action((organizationId: string, email: string) => removeTestUser(organizationId, email), 'tester.remove', {
-  invalidates: ['organization'],
+  invalidates: ['organization', 'workspace'],
 });
 const saveOrganization = action(
   (organizationId: string, patch: { name?: string; support_email?: string | null }) => updateOrganization(organizationId, patch),
   'organization.update',
-  { invalidates: ['organization', 'home'] },
+  { invalidates: ['organization', 'home', 'workspace'] },
 );
 
 const words = (text: string) => text.split(/[\s,]+/).filter(Boolean);
@@ -92,7 +93,7 @@ function Apps(props: { id: string }) {
     const created = await newApp(props.id, { name: name().trim(), client_type: kind(), redirect_uri: redirect().trim() });
     // A confidential app's secret is shown on the app page, once, from the creation answer.
     handOverSecret(created.app.client_id, created.client_secret);
-    navigate(`/apps/${created.app.client_id}`);
+    navigate(appPath(props.id, created.app.client_id, 'credentials'));
   };
   return (
     <Card class="panel">
@@ -103,7 +104,7 @@ function Apps(props: { id: string }) {
             <For each={data()?.apps ?? []}>
               {(app) => (
                 <li>
-                  <Link href={`/apps/${app.client_id}`} class="row-link">
+                  <Link href={appPath(app.organization_id, app.client_id)} class="row-link">
                     <strong>{app.name}</strong>
                     <code class="mono muted">{app.client_id}</code>
                   </Link>

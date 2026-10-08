@@ -20,10 +20,19 @@ export interface NewApp {
   terms_url?: string;
 }
 
+/** A change to an app: a link set to null is removed. */
+export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'terms_url'>> & {
+  scopes?: string[];
+  homepage_url?: string | null;
+  privacy_url?: string | null;
+  terms_url?: string | null;
+  brand?: { logo?: string | null; accent?: string };
+};
+
 export interface DeveloperService {
   createOrganization(input: { name: string; support_email?: string }): Promise<Organization>;
   createApp(input: { organization: string; app: NewApp }): Promise<{ app: App; client_secret: string | null }>;
-  updateApp(input: { client_id: string; patch: Partial<NewApp> & { scopes?: string[] } }): Promise<App>;
+  updateApp(input: { client_id: string; patch: AppPatch }): Promise<App>;
   publishApp(client_id: string): Promise<{ state: 'live' | 'pending'; missing: string[] }>;
   rotateSecret(client_id: string): Promise<{ app: App; client_secret: string }>;
   revokeSecret(input: { client_id: string; secret: string }): Promise<App>;
