@@ -1,7 +1,9 @@
 /** Every page: the console's navigation, the progress bar, the matched route. */
-import { useIsRouting, useLocation } from '@fluixi/start/router';
+import { useIsRouting, useLocation, useNavigate } from '@fluixi/start/router';
+import '@idp/elements/auth-notice';
 import { Button } from '@fluixi-ui/button';
 import { locale, setLocale, t } from '../lib/i18n.js';
+import { authNoticeLabels } from '../lib/auth-notice.js';
 import { auth } from '../services/auth.js';
 
 const SECTIONS = [
@@ -27,6 +29,13 @@ export default function RootLayout() {
     const next = locale() === 'fr' ? 'en' : 'fr';
     chosen.set(next);
     setLocale(next);
+  };
+  const navigate = useNavigate();
+  // Drops the error from the address once read; the rest of the query stays.
+  const dismissAuthError = () => {
+    const query = new URLSearchParams(location.search);
+    query.delete('auth_error');
+    navigate(`${location.pathname}${query.size ? `?${query}` : ''}`, { replace: true });
   };
   return (
     <>
@@ -59,6 +68,12 @@ export default function RootLayout() {
         </nav>
       </header>
       <main class="page">
+        <dp-auth-notice
+          error={location.query.auth_error ?? ''}
+          labels={authNoticeLabels()}
+          onRetry={() => auth.signIn({ returnTo: location.pathname })}
+          onDismiss={dismissAuthError}
+        />
         <Suspense fallback={<p class="muted">{() => t('common.loading')}</p>}>
           <Outlet />
         </Suspense>

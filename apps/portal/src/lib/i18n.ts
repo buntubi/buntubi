@@ -2,6 +2,12 @@
 import { createI18n } from '@fluixi/core/i18n';
 
 const fr = {
+  'authError.access_denied': 'La connexion a été refusée.',
+  'authError.server_error': 'Le fournisseur d’identité n’a pas pu terminer la connexion.',
+  'authError.temporarily_unavailable': 'Le fournisseur d’identité est indisponible pour le moment.',
+  'authError.generic': 'La connexion n’a pas abouti.',
+  'authError.retry': 'Réessayer',
+  'authError.dismiss': 'Fermer',
   'nav.signOut': 'Se déconnecter',
   'nav.language': 'English',
   'common.loading': 'Chargement',
@@ -95,6 +101,12 @@ const fr = {
 };
 
 const en: typeof fr = {
+  'authError.access_denied': 'The sign-in was refused.',
+  'authError.server_error': 'The identity provider could not complete the sign-in.',
+  'authError.temporarily_unavailable': 'The identity provider is unavailable for a moment.',
+  'authError.generic': 'The sign-in did not go through.',
+  'authError.retry': 'Try again',
+  'authError.dismiss': 'Dismiss',
   'nav.signOut': 'Sign out',
   'nav.language': 'Français',
   'common.loading': 'Loading',

@@ -7,7 +7,10 @@
     "./view": "./src/view.ts",
     "./product-catalog": "./src/product-catalog/product-catalog.tsx",
     "./product-catalog/view": "./src/product-catalog/view.tsx",
-    "./product-catalog/logic": "./src/product-catalog/logic.ts"
+    "./product-catalog/logic": "./src/product-catalog/logic.ts",
+    "./auth-notice": "./src/auth-notice/auth-notice.tsx",
+    "./auth-notice/logic": "./src/auth-notice/logic.ts",
+    "./auth-notice/view": "./src/auth-notice/view.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
