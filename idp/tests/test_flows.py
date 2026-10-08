@@ -329,6 +329,37 @@ def test_admin_api_needs_the_admin_role(app: Flask, browser: FlaskClient, outbox
     assert reply.status_code == 403
 
 
+def test_a_renewed_admin_token_keeps_the_second_factor(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    # Signed in with both factors (as admin_token does), then a code flow that keeps a
+    # refresh token: what the console holds.
+    admin_token(app, browser, outbox, make_admin=True)
+    verifier, challenge = pkce()
+    query = authorize_query(challenge, client_id="console", scope="openid admin")
+    code = parse_qs(urlparse(browser.get("/oauth/authorize?" + urlencode(query)).location).query)["code"][0]
+    tokens = browser.post(
+        "/oauth/token",
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": REDIRECT,
+            "client_id": "console",
+            "code_verifier": verifier,
+        },
+    ).json
+    renewed = browser.post(
+        "/oauth/token",
+        data={
+            "grant_type": "refresh_token",
+            "refresh_token": tokens["refresh_token"],
+            "client_id": "console",
+        },
+    ).json
+    reply = browser.get("/admin/api/clients", headers={"Authorization": f"Bearer {renewed['access_token']}"})
+    assert reply.status_code == 200, reply.json
+
+
 def test_admin_api_needs_a_second_factor(
     app: Flask, browser: FlaskClient, outbox: list[mail.Message]
 ) -> None:

@@ -19,7 +19,15 @@ from sqlalchemy import select, update
 
 from idp.config import get_settings
 from idp.db import db, utcnow
-from idp.models import AccessTokenRecord, AuthorizationCode, Client, DeviceCode, RefreshToken, User
+from idp.models import (
+    AccessTokenRecord,
+    AuthorizationCode,
+    Client,
+    DeviceCode,
+    LoginSession,
+    RefreshToken,
+    User,
+)
 from idp.oauth.claims import user_claims
 from idp.security.keys import ALGORITHM
 from idp.security.tokens import hash_token
@@ -172,10 +180,14 @@ class RefreshTokenGrant(grants.RefreshTokenGrant):  # type: ignore[misc]
 
         if not may_sign_in(refresh_token.client, user):
             return None
+        # How the person signed in, from the session the token continues: a renewed token
+        # still says a second factor was used, or the admin API refuses it as if it had not.
+        login = db().get(LoginSession, refresh_token.session_id) if refresh_token.session_id else None
+        methods = list(login.auth_methods) if login else []
         return attach(
             user,
             AuthContext(
-                refresh_token.session_id, refresh_token.auth_time, [], family_id=refresh_token.family_id
+                refresh_token.session_id, refresh_token.auth_time, methods, family_id=refresh_token.family_id
             ),
         )
 
