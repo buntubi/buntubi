@@ -567,6 +567,17 @@ def paths() -> dict[str, dict[str, Any]]:
                 request=form({"client_id": STRING, "scope": STRING}, ["client_id"]),
             )
         },
+        "/oauth/check-session": {
+            "get": op(
+                "The session check page apps embed (OpenID Connect Session Management)",
+                oidc,
+                None,
+                {"200": answer(None, "An HTML page answering postMessage with changed or unchanged")},
+            )
+        },
+        "/oauth/check-session.js": {
+            "get": op("The session check page's script", oidc, None, {"200": answer(None, "JavaScript")})
+        },
         "/oauth/logout": {
             "get": op(
                 "End the browser session (RP-initiated logout)",

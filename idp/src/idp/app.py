@@ -10,6 +10,7 @@ from idp.config import Settings, get_settings
 from idp.db import init_db
 from idp.extensions import limiter
 from idp.oauth.server import init_oauth
+from idp.services import session_check
 from idp.web import admin, api, developer, oidc, openapi, pages
 
 # Endpoints a browser application (SPA) calls cross-origin.
@@ -54,10 +55,13 @@ def create_app(settings: Settings | None = None) -> Flask:
             "img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; "
             "base-uri 'none'; form-action 'self'",
         )
-        headers.setdefault("X-Frame-Options", "DENY")
+        # The session check page is meant to be framed by apps; nothing else is.
+        if request.path != "/oauth/check-session":
+            headers.setdefault("X-Frame-Options", "DENY")
+        session_check.sync_cookie(response)
         headers.setdefault("X-Content-Type-Options", "nosniff")
         headers.setdefault("Referrer-Policy", "no-referrer")
-        if not request.path.startswith(("/static/", "/.well-known/")):
+        if not request.path.startswith(("/static/", "/.well-known/", "/oauth/check-session.js")):
             headers["Cache-Control"] = "no-store"
         origin = request.headers.get("Origin")
         if origin and origin in settings.cors_origins and request.path in _CORS_PATHS:

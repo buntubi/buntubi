@@ -19,7 +19,7 @@ from idp.oauth.claims import SCOPES, user_claims
 from idp.oauth.grants import GRANT_TYPES_SUPPORTED
 from idp.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
 from idp.security import csrf
-from idp.services import audit, consent, platform, sessions
+from idp.services import audit, consent, platform, session_check, sessions
 from idp.web import pages
 
 bp = Blueprint("oidc", __name__)
@@ -38,6 +38,7 @@ def discovery() -> Response:
         introspection_endpoint=f"{issuer}/oauth/introspect",
         device_authorization_endpoint=f"{issuer}/oauth/device_authorization",
         end_session_endpoint=f"{issuer}/oauth/logout",
+        check_session_iframe=f"{issuer}/oauth/check-session",
         scopes_supported=list(SCOPES),
         response_types_supported=["code"],
         response_modes_supported=["query"],
@@ -97,7 +98,11 @@ def authorize() -> Any:
     try:
         grant = authorization.get_consent_grant(end_user=login.user if login else None)
     except OAuth2Error as error:
-        return authorization.handle_error_response(request, error)
+        response = authorization.handle_error_response(request, error)
+        # Set only once the redirect URI was checked against the client's registered ones.
+        if getattr(error, "redirect_uri", None):
+            response = _with_session_state(response, request.args.get("client_id", ""))
+        return response
 
     if login is None or "login" in prompt or _too_old(login):
         if "none" in prompt:
@@ -123,7 +128,10 @@ def authorize() -> Any:
         return redirect(url_for("pages.consent") + "?" + urlencode(_query(drop_prompt=True)))
 
     g.login = login
-    response = authorization.create_authorization_response(grant_user=login.user, grant=grant)
+    response = _with_session_state(
+        authorization.create_authorization_response(grant_user=login.user, grant=grant),
+        grant.client.client_id,
+    )
     audit.record("authorize", user=login.user, client=grant.client)
     db().commit()
     return response
@@ -151,7 +159,7 @@ def authorize_decision() -> Any:
         response = authorization.create_authorization_response(grant_user=None, grant=grant)
     audit.record("consent", user=login.user, client=grant.client, approved=approve)
     db().commit()
-    return jsonify(redirect=response.headers["Location"])
+    return jsonify(redirect=_with_session_state(response, grant.client.client_id).headers["Location"])
 
 
 @bp.post("/oauth/token")
@@ -239,7 +247,38 @@ def _error_redirect(grant: Any, error: str) -> Any:
         params["state"] = state
     params["iss"] = get_settings().issuer
     uri = grant.request.payload.redirect_uri
+    # A refusal carries it too: an app told "nobody signed in" watches for someone who does.
+    params["session_state"] = session_check.session_state(grant.client.client_id, uri)
     return redirect(uri + ("&" if "?" in uri else "?") + urlencode(params))
+
+
+def _with_session_state(response: Any, client_id: str) -> Any:
+    """Adds `session_state` to an authorization answer that goes back to the app."""
+    location = response.headers.get("Location")
+    if location and response.status_code in (301, 302, 303, 307):
+        state = session_check.session_state(client_id, location)
+        response.headers["Location"] = (
+            location + ("&" if "?" in location else "?") + urlencode({"session_state": state})
+        )
+    return response
+
+
+@bp.get("/oauth/check-session")
+def check_session() -> Response:
+    """The OP iframe of Session Management: any app may embed it; it shows nothing."""
+    response = Response(session_check.PAGE, mimetype="text/html")
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; script-src 'self'; frame-ancestors *; base-uri 'none'"
+    )
+    return response
+
+
+@bp.get("/oauth/check-session.js")
+def check_session_script() -> Response:
+    response = Response(session_check.SCRIPT, mimetype="text/javascript")
+    response.cache_control.max_age = 300
+    response.cache_control.public = True
+    return response
 
 
 def _client_from_id_token_hint(hint: str | None) -> Any:
