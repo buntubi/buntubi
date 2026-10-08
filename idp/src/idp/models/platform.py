@@ -27,6 +27,8 @@ AVAILABILITIES = ("ga", "beta", "sandbox")
 PRODUCT_AUTH = ("oauth2", "oidc", "api_key", "webhooks")
 APP_KINDS = ("consumer", "business", "web", "mobile", "backend", "internal")
 PLATFORMS = ("web", "ios", "android", "backend")
+# pending: waiting for the platform owner; approved, rejected: decided.
+REVIEW_DECISIONS = ("pending", "approved", "rejected")
 
 
 class Organization(IdMixin, TimestampMixin, Base):
@@ -90,6 +92,32 @@ class OrganizationTestUser(IdMixin, Base):
     added_at: Mapped[datetime] = mapped_column(default=utcnow)
 
     organization: Mapped[Organization] = relationship(back_populates="test_users")
+
+
+class AppReview(IdMixin, Base):
+    """
+    One request to put an app live with sensitive scopes, and the platform owner's answer. Kept
+    after the decision: an app's reviews are its history, what was asked each time and why.
+    """
+
+    __tablename__ = "app_reviews"
+
+    client_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"), index=True)
+    submitted_at: Mapped[datetime] = mapped_column(default=utcnow)
+    submitted_by_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    # The sensitive scopes not yet approved for the organization when it was submitted.
+    scopes: Mapped[list[str]] = mapped_column(ARRAY(String(64)), default=list)
+    # Why the app needs each scope and where people meet it, by scope.
+    justifications: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict)
+    # How a reviewer can try the app: test account, steps.
+    instructions: Mapped[str] = mapped_column(Text, default="")
+    decision: Mapped[str] = mapped_column(String(16), default="pending")
+    note: Mapped[str] = mapped_column(Text, default="")
+    decided_at: Mapped[datetime | None]
+    decided_by_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+
+    submitted_by: Mapped["User | None"] = relationship(foreign_keys=[submitted_by_id])
+    decided_by: Mapped["User | None"] = relationship(foreign_keys=[decided_by_id])
 
 
 class ClientSecret(IdMixin, Base):

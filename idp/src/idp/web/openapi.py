@@ -25,6 +25,7 @@ INTERNAL = {("POST", "/oauth/authorize")}
 DESCRIBED_PREFIXES = ("/.well-known/", "/oauth/", "/developer/api/", "/admin/api/")
 
 REQUEST_MODELS: list[type[BaseModel]] = [
+    developer.PublishIn,
     developer.OrganizationIn,
     developer.OrganizationPatch,
     developer.AppIn,
@@ -373,8 +374,27 @@ RESPONSE_SCHEMAS["Review"] = obj(
         "organization": {"type": ["object", "null"]},
         "owner": {"type": ["object", "null"]},
         "requested_at": TIME,
+        "description": STRING,
+        "logo": MAYBE_STRING,
+        "history": {"type": "array", "items": ref("AppReview")},
     }
 )
+
+PERSON: dict[str, Any] = {"type": ["object", "null"]}
+# One request to go live with sensitive scopes, and its answer. `decided_by` for staff only.
+_APP_REVIEW = {
+    "id": STRING,
+    "submitted_at": TIME,
+    "submitted_by": PERSON,
+    "scopes": STRINGS,
+    "justifications": {"type": "object", "additionalProperties": STRING},
+    "instructions": STRING,
+    "decision": {"type": "string", "enum": ["pending", "approved", "rejected"]},
+    "note": STRING,
+    "decided_at": MAYBE_TIME,
+    "decided_by": PERSON,
+}
+RESPONSE_SCHEMAS["AppReview"] = obj(_APP_REVIEW, [key for key in _APP_REVIEW if key != "decided_by"])
 
 # ── Operations ────────────────────────────────────────────────────────────────────────────────
 
@@ -741,7 +761,7 @@ def paths() -> dict[str, dict[str, Any]]:
         },
         "/developer/api/apps/{client_id}/publish": {
             "post": op(
-                "Ask to go live: live at once, or pending review for sensitive scopes",
+                "Ask to go live: live at once, or pending review for sensitive scopes, each explained",
                 d,
                 DEVELOPER,
                 {
@@ -749,7 +769,13 @@ def paths() -> dict[str, dict[str, Any]]:
                         obj({"state": {"type": "string", "enum": ["live", "pending"]}, "app": ref("App")})
                     )
                 },
+                request={"required": False, "content": {"application/json": {"schema": ref("PublishIn")}}},
                 params=["client_id"],
+            )
+        },
+        "/developer/api/apps/{client_id}/reviews": {
+            "get": op(
+                "An app's reviews, the latest first", d, DEVELOPER, listing("AppReview"), params=["client_id"]
             )
         },
         "/developer/api/apps/{client_id}/secrets": {
@@ -774,6 +800,13 @@ def paths() -> dict[str, dict[str, Any]]:
         "/admin/api/overview": {"get": op("Counts", a, ADMIN, ok("Overview"))},
         "/admin/api/reviews": {"get": op("Apps waiting for review", a, ADMIN, listing("Review"))},
         "/admin/api/apps/{client_id}/review": {
+            "get": op(
+                "One app as a reviewer sees it, with its history",
+                a,
+                ADMIN,
+                one("app", "Review"),
+                params=["client_id"],
+            ),
             "post": op(
                 "Approve or reject an app (a rejection needs a note)",
                 a,
@@ -781,7 +814,7 @@ def paths() -> dict[str, dict[str, Any]]:
                 one("app", "Review"),
                 request=body(ref("ReviewIn")),
                 params=["client_id"],
-            )
+            ),
         },
         "/admin/api/organizations": {
             "get": op("Organizations", a, ADMIN, listing("AdminOrganization"), query=["q"])

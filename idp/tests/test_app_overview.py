@@ -88,7 +88,13 @@ def test_a_sensitive_scope_shows_as_waiting_until_reviewed(app: Flask, outbox: l
         f"/organizations/{organization_id}/apps",
         {"name": "Web", "redirect_uris": ["https://shop.example/cb"], "scopes": ["phone"], **LIVE_FIELDS},
     ).json["app"]["client_id"]
-    call(dev_browser, dev, "POST", f"/apps/{client_id}/publish")
+    call(
+        dev_browser,
+        dev,
+        "POST",
+        f"/apps/{client_id}/publish",
+        {"justifications": {"phone": "Booking reminders"}},
+    )
 
     waiting = call(dev_browser, dev, "GET", f"/apps/{client_id}/overview").json
     assert waiting["stage"] == "in_review" and waiting["scopes"]["waiting"] == ["phone"]

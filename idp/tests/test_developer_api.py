@@ -150,7 +150,12 @@ def test_a_sensitive_scope_waits_for_review(app: Flask, browser: FlaskClient, de
         f"/organizations/{organization_id}/apps",
         {"name": "Web", "redirect_uris": ["https://shop.example/cb"], "scopes": ["phone"], **LIVE_FIELDS},
     ).json["app"]["client_id"]
-    published = call(browser, dev, "POST", f"/apps/{client_id}/publish")
+    unexplained = call(browser, dev, "POST", f"/apps/{client_id}/publish")
+    assert unexplained.status_code == 422
+    assert unexplained.json == {"error": "justification_required", "scopes": ["phone"]}
+    published = call(
+        browser, dev, "POST", f"/apps/{client_id}/publish", {"justifications": {"phone": "Reminders"}}
+    )
     assert published.json["state"] == "pending"
     assert published.json["app"]["environment"] == "sandbox"
     assert published.json["app"]["review_status"] == "pending"

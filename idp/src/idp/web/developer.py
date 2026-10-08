@@ -21,7 +21,7 @@ from idp.oauth.server import require_token
 from idp.services import audit
 from idp.services import platform as p
 from idp.services.credentials import rotate_client_secret
-from idp.web.admin import Brand
+from idp.web.admin import Brand, review_json
 from idp.web.validation import parse
 
 bp = Blueprint("developer", __name__, url_prefix="/developer/api")
@@ -468,14 +468,31 @@ def delete_app(client_id: str, me: User) -> Response:
     return jsonify(deleted=True)
 
 
+class PublishIn(BaseModel):
+    # Why the app needs each sensitive scope and where people meet it, by scope.
+    justifications: dict[str, str] = Field(default={}, max_length=50)
+    # How a reviewer tries the app: a test account, the steps to follow.
+    instructions: str = Field(default="", max_length=4000)
+
+
 @bp.post("/apps/<client_id>/publish")
 @developer()
 def publish_app(client_id: str, me: User) -> Response:
     client, member = p.app_of(me, client_id, "publish")
-    state = p.publish(client, p.writable(member.organization))
+    data = parse(PublishIn)
+    if any(len(text) > 2000 for text in data.justifications.values()):
+        raise p.PlatformError("justification_too_long", 422)
+    state = p.publish(client, p.writable(member.organization), me, data.justifications, data.instructions)
     audit.record("developer.app_publish", user=me, client=client, state=state)
     db().commit()
     return jsonify(state=state, app=app_json(client))
+
+
+@bp.get("/apps/<client_id>/reviews")
+@developer()
+def app_reviews(client_id: str, me: User) -> Response:
+    client, _ = p.app_of(me, client_id, "read")
+    return jsonify(items=[review_json(r) for r in p.reviews_of(client)])
 
 
 @bp.post("/apps/<client_id>/secrets")

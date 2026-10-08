@@ -18,6 +18,7 @@ from idp.models import (
     AccessTokenRecord,
     ApiKey,
     ApiProduct,
+    AppReview,
     Client,
     Organization,
     OrganizationMember,
@@ -526,10 +527,18 @@ def overview(client: Client, organization: Organization) -> Overview:
     )
 
 
-def publish(client: Client, organization: Organization) -> str:
+def publish(
+    client: Client,
+    organization: Organization,
+    submitter: User | None = None,
+    justifications: dict[str, str] | None = None,
+    instructions: str = "",
+) -> str:
     """
     Asks for the app to go live. Public scopes only: live at once. A sensitive scope: pending,
-    until the platform owner approves it. Returns the app's state afterwards.
+    until the platform owner approves it, with a review recording why each scope is needed and
+    how to try the app. Sent again while pending, it updates that review. Returns the app's
+    state afterwards.
     """
     if client.is_live:
         return "live"
@@ -537,14 +546,42 @@ def publish(client: Client, organization: Organization) -> str:
     if missing:
         raise PlatformError("missing_for_live", 422, fields=missing)
     sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
-    if set(sensitive) - set(organization.approved_scopes):
-        client.review_status = "pending"
-        return "pending"
-    client.environment = "live"
-    return "live"
+    waiting = sorted(set(sensitive) - set(organization.approved_scopes))
+    if not waiting:
+        client.environment = "live"
+        return "live"
+    given = {scope: text.strip() for scope, text in (justifications or {}).items() if scope in waiting}
+    unexplained = [scope for scope in waiting if not given.get(scope)]
+    if unexplained:
+        raise PlatformError("justification_required", 422, scopes=unexplained)
+    review = open_review(client) or AppReview(client_id=client.id)
+    review.submitted_at = utcnow()
+    review.submitted_by_id = submitter.id if submitter else None
+    review.scopes = waiting
+    review.justifications = given
+    review.instructions = instructions.strip()
+    db().add(review)
+    client.review_status = "pending"
+    return "pending"
 
 
 # ── Reviews and suspensions (the platform owner's side) ────────────────────────────────────────────────
+
+
+def open_review(client: Client) -> AppReview | None:
+    """The app's review still waiting for an answer, if any."""
+    return db().scalar(
+        select(AppReview).where(AppReview.client_id == client.id, AppReview.decision == "pending")
+    )
+
+
+def reviews_of(client: Client) -> list[AppReview]:
+    """The app's reviews, the latest first."""
+    return list(
+        db().scalars(
+            select(AppReview).where(AppReview.client_id == client.id).order_by(AppReview.submitted_at.desc())
+        )
+    )
 
 
 def pending_reviews() -> list[Client]:
@@ -564,6 +601,13 @@ def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
     client.review_note = note
     client.reviewed_at = utcnow()
     client.reviewed_by_id = reviewer.id
+    # An app put pending before reviews were kept has no row: the decision makes one.
+    record = open_review(client) or AppReview(client_id=client.id, submitted_at=client.updated_at)
+    record.decision = client.review_status
+    record.note = note
+    record.decided_at = client.reviewed_at
+    record.decided_by_id = reviewer.id
+    db().add(record)
     if approve:
         sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
         organization = client.organization

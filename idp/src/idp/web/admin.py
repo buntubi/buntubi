@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy import func, select
 
 from idp.db import db, utcnow
-from idp.models import ApiProduct, AuditEvent, Client, Organization, Scope, User
+from idp.models import ApiProduct, AppReview, AuditEvent, Client, Organization, Scope, User
 from idp.models.clients import GRANT_TYPES
 from idp.oauth.server import require_token
 from idp.services import audit, mfa
@@ -312,6 +312,29 @@ def overview(admin: User) -> Response:
 # ── Reviews ───────────────────────────────────────────────────────────────────────────────────
 
 
+def review_json(review: AppReview, *, reviewer: bool = False) -> dict[str, Any]:
+    """
+    One review of an app. `reviewer` adds who decided, for the platform's own staff; developers
+    see the decision and its note, not the person.
+    """
+    who = review.submitted_by
+    answer: dict[str, Any] = {
+        "id": str(review.id),
+        "submitted_at": review.submitted_at.isoformat(),
+        "submitted_by": {"name": who.name, "email": who.email} if who else None,
+        "scopes": list(review.scopes),
+        "justifications": dict(review.justifications),
+        "instructions": review.instructions,
+        "decision": review.decision,
+        "note": review.note,
+        "decided_at": review.decided_at.isoformat() if review.decided_at else None,
+    }
+    if reviewer:
+        decider = review.decided_by
+        answer["decided_by"] = {"name": decider.name, "email": decider.email} if decider else None
+    return answer
+
+
 def _review_json(client: Client) -> dict[str, Any]:
     organization = client.organization
     owner = _first_owner(organization) if organization else None
@@ -334,6 +357,9 @@ def _review_json(client: Client) -> dict[str, Any]:
         else None,
         "owner": {"email": owner.email, "name": owner.name} if owner else None,
         "requested_at": client.updated_at.isoformat(),
+        "description": client.description,
+        "logo": client.brand.get("logo"),
+        "history": [review_json(r, reviewer=True) for r in p.reviews_of(client)],
     }
 
 
@@ -346,6 +372,13 @@ class ReviewIn(BaseModel):
 @admin_only
 def list_reviews(admin: User) -> Response:
     return jsonify(items=[_review_json(c) for c in p.pending_reviews()])
+
+
+@bp.get("/apps/<client_id>/review")
+@admin_only
+def app_review(client_id: str, admin: User) -> Response:
+    """One app as a reviewer sees it, decided or not, with its history."""
+    return jsonify(app=_review_json(_client_or_404(client_id)))
 
 
 @bp.post("/apps/<client_id>/review")

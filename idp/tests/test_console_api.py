@@ -42,7 +42,8 @@ def app_waiting_for_review(
         f"/organizations/{organization_id}/apps",
         {"name": "Web", "redirect_uris": ["https://shop.example/cb"], "scopes": scopes, **LIVE_FIELDS},
     ).json["app"]["client_id"]
-    assert call(dev_browser, dev, "POST", f"/apps/{client_id}/publish").json["state"] == "pending"
+    explained = {"justifications": {scope: f"Why {scope}" for scope in scopes}}
+    assert call(dev_browser, dev, "POST", f"/apps/{client_id}/publish", explained).json["state"] == "pending"
     return organization_id, client_id
 
 

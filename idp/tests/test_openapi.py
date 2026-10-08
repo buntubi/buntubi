@@ -118,7 +118,10 @@ def test_developer_and_admin_answers_match_the_description(
     dev_call("PATCH", f"/apps/{client_id}", {"name": "Server app"})
     rotated = dev_call("POST", f"/apps/{client_id}/secrets")
     dev_call("DELETE", f"/apps/{client_id}/secrets/{rotated['app']['secrets'][0]['id']}")
-    dev_call("POST", f"/apps/{client_id}/publish")
+    dev_call(
+        "POST", f"/apps/{client_id}/publish", {"justifications": {"billing.write": "Charges the booking"}}
+    )
+    dev_call("GET", f"/apps/{client_id}/reviews")
     key = dev_call(
         "POST", f"/organizations/{organization['id']}/keys", {"name": "CI", "scopes": ["billing.read"]}
     )
@@ -143,7 +146,9 @@ def test_developer_and_admin_answers_match_the_description(
 
     admin("GET", "/overview")
     admin("GET", "/reviews")
+    admin("GET", f"/apps/{client_id}/review")
     admin("POST", f"/apps/{client_id}/review", {"approve": True})
+    dev_call("GET", f"/apps/{client_id}/reviews")
     admin("GET", "/organizations")
     admin("POST", f"/organizations/{organization['id']}/suspend", {"reason": "check"})
     admin("POST", f"/organizations/{organization['id']}/restore")
