@@ -1,0 +1,34 @@
+.idp-apps {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.idp-app {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+.idp-app:hover,
+.idp-app:focus-visible {
+  background: var(--flx-ui-color-bg-subtle);
+}
+.idp-app-mark {
+  flex: none;
+  width: 34px;
+  height: 34px;
+}
+.idp-app-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+.idp-app-go {
+  color: var(--flx-ui-color-fg-muted);
+}

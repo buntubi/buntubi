@@ -6,6 +6,7 @@ import type { ForgotPasswordLabels } from '../elements/forgot-password/forgot-pa
 import type { ResetPasswordLabels } from '../elements/reset-password/reset-password.js';
 import type { ConsentLabels } from '../elements/consent/consent.js';
 import type { AccountSelectLabels } from '../elements/account-select/account-select.js';
+import type { AppLinksLabels } from '../elements/app-links/app-links.js';
 import type { DeviceActivateLabels } from '../elements/device-activate/device-activate.js';
 import type { MfaVerifyLabels } from '../elements/mfa-verify/mfa-verify.js';
 import type { MfaSetupLabels } from '../elements/mfa-setup/mfa-setup.js';
@@ -29,6 +30,7 @@ export interface Text {
     blocked: string;
     mfa: string;
     twoStep: string;
+    yourApps: string;
   };
   /** One line under some titles, keyed like `titles`. */
   subtitles: Partial<Record<keyof Text['titles'], string>>;
@@ -62,6 +64,7 @@ export interface Text {
   resetPassword: ResetPasswordLabels;
   consent: ConsentLabels;
   accountSelect: AccountSelectLabels;
+  appLinks: AppLinksLabels;
   deviceActivate: DeviceActivateLabels;
   mfaVerify: MfaVerifyLabels;
   mfaSetup: MfaSetupLabels;
@@ -86,6 +89,7 @@ const fr: Text = {
     blocked: 'Accès bloqué',
     mfa: 'Validation en deux étapes',
     twoStep: 'Validation en deux étapes',
+    yourApps: 'Vos applications',
   },
   subtitles: {
     signIn: 'Ravi de vous revoir. Connectez-vous pour continuer.',
@@ -166,6 +170,7 @@ const fr: Text = {
     pending: 'Un instant',
   },
   accountSelect: { other: 'Utiliser un autre compte' },
+  appLinks: { open: 'Ouvrir' },
   mfaVerify: {
     intro: 'Saisissez le code à 6 chiffres affiché par votre application d’authentification.',
     backupIntro: 'Saisissez l’un des codes de secours que vous avez enregistrés. Chacun ne sert qu’une fois.',
@@ -254,6 +259,7 @@ const en: Text = {
     blocked: 'Access blocked',
     mfa: 'Two-step sign-in',
     twoStep: 'Two-step sign-in',
+    yourApps: 'Your apps',
   },
   subtitles: {
     signIn: 'Welcome back. Sign in to continue.',
@@ -334,6 +340,7 @@ const en: Text = {
     pending: 'One moment',
   },
   accountSelect: { other: 'Use another account' },
+  appLinks: { open: 'Open' },
   mfaVerify: {
     intro: 'Enter the 6-digit code from your authenticator app.',
     backupIntro: 'Enter one of the backup codes you saved. Each one works once.',

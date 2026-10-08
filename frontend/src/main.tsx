@@ -18,8 +18,10 @@ import './elements/account-select/account-select.js';
 import './elements/device-activate/device-activate.js';
 import './elements/mfa-verify/mfa-verify.js';
 import './elements/mfa-setup/mfa-setup.js';
+import './elements/app-links/app-links.js';
 import type { MfaEnrolment } from './elements/mfa-setup/mfa-setup.js';
 import type { AccountItem } from './elements/account-select/account-select.js';
+import type { AppLink } from './elements/app-links/app-links.js';
 import { createApi, type Redirect } from './host/api.js';
 import { applyBrand } from './host/brand.js';
 import { readConfig } from './host/config.js';
@@ -233,6 +235,12 @@ const screens: Record<string, () => Screen> = {
         <p>
           {t.notes.signedInAs} <strong>{str('email')}</strong>
         </p>
+        <Show when={((props.apps as AppLink[] | undefined) ?? []).length}>
+          <section class="idp-section">
+            <h2>{t.titles.yourApps}</h2>
+            <idp-app-links apps={(props.apps as AppLink[] | undefined) ?? []} labels={t.appLinks} />
+          </section>
+        </Show>
         <section class="idp-section">
           <h2>{t.titles.twoStep}</h2>
           <idp-mfa-setup

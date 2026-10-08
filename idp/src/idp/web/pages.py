@@ -16,7 +16,7 @@ from idp.config import get_settings
 from idp.db import db
 from idp.oauth.server import authorization, query_client
 from idp.security import csrf
-from idp.services import mfa, platform, sessions
+from idp.services import mfa, own_apps, platform, sessions
 
 bp = Blueprint("pages", __name__)
 
@@ -157,6 +157,10 @@ def account() -> Any:
         name=login.user.name,
         mfa=mfa.is_enabled(login.user),
         backup_codes_left=mfa.remaining_backup_codes(login.user),
+        apps=[
+            {"name": c.name, "url": c.homepage_url, "logo": c.brand.get("logo")}
+            for c in own_apps.own_apps_for(login.user)
+        ],
     )
 
 

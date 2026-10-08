@@ -7,6 +7,8 @@ The admin role is granted here and nowhere else: no screen can make anyone an ad
 person who controls the server is the root of trust.
 """
 
+from urllib.parse import urlparse
+
 from email_validator import EmailNotValidError, validate_email
 from flask import Flask
 from sqlalchemy import select
@@ -47,6 +49,9 @@ def register(app: Flask) -> None:
     @click.option("--grant-type", "grant_types", multiple=True, type=click.Choice(GRANT_TYPES))
     @click.option("--scope", default="openid profile email offline_access")
     @click.option("--first-party", is_flag=True, help="Skip the consent screen.")
+    @click.option(
+        "--homepage-url", help="Where the app lives; a first-party app is then listed on account pages."
+    )
     def clients_create(
         client_id: str,
         name: str,
@@ -56,6 +61,7 @@ def register(app: Flask) -> None:
         grant_types: tuple[str, ...],
         scope: str,
         first_party: bool,
+        homepage_url: str | None,
     ) -> None:
         """Register a client. A confidential client's secret is shown once."""
         if db().scalar(select(Client.id).where(Client.client_id == client_id)) is not None:
@@ -74,6 +80,7 @@ def register(app: Flask) -> None:
             scope=scope,
             token_endpoint_auth_method=method,
             first_party=first_party,
+            homepage_url=homepage_url,
         )
         db().add(client)
         secret = issue_client_secret(client) if confidential else None
@@ -81,6 +88,20 @@ def register(app: Flask) -> None:
         click.echo(f"Created {client_id} ({client_type}).")
         if secret:
             click.echo(f"Secret (shown once, store it now): {secret}")
+
+    @clients.command("homepage")
+    @click.argument("client_id")
+    @click.argument("url", required=False)
+    def clients_homepage(client_id: str, url: str | None) -> None:
+        """Set where a client lives, or clear it with no URL."""
+        client = db().scalar(select(Client).where(Client.client_id == client_id))
+        if client is None:
+            raise click.ClickException(f"no client {client_id}")
+        if url and (urlparse(url).scheme not in ("http", "https") or not urlparse(url).netloc):
+            raise click.ClickException("expected an http or https URL")
+        client.homepage_url = url or None
+        db().commit()
+        click.echo(f"{client_id}: {client.homepage_url or 'no homepage'}")
 
     @app.cli.group()
     def users() -> None:

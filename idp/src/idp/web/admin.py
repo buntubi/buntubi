@@ -77,6 +77,8 @@ class ClientIn(BaseModel):
     scope: str = "openid profile email"
     first_party: bool = False
     brand: Brand = Brand()
+    # Where the app lives; a first-party app with one is listed on account pages.
+    homepage_url: HttpUrl | None = None
 
 
 class ClientPatch(BaseModel):
@@ -87,6 +89,7 @@ class ClientPatch(BaseModel):
     first_party: bool | None = None
     brand: Brand | None = None
     disabled: bool | None = None
+    homepage_url: HttpUrl | None = None
 
 
 def _client_json(client: Client) -> dict[str, Any]:
@@ -100,6 +103,7 @@ def _client_json(client: Client) -> dict[str, Any]:
         "scope": client.scope,
         "first_party": client.first_party,
         "brand": client.brand,
+        "homepage_url": client.homepage_url,
         "disabled": client.disabled_at is not None,
         "organization_id": str(client.organization_id) if client.organization_id else None,
         "environment": client.environment,
@@ -169,6 +173,7 @@ def create_client(admin: User) -> Any:
         token_endpoint_auth_method="client_secret_basic" if confidential else "none",
         first_party=data.first_party,
         brand=data.brand.model_dump(mode="json", exclude_none=True),
+        homepage_url=str(data.homepage_url) if data.homepage_url else None,
     )
     db().add(client)
     secret = issue_client_secret(client) if confidential else None
@@ -198,6 +203,8 @@ def update_client(client_id: str, admin: User) -> Response:
         client.brand = patch.brand.model_dump(mode="json", exclude_none=True)
     if patch.disabled is not None:
         client.disabled_at = utcnow() if patch.disabled else None
+    if "homepage_url" in patch.model_fields_set:
+        client.homepage_url = str(patch.homepage_url) if patch.homepage_url else None
     audit.record("admin.client_updated", user=admin, client=client, fields=sorted(patch.model_fields_set))
     db().commit()
     return jsonify(client=_client_json(client))

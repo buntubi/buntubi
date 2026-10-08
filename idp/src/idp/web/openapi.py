@@ -296,6 +296,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "scope": STRING,
             "first_party": BOOL,
             "brand": {"type": "object"},
+            "homepage_url": MAYBE_STRING,
             "disabled": BOOL,
             "organization_id": MAYBE_STRING,
             "environment": ENVIRONMENT,

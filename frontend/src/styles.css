@@ -211,6 +211,10 @@ body {
   border-top: 1px solid var(--flx-ui-color-border, rgba(127, 127, 127, 0.2));
   border-bottom: 1px solid var(--flx-ui-color-border, rgba(127, 127, 127, 0.2));
 }
+/* Sections in a row share one line between them. */
+.idp-section + .idp-section {
+  border-top: 0;
+}
 .idp-section h2 {
   margin: 0;
   font-size: 16px;

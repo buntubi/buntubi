@@ -46,12 +46,14 @@ secret_of() { sed -n 's/^Secret (shown once, store it now): //p'; }
 echo "Registering the developer portal..."
 store portal PORTAL_CLIENT_SECRET "$(flask clients create --client-id developer-portal --name "Developer portal" \
   --type confidential --first-party --scope "openid profile email developer" \
-  --redirect-uri http://localhost:3410/auth/callback --post-logout-redirect-uri http://localhost:3410/ | secret_of)"
+  --redirect-uri http://localhost:3410/auth/callback --post-logout-redirect-uri http://localhost:3410/ \
+  --homepage-url http://localhost:3410/ | secret_of)"
 
 echo "Registering the owner console..."
 store console CONSOLE_CLIENT_SECRET "$(flask clients create --client-id owner-console --name "Owner console" \
   --type confidential --first-party --scope "openid profile email admin" \
-  --redirect-uri http://localhost:3420/auth/callback --post-logout-redirect-uri http://localhost:3420/ | secret_of)"
+  --redirect-uri http://localhost:3420/auth/callback --post-logout-redirect-uri http://localhost:3420/ \
+  --homepage-url http://localhost:3420/ | secret_of)"
 
 echo "Registering Postman..."
 flask clients create --client-id postman --name "Postman" --type public --first-party \
