@@ -37,6 +37,7 @@ export const launchPathView = (l: LaunchPathLogic) => (
       .tag { margin-left: 6px; font-size: 11px; color: var(--dp-muted); }
       li.check :deep(a) { font-size: 13px; color: var(--dp-accent-ink); text-decoration: none; font-weight: 500; }
       .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+      .actions :deep(.cta) { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--dp-radius-sm); background: var(--dp-accent); color: var(--dp-accent-fg); font-weight: 500; text-decoration: none; }
       .alert { margin: 12px 0 0; color: var(--dp-bad); font-size: 13px; }
       @media (max-width: 720px) {
         ol { grid-template-columns: 1fr; gap: 10px; }
@@ -109,9 +110,18 @@ export const launchPathView = (l: LaunchPathLogic) => (
       </ul>
       <Show when={l.action() && l.canPublish()}>
         <div class="actions">
-          <Button variant="solid" part="publish" disabled={l.busy()} onPress={l.publish}>
-            {() => l.action()}
-          </Button>
+          <Show
+            when={l.reviewHref()}
+            fallback={
+              <Button variant="solid" part="publish" disabled={l.busy()} onPress={l.publish}>
+                {() => l.action()}
+              </Button>
+            }
+          >
+            <Link href={l.reviewHref()} class="cta" part="publish">
+              {() => l.action()}
+            </Link>
+          </Show>
         </div>
       </Show>
       <Show when={l.missing().length}>

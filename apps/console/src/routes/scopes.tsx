@@ -40,7 +40,7 @@ export default function ScopesPage() {
     en.set('');
   };
   return (
-    <section>
+    <section class="legacy">
       <h1>{() => t('scopes.title')}</h1>
       <Card class="panel">
         <CardBody>

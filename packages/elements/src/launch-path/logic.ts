@@ -120,6 +120,8 @@ export interface LaunchPathLogic {
   action: () => string | null;
   status: () => string | null;
   canPublish: () => boolean;
+  /** Where the review is prepared, when going live needs one; empty otherwise. */
+  reviewHref: () => string;
   busy: () => boolean;
   error: () => string | null;
   missing: () => string[];

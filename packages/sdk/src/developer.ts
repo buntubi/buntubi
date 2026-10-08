@@ -41,7 +41,12 @@ export interface DeveloperService {
   deleteOrganization(organization: string): Promise<void>;
   createApp(input: { organization: string; app: NewApp }): Promise<{ app: App; client_secret: string | null }>;
   updateApp(input: { client_id: string; patch: AppPatch }): Promise<App>;
-  publishApp(client_id: string): Promise<{ state: 'live' | 'pending'; missing: string[] }>;
+  /** Live at once, or a review: `justifications` explains each sensitive scope it waits on. */
+  publishApp(input: {
+    client_id: string;
+    justifications?: Record<string, string>;
+    instructions?: string;
+  }): Promise<{ state: 'live' | 'pending'; missing: string[] }>;
   rotateSecret(client_id: string): Promise<{ app: App; client_secret: string }>;
   revokeSecret(input: { client_id: string; secret: string }): Promise<App>;
   createKey(input: {

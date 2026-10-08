@@ -93,6 +93,46 @@ export interface AppOverview {
   scopes: { live: string[]; waiting: string[]; sandbox: string[] };
 }
 
+/** One request to go live with sensitive scopes, and the platform owner's answer. */
+export interface AppReview {
+  id: string;
+  submitted_at: string;
+  submitted_by: { name: string; email: string } | null;
+  /** The sensitive scopes it asked for. */
+  scopes: string[];
+  /** Why each scope is needed and where people meet it. */
+  justifications: Record<string, string>;
+  /** How a reviewer can try the app. */
+  instructions: string;
+  decision: 'pending' | 'approved' | 'rejected';
+  note: string;
+  decided_at: string | null;
+  /** For the platform's staff only. */
+  decided_by?: { name: string; email: string } | null;
+}
+
+/** An app as a reviewer sees it: what it is, who answers for it, and its reviews. */
+export interface ReviewRequest {
+  client_id: string;
+  name: string;
+  client_type: string;
+  scope: string;
+  sensitive_scopes: string[];
+  homepage_url: string | null;
+  privacy_url: string | null;
+  terms_url: string | null;
+  brand: { logo?: string };
+  redirect_uris: string[];
+  organization: { id: string; name: string; support_email: string | null } | null;
+  owner: { email: string; name: string } | null;
+  requested_at: string;
+  description: string;
+  logo: string | null;
+  review_status: ReviewStatus;
+  /** The latest first; the first is the open one while the app waits. */
+  history: AppReview[];
+}
+
 export interface Product {
   slug: string;
   names: Localized;

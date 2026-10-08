@@ -1,15 +1,15 @@
 /** The frame of the pages outside a workspace: landing, developer terms, first organization. */
 import type { ComponentChild } from '@fluixi/dom';
 import { Button } from '@fluixi-ui/button';
-import { markOf, useBrand } from '../lib/brand.js';
-import { t } from '../lib/i18n.js';
-import { usePreferences } from '../lib/preferences.js';
+import { markOf, useBrand } from '@idp/shell/brand';
+import { locale, setLocale, t } from '../lib/i18n.js';
+import { usePreferences } from '@idp/shell/preferences';
 import { auth } from '../services/auth.js';
 
 export function PublicFrame(props: { children?: ComponentChild }): ComponentChild {
   const brand = useBrand();
   const user = auth.useUser();
-  const { switchLanguage } = usePreferences();
+  const { switchLanguage } = usePreferences('portal', { locale, setLocale });
   const children = props.children;
   return (
     <div class="public">

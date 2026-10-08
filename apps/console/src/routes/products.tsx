@@ -49,10 +49,14 @@ export default function ProductsPage() {
   const free = () =>
     (data()?.[1] ?? []).filter((scope) => !scope.product && scope.sensitivity !== 'restricted').map((scope) => scope.name);
   return (
-    <section>
-      <h1>{() => t('products.title')}</h1>
-      <p class="lead">{() => t('products.lead')}</p>
+    <div class="stack">
+      <header class="page-head">
+        <div>
+          <h1>{() => t('products.title')}</h1>
+          <p class="page-intro">{() => t('products.lead')}</p>
+        </div>
+      </header>
       <dp-product-catalog products={catalog()} freeScopes={free()} labels={labels()} describe={errorText} />
-    </section>
+    </div>
   );
 }

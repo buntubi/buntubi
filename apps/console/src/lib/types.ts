@@ -9,21 +9,8 @@ export interface Overview {
   pending_reviews: number;
 }
 
-export interface Review {
-  client_id: string;
-  name: string;
-  client_type: string;
-  scope: string;
-  sensitive_scopes: string[];
-  homepage_url: string | null;
-  privacy_url: string | null;
-  terms_url: string | null;
-  brand: { logo?: string };
-  redirect_uris: string[];
-  organization: { id: string; name: string; support_email: string | null } | null;
-  owner: { email: string; name: string } | null;
-  requested_at: string;
-}
+/** An app as a reviewer sees it: the SDK's shape, shared with the console's elements. */
+export type { ReviewRequest as Review } from '@idp/sdk/types';
 
 export interface OrganizationRow {
   id: string;

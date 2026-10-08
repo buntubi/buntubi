@@ -6,7 +6,7 @@ import { useRouteData } from '@fluixi/start/router';
 import { statusOf } from '@idp/elements/app-list/logic';
 import { appRouteData, type AppPageData } from '../../../../../lib/app-route.js';
 import { t } from '../../../../../lib/i18n.js';
-import { markOf } from '../../../../../lib/brand.js';
+import { markOf } from '@idp/shell/brand';
 
 export const routeData = appRouteData;
 

@@ -2,7 +2,7 @@
 import { useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { can } from '@idp/sdk/roles';
 import '@idp/elements/create-app';
-import { useBrand } from '../../../../lib/brand.js';
+import { useBrand } from '@idp/shell/brand';
 import { errorText, locale, t } from '../../../../lib/i18n.js';
 import { createAppLabels } from '../../../../lib/labels.js';
 import { handOverSecret } from '../../../../lib/one-time.js';

@@ -25,7 +25,7 @@ export default function UsersPage() {
   const q = $signal('');
   const submission = useSubmission(toggle);
   return (
-    <section>
+    <section class="legacy">
       <h1>{() => t('users.title')}</h1>
       <form
         class="form-row search"

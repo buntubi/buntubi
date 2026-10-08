@@ -1,18 +1,12 @@
-/* Layer order first, then fluixi-ui's tokens. Flat and ink, like the sign-in pages. */
+/* Layer order first, then fluixi-ui's tokens. Colours come from @idp/theme's --dp-* tokens. */
 @layer flx.reset, flx.base, flx.tokens, flx.components, flx.skin, flx.fx;
 @import '@fluixi-ui/tokens/tokens.css';
 
-:root {
-  color-scheme: light dark;
-  --flx-ui-color-primary: var(--flx-ui-color-fg);
-  --flx-ui-color-primary-fg: var(--flx-ui-color-bg);
-}
-
 body {
   margin: 0;
-  background: var(--flx-ui-color-bg);
-  color: var(--flx-ui-color-fg);
-  font-family: var(--flx-ui-font-sans, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  background: var(--dp-bg);
+  color: var(--dp-text);
+  font-family: var(--dp-font);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -20,7 +14,8 @@ body {
   position: fixed;
   inset: 0 0 auto;
   height: 2px;
-  background: var(--flx-ui-color-fg);
+  z-index: 10;
+  background: var(--dp-accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s;
@@ -29,96 +24,99 @@ body {
   transform: scaleX(0.7);
 }
 
-.bar {
+/* Page layout inside the shell; the shell itself is @idp/shell's. */
+.stack {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+}
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
   justify-content: space-between;
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 18px 24px;
+  gap: 16px;
 }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: inherit;
-  font-weight: 700;
-  font-size: 16px;
-  text-decoration: none;
+.page-head h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
-.brand-mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  background: var(--flx-ui-color-fg);
+.page-intro {
+  margin: 6px 0 0;
+  max-width: 64ch;
+  color: var(--dp-muted);
 }
-.bar-links {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.page-intro.mono {
+  font-family: var(--dp-mono);
+  font-size: 12.5px;
 }
-.bar-link {
-  color: var(--flx-ui-color-fg-muted);
-  font-size: 14px;
+.eyebrow {
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+.eyebrow a {
+  color: var(--dp-muted);
   text-decoration: none;
 }
 
-.page {
+/* The pages not rebuilt yet, kept under their root so their generic classes never reach the
+   elements in the shell. */
+.legacy .page {
   max-width: 1040px;
   margin: 0 auto;
   padding: 16px 24px 64px;
 }
-h1 {
+.legacy h1 {
   margin: 8px 0 20px;
   font-size: 30px;
   letter-spacing: -0.02em;
 }
-h2 {
+.legacy h2 {
   margin: 0 0 14px;
   font-size: 18px;
 }
-h3 {
+.legacy h3 {
   margin: 20px 0 10px;
   font-size: 15px;
 }
-.lead {
+.legacy .lead {
   max-width: 560px;
   color: var(--flx-ui-color-fg-muted);
   font-size: 16px;
   line-height: 1.55;
 }
-.muted {
+.legacy .muted {
   color: var(--flx-ui-color-fg-muted);
   font-size: 13.5px;
 }
-.mono {
+.legacy .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 13px;
   word-break: break-all;
 }
-
-.hero {
+.legacy .hero {
   padding: 72px 0;
 }
-.hero h1 {
+.legacy .hero h1 {
   max-width: 640px;
   font-size: clamp(32px, 5vw, 52px);
   line-height: 1.05;
 }
-.narrow {
+.legacy .narrow {
   max-width: 560px;
 }
-.wide {
+.legacy .wide {
   min-width: 200px;
 }
-
-.grid {
+.legacy .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
 }
-.tile {
+.legacy .tile {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -128,47 +126,45 @@ h3 {
   color: inherit;
   text-decoration: none;
 }
-.tile:hover {
+.legacy .tile:hover {
   background: var(--flx-ui-color-bg-muted, rgba(127, 127, 127, 0.14));
 }
-
-.panel {
+.legacy .panel {
   margin-bottom: 16px;
 }
-.back {
+.legacy .back {
   color: var(--flx-ui-color-fg-muted);
   font-size: 14px;
   text-decoration: none;
 }
-.title-row {
+.legacy .title-row {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-.badges {
+.legacy .badges {
   display: inline-flex;
   gap: 6px;
 }
-
-.rows {
+.legacy .rows {
   display: flex;
   flex-direction: column;
   margin: 0 0 12px;
   padding: 0;
   list-style: none;
 }
-.rows li {
+.legacy .rows li {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid var(--flx-ui-color-border, rgba(127, 127, 127, 0.18));
 }
-.rows li.inactive {
+.legacy .rows li.inactive {
   opacity: 0.5;
 }
-.row-link,
-.row-text {
+.legacy .row-link,
+.legacy .row-text {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
@@ -178,41 +174,39 @@ h3 {
   color: inherit;
   text-decoration: none;
 }
-
-.form-row {
+.legacy .form-row {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 12px;
 }
-.form-row .field {
+.legacy .form-row .field {
   flex: 1 1 200px;
 }
-.form-stack {
+.legacy .form-stack {
   display: flex;
   flex-direction: column;
   gap: 14px;
   max-width: 560px;
 }
-.field {
+.legacy .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-.field-label {
+.legacy .field-label {
   font-size: 13px;
   font-weight: 600;
 }
-.field-hint {
+.legacy .field-hint {
   color: var(--flx-ui-color-fg-muted);
   font-size: 12.5px;
 }
-.choice {
+.legacy .choice {
   display: flex;
   gap: 6px;
 }
-
-.alert {
+.legacy .alert {
   margin: 12px 0 0;
   padding: 10px 12px;
   border-radius: 10px;
@@ -220,60 +214,34 @@ h3 {
   color: var(--flx-ui-color-danger-text);
   font-size: 14px;
 }
-.alert p {
+.legacy .alert p {
   margin: 0;
 }
-.reveal {
+.legacy .reveal {
   margin: 0 0 14px;
   padding: 14px;
   border-radius: 12px;
   background: var(--flx-ui-color-bg-subtle, rgba(127, 127, 127, 0.08));
 }
-.reveal p {
+.legacy .reveal p {
   margin: 0 0 10px;
   font-size: 14px;
 }
-.reveal-row {
+.legacy .reveal-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.reveal-row code {
+.legacy .reveal-row code {
   flex: 1;
 }
-
-@media (max-width: 640px) {
-  .page,
-  .bar {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-/* Console additions. */
-.sections {
-  display: flex;
-  gap: 4px;
-}
-.section-link {
-  padding: 6px 10px;
-  border-radius: 8px;
-  color: var(--flx-ui-color-fg-muted);
-  font-size: 14px;
-  text-decoration: none;
-}
-.section-link.current {
-  background: var(--flx-ui-color-bg-subtle, rgba(127, 127, 127, 0.1));
-  color: var(--flx-ui-color-fg);
-  font-weight: 600;
-}
-.stats {
+.legacy .stats {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
 }
-.stat {
+.legacy .stat {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -283,45 +251,40 @@ h3 {
   color: inherit;
   text-decoration: none;
 }
-.stat.attention {
+.legacy .stat.attention {
   background: var(--flx-ui-color-fg);
   color: var(--flx-ui-color-bg);
 }
-.stat.attention .muted {
+.legacy .stat.attention .muted {
   color: inherit;
   opacity: 0.75;
 }
-.stat-value {
+.legacy .stat-value {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-.links {
+.legacy .links {
   display: flex;
   gap: 14px;
   font-size: 14px;
 }
-.links a,
-.button-link {
+.legacy .links a,
+.legacy .button-link {
   color: var(--flx-ui-color-fg);
   font-weight: 600;
 }
-.search {
+.legacy .search {
   max-width: 480px;
   margin-bottom: 16px;
 }
-@media (max-width: 760px) {
-  .sections {
-    display: none;
-  }
-}
-.search > :first-child {
+.legacy .search > :first-child {
   flex: 1 1 240px;
 }
-.panel .field + .field,
-.panel .field + .form-row {
+.legacy .panel .field + .field,
+.legacy .panel .field + .form-row {
   margin-top: 12px;
 }
-.panel .title-row + .muted {
+.legacy .panel .title-row + .muted {
   margin-top: 0;
 }

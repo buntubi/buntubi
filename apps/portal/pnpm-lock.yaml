@@ -65,6 +65,9 @@ importers:
       '@idp/sdk':
         specifier: link:../../packages/sdk
         version: link:../../packages/sdk
+      '@idp/shell':
+        specifier: link:../../packages/shell
+        version: link:../../packages/shell
       '@idp/theme':
         specifier: link:../../packages/theme
         version: link:../../packages/theme

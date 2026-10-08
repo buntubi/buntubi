@@ -251,85 +251,7 @@ body {
   }
 }
 
-/* The workspace shell: sidebar, top bar, page. Layout only; the elements draw themselves. */
-.shell {
-  display: flex;
-  min-height: 100vh;
-}
-.shell-sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  flex: none;
-}
-.shell-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 28px;
-  border-bottom: 1px solid var(--dp-border);
-  background: var(--dp-surface);
-}
-.crumbs {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  color: var(--dp-muted);
-  font-size: 13px;
-}
-
-.crumbs a {
-  color: var(--dp-muted);
-  text-decoration: none;
-}
-
-.crumbs a:hover {
-  color: var(--dp-text);
-}
-
-.crumbs [aria-current='page'] {
-  color: var(--dp-text);
-  font-weight: 500;
-}
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.topbar-link {
-  color: var(--dp-muted);
-  font-size: 13px;
-  text-decoration: none;
-}
-.topbar-link:hover {
-  color: var(--dp-text);
-}
-.avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--dp-accent-soft);
-  color: var(--dp-accent-ink);
-  font-size: 12px;
-  font-weight: 700;
-}
-.workspace {
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 32px 28px 56px;
-  box-sizing: border-box;
-}
+/* Page layout inside the workspace; the shell itself is @idp/shell's. */
 .stack {
   display: flex;
   flex-direction: column;
@@ -384,23 +306,4 @@ body {
   margin: 0 auto;
   padding: 0 28px;
   box-sizing: border-box;
-}
-@media (max-width: 720px) {
-  .shell-sidebar {
-    position: static;
-    height: auto;
-    --dp-sidebar: 100%;
-  }
-  .shell {
-    flex-direction: column;
-  }
-  .topbar {
-    flex-wrap: wrap;
-    row-gap: 8px;
-  }
-  .crumbs {
-    flex-basis: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-  }
 }

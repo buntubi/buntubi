@@ -1,46 +1,20 @@
-/** The entrance: why the console is closed to this visitor, or the overview. */
+/** The entrance: the counts, and the way to what needs an answer. */
 import { cache, useRouteData } from '@fluixi/start/router';
-import { Button } from '@fluixi-ui/button';
 import { Card, CardBody } from '@fluixi-ui/card';
 import { t } from '../lib/i18n.js';
 import { loadOverview } from '../server/admin.js';
-import { auth, idpUrl } from '../services/auth.js';
 
 const overview = cache(() => loadOverview(), 'overview');
 export const routeData = () => overview();
 
 type Data = Awaited<ReturnType<typeof loadOverview>>;
 
+/** The gate is the root layout's; a visitor who reaches this page may use the console. */
 export default function OverviewPage() {
-  const data = useRouteData<Data>();
-  const gate = () => data()?.gate ?? null;
   return (
-    <Switch fallback={<Dashboard />}>
-      <Match when={gate() === 'signed_out'}>
-        <section class="hero">
-          <h1>{() => t('gate.signedOut.title')}</h1>
-          <p class="lead">{() => t('gate.signedOut.text')}</p>
-          <Button variant="solid" class="wide" onPress={() => auth.signIn({ returnTo: '/' })}>
-            {() => t('gate.signIn')}
-          </Button>
-        </section>
-      </Match>
-      <Match when={gate() === 'not_admin'}>
-        <section class="narrow">
-          <h1>{() => t('gate.notAdmin.title')}</h1>
-          <p class="lead">{() => t('gate.notAdmin.text')}</p>
-        </section>
-      </Match>
-      <Match when={gate() === 'mfa_required'}>
-        <section class="narrow">
-          <h1>{() => t('gate.mfa.title')}</h1>
-          <p class="lead">{() => t('gate.mfa.text')}</p>
-          <a class="button-link" href={`${idpUrl}/account`}>
-            {() => t('gate.mfa.account')}
-          </a>
-        </section>
-      </Match>
-    </Switch>
+    <div class="legacy">
+      <Dashboard />
+    </div>
   );
 }
 

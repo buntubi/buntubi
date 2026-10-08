@@ -19,6 +19,8 @@ export interface AdminService {
   setAvailability(input: { slug: string; availability: Availability }): Promise<void>;
   /** Puts a scope in a product, or takes it out with `null`. */
   setScopeProduct(input: { scope: string; product: string | null }): Promise<void>;
+  /** Answers an app's review: approving puts it live; a rejection needs a note. */
+  review(input: { client_id: string; approve: boolean; note: string }): Promise<void>;
 }
 
 export const Admin = injectionToken<AdminService>('Admin');

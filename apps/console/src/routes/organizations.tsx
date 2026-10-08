@@ -27,7 +27,7 @@ export default function OrganizationsPage() {
   const navigate = useNavigate();
   const q = $signal('');
   return (
-    <section>
+    <section class="legacy">
       <h1>{() => t('organizations.title')}</h1>
       <form
         class="form-row search"

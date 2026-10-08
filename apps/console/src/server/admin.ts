@@ -3,17 +3,29 @@
  * the access token stays in the session cookie. Refusals the console words are returned as
  * values; anything else throws its code.
  */
+import type { Brand } from '@idp/sdk/types';
 import type { Gate, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH';
 
-class AdminRefusal extends Error {}
+/**
+ * A refusal from the admin API. Its `status` is the provider's, so the browser gets a 4xx it can
+ * word, never a 500; a provider fault has none and stays a server error.
+ */
+class AdminRefusal extends Error {
+  constructor(
+    readonly code: string,
+    readonly status?: number,
+  ) {
+    super(code);
+  }
+}
 
 async function call<T>(method: Method, path: string, body?: unknown): Promise<T> {
   const { requestAuth } = await import('@fluixi/oauth2/server');
   const { publicEnv } = await import('@fluixi/start/env');
   const { fetch } = await requestAuth();
-  if (!fetch) throw new AdminRefusal('signed_out');
+  if (!fetch) throw new AdminRefusal('signed_out', 401);
   const response = await fetch(`${publicEnv().IDP_URL}/admin/api${path}`, {
     method,
     headers: body === undefined ? {} : { 'content-type': 'application/json' },
@@ -21,7 +33,8 @@ async function call<T>(method: Method, path: string, body?: unknown): Promise<T>
   });
   const data = (await response.json().catch(() => ({}))) as { error?: unknown };
   if (!response.ok) {
-    throw new AdminRefusal(typeof data.error === 'string' ? data.error : response.status === 401 ? 'signed_out' : 'generic');
+    const code = typeof data.error === 'string' ? data.error : response.status === 401 ? 'signed_out' : 'generic';
+    throw new AdminRefusal(code, response.status < 500 ? response.status : undefined);
   }
   return data as T;
 }
@@ -36,16 +49,38 @@ export const loadOverview = async (): Promise<{ gate: Gate; overview: Overview |
     const reviews = (await call<{ items: Review[] }>('GET', '/reviews')).items;
     return { gate: null, overview, reviews };
   } catch (error) {
-    if (error instanceof AdminRefusal && GATES.has(error.message)) {
-      return { gate: error.message as Gate, overview: null, reviews: [] };
+    if (error instanceof AdminRefusal && GATES.has(error.code)) {
+      return { gate: error.code as Gate, overview: null, reviews: [] };
     }
     throw error;
   }
 };
 
-export const loadReviews = async (): Promise<Review[]> => {
+/** The apps waiting, and when the list was read, so the page counts the same wait on both sides. */
+export const loadReviews = async (): Promise<{ reviews: Review[]; now: string }> => {
   'use server';
-  return (await call<{ items: Review[] }>('GET', '/reviews')).items;
+  return { reviews: (await call<{ items: Review[] }>('GET', '/reviews')).items, now: new Date().toISOString() };
+};
+
+/** One app as a reviewer sees it, with the scope catalogue for what its scopes mean. */
+export const loadReview = async (clientId: string): Promise<{ review: Review | null; scopes: ScopeRow[] }> => {
+  'use server';
+  const scopes = (await call<{ items: ScopeRow[] }>('GET', '/scopes')).items;
+  try {
+    const review = (await call<{ app: Review }>('GET', `/apps/${encodeURIComponent(clientId)}/review`)).app;
+    return { review, scopes };
+  } catch (error) {
+    if (error instanceof AdminRefusal && error.code === 'not_found') return { review: null, scopes };
+    throw error;
+  }
+};
+
+/** The platform's brand: public, the same for everyone. */
+export const loadBrand = async (): Promise<Brand> => {
+  'use server';
+  const { publicEnv } = await import('@fluixi/start/env');
+  const response = await fetch(`${publicEnv().IDP_URL}/.well-known/brand.json`).catch(() => null);
+  return response?.ok ? ((await response.json()) as Brand) : {};
 };
 
 export const reviewApp = async (input: { clientId: string; approve: boolean; note: string }): Promise<void> => {

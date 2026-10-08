@@ -57,6 +57,7 @@ export default function AppOverviewPage() {
         overview={overview()}
         links={links()}
         canPublish={can(data()?.app.role, 'publish')}
+        reviewHref={section('review')}
         labels={launchPathLabels()}
         describe={errorText}
       />

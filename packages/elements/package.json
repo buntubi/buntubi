@@ -40,7 +40,16 @@
     "./organization-settings/logic": "./src/organization-settings/logic.ts",
     "./product-browser": "./src/product-browser/product-browser.tsx",
     "./product-browser/view": "./src/product-browser/view.tsx",
-    "./product-browser/logic": "./src/product-browser/logic.ts"
+    "./product-browser/logic": "./src/product-browser/logic.ts",
+    "./app-review": "./src/app-review/app-review.tsx",
+    "./app-review/view": "./src/app-review/view.tsx",
+    "./app-review/logic": "./src/app-review/logic.ts",
+    "./review-queue": "./src/review-queue/review-queue.tsx",
+    "./review-queue/view": "./src/review-queue/view.tsx",
+    "./review-queue/logic": "./src/review-queue/logic.ts",
+    "./review-decision": "./src/review-decision/review-decision.tsx",
+    "./review-decision/view": "./src/review-decision/view.tsx",
+    "./review-decision/logic": "./src/review-decision/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

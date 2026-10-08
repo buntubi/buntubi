@@ -1,10 +1,12 @@
 /** Element words, built from the catalogue in one place so a language change reaches them all. */
 import type { AppListLabels } from '@idp/elements/app-list/logic';
+import type { AppReviewLabels } from '@idp/elements/app-review/logic';
 import type { AppSettingsLabels } from '@idp/elements/app-settings/logic';
 import type { CreateAppLabels } from '@idp/elements/create-app/logic';
 import type { OrganizationSettingsLabels } from '@idp/elements/organization-settings/logic';
 import type { ProductBrowserLabels } from '@idp/elements/product-browser/logic';
 import type { TeamLabels } from '@idp/elements/team/logic';
+import type { ShellLabels } from '@idp/shell/shell';
 import type { CredentialsLabels } from '@idp/elements/credentials/logic';
 import type { LaunchPathLabels } from '@idp/elements/launch-path/logic';
 import type { PermissionsLabels } from '@idp/elements/permissions/logic';
@@ -258,4 +260,53 @@ export const productBrowserLabels = (): ProductBrowserLabels => ({
   docs: t('pb.docs'),
   empty: t('pm.empty'),
   noMatch: t('pb.noMatch'),
+});
+
+export const appReviewLabels = (): AppReviewLabels => ({
+  readiness: t('rv.readiness'),
+  readinessCount: t('rv.readinessCount'),
+  ready: t('rv.ready'),
+  checks: launchPathLabels().checks,
+  fix: t('lp.fix'),
+  status: t('rv.status'),
+  stages: {
+    draft: t('rv.stage.draft'),
+    in_review: t('rv.stage.in_review'),
+    changes_requested: t('rv.stage.changes_requested'),
+    live: t('rv.stage.live'),
+  },
+  stageTexts: {
+    draft: t('rv.text.draft'),
+    in_review: t('rv.text.in_review'),
+    changes_requested: t('rv.text.changes_requested'),
+    live: t('rv.text.live'),
+  },
+  feedback: t('rv.feedback'),
+  submission: t('rv.submission'),
+  submissionIntro: t('rv.submissionIntro'),
+  noReviewNeeded: t('rv.noReviewNeeded'),
+  justify: t('rv.justify'),
+  justifyHint: t('rv.justifyHint'),
+  instructions: t('rv.instructions'),
+  instructionsHint: t('rv.instructionsHint'),
+  submit: t('rv.submission'),
+  resubmit: t('rv.resubmit'),
+  submitted: t('rv.submitted'),
+  missing: t('lp.missing'),
+  history: t('rv.history'),
+  showSubmission: t('rv.showSubmission'),
+  noHistory: t('rv.noHistory'),
+  decisions: { pending: t('rv.decision.pending'), approved: t('rv.decision.approved'), rejected: t('rv.decision.rejected') },
+  submittedOn: t('rv.submittedOn'),
+  decidedOn: t('rv.decidedOn'),
+  asked: t('rv.asked'),
+  error: t('error.generic'),
+});
+
+export const shellLabels = (): ShellLabels => ({
+  theme: t('shell.theme'),
+  schemes: { light: t('shell.light'), dark: t('shell.dark'), system: t('shell.system') },
+  navigation: t('shell.navigation'),
+  language: t('nav.language'),
+  signOut: t('nav.signOut'),
 });

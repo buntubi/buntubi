@@ -24,6 +24,8 @@ import {
 } from '../server/developer.js';
 
 const app = { invalidates: ['workspace', 'app'] };
+// Going live also writes the app's review history.
+const submission = { invalidates: ['workspace', 'app', 'reviews'] };
 const organization = { invalidates: ['workspace'] };
 
 const service: DeveloperService = {
@@ -32,10 +34,14 @@ const service: DeveloperService = {
   deleteOrganization: action((id: string) => deleteOrganization(id), 'organization.delete', { invalidates: ['workspace', 'home'] }),
   createApp: action(({ organization: id, app: input }) => createApp(id, input), 'app.create', organization),
   updateApp: action(({ client_id, patch }) => updateApp(client_id, patch), 'app.update', app),
-  publishApp: action(async (clientId: string) => {
-    const answer = await publishApp(clientId);
-    return { state: answer.state === 'live' ? 'live' : 'pending', missing: answer.missing } as const;
-  }, 'app.publish', app),
+  publishApp: action(
+    async ({ client_id, ...input }) => {
+      const answer = await publishApp(client_id, input);
+      return { state: answer.state === 'live' ? 'live' : 'pending', missing: answer.missing } as const;
+    },
+    'app.publish',
+    submission,
+  ),
   rotateSecret: action((clientId: string) => rotateSecret(clientId), 'secret.rotate', app),
   revokeSecret: action(({ client_id, secret }) => revokeSecret(client_id, secret), 'secret.revoke', app),
   createKey: action(({ organization: id, ...input }) => createKey(id, input), 'key.create', organization),

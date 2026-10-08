@@ -8,6 +8,7 @@ export type {
   ApiKey,
   App,
   AppOverview,
+  AppReview,
   Brand,
   Me,
   Member,

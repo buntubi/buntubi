@@ -5,7 +5,7 @@
  * page words.
  */
 import type { AppPatch, NewApp } from '@idp/sdk/developer';
-import type { ApiKey, App, AppOverview, AppWorkspace, Brand, Home, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
+import type { ApiKey, App, AppOverview, AppReview, AppWorkspace, Brand, Home, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -154,10 +154,13 @@ export const updateApp = async (clientId: string, patch: AppPatch): Promise<App>
 };
 
 /** `missing` lists what the app still lacks to go live, when that is why it is not live. */
-export const publishApp = async (clientId: string): Promise<{ state: 'live' | 'pending' | 'sandbox'; missing: string[] }> => {
+export const publishApp = async (
+  clientId: string,
+  submission: { justifications?: Record<string, string>; instructions?: string } = {},
+): Promise<{ state: 'live' | 'pending' | 'sandbox'; missing: string[] }> => {
   'use server';
   try {
-    const answer = await call<{ state: 'live' | 'pending' }>('POST', `/apps/${encodeURIComponent(clientId)}/publish`);
+    const answer = await call<{ state: 'live' | 'pending' }>('POST', `/apps/${encodeURIComponent(clientId)}/publish`, submission);
     return { state: answer.state, missing: [] };
   } catch (error) {
     if (error instanceof ApiRefusal && error.code === 'missing_for_live') {
@@ -165,6 +168,12 @@ export const publishApp = async (clientId: string): Promise<{ state: 'live' | 'p
     }
     throw error;
   }
+};
+
+/** The app's reviews, the latest first. */
+export const loadAppReviews = async (clientId: string): Promise<AppReview[]> => {
+  'use server';
+  return (await call<{ items: AppReview[] }>('GET', `/apps/${encodeURIComponent(clientId)}/reviews`)).items;
 };
 
 export const rotateSecret = async (clientId: string): Promise<{ client_secret: string; app: App }> => {

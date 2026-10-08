@@ -29,6 +29,7 @@
     "@fluixi/start": "link:../../../../fluixi-core/packages/start",
     "@idp/elements": "link:../../packages/elements",
     "@idp/sdk": "link:../../packages/sdk",
+    "@idp/shell": "link:../../packages/shell",
     "@idp/theme": "link:../../packages/theme"
   },
   "devDependencies": {

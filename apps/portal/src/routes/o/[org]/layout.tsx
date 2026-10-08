@@ -3,15 +3,13 @@
  * page. The organization comes from the address, so a page can be shared and reloaded as is.
  */
 import { cache, useLocation, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
-import { Button } from '@fluixi-ui/button';
-import { useColorScheme } from '@fluixi/core';
-import '@idp/elements/sidebar';
 import type { SidebarContext, SidebarGroup } from '@idp/elements/sidebar/logic';
-import { markOf, useBrand } from '../../../lib/brand.js';
-import { t } from '../../../lib/i18n.js';
-import { icons } from '../../../lib/icons.js';
-import { sidebarLabels } from '../../../lib/labels.js';
-import { usePreferences } from '../../../lib/preferences.js';
+import { markOf, useBrand } from '@idp/shell/brand';
+import { icons } from '@idp/shell/icons';
+import { usePreferences } from '@idp/shell/preferences';
+import { Shell, type Crumb } from '@idp/shell/shell';
+import { locale, setLocale, t } from '../../../lib/i18n.js';
+import { shellLabels, sidebarLabels } from '../../../lib/labels.js';
 import type { Workspace } from '../../../lib/types.js';
 import { paramOf } from '../../../lib/params.js';
 import { appPath } from '../../../lib/paths.js';
@@ -20,14 +18,11 @@ import { loadWorkspace } from '../../../server/developer.js';
 export const workspace = cache((organization: string) => loadWorkspace(organization), 'workspace');
 export const routeData = (args: RouteDataArgs) => workspace(paramOf(args, 'org'));
 
-const SCHEMES = ['light', 'dark', 'system'] as const;
-
 export default function WorkspaceLayout() {
   const data = useRouteData<Workspace>();
   const brand = useBrand();
   const location = useLocation();
-  const scheme = useColorScheme();
-  const { switchLanguage, sidebarFolded: collapsed } = usePreferences();
+  const { switchLanguage, sidebarFolded: collapsed } = usePreferences('portal', { locale, setLocale });
 
   const organization = () => data()?.current?.organization ?? null;
   const base = () => `/o/${organization()?.id ?? ''}`;
@@ -62,6 +57,7 @@ export default function WorkspaceLayout() {
             item(t('appws.credentials'), section('credentials'), icons.key),
           ],
         },
+        { label: t('appws.ship'), items: [item(t('appws.review'), section('review'), icons.shield)] },
       ];
     }
     return [
@@ -75,9 +71,12 @@ export default function WorkspaceLayout() {
       },
     ];
   };
-  const nextScheme = () => SCHEMES[(SCHEMES.indexOf(scheme.value()) + 1) % SCHEMES.length]!;
-  const schemeIcon = () => (scheme.value() === 'system' ? icons.monitor : scheme.value() === 'dark' ? icons.moon : icons.sun);
-  const initials = () => markOf(data()?.me.name || data()?.me.email);
+
+  const crumbs = (): Crumb[] => {
+    const current = app();
+    if (!current) return [{ label: organization()?.name ?? '' }];
+    return [{ label: organization()?.name ?? '', href: base() }, { label: current.name }];
+  };
 
   // Creating an app is a focused flow: the page alone, with a way out.
   const focused = () => location.pathname === `${base()}/apps/new`;
@@ -85,54 +84,21 @@ export default function WorkspaceLayout() {
   return (
     <Show when={organization()} fallback={<NotFound />}>
       <Show when={!focused()} fallback={<Focused brand={brand().name ?? ''} close={base()} />}>
-      <div class="shell" data-collapsed={() => (collapsed() ? '' : undefined)}>
-        <dp-sidebar
-          class="shell-sidebar"
-          brand={{ name: brand().name ?? '', mark: markOf(brand().name), href: base() }}
-          context={context()}
-          groups={groups()}
-          collapsed={collapsed()}
-          labels={sidebarLabels()}
-          onToggle={(event: CustomEvent<{ collapsed: boolean }>) => collapsed.set(event.detail.collapsed)}
-        />
-        <div class="shell-main">
-          <header class="topbar">
-            <nav class="crumbs" aria-label={() => t('shell.navigation')}>
-              <Show when={app()} fallback={<span>{() => organization()?.name ?? ''}</span>}>
-                <Link href={base()}>{() => organization()?.name ?? ''}</Link>
-                <span aria-hidden="true">/</span>
-                <span aria-current="page">{() => app()?.name ?? ''}</span>
-              </Show>
-            </nav>
-            <div class="topbar-actions">
-              <Button
-                variant="outline"
-                tone="neutral"
-                size="sm"
-                aria-label={() => `${t('shell.theme')}: ${t(`shell.${scheme.value()}`)}`}
-                title={() => t(`shell.${nextScheme()}`)}
-                onPress={() => scheme.set(nextScheme())}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-                  <path d={schemeIcon()} />
-                </svg>
-              </Button>
-              <Button variant="ghost" tone="neutral" size="sm" onPress={switchLanguage}>
-                {() => t('nav.language')}
-              </Button>
-              <a class="topbar-link" href="/auth/logout">
-                {() => t('nav.signOut')}
-              </a>
-              <span class="avatar" title={() => data()?.me.email ?? ''}>
-                {initials}
-              </span>
-            </div>
-          </header>
-          <main class="workspace">
-            <Outlet />
-          </main>
-        </div>
-      </div>
+      <Shell
+        brand={{ name: brand().name ?? '', href: base() }}
+        context={context()}
+        groups={groups()}
+        sidebarLabels={sidebarLabels()}
+        collapsed={collapsed()}
+        onToggle={(folded) => collapsed.set(folded)}
+        crumbs={crumbs()}
+        user={data()?.me ?? null}
+        signOutHref="/auth/logout"
+        onLanguage={switchLanguage}
+        labels={shellLabels()}
+      >
+        <Outlet />
+      </Shell>
       </Show>
     </Show>
   );

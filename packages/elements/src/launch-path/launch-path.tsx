@@ -19,6 +19,8 @@ const props = {
   links: prop.object<Partial<Record<CheckKey, string>>>({}),
   /** Whether this member may ask for the app to go live. */
   canPublish: prop.boolean(false),
+  /** Where a review is prepared: an app with sensitive scopes is sent there to explain them. */
+  reviewHref: prop.string(''),
   labels: prop.object<Partial<LaunchPathLabels>>({}),
   /** Words a refusal for the reader; the generic label when absent. */
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
@@ -59,6 +61,7 @@ export class DpLaunchPath extends typedElement(props) {
       status: () =>
         this.overview?.stage === 'live' ? labels().live : this.overview?.stage === 'in_review' ? labels().inReview : null,
       canPublish: () => this.canPublish,
+      reviewHref: () => ((this.overview?.scopes.waiting.length ?? 0) > 0 ? this.reviewHref : ''),
       busy,
       error,
       missing: () => missing().map(named),
@@ -66,7 +69,7 @@ export class DpLaunchPath extends typedElement(props) {
         busy.set(true);
         error.set(null);
         try {
-          missing.set((await developer.publishApp(this.clientId)).missing);
+          missing.set((await developer.publishApp({ client_id: this.clientId })).missing);
         } catch (failure) {
           error.set(this.describe?.(failure) ?? labels().error);
         } finally {
