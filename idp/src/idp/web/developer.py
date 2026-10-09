@@ -15,6 +15,7 @@ from authlib.oauth2.rfc6749 import scope_to_list
 from flask import Blueprint, Response, abort, jsonify
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
+from idp import plugins
 from idp.db import db, utcnow
 from idp.models import ApiKey, ApiProduct, Client, ClientSecret, OrganizationMember, Scope, User
 from idp.oauth.server import require_token
@@ -258,6 +259,13 @@ def accept_terms(me: User) -> Response:
 
 
 # ── API products ──────────────────────────────────────────────────────────────────────────────
+
+
+@bp.get("/plugins")
+@developer()
+def list_plugins(me: User) -> Response:
+    """The plugins this deployment runs, by id: the portal shows the pages of these only."""
+    return jsonify(items=[{"id": plugin.id, "ui": plugin.ui()} for plugin in plugins.active()])
 
 
 @bp.get("/products")

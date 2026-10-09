@@ -197,3 +197,26 @@ def emit(name: str, payload: dict[str, Any]) -> None:
             plugin.on_event(name, payload)
         except Exception:
             log.exception("plugin %s failed on %s", plugin.id, name)
+
+
+def require_admin(view: Any) -> Any:
+    """For a plugin's own API: the caller is the platform owner, with two-step sign-in. The view
+    gets `admin` (the User) as a keyword, as the provider's admin API does."""
+    from idp.web.admin import admin_only
+
+    return admin_only(view)
+
+
+def require_developer(view: Any) -> Any:
+    """For a plugin's own API: a signed-in developer who accepted the terms. The view gets `me`."""
+    from idp.web.developer import developer
+
+    return developer()(view)
+
+
+def member_of(user: User, organization_id: str, ability: str = "read") -> Any:
+    """The user's membership of the organization, refusing (403 or 404) when they may not `ability`
+    there: what a plugin's organization-scoped endpoint checks first."""
+    from idp.services import platform
+
+    return platform.membership(user, organization_id, ability)

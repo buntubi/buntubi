@@ -32,6 +32,8 @@ export interface Workspace {
   products: Product[];
   /** The organization in the address, or null when it is not one of theirs. */
   current: OrganizationDetail | null;
+  /** The plugins the provider runs, by id: their pages show in the sidebar. */
+  plugins: string[];
 }
 
 /** One app's workspace: null throughout when the address names an app the reader cannot see. */

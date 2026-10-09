@@ -9,6 +9,7 @@ declare module '@fluixi/start/env' {
   interface ServerEnv {
     CONSOLE_CLIENT_ID: string;
     CONSOLE_CLIENT_SECRET: string;
+    IDP_UI_PLUGINS: string;
     SESSION_SECRET: string;
   }
 }

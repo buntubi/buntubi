@@ -70,12 +70,16 @@ export const loadBrand = async (): Promise<Brand> => {
  */
 export const loadWorkspace = async (organizationId: string): Promise<Workspace> => {
   'use server';
-  const [me, list, products] = await Promise.all([
+  const [me, list, products, plugins] = await Promise.all([
     call<Me>('GET', '/me'),
     call<{ items: Organization[] }>('GET', '/organizations'),
     call<{ items: Product[] }>('GET', '/products'),
+    call<{ items: { id: string }[] }>('GET', '/plugins').then(
+      (reply) => reply.items.map((plugin) => plugin.id),
+      () => [] as string[],
+    ),
   ]);
-  const base = { me, organizations: list.items, products: products.items };
+  const base = { me, organizations: list.items, products: products.items, plugins };
   try {
     const detail = await call<OrganizationDetail>('GET', `/organizations/${encodeURIComponent(organizationId)}`);
     return { ...base, current: detail };
@@ -232,4 +236,24 @@ export const changeMember = async (
 export const removeMember = async (organizationId: string, memberId: string): Promise<void> => {
   'use server';
   await call('DELETE', `/organizations/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(memberId)}`);
+};
+
+/** A plugin's own API, as the signed-in developer. */
+export const pluginCall = async (input: { plugin: string; method: string; path: string; body?: unknown }): Promise<unknown> => {
+  'use server';
+  const { requestAuth } = await import('@fluixi/oauth2/server');
+  const { publicEnv } = await import('@fluixi/start/env');
+  const { fetch } = await requestAuth();
+  if (!fetch) throw new ApiRefusal('signed_out', {}, 401);
+  const response = await fetch(`${publicEnv().IDP_URL}/api/plugins/${encodeURIComponent(input.plugin)}${input.path}`, {
+    method: input.method,
+    headers: input.body === undefined ? {} : { 'content-type': 'application/json' },
+    body: input.body === undefined ? undefined : JSON.stringify(input.body),
+  });
+  const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+  if (!response.ok) {
+    const { error, ...details } = data;
+    throw new ApiRefusal(typeof error === 'string' ? error : 'generic', details, response.status < 500 ? response.status : undefined);
+  }
+  return data;
 };

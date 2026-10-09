@@ -13,4 +13,6 @@ export const paths = {
   users: (q?: string) => `/users${query(q)}`,
   scopes: () => '/scopes',
   products: () => '/products',
+  /** A page a plugin adds. */
+  plugin: (plugin: string, section: string) => `/p/${segment(plugin)}/${segment(section)}`,
 } as const;

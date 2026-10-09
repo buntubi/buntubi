@@ -8,6 +8,7 @@ import {
   loadBrand,
   loadOrganizations,
   loadOverview,
+  loadPlugins,
   loadProducts,
   loadReview,
   loadReviews,
@@ -23,3 +24,4 @@ export const organizations = cache((q: string) => loadOrganizations(q), 'organiz
 export const users = cache((q: string) => loadUsers(q), 'users');
 export const scopes = cache(() => loadScopes(), 'scopes');
 export const products = cache(() => loadProducts(), 'products');
+export const enabledPlugins = cache(() => loadPlugins(), 'plugins');

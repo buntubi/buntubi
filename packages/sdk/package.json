@@ -7,7 +7,12 @@
     "./types": "./src/types.ts",
     "./developer": "./src/developer.ts",
     "./admin": "./src/admin.ts",
-    "./roles": "./src/roles.ts"
+    "./roles": "./src/roles.ts",
+    "./plugins": "./src/plugins.ts",
+    "./vite": {
+      "types": "./src/vite.d.ts",
+      "default": "./src/vite.js"
+    }
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
@@ -16,6 +21,8 @@
     "@fluixi/start": "link:../../../../fluixi-core/packages/start"
   },
   "devDependencies": {
-    "typescript": "^7.0.2"
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
   }
 }

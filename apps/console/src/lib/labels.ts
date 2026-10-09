@@ -1,5 +1,6 @@
 /** Element and shell words, built from the catalogue in one place so a language change reaches them all. */
 import type { AccessGateLabels } from '@idp/elements/access-gate/logic';
+import type { NotFoundLabels } from '@idp/elements/not-found/logic';
 import type { OrganizationListLabels } from '@idp/elements/organization-list/logic';
 import type { OrganizationRowLabels } from '@idp/elements/organization-row/logic';
 import type { ReviewWaitingLabels } from '@idp/elements/review-waiting/logic';
@@ -187,4 +188,10 @@ export const scopeFormLabels = (): ScopeFormLabels => ({
   en: t('scopes.en'),
   create: t('scopes.create'),
   error: t('error.generic'),
+});
+
+export const pluginNotFoundLabels = (): NotFoundLabels => ({
+  title: t('plugins.notFound'),
+  text: t('plugins.notFoundText'),
+  back: t('plugins.back'),
 });

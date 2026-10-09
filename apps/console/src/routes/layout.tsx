@@ -10,7 +10,9 @@ import { BrandContext } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
 import { usePreferences } from '@idp/shell/preferences';
 import { Shell, type Crumb } from '@idp/shell/shell';
+import { sectionsOf } from '@idp/sdk/plugins';
 import type { Brand } from '@idp/sdk/types';
+import uiPlugins from 'virtual:idp-ui-plugins';
 import type { Gate as GateCode } from '../lib/types.js';
 import { PageBoundary } from '../components/page-boundary.js';
 import { authNoticeLabels } from '../lib/auth-notice.js';
@@ -18,7 +20,7 @@ import { locale, setLocale, t } from '../lib/i18n.js';
 import { accessGateLabels, shellLabels, sidebarLabels } from '../lib/labels.js';
 import { auth, idpUrl } from '../services/auth.js';
 import { paths } from '../lib/paths.js';
-import { brand, overview } from '../data/admin.js';
+import { brand, enabledPlugins, overview } from '../data/admin.js';
 
 
 interface ShellData {
@@ -26,11 +28,15 @@ interface ShellData {
   /** Why the console is closed to this visitor, or null. */
   gate: GateCode;
   pending: number;
+  /** The plugins the provider runs, by id. */
+  plugins: string[];
 }
 
 export const routeData = async (): Promise<ShellData> => {
   const [platform, counts] = await Promise.all([brand(), overview()]);
-  return { brand: platform, gate: counts.gate, pending: counts.overview?.pending_reviews ?? 0 };
+  // The plugins' pages only once the console is open to this visitor.
+  const plugins = counts.gate ? [] : await enabledPlugins();
+  return { brand: platform, gate: counts.gate, pending: counts.overview?.pending_reviews ?? 0, plugins };
 };
 
 const SECTIONS = [
@@ -51,8 +57,16 @@ export default function RootLayout() {
   const user = auth.useUser();
   const { switchLanguage, sidebarFolded: collapsed } = usePreferences('console', { locale, setLocale });
   const current = (href: string) => (href === paths.overview() ? location.pathname === href : location.pathname.startsWith(href));
-  const groups = (): SidebarGroup[] =>
-    (['decide', 'manage'] as const).map((group) => ({
+  // The deployment's own pages, from its plugins, after the console's.
+  const extensions = () =>
+    sectionsOf(uiPlugins, 'console', data()?.plugins ?? []).map(({ plugin, section }) => ({
+      label: section.label[locale()],
+      href: paths.plugin(plugin, section.key),
+      icon: section.icon,
+      current: current(paths.plugin(plugin, section.key)),
+    }));
+  const groups = (): SidebarGroup[] => [
+    ...(['decide', 'manage'] as const).map((group) => ({
       label: t(`shell.${group}`),
       items: SECTIONS.filter((section) => section.group === group).map((section) => ({
         label: t(section.key),
@@ -61,10 +75,13 @@ export default function RootLayout() {
         current: current(section.href),
         count: section.href === paths.reviews() && data()?.pending ? data()?.pending : undefined,
       })),
-    }));
+    })),
+    ...(extensions().length ? [{ label: t('shell.extensions'), items: extensions() }] : []),
+  ];
   const crumbs = (): Crumb[] => {
     const section = [...SECTIONS].reverse().find((entry) => current(entry.href));
-    return [{ label: t('shell.platform'), href: paths.overview() }, { label: section ? t(section.key) : '' }];
+    const extension = extensions().find((entry) => entry.current);
+    return [{ label: t('shell.platform'), href: paths.overview() }, { label: section ? t(section.key) : (extension?.label ?? '') }];
   };
   // Drops the error from the address once read; the rest of the query stays.
   const dismissAuthError = () => {

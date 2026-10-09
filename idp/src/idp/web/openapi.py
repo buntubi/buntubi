@@ -349,6 +349,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             **MANAGED,
         }
     ),
+    "DeveloperPlugin": obj({"id": STRING, "ui": {"type": "object"}}),
     "Plugin": obj(
         {
             "id": STRING,
@@ -887,6 +888,14 @@ def paths() -> dict[str, dict[str, Any]]:
                 request=body(ref("ProductPatch")),
                 params=["slug"],
             )
+        },
+        "/developer/api/plugins": {
+            "get": op(
+                "The plugins this deployment runs",
+                d,
+                DEVELOPER,
+                listing("DeveloperPlugin"),
+            ),
         },
         "/admin/api/plugins": {
             "get": op("The plugins this deployment runs", a, ADMIN, listing("Plugin")),

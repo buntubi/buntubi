@@ -422,6 +422,12 @@ export const workspaceNotFoundLabels = (): NotFoundLabels => ({
   back: t('workspace.backHome'),
 });
 
+export const pluginNotFoundLabels = (): NotFoundLabels => ({
+  title: t('plugins.notFound'),
+  text: t('plugins.notFoundText'),
+  back: t('plugins.back'),
+});
+
 export const welcomeLabels = (): WelcomeLabels => ({
   title: t('landing.title'),
   text: t('landing.text'),

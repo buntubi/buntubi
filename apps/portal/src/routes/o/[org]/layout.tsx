@@ -4,6 +4,8 @@
  */
 import { useLocation, useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import type { SidebarContext, SidebarGroup, SidebarSwitcher } from '@idp/elements/sidebar/logic';
+import { sectionOf, sectionsOf } from '@idp/sdk/plugins';
+import uiPlugins from 'virtual:idp-ui-plugins';
 import { markOf, useBrand } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
 import { usePreferences } from '@idp/shell/preferences';
@@ -85,6 +87,17 @@ export default function WorkspaceLayout() {
     const here = location.pathname;
     const item = (label: string, href: string, icon: string) => ({ label, href, icon, current: here === href });
     const current = app();
+    // The deployment's own pages, from its plugins, after the portal's.
+    const extensions = (place: 'organization' | 'app') => {
+      const items = sectionsOf(uiPlugins, place, data()?.plugins ?? []).map(({ plugin, section }) => {
+        const href =
+          place === 'app' && current
+            ? paths.appPlugin(id(), current.client_id, plugin, section.key)
+            : paths.organizationPlugin(id(), plugin, section.key);
+        return item(section.label[locale()], href, section.icon);
+      });
+      return items.length ? [{ label: t('shell.extensions'), items }] : [];
+    };
     if (current) {
       const section = (name?: AppSection) => paths.app(id(), current.client_id, name);
       return [
@@ -101,6 +114,7 @@ export default function WorkspaceLayout() {
           ],
         },
         { label: t('appws.ship'), items: [item(t('appws.review'), section('review'), icons.shield)] },
+        ...extensions('app'),
       ];
     }
     return [
@@ -112,6 +126,7 @@ export default function WorkspaceLayout() {
         label: t('shell.operate'),
         items: [item(t('shell.team'), paths.organization(id(), 'team'), icons.users), item(t('shell.settings'), paths.organization(id(), 'settings'), icons.sliders)],
       },
+      ...extensions('organization'),
     ];
   };
 
@@ -127,11 +142,19 @@ export default function WorkspaceLayout() {
   const crumbs = (): Crumb[] => {
     const current = app();
     const rest = location.pathname.slice(base().length).replace(/^\//, '');
+    const parts = rest.split('/').map(decodeURIComponent);
+    // A plugin's page: `p/<plugin>/<key>`, after the organization or the app.
+    const pluginLabel = (at: number, place: 'organization' | 'app') =>
+      parts[at] === 'p' ? sectionOf(uiPlugins, place, parts[at + 1] ?? '', parts[at + 2] ?? '')?.label[locale()] : undefined;
     if (!current) {
-      const page = ORG_PAGES[rest.split('/')[0] ?? ''];
-      return [{ label: organization()?.name ?? '', href: base() }, ...(page ? [{ label: t(page) }] : [])];
+      const page = ORG_PAGES[parts[0] ?? ''];
+      const extension = pluginLabel(0, 'organization');
+      const label = page ? t(page) : extension;
+      return [{ label: organization()?.name ?? '', href: base() }, ...(label ? [{ label }] : [])];
     }
-    const section = rest.split('/')[2] ?? '';
+    const extension = pluginLabel(2, 'app');
+    if (extension) return [{ label: current.name, href: paths.app(id(), current.client_id) }, { label: extension }];
+    const section = parts[2] ?? '';
     const page = APP_PAGES[section];
     if (!page) return [{ label: organization()?.name ?? '', href: base() }, { label: t('shell.apps'), href: base() }, { label: current.name }];
     return [{ label: current.name, href: paths.app(id(), current.client_id) }, { label: t(page) }];

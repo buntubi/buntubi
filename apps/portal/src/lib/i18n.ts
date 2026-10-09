@@ -3,6 +3,10 @@ import { createI18n } from '@fluixi/core/i18n';
 
 const fr = {
   'workspace.notFound': 'Organisation introuvable',
+  'plugins.notFound': 'Page introuvable',
+  'plugins.notFoundText': 'Aucune extension de ce déploiement ne fournit cette page.',
+  'plugins.back': 'Retour',
+  'shell.extensions': 'Extensions',
   'workspace.notFoundText': 'Elle n’existe pas, ou vous n’en êtes pas membre.',
   'workspace.backHome': 'Retour à l’accueil',
   'authError.access_denied': 'La connexion a été refusée.',
@@ -431,6 +435,10 @@ const fr = {
 
 const en: typeof fr = {
   'workspace.notFound': 'Organization not found',
+  'plugins.notFound': 'Page not found',
+  'plugins.notFoundText': 'No plugin of this deployment provides this page.',
+  'plugins.back': 'Back',
+  'shell.extensions': 'Extensions',
   'workspace.notFoundText': 'It does not exist, or you are not a member.',
   'workspace.backHome': 'Back home',
   'authError.access_denied': 'The sign-in was refused.',

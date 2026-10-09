@@ -6,7 +6,7 @@
 import type { Brand } from '@idp/sdk/types';
 import type { Gate, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
-type Method = 'GET' | 'POST' | 'PATCH';
+type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
 /**
  * A refusal from the admin API. Its `status` is the provider's, so the browser gets a 4xx it can
@@ -144,4 +144,33 @@ export const setAvailability = async (input: { slug: string; availability: Produ
 export const setScopeProduct = async (input: { scope: string; product: string | null }): Promise<void> => {
   'use server';
   await call('PATCH', `/scopes/${encodeURIComponent(input.scope)}`, { product: input.product });
+};
+
+/** The plugins the provider runs, by id: the console shows the pages of these only. */
+export const loadPlugins = async (): Promise<string[]> => {
+  'use server';
+  try {
+    return (await call<{ items: { id: string }[] }>('GET', '/plugins')).items.map((plugin) => plugin.id);
+  } catch {
+    return [];
+  }
+};
+
+/** A plugin's own API, as the signed-in owner. */
+export const pluginCall = async (input: { plugin: string; method: Method; path: string; body?: unknown }): Promise<unknown> => {
+  'use server';
+  const { requestAuth } = await import('@fluixi/oauth2/server');
+  const { publicEnv } = await import('@fluixi/start/env');
+  const { fetch } = await requestAuth();
+  if (!fetch) throw new AdminRefusal('signed_out', 401);
+  const response = await fetch(`${publicEnv().IDP_URL}/api/plugins/${encodeURIComponent(input.plugin)}${input.path}`, {
+    method: input.method,
+    headers: input.body === undefined ? {} : { 'content-type': 'application/json' },
+    body: input.body === undefined ? undefined : JSON.stringify(input.body),
+  });
+  const data = (await response.json().catch(() => ({}))) as { error?: unknown };
+  if (!response.ok) {
+    throw new AdminRefusal(typeof data.error === 'string' ? data.error : 'generic', response.status < 500 ? response.status : undefined);
+  }
+  return data;
 };
