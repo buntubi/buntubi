@@ -52,7 +52,10 @@ export default function WorkspaceLayout() {
       const section = (name?: AppSection) => paths.app(id(), current.client_id, name);
       return [
         { label: '', items: [item(t('appws.overview'), section(), icons.overview)] },
-        { label: t('appws.configure'), items: [item(t('appws.basicInfo'), section('settings'), icons.sliders)] },
+        {
+          label: t('appws.configure'),
+          items: [item(t('appws.basicInfo'), section('settings'), icons.sliders), item(t('appws.redirects'), section('redirects'), icons.link)],
+        },
         {
           label: t('appws.apisAccess'),
           items: [
@@ -79,6 +82,7 @@ export default function WorkspaceLayout() {
   const ORG_PAGES: Record<string, string> = { '': 'shell.home', products: 'shell.products', team: 'shell.team', settings: 'shell.settings' };
   const APP_PAGES: Record<string, string> = {
     settings: 'appws.basicInfo',
+    redirects: 'appws.redirects',
     permissions: 'appws.permissions',
     credentials: 'appws.credentials',
     review: 'appws.review',

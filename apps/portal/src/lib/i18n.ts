@@ -374,6 +374,19 @@ const fr = {
   'pb.category.communication': 'Communication',
   'pb.category.insights': 'Analyses',
   'pb.category.platform': 'Plateforme',
+  'pm.legend': 'États des portées',
+  'pm.productDetails': 'Détails du produit',
+  'pm.requestTitle': 'Demander plus d’accès',
+  'pm.review': 'Revue',
+  'pm.continue': 'Continuer vers la justification',
+  'appws.redirects': 'URI de redirection et domaines',
+  'cr.environment': 'Environnement',
+  'cr.manageRedirects': 'Gérer',
+  'cr.noRedirects': 'Aucune pour l’instant : personne ne peut se connecter avant d’en ajouter une.',
+  'cr.allScopes': 'Toutes les portées {environment}',
+  'cr.keyCreated': 'créée le {date}',
+  'cr.saved': 'Enregistré',
+  'common.cancel': 'Annuler',
 };
 
 const en: typeof fr = {
@@ -749,6 +762,19 @@ const en: typeof fr = {
   'pb.category.communication': 'Communication',
   'pb.category.insights': 'Insights',
   'pb.category.platform': 'Platform',
+  'pm.legend': 'Scope states',
+  'pm.productDetails': 'Product details',
+  'pm.requestTitle': 'Request additional access',
+  'pm.review': 'Review',
+  'pm.continue': 'Continue to justification',
+  'appws.redirects': 'Redirect URIs and domains',
+  'cr.environment': 'Environment',
+  'cr.manageRedirects': 'Manage',
+  'cr.noRedirects': 'None yet: people cannot sign in until one is added.',
+  'cr.allScopes': 'All {environment} scopes',
+  'cr.keyCreated': 'created {date}',
+  'cr.saved': 'Saved',
+  'common.cancel': 'Cancel',
 };
 
 export const i18n = createI18n({ locale: 'fr', locales: ['fr', 'en'] as const, messages: { fr, en } });

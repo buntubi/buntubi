@@ -1,4 +1,5 @@
 /** What an app may ask of its users, by API product, apart from how it looks. */
+import type { AccessRequestLabels, PendingScope } from '../access-request/logic.js';
 
 /**
  * Where a scope stands for the app: `live` works for everyone, `waiting` needs a review before
@@ -25,24 +26,21 @@ export interface PermissionGroup {
 }
 
 export interface PermissionsLabels {
+  title: string;
   intro: string;
+  legend: string;
   states: Record<ScopeState, string>;
-  sensitive: string;
-  summaryTitle: string;
-  /** "{selected} selected, {review} need a review before production." */
-  summary: string;
-  reviewNote: string;
-  sandboxNote: string;
-  save: string;
-  saved: string;
-  toReview: string;
+  productDetails: string;
+  request: Partial<AccessRequestLabels>;
   empty: string;
   error: string;
 }
 
 export const permissionsLabels: PermissionsLabels = {
+  title: 'Permissions',
   intro:
     'Permissions decide what your app can read or do for the people who sign in. Sensitive ones go through a review before they work in production.',
+  legend: 'Scope states',
   states: {
     live: 'Approved',
     waiting: 'Needs review',
@@ -51,14 +49,8 @@ export const permissionsLabels: PermissionsLabels = {
     available: 'Available',
     restricted: 'Restricted',
   },
-  sensitive: 'Sensitive',
-  summaryTitle: 'Requested access',
-  summary: '{selected} selected, {review} need a review before production.',
-  reviewNote: 'For each one, the review asks why your app needs it and where people meet it.',
-  sandboxNote: 'In the sandbox every selected scope works for you and your test users.',
-  save: 'Save permissions',
-  saved: 'Saved',
-  toReview: 'Go to the path to live',
+  productDetails: 'Product details',
+  request: {},
   empty: 'No API product is available yet.',
   error: 'Something went wrong. Try again.',
 };
@@ -67,8 +59,9 @@ export interface PermissionsLogic {
   labels: () => PermissionsLabels;
   groups: () => PermissionGroup[];
   toggle: (scope: string) => void;
-  /** The selected scopes needing a review, saved or not. */
-  needsReview: () => string[];
+  /** The selected scopes needing a review, saved or not, and whether the platform alone grants them. */
+  pending: () => PendingScope[];
+  detailsHref: () => string;
   selectedCount: () => number;
   changed: () => boolean;
   canEdit: () => boolean;

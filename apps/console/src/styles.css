@@ -23,26 +23,6 @@ body {
 .progress.active {
   transform: scaleX(0.7);
 }
-
-/* Page layout inside the shell; the shell itself is @idp/shell's. */
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.page-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-}
-.page-head h1 {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
 .page-intro {
   margin: 6px 0 0;
   max-width: 64ch;
@@ -51,12 +31,4 @@ body {
 .page-intro.mono {
   font-family: var(--idp-mono);
   font-size: 12.5px;
-}
-.eyebrow {
-  margin: 0 0 4px;
-  font-size: 13px;
-}
-.eyebrow a {
-  color: var(--idp-muted);
-  text-decoration: none;
 }

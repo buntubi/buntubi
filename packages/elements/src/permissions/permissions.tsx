@@ -8,6 +8,10 @@ import { inject } from '@fluixi/start/di';
 import { Developer } from '@idp/sdk/developer';
 import type { App, AppOverview, Localized, Product } from '@idp/sdk/types';
 import { freshest } from '../fresh.js';
+import '../access-request/access-request.js';
+import '../page-header/page-header.js';
+import '../permission-legend/permission-legend.js';
+import '../scope-group/scope-group.js';
 import { useView } from '../view.js';
 import { permissionsLabels, type PermissionsLabels, type PermissionsLogic, type ScopeState } from './logic.js';
 import { PermissionsView } from './view.js';
@@ -21,8 +25,10 @@ const props = {
   overview: prop.object<AppOverview | null>(null),
   /** Whether this member may change the app's scopes. */
   canEdit: prop.boolean(false),
-  /** Where the path to live is, for the review. */
+  /** Where the review is prepared. */
   reviewHref: prop.string(''),
+  /** Where the API products are described. */
+  productsHref: prop.string(''),
   /** The reader's language, for product and scope descriptions. */
   locale: prop.string('en'),
   labels: prop.object<Partial<PermissionsLabels>>({}),
@@ -82,10 +88,15 @@ export class IdpPermissions extends typedElement(props) {
         edits.set([...next]);
         saved.set(false);
       },
-      needsReview: () => {
+      pending: () => {
         const approved = new Set(this.overview?.scopes.live ?? []);
-        return [...selected()].filter((name) => sensitiveScopes().has(name) && !approved.has(name)).sort();
+        const restricted = new Set(this.products.flatMap((p) => p.scopes.filter((s) => s.sensitivity === 'restricted').map((s) => s.name)));
+        return [...selected()]
+          .filter((name) => sensitiveScopes().has(name) && !approved.has(name))
+          .sort()
+          .map((name) => ({ name, restricted: restricted.has(name) }));
       },
+      detailsHref: () => this.productsHref,
       selectedCount: () => selected().size,
       changed: () => {
         const current = edits();

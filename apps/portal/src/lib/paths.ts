@@ -3,7 +3,7 @@
 const segment = (value: string) => encodeURIComponent(value);
 
 /** The sections of an app's workspace; the overview has none. */
-export type AppSection = 'settings' | 'permissions' | 'credentials' | 'review';
+export type AppSection = 'settings' | 'redirects' | 'permissions' | 'credentials' | 'review';
 
 /** The pages of an organization's workspace; home has none. */
 export type OrganizationPage = 'products' | 'team' | 'settings';
@@ -27,7 +27,7 @@ export const paths = {
 export const checkLinks = (organization: string, clientId: string) => ({
   basic_info: paths.app(organization, clientId, 'settings'),
   policies: paths.app(organization, clientId, 'settings'),
-  redirect_uri: paths.app(organization, clientId, 'credentials'),
+  redirect_uri: paths.app(organization, clientId, 'redirects'),
   products: paths.app(organization, clientId, 'permissions'),
   permissions: paths.app(organization, clientId, 'permissions'),
   support_email: paths.organization(organization, 'settings'),

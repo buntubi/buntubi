@@ -76,55 +76,10 @@ body {
   display: grid;
   gap: 18px;
 }
-
-/* Page layout inside the workspace; the shell itself is @idp/shell's. */
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.page-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-}
 .page-intro {
   margin: 6px 0 0;
   max-width: 64ch;
   color: var(--idp-muted);
-}
-.page-head h1 {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-.eyebrow {
-  margin: 0 0 4px;
-  color: var(--idp-muted);
-  font-size: 13px;
-}
-.page-actions {
-  display: flex;
-  gap: 8px;
-}
-.action {
-  display: inline-flex;
-  align-items: center;
-  height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--idp-border-2);
-  border-radius: 9px;
-  color: var(--idp-text);
-  font-weight: 500;
-  text-decoration: none;
-}
-.action.primary {
-  border-color: transparent;
-  background: var(--idp-accent);
-  color: var(--idp-accent-fg);
 }
 .auth-notice {
   display: block;
