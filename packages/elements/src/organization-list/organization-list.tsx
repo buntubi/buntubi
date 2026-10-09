@@ -1,27 +1,26 @@
-/** Every organization, one `idp-organization-card` each. */
+/** Every organization as a table, one `idp-organization-row` each, in a card. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import type { AdminOrganization } from '@idp/sdk/types';
-import '../organization-card/organization-card.js';
-import type { OrganizationCardLabels } from '../organization-card/logic.js';
+import '../organization-row/organization-row.js';
+import type { OrganizationRowLabels } from '../organization-row/logic.js';
 import { useView } from '../view.js';
-import type { OrganizationListLogic } from './logic.js';
+import { organizationListLabels, type OrganizationListLabels, type OrganizationListLogic } from './logic.js';
 import { OrganizationListView } from './view.js';
 
 const props = {
   organizations: prop.object<AdminOrganization[]>([]),
-  /** Shown when there is none. */
-  empty: prop.string('No organization.'),
-  /** Handed to every card. */
-  cardLabels: prop.object<Partial<OrganizationCardLabels>>({}),
+  labels: prop.object<Partial<OrganizationListLabels>>({}),
+  /** Handed to every row. */
+  rowLabels: prop.object<Partial<OrganizationRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
 export class IdpOrganizationList extends typedElement(props) {
   protected override render(): unknown {
     const logic: OrganizationListLogic = {
+      labels: () => ({ ...organizationListLabels, ...this.labels }),
       organizations: () => this.organizations,
-      empty: () => this.empty,
-      cardLabels: () => this.cardLabels,
+      rowLabels: () => this.rowLabels,
       describe: () => this.describe,
     };
     return useView(OrganizationListView)(logic);

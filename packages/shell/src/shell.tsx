@@ -60,8 +60,8 @@ export function Shell(props: ShellProps): ComponentChild {
         .side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; }
         .side > :deep(idp-sidebar) { flex: 1; min-height: 0; overflow-y: auto; }
         .foot { padding: 10px 12px 14px; border-top: 1px solid var(--idp-border); }
-        .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-        header { display: flex; align-items: center; gap: 12px; min-height: 58px; box-sizing: border-box; padding: 12px 28px; border-bottom: 1px solid var(--idp-border); background: var(--idp-surface); }
+        .main { flex: 1; min-width: 0; display: flex; flex-direction: column; --idp-topbar: 58px; }
+        header { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 12px; height: var(--idp-topbar); box-sizing: border-box; padding: 12px 28px; border-bottom: 1px solid var(--idp-border); background: var(--idp-surface); }
         .crumbs { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--idp-muted); font-size: 13px; }
         .crumbs :deep(a) { color: var(--idp-muted); text-decoration: none; }
         .crumbs :deep(a:hover) { color: var(--idp-text); }
@@ -72,6 +72,8 @@ export function Shell(props: ShellProps): ComponentChild {
           .column { border-right: 0; border-bottom: 1px solid var(--idp-border); }
           .side { position: static; height: auto; --idp-sidebar: 100%; }
           .crumbs { overflow: hidden; white-space: nowrap; }
+          .main { --idp-topbar: 0px; }
+          header { position: static; height: auto; min-height: 58px; }
         }
       `}</style>
       <div class="column">

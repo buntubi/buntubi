@@ -11,6 +11,12 @@ importers:
       '@fluixi-ui/button':
         specifier: link:../../../../fluixi-ui/packages/button
         version: link:../../../../fluixi-ui/packages/button
+      '@fluixi-ui/layout':
+        specifier: link:../../../../fluixi-ui/packages/layout
+        version: link:../../../../fluixi-ui/packages/layout
+      '@fluixi-ui/primitives':
+        specifier: link:../../../../fluixi-ui/packages/primitives
+        version: link:../../../../fluixi-ui/packages/primitives
       '@fluixi/core':
         specifier: link:../../../../fluixi-core/packages/core
         version: link:../../../../fluixi-core/packages/core

@@ -1,5 +1,4 @@
-/** The default look: the field, the button beside it. */
-import { Button } from '@fluixi-ui/button';
+/** The default look: one field with a search icon in it. */
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { SearchBoxLogic } from './logic.js';
@@ -15,19 +14,23 @@ export const searchBoxView = (s: SearchBoxLogic) => (
     }}
   >
     <style scoped>{`
-      .search { display: grid; grid-template-columns: minmax(0, 420px) max-content; justify-content: start; gap: 8px; }
-      @media (max-width: 640px) { .search { grid-template-columns: 1fr; } }
+      .search { max-width: 360px; }
+      .icon { display: grid; color: var(--idp-muted); }
     `}</style>
     <Input
       type="search"
       value={() => s.query()}
       aria-label={() => s.label()}
       placeholder={() => s.label()}
+      leading={
+        <span class="icon" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14M20 20l-3.5-3.5" />
+          </svg>
+        </span>
+      }
       onInput={(event: Event) => s.edit((event.target as HTMLInputElement).value)}
     />
-    <Button type="submit" variant="outline" tone="neutral">
-      {() => s.button()}
-    </Button>
   </form>
 );
 

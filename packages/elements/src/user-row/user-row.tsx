@@ -4,6 +4,7 @@ import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Admin } from '@idp/sdk/admin';
 import type { AdminUser } from '@idp/sdk/types';
+import { initials } from '../initials.js';
 import { useView } from '../view.js';
 import { userRowLabels, type UserRowLabels, type UserRowLogic } from './logic.js';
 import { UserRowView } from './view.js';
@@ -26,6 +27,10 @@ export class IdpUserRow extends typedElement(props) {
       name: () => {
         const u = this.user;
         return u ? `${u.given_name} ${u.family_name}`.trim() || u.email : '';
+      },
+      initials: () => {
+        const u = this.user;
+        return initials(u ? `${u.given_name} ${u.family_name}`.trim() || u.email : '');
       },
       toggle: async () => {
         const u = this.user;

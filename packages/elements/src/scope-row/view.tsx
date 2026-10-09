@@ -1,29 +1,29 @@
-/** The default look: name and texts on the left, the sensitivity on the right. */
-import { Show } from '@fluixi/core';
+/** The default look: a table row; name, consent text, API, sensitivity. */
 import { viewToken } from '../view.js';
 import type { ScopeRowLogic } from './logic.js';
 
 export const scopeRowView = (r: ScopeRowLogic) => (
-  <div part="scope" class="scope">
+  <div part="scope" class="scope" role="row">
     <style scoped>{`
-      .scope { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; }
-      .text { display: grid; gap: 2px; min-width: 0; }
-      code { font-family: var(--idp-mono); font-size: 12.5px; }
-      .muted { color: var(--idp-muted); font-size: 12.5px; }
-      .tag { padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; }
-      .tag[data-level='public'] { color: var(--idp-ok); background: color-mix(in srgb, var(--idp-ok) 12%, transparent); }
-      .tag[data-level='sensitive'] { color: var(--idp-warn); background: color-mix(in srgb, var(--idp-warn) 12%, transparent); }
-      .tag[data-level='restricted'] { color: var(--idp-bad); background: color-mix(in srgb, var(--idp-bad) 12%, transparent); }
+      .scope { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) 120px 110px; gap: 12px; align-items: center; padding: 11px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
+      code { font-family: var(--idp-mono); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; }
+      .muted { color: var(--idp-muted); font-size: 13px; }
+      .dot { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+      .dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+      .dot[data-level='public'] { color: var(--idp-ok); }
+      .dot[data-level='sensitive'] { color: var(--idp-warn); }
+      .dot[data-level='restricted'] { color: var(--idp-bad); }
+      @media (max-width: 860px) { .scope { grid-template-columns: minmax(0, 1fr) auto; } .muted { grid-column: 1; } }
     `}</style>
-    <span class="text">
+    <span role="cell">
       <code>{() => r.name()}</code>
-      <span class="muted">{() => r.description()}</span>
-      <Show when={r.resource()}>
-        <span class="muted">{() => `${r.labels().api} ${r.resource()}`}</span>
-      </Show>
     </span>
-    <span class="tag" data-level={() => r.sensitivity()}>
-      {() => r.labels().sensitivities[r.sensitivity()]}
+    <span role="cell" class="muted">{() => r.description()}</span>
+    <span role="cell" class="muted">{() => r.resource() || r.labels().signIn}</span>
+    <span role="cell">
+      <span class="dot" data-level={() => r.sensitivity()}>
+        {() => r.labels().sensitivities[r.sensitivity()]}
+      </span>
     </span>
   </div>
 );

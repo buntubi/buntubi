@@ -7,6 +7,9 @@ export interface UserRowLabels {
   mfa: string;
   unverified: string;
   disabled: string;
+  active: string;
+  on: string;
+  off: string;
   enable: string;
   disable: string;
   error: string;
@@ -18,6 +21,9 @@ export const userRowLabels: UserRowLabels = {
   mfa: 'Two-step',
   unverified: 'Email not verified',
   disabled: 'Disabled',
+  active: 'Active',
+  on: 'On',
+  off: 'Off',
   enable: 'Enable',
   disable: 'Disable',
   error: 'Something went wrong. Try again.',
@@ -27,6 +33,7 @@ export interface UserRowLogic {
   labels: () => UserRowLabels;
   user: () => AdminUser | null;
   name: () => string;
+  initials: () => string;
   toggle: () => Promise<void>;
   busy: () => boolean;
   error: () => string | null;

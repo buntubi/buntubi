@@ -3,6 +3,7 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { signal } from '@fluixi/reactive/signal';
 import type { Role } from '@idp/sdk/types';
 import { teamLabels, type MemberRow, type TeamLabels } from '../team/logic.js';
+import { initials } from '../initials.js';
 import { useView } from '../view.js';
 import type { MemberRowEvents, MemberRowLogic } from './logic.js';
 import { MemberRowView } from './view.js';
@@ -23,15 +24,7 @@ export class IdpMemberRow extends typedElement(props) {
     const logic: MemberRowLogic = {
       labels: () => this.labels,
       member: () => this.member,
-      initials: () => {
-        const name = this.member?.name || this.member?.email || '?';
-        return name
-          .split(/[\s@.]+/)
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((part) => part[0]!.toUpperCase())
-          .join('');
-      },
+      initials: () => initials(this.member?.name || this.member?.email),
       canManage: () => this.canManage && !this.member?.self,
       busy: () => this.busy,
       changeRole: (role) => this.emit('role', { role }),

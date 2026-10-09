@@ -2,12 +2,13 @@
 import type { Sensitivity } from '@idp/sdk/types';
 
 export interface ScopeRowLabels {
-  api: string;
+  /** In place of an API: a scope of sign-in itself. */
+  signIn: string;
   sensitivities: Record<Sensitivity, string>;
 }
 
 export const scopeRowLabels: ScopeRowLabels = {
-  api: 'API',
+  signIn: 'Sign-in',
   sensitivities: { public: 'Public', sensitive: 'Sensitive', restricted: 'Restricted' },
 };
 

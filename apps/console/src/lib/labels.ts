@@ -1,10 +1,13 @@
 /** Element and shell words, built from the catalogue in one place so a language change reaches them all. */
 import type { AccessGateLabels } from '@idp/elements/access-gate/logic';
-import type { OrganizationCardLabels } from '@idp/elements/organization-card/logic';
+import type { OrganizationListLabels } from '@idp/elements/organization-list/logic';
+import type { OrganizationRowLabels } from '@idp/elements/organization-row/logic';
 import type { ReviewWaitingLabels } from '@idp/elements/review-waiting/logic';
 import type { ScopeFormLabels } from '@idp/elements/scope-form/logic';
+import type { ScopeListLabels } from '@idp/elements/scope-list/logic';
 import type { ScopeRowLabels } from '@idp/elements/scope-row/logic';
 import type { Stat } from '@idp/elements/stat-group/logic';
+import type { UserListLabels } from '@idp/elements/user-list/logic';
 import type { UserRowLabels } from '@idp/elements/user-row/logic';
 import type { AdminOverview } from '@idp/sdk/types';
 import type { PageErrorLabels } from '@idp/elements/page-error/logic';
@@ -112,24 +115,48 @@ export const reviewWaitingLabels = (): ReviewWaitingLabels => ({
   open: t('rq.open'),
 });
 
-export const organizationCardLabels = (): OrganizationCardLabels => ({
+export const organizationListLabels = (): OrganizationListLabels => ({
+  title: t('organizations.title'),
+  organization: t('organizations.organization'),
   owner: t('organizations.owner'),
   members: t('organizations.members'),
   apps: t('organizations.apps'),
   approved: t('organizations.approved'),
+  status: t('common.status'),
+  empty: t('common.none'),
+});
+
+export const organizationRowLabels = (): OrganizationRowLabels => ({
+  approved: t('organizations.approved'),
+  none: t('organizations.noScope'),
+  active: t('organizations.active'),
   suspended: t('organizations.suspended'),
   reason: t('organizations.reason'),
   suspend: t('organizations.suspend'),
+  confirm: t('organizations.confirm'),
+  cancel: t('common.cancel'),
   restore: t('organizations.restore'),
   error: t('error.generic'),
+});
+
+export const userListLabels = (): UserListLabels => ({
+  title: t('users.title'),
+  user: t('users.user'),
+  status: t('common.status'),
+  roles: t('users.roles'),
+  twoStep: t('users.twoStep'),
+  empty: t('common.none'),
 });
 
 export const userRowLabels = (): UserRowLabels => ({
   admin: t('users.admin'),
   developer: t('users.developer'),
-  mfa: t('users.mfa'),
+  mfa: t('users.twoStep'),
   unverified: t('users.unverified'),
   disabled: t('users.disabled'),
+  active: t('users.active'),
+  on: t('common.on'),
+  off: t('common.off'),
   enable: t('users.enable'),
   disable: t('users.disable'),
   error: t('error.generic'),
@@ -137,7 +164,18 @@ export const userRowLabels = (): UserRowLabels => ({
 
 const sensitivities = () => ({ public: t('scopes.public'), sensitive: t('scopes.sensitive'), restricted: t('scopes.restricted') });
 
-export const scopeRowLabels = (): ScopeRowLabels => ({ api: t('scopes.api'), sensitivities: sensitivities() });
+export const scopeListLabels = (): ScopeListLabels => ({
+  title: t('scopes.catalog'),
+  scope: t('scopes.scope'),
+  description: t('scopes.description'),
+  api: t('scopes.api'),
+  sensitivity: t('scopes.sensitivity'),
+  all: t('scopes.all'),
+  sensitivities: sensitivities(),
+  empty: t('common.none'),
+});
+
+export const scopeRowLabels = (): ScopeRowLabels => ({ signIn: t('scopes.signIn'), sensitivities: sensitivities() });
 
 export const scopeFormLabels = (): ScopeFormLabels => ({
   title: t('scopes.new'),

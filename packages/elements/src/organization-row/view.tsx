@@ -1,66 +1,95 @@
-/** The default look: name and state, the facts, then suspend with a reason or restore. */
+/** The default look: a table row; the organization, owner, counts, scopes, status, then the action. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
-import type { OrganizationCardLogic } from './logic.js';
+import type { OrganizationRowLogic } from './logic.js';
 
-export const organizationCardView = (c: OrganizationCardLogic) => (
-  <section part="organization" class="card" data-suspended={() => (c.organization()?.suspended ? '' : undefined)}>
+export const organizationRowView = (r: OrganizationRowLogic) => (
+  <div part="organization" class="organization" role="row" data-suspended={() => (r.organization()?.suspended ? '' : undefined)}>
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 16px 18px; display: grid; gap: 10px; }
-      .card[data-suspended] { border-color: color-mix(in srgb, var(--idp-bad) 40%, var(--idp-border)); }
-      .head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-      h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .pill { padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--idp-bad); background: color-mix(in srgb, var(--idp-bad) 12%, transparent); }
-      .meta { margin: 0; color: var(--idp-muted); font-size: 13px; }
-      code { font-family: var(--idp-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 6px; background: var(--idp-surface-2); border: 1px solid var(--idp-border); margin-right: 4px; }
-      .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
-      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
-      @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+      .organization { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr) 84px 100px minmax(0, 1.2fr) 110px 110px; gap: 12px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
+      .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .mark { flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--idp-accent-ink); background: var(--idp-accent-soft); }
+      .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+      .muted { color: var(--idp-muted); overflow: hidden; text-overflow: ellipsis; }
+      .number { font-variant-numeric: tabular-nums; }
+      .scopes { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+      code { font-family: var(--idp-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 6px; background: var(--idp-surface-2); border: 1px solid var(--idp-border); }
+      .state { display: grid; gap: 2px; }
+      .dot { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--idp-ok); }
+      .organization[data-suspended] .dot { color: var(--idp-bad); }
+      .dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+      .why { color: var(--idp-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+      .action { display: flex; justify-content: flex-end; }
+      .editor { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 12px; border-radius: 10px; background: var(--idp-surface-2); }
+      .alert { grid-column: 1 / -1; margin: 0; color: var(--idp-bad); font-size: 13px; }
+      @media (max-width: 960px) { .organization { grid-template-columns: minmax(0, 1fr) auto; } .organization > [role='cell']:not(.who):not(.action) { grid-column: 1; } .action { grid-row: 1; grid-column: 2; } .editor { grid-template-columns: 1fr; } }
     `}</style>
-    <div class="head">
-      <h2>{() => c.organization()?.name ?? ''}</h2>
-      <Show when={c.organization()?.suspended}>
-        <span class="pill">{() => c.labels().suspended}</span>
+    <span role="cell" class="who">
+      <span class="mark" aria-hidden="true">{() => r.initials()}</span>
+      <span class="name">{() => r.organization()?.name ?? ''}</span>
+    </span>
+    <span role="cell" class="muted">{() => r.organization()?.owner?.email ?? ''}</span>
+    <span role="cell" class="number">{() => r.organization()?.members ?? 0}</span>
+    <span role="cell" class="number">{() => r.organization()?.apps ?? 0}</span>
+    <span role="cell" class="scopes" aria-label={() => r.labels().approved}>
+      <Show when={r.organization()?.approved_scopes.length} fallback={<span class="muted">{() => r.labels().none}</span>}>
+        <For each={r.organization()?.approved_scopes ?? []}>{(scope) => <code>{scope}</code>}</For>
       </Show>
-    </div>
-    <p class="meta">{() => c.summary()}</p>
-    <Show when={c.organization()?.approved_scopes.length}>
-      <p class="meta">
-        {() => `${c.labels().approved} `}
-        <For each={c.organization()?.approved_scopes ?? []}>{(scope) => <code>{scope}</code>}</For>
-      </p>
-    </Show>
-    <Show
-      when={c.organization()?.suspended}
-      fallback={
-        <div class="row">
-          <Input
-            value={() => c.reason()}
-            aria-label={() => c.labels().reason}
-            placeholder={() => c.labels().reason}
-            onInput={(event: Event) => c.editReason((event.target as HTMLInputElement).value)}
-          />
-          <Button variant="outline" tone="danger" disabled={!c.canSuspend()} onPress={() => void c.suspend()}>
-            {() => c.labels().suspend}
-          </Button>
-        </div>
-      }
-    >
-      <p class="meta">{() => c.organization()?.suspended_reason ?? ''}</p>
-      <div>
-        <Button variant="outline" tone="neutral" disabled={c.busy()} onPress={() => void c.restore()}>
-          {() => c.labels().restore}
+    </span>
+    <span role="cell" class="state">
+      <span class="dot">{() => (r.organization()?.suspended ? r.labels().suspended : r.labels().active)}</span>
+      <Show when={r.organization()?.suspended && r.organization()?.suspended_reason}>
+        <span class="why" title={() => r.organization()?.suspended_reason ?? ''}>
+          {() => r.organization()?.suspended_reason ?? ''}
+        </span>
+      </Show>
+    </span>
+    <span role="cell" class="action">
+      <Show
+        when={r.organization()?.suspended}
+        fallback={
+          <Show when={!r.suspending()}>
+            <Button variant="ghost" tone="danger" size="sm" onPress={() => r.openSuspend(true)}>
+              {() => r.labels().suspend}
+            </Button>
+          </Show>
+        }
+      >
+        <Button variant="ghost" tone="neutral" size="sm" disabled={r.busy()} onPress={() => void r.restore()}>
+          {() => r.labels().restore}
         </Button>
-      </div>
+      </Show>
+    </span>
+    <Show when={r.suspending() && !r.organization()?.suspended}>
+      <form
+        class="editor"
+        onSubmit={(event: SubmitEvent) => {
+          event.preventDefault();
+          if (r.canSuspend()) void r.suspend();
+        }}
+      >
+        <Input
+          value={() => r.reason()}
+          aria-label={() => r.labels().reason}
+          placeholder={() => r.labels().reason}
+          onInput={(event: Event) => r.editReason((event.target as HTMLInputElement).value)}
+        />
+        <Button type="submit" variant="solid" tone="danger" size="sm" disabled={!r.canSuspend()}>
+          {() => r.labels().confirm}
+        </Button>
+        <Button variant="ghost" tone="neutral" size="sm" onPress={() => r.openSuspend(false)}>
+          {() => r.labels().cancel}
+        </Button>
+      </form>
     </Show>
-    <Show when={c.error()}>
+    <Show when={r.error()}>
       <p class="alert" role="alert">
-        {() => c.error()}
+        {() => r.error()}
       </p>
     </Show>
-  </section>
+  </div>
 );
 
-export const OrganizationCardView = viewToken<OrganizationCardLogic>('OrganizationCardView', organizationCardView);
+export const OrganizationRowView = viewToken<OrganizationRowLogic>('OrganizationRowView', organizationRowView);

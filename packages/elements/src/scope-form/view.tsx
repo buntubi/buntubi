@@ -1,9 +1,13 @@
-/** The default look: a card, the fields stacked, the sensitivity as a choice of three. */
-import { For, Show } from '@fluixi/core';
+/** The default look: a card, the fields stacked, the sensitivity as a segmented choice. */
+import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Input } from '@fluixi-ui/input';
+import type { Sensitivity } from '@idp/sdk/types';
 import { viewToken } from '../view.js';
 import { SENSITIVITIES, type ScopeFormLogic } from './logic.js';
+import '../segmented/segmented.js';
+
+const DOT = { public: 'var(--idp-ok)', sensitive: 'var(--idp-warn)', restricted: 'var(--idp-bad)' } as const;
 
 const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
 
@@ -13,8 +17,8 @@ export const scopeFormView = (f: ScopeFormLogic) => (
       .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       form { display: grid; gap: 12px; max-width: 560px; }
-      label { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
-      .choice { display: flex; flex-wrap: wrap; gap: 6px; }
+      label, .field { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
+      .field { justify-items: start; }
       .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
     `}</style>
     <h2>{() => f.labels().title}</h2>
@@ -28,21 +32,15 @@ export const scopeFormView = (f: ScopeFormLogic) => (
         {() => f.labels().name}
         <Input value={() => f.draft().name} placeholder="orders.read" onInput={(event: Event) => f.edit('name', valueOf(event))} />
       </label>
-      <div role="radiogroup" aria-label={() => f.labels().sensitivity} class="choice">
-        <For each={SENSITIVITIES}>
-          {(level) => (
-            <Button
-              type="button"
-              role="radio"
-              aria-checked={() => f.draft().sensitivity === level}
-              variant={f.draft().sensitivity === level ? 'solid' : 'outline'}
-              tone="neutral"
-              onPress={() => f.edit('sensitivity', level)}
-            >
-              {() => f.labels().sensitivities[level]}
-            </Button>
-          )}
-        </For>
+      <div class="field">
+        <span>{() => f.labels().sensitivity}</span>
+        <idp-segmented
+          options={SENSITIVITIES.map((level) => ({ value: level, label: f.labels().sensitivities[level], dot: DOT[level] }))}
+          value={f.draft().sensitivity}
+          label={f.labels().sensitivity}
+          size="md"
+          onChange={(event) => f.edit('sensitivity', event.detail.value as Sensitivity)}
+        />
       </div>
       <label>
         {() => f.labels().resource}

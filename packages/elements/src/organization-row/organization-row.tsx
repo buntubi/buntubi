@@ -1,23 +1,25 @@
-/** One organization, with its suspension, changed through the injected `Admin` service. */
+/** One organization as a table row, with its suspension, changed through the injected `Admin` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Admin } from '@idp/sdk/admin';
 import type { AdminOrganization } from '@idp/sdk/types';
+import { initials } from '../initials.js';
 import { useView } from '../view.js';
-import { organizationCardLabels, type OrganizationCardLabels, type OrganizationCardLogic } from './logic.js';
-import { OrganizationCardView } from './view.js';
+import { organizationRowLabels, type OrganizationRowLabels, type OrganizationRowLogic } from './logic.js';
+import { OrganizationRowView } from './view.js';
 
 const props = {
   organization: prop.object<AdminOrganization | null>(null),
-  labels: prop.object<Partial<OrganizationCardLabels>>({}),
+  labels: prop.object<Partial<OrganizationRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
-export class IdpOrganizationCard extends typedElement(props) {
+export class IdpOrganizationRow extends typedElement(props) {
   protected override render(): unknown {
     const admin = inject(Admin);
-    const labels = () => ({ ...organizationCardLabels, ...this.labels });
+    const labels = () => ({ ...organizationRowLabels, ...this.labels });
+    const suspending = signal(false);
     const reason = signal('');
     const busy = signal(false);
     const error = signal<string | null>(null);
@@ -33,13 +35,14 @@ export class IdpOrganizationCard extends typedElement(props) {
       }
     };
     const id = () => this.organization?.id ?? '';
-    const logic: OrganizationCardLogic = {
+    const logic: OrganizationRowLogic = {
       labels,
       organization: () => this.organization,
-      summary: () => {
-        const o = this.organization;
-        const l = labels();
-        return o ? `${l.owner} ${o.owner?.email ?? ''} · ${o.members} ${l.members} · ${o.apps} ${l.apps}` : '';
+      initials: () => initials(this.organization?.name),
+      suspending,
+      openSuspend: (open) => {
+        suspending.set(open);
+        if (!open) reason.set('');
       },
       reason,
       editReason: (value) => reason.set(value),
@@ -48,22 +51,23 @@ export class IdpOrganizationCard extends typedElement(props) {
         run(async () => {
           await admin.suspendOrganization({ id: id(), reason: reason().trim() });
           reason.set('');
+          suspending.set(false);
         }),
       restore: () => run(() => admin.restoreOrganization(id())),
       busy,
       error,
     };
-    return useView(OrganizationCardView)(logic);
+    return useView(OrganizationRowView)(logic);
   }
 }
 
-defineCustomElement('idp-organization-card', IdpOrganizationCard);
+defineCustomElement('idp-organization-row', IdpOrganizationRow);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'idp-organization-card': IdpOrganizationCard;
+    'idp-organization-row': IdpOrganizationRow;
   }
   interface JSXCustomElements {
-    'idp-organization-card': ElementAttributes<typeof props>;
+    'idp-organization-row': ElementAttributes<typeof props>;
   }
 }

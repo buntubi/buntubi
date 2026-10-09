@@ -6,7 +6,7 @@ import { useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/st
 import '@idp/elements/access-gate';
 import '@idp/elements/auth-notice';
 import type { SidebarGroup } from '@idp/elements/sidebar/logic';
-import { BrandContext, markOf } from '@idp/shell/brand';
+import { BrandContext } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
 import { usePreferences } from '@idp/shell/preferences';
 import { Shell, type Crumb } from '@idp/shell/shell';
@@ -91,7 +91,7 @@ export default function RootLayout() {
       >
       <Shell
         brand={{ name: platform(), href: paths.overview() }}
-        context={{ name: platform(), detail: t('shell.product'), mark: markOf(platform()) }}
+        context={null}
         groups={groups()}
         sidebarLabels={sidebarLabels()}
         collapsed={collapsed()}
