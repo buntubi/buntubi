@@ -30,6 +30,7 @@
     "@idp/elements": "link:../../packages/elements",
     "@idp/sdk": "link:../../packages/sdk",
     "@idp/shell": "link:../../packages/shell",
+    "@idp/skin": "link:../../packages/skin",
     "@idp/theme": "link:../../packages/theme"
   },
   "devDependencies": {

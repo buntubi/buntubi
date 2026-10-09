@@ -1,0 +1,164 @@
+/**
+ * The platform's skin for fluixi-ui, measured from the design canvas.
+ *
+ * Activate with `data-ui="idp"` on the root. Rules live in the `flx.skin` layer, above
+ * `flx.components`. Colours stay with the theme's `--idp-*` tokens (mapped to `--flx-ui-*` in
+ * @idp/theme); this file sets what the canvas draws differently from fluixi-ui's defaults:
+ * type, control sizes, radii, borders and the focus ring.
+ */
+@layer flx.reset, flx.base, flx.tokens, flx.components, flx.skin, flx.fx;
+
+@layer flx.skin {
+  [data-ui='idp'] {
+    --flx-ui-font-family-sans: 'Geist Variable', 'Geist', ui-sans-serif, system-ui, sans-serif;
+    --flx-ui-font-family-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+    --flx-ui-font-size-xs: 12px;
+    --flx-ui-font-size-sm: 13px;
+    --flx-ui-font-size-md: 14px;
+    --flx-ui-font-size-lg: 15px;
+    --flx-ui-line-height-normal: 1.45;
+
+    --flx-ui-radius-sm: 8px;
+    --flx-ui-radius-md: 9px;
+    --flx-ui-radius-lg: 12px;
+
+    /* Buttons 36px, small ones 32px; fields 38px. */
+    --flx-ui-size-xs: 24px;
+    --flx-ui-size-sm: 32px;
+    --flx-ui-size-md: 36px;
+    --flx-ui-size-lg: 40px;
+    --flx-ui-size-xl: 48px;
+
+    --idp-skin-ring: 0 0 0 3px color-mix(in srgb, var(--idp-accent) 22%, transparent);
+
+    font-family: var(--flx-ui-font-family-sans);
+    font-size: var(--flx-ui-font-size-md);
+    line-height: var(--flx-ui-line-height-normal);
+  }
+
+  /* Buttons: medium weight; outline ones sit on the surface with the stronger border. */
+  [data-ui='idp'] :where([data-variant]:not([data-badge])) {
+    font-weight: 500;
+    padding-inline: 14px;
+  }
+  [data-ui='idp'] :where([data-variant]:not([data-badge])[data-size='sm']) {
+    padding-inline: 12px;
+  }
+  [data-ui='idp'] :where([data-variant='solid']:not([data-badge])) {
+    padding-inline: 16px;
+  }
+  [data-ui='idp'] :where([data-variant='outline']:not([data-badge])) {
+    background: var(--idp-surface);
+    border-color: var(--idp-border-2);
+  }
+  [data-ui='idp'] :where([data-variant]:not([data-badge]):focus-visible) {
+    outline: none;
+    box-shadow: var(--idp-skin-ring);
+  }
+
+  /* Fields: 38px, 13px text, the stronger border, the accent ring on focus. */
+  [data-ui='idp'] :where([data-input]) {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: var(--flx-ui-font-size-sm);
+    background: var(--idp-surface);
+    border-color: var(--idp-border-2);
+    border-radius: var(--flx-ui-radius-md);
+  }
+  [data-ui='idp'] :where(textarea[data-input]) {
+    padding: 9px 12px;
+    min-height: 76px;
+  }
+  [data-ui='idp'] :where([data-input]:focus-visible) {
+    border-color: var(--idp-accent);
+    box-shadow: var(--idp-skin-ring);
+  }
+
+  /* Checkboxes: 16px, small radius, the accent when on. */
+  [data-ui='idp'] :where([role='checkbox']) {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border-color: var(--idp-border-2);
+  }
+  [data-ui='idp'] :where([role='checkbox'][data-state='checked'], [role='checkbox'][data-state='indeterminate']) {
+    background: var(--idp-accent);
+    border-color: var(--idp-accent);
+  }
+  [data-ui='idp'] :where([role='checkbox']:focus-visible) {
+    outline: none;
+    box-shadow: var(--idp-skin-ring);
+  }
+
+  /*
+   * Choices: a toggle marked data-choice is a selectable card (data-choice="card") or a chip
+   * (data-choice="chip"). A [data-tick] inside draws the check box that follows its state.
+   */
+  [data-ui='idp'] :where([aria-pressed][data-choice]) {
+    height: auto;
+    min-height: 0;
+    font: inherit;
+    font-weight: 400;
+    text-align: left;
+    white-space: normal;
+    color: var(--idp-text);
+    background: var(--idp-surface);
+    border: 1px solid var(--idp-border);
+    box-shadow: var(--idp-shadow);
+    cursor: pointer;
+    transition: border-color 120ms, box-shadow 120ms;
+  }
+  [data-ui='idp'] :where([aria-pressed][data-choice='card']) {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    border-radius: var(--idp-radius);
+  }
+  [data-ui='idp'] :where([aria-pressed][data-choice='chip']) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-color: var(--idp-border-2);
+    border-radius: var(--flx-ui-radius-md);
+    box-shadow: none;
+  }
+  [data-ui='idp'] :where([aria-pressed][data-choice]:hover:not([data-disabled])) {
+    border-color: var(--idp-border-2);
+    background: var(--idp-surface);
+  }
+  [data-ui='idp'] :where([aria-pressed][data-choice][data-state='on']) {
+    border-color: var(--idp-accent);
+    box-shadow: var(--idp-skin-ring);
+    background: var(--idp-surface);
+    color: var(--idp-text);
+  }
+  [data-ui='idp'] :where([aria-pressed][data-choice='chip'][data-state='on']) {
+    background: color-mix(in srgb, var(--idp-accent) 10%, var(--idp-surface));
+    box-shadow: none;
+  }
+  [data-ui='idp'] :where([aria-pressed][data-choice]:focus-visible) {
+    outline: none;
+    box-shadow: var(--idp-skin-ring);
+  }
+  [data-ui='idp'] :where([data-choice] [data-tick]) {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1.5px solid var(--idp-border-2);
+    display: inline-grid;
+    place-items: center;
+    color: transparent;
+  }
+  [data-ui='idp'] :where([data-choice][data-state='on'] [data-tick]) {
+    border: 0;
+    background: var(--idp-accent);
+    color: var(--idp-accent-fg);
+  }
+
+  [data-ui='idp'] :where(code, kbd, pre) {
+    font-family: var(--flx-ui-font-family-mono);
+  }
+}

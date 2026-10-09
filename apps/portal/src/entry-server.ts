@@ -1,4 +1,6 @@
 import '@idp/theme/tokens.css';
+import '@idp/skin/fonts.css';
+import '@idp/skin/styles.css';
 import './styles.css';
 import App from './app.js';
 import { renderRequestAsync, renderToBodyStream } from '@fluixi/server';

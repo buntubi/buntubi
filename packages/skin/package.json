@@ -1,0 +1,18 @@
+{
+  "name": "@idp/skin",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The platform's skin for fluixi-ui, drawn from the design canvas; activate with data-ui=\"idp\"",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    "./styles.css": "./styles.css",
+    "./fonts.css": "./fonts.css"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.2.0",
+    "@fontsource-variable/geist-mono": "^5.2.0"
+  }
+}
