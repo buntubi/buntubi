@@ -11,6 +11,10 @@ export type OrganizationPage = 'products' | 'team' | 'settings';
 export const paths = {
   /** The way in: sign in, the developer terms, a first organization. */
   start: () => '/',
+  /** The organization picker: every organization the developer belongs to. */
+  organizations: () => '/organizations',
+  /** Creating an organization. */
+  newOrganization: () => '/organizations/new',
   /** An organization's workspace, or one of its pages. */
   organization: (organization: string, page?: OrganizationPage) =>
     `/o/${segment(organization)}${page ? `/${page}` : ''}`,

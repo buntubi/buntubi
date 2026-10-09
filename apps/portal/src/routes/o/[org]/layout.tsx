@@ -2,8 +2,8 @@
  * The workspace shell around every page of an organization: the sidebar, the top bar, and the
  * page. The organization comes from the address, so a page can be shared and reloaded as is.
  */
-import { useLocation, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
-import type { SidebarContext, SidebarGroup } from '@idp/elements/sidebar/logic';
+import { useLocation, useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
+import type { SidebarContext, SidebarGroup, SidebarSwitcher } from '@idp/elements/sidebar/logic';
 import { markOf, useBrand } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
 import { usePreferences } from '@idp/shell/preferences';
@@ -24,7 +24,8 @@ export default function WorkspaceLayout() {
   const data = useRouteData<Workspace>();
   const brand = useBrand();
   const location = useLocation();
-  const { switchLanguage, sidebarFolded: collapsed } = usePreferences('portal', { locale, setLocale });
+  const { switchLanguage, sidebarFolded: collapsed, chooseOrganization, forgetOrganization } = usePreferences('portal', { locale, setLocale });
+  const navigate = useNavigate();
 
   const organization = () => data()?.current?.organization ?? null;
   const id = () => organization()?.id ?? '';
@@ -34,15 +35,51 @@ export default function WorkspaceLayout() {
     const id = location.pathname.slice(base().length).match(/^\/apps\/([^/]+)/)?.[1];
     return id ? (data()?.current?.apps.find((entry) => entry.client_id === decodeURIComponent(id)) ?? null) : null;
   };
+  // The organizations to switch to, and inside an app the organization's other apps.
+  const organizations = (): SidebarSwitcher => ({
+    label: t('switch.organizations'),
+    items: (data()?.organizations ?? []).map((entry) => ({
+      key: `organization:${entry.id}`,
+      label: entry.name,
+      detail: entry.role ? t(`tm.role.${entry.role}`) : '',
+      mark: markOf(entry.name),
+      href: paths.organization(entry.id),
+      current: entry.id === id(),
+    })),
+    actions: [
+      { key: 'organizations', label: t('org.new.back'), href: paths.organizations() },
+      { key: 'create', label: t('org.create'), href: paths.newOrganization() },
+    ],
+  });
+  const apps = (current: { client_id: string }): SidebarSwitcher => ({
+    label: t('switch.apps'),
+    items: (data()?.current?.apps ?? []).map((entry) => ({
+      key: `app:${entry.client_id}`,
+      label: entry.name,
+      detail: t(entry.environment === 'live' ? 'apps.production' : 'apps.sandbox'),
+      mark: markOf(entry.name),
+      href: paths.app(id(), entry.client_id),
+      current: entry.client_id === current.client_id,
+    })),
+    actions: [{ key: 'apps', label: t('appws.allApps'), href: base() }],
+  });
   const context = (): SidebarContext => {
     const current = app();
-    if (!current) return { name: organization()?.name ?? '', detail: t('shell.organization'), mark: markOf(organization()?.name) };
+    if (!current) {
+      return { name: organization()?.name ?? '', detail: t('shell.organization'), mark: markOf(organization()?.name), switcher: organizations() };
+    }
     return {
       name: current.name,
       detail: t(current.environment === 'live' ? 'apps.production' : 'apps.sandbox'),
       mark: markOf(current.name),
       back: { label: t('appws.allApps'), href: base() },
+      switcher: apps(current),
     };
+  };
+  // Switching organization is choosing it: the next visit to the portal starts there.
+  const switchTo = (key: string, href: string) => {
+    if (key.startsWith('organization:')) chooseOrganization(key.slice('organization:'.length));
+    navigate(href);
   };
   const groups = (): SidebarGroup[] => {
     const here = location.pathname;
@@ -127,6 +164,7 @@ export default function WorkspaceLayout() {
         sidebarLabels={sidebarLabels()}
         collapsed={collapsed()}
         onToggle={(folded) => collapsed.set(folded)}
+        onSwitch={switchTo}
         crumbs={crumbs()}
         user={
           data()?.me
@@ -134,6 +172,7 @@ export default function WorkspaceLayout() {
             : null
         }
         signOutHref="/auth/logout"
+        onSignOut={forgetOrganization}
         onLanguage={switchLanguage}
         labels={shellLabels()}
       >

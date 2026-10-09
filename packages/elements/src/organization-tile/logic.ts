@@ -4,4 +4,6 @@ export interface OrganizationTileLogic {
   name: () => string;
   detail: () => string;
   href: () => string;
+  /** Opening it is choosing it: the host may keep the choice. */
+  choose: () => void;
 }

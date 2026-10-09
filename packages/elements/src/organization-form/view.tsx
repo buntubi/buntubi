@@ -17,7 +17,9 @@ export const organizationFormView = (o: OrganizationFormLogic) => (
       .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 640px) { form { grid-template-columns: 1fr; } }
     `}</style>
-    <h2>{() => o.labels().title}</h2>
+    <Show when={o.labels().title}>
+      <h2>{() => o.labels().title}</h2>
+    </Show>
     <form
       onSubmit={(event: SubmitEvent) => {
         event.preventDefault();

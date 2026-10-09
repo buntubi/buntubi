@@ -29,6 +29,7 @@ export class IdpSidebar extends typedElement(props) {
       toggle: () => this.emit('toggle', { collapsed: !this.collapsed }),
       searchable: () => this.searchable,
       search: () => this.emit('search', {}),
+      switchTo: (key, href) => this.emit('switch', { key, href }),
     };
     return useView(SidebarView)(logic);
   }

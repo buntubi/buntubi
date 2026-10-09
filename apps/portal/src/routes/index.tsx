@@ -1,56 +1,45 @@
 /**
- * The way in: an invitation to sign in, the developer terms, a first organization, or for a
- * developer with organizations, their first workspace.
+ * The way in: an invitation to sign in, the developer terms, then the organization the
+ * developer chose, while they still belong to it, or the picker.
  */
-import { Redirect, useNavigate, useRouteData } from '@fluixi/start/router';
+import { Redirect, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/developer-terms';
-import '@idp/elements/organization-form';
-import '@idp/elements/organization-tiles';
 import '@idp/elements/welcome';
-import { PublicFrame } from '../components/public-frame.js';
-import { errorText, t } from '../lib/i18n.js';
-import { developerTermsLabels, organizationFormLabels, welcomeLabels } from '../lib/labels.js';
-import type { Home } from '../lib/types.js';
-import { paths } from '../lib/paths.js';
-import { auth } from '../services/auth.js';
+import { usePreferences } from '@idp/shell/preferences';
+import { PublicPage } from '../components/public-page.js';
 import { home } from '../data/developer.js';
+import { errorText, locale, setLocale, t } from '../lib/i18n.js';
+import { developerTermsLabels, welcomeLabels } from '../lib/labels.js';
+import { paths } from '../lib/paths.js';
+import type { Home } from '../lib/types.js';
+import { auth } from '../services/auth.js';
 
 export const routeData = () => home();
 
 export default function HomePage() {
   const data = useRouteData<Home>();
-  const navigate = useNavigate();
+  const { organization } = usePreferences('portal', { locale, setLocale });
   const me = () => data()?.me ?? null;
-  const first = () => data()?.organizations[0]?.id;
+  // The saved choice counts only while the person still belongs to it.
+  const chosen = () => {
+    const id = organization();
+    return id && data()?.organizations.some((entry) => entry.id === id) ? id : '';
+  };
   return (
-    <PublicFrame>
+    <PublicPage>
       <Switch
-        fallback={
-          <div class="start">
-            <idp-organization-tiles
-              organizations={data()?.organizations ?? []}
-              title={t('organizations.title')}
-              empty={t('organizations.empty')}
-              href={paths.organizationPattern()}
-            />
-            <idp-organization-form
-              labels={organizationFormLabels()}
-              describe={errorText}
-              onCreated={(event) => navigate(paths.organization(event.detail.id))}
-            />
-          </div>
-        }
+        fallback={<Redirect to={paths.organizations()} />}
       >
         <Match when={!me()}>
-          <idp-welcome labels={welcomeLabels()} onSignin={() => auth.signIn({ returnTo: '/' })} />
+          <idp-welcome labels={welcomeLabels()} onSignin={() => auth.signIn({ returnTo: paths.start() })} />
         </Match>
         <Match when={me() && !me()?.developer}>
           <idp-developer-terms labels={developerTermsLabels()} describe={errorText} />
         </Match>
-        <Match when={first()}>
+        <Match when={chosen()}>
           {(id: string) => <Redirect to={paths.organization(id)} />}
         </Match>
       </Switch>
-    </PublicFrame>
+    </PublicPage>
   );
 }

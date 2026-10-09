@@ -21,6 +21,7 @@ export class IdpOrganizationTiles extends typedElement(props) {
       empty: () => this.empty,
       organizations: () => this.organizations,
       hrefOf: (organization) => this.href.replace('{id}', encodeURIComponent(organization.id)),
+      choose: (id) => this.emit('choose', { id }),
     };
     return useView(OrganizationTilesView)(logic);
   }
@@ -33,6 +34,6 @@ declare global {
     'idp-organization-tiles': IdpOrganizationTiles;
   }
   interface JSXCustomElements {
-    'idp-organization-tiles': ElementAttributes<typeof props>;
+    'idp-organization-tiles': ElementAttributes<typeof props, { choose: { id: string } }>;
   }
 }

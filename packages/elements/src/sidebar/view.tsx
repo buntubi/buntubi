@@ -1,11 +1,22 @@
 /** The sidebar's default look: a full panel, or an icon rail when collapsed. */
 import { Button } from '@fluixi-ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@fluixi-ui/dropdown-menu';
 import { For, Show } from '@fluixi/core';
 import { Link } from '@fluixi/core/router';
 import { viewToken } from '../view.js';
-import type { SidebarContext, SidebarItem, SidebarLogic } from './logic.js';
+import type { SidebarContext, SidebarItem, SidebarLogic, SidebarSwitcher } from './logic.js';
 
 const PANEL = 'M3 4h18v16H3zM9 4v16';
+const UPDOWN = 'm7 15 5 5 5-5M7 9l5-5 5 5';
+const TICK = 'M5 12.5l4.5 4.5L19 7.5';
 
 function Icon(props: { path: string; size?: number }) {
   return (
@@ -49,6 +60,11 @@ export const sidebarView = (s: SidebarLogic) => {
         .context-text { display: flex; flex-direction: column; min-width: 0; }
         .context-name { font-weight: 600; font-size: 13px; }
         .context-detail { color: var(--idp-muted); font-size: 12px; }
+        .chevrons { margin-left: auto; color: var(--idp-muted); display: grid; }
+        .menu-item { display: flex; align-items: center; gap: 10px; min-width: 200px; }
+        .menu-mark { flex: none; width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; background: var(--idp-accent-soft); color: var(--idp-accent-ink); font-size: 11px; font-weight: 700; }
+        .menu-text { flex: 1; display: grid; min-width: 0; }
+        .menu-detail { color: var(--idp-muted); font-size: 12px; }
         .groups { display: flex; flex-direction: column; gap: 14px; width: 100%; }
         .group { display: flex; flex-direction: column; gap: 1px; }
         .heading { padding: 0 10px 6px; color: var(--idp-muted); font-size: 11.5px; font-weight: 500; }
@@ -61,6 +77,7 @@ export const sidebarView = (s: SidebarLogic) => {
         .sidebar[data-collapsed] .top { flex-direction: column; }
         .sidebar[data-collapsed] .group :deep(.item) { justify-content: center; padding: 10px; }
         .sidebar[data-collapsed] .context { padding: 6px; border: 0; background: none; }
+        .sidebar[data-collapsed] .chevrons { display: none; }
         .sidebar[data-collapsed] .groups { gap: 6px; }
       `}</style>
       <div class="top">
@@ -93,13 +110,62 @@ export const sidebarView = (s: SidebarLogic) => {
                 </Link>
               )}
             </Show>
-            <div part="context" class="context" title={context.name}>
-              <span class="context-mark">{context.mark}</span>
-              <span class="context-text">
-                <span class="context-name">{context.name}</span>
-                <span class="context-detail">{context.detail}</span>
-              </span>
-            </div>
+            <Show
+              when={context.switcher}
+              fallback={
+                <div part="context" class="context" title={context.name}>
+                  <span class="context-mark">{context.mark}</span>
+                  <span class="context-text">
+                    <span class="context-name">{context.name}</span>
+                    <span class="context-detail">{context.detail}</span>
+                  </span>
+                </div>
+              }
+            >
+              {(switcher: SidebarSwitcher) => (
+                <DropdownMenu placement="bottom-start">
+                  <DropdownMenuTrigger data-switcher="" part="context" title={context.name} aria-label={`${switcher.label}: ${context.name}`}>
+                    <span class="context-mark">{context.mark}</span>
+                    <span class="context-text">
+                      <span class="context-name">{context.name}</span>
+                      <span class="context-detail">{context.detail}</span>
+                    </span>
+                    <span class="chevrons">
+                      <Icon path={UPDOWN} size={14} />
+                    </span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>{switcher.label}</DropdownMenuLabel>
+                      <For each={switcher.items}>
+                        {(item) => (
+                          <DropdownMenuItem onSelect={() => s.switchTo(item.key, item.href)} aria-current={item.current ? 'true' : undefined}>
+                            <span class="menu-item">
+                              <span class="menu-mark">{item.mark}</span>
+                              <span class="menu-text">
+                                <span>{item.label}</span>
+                                <Show when={item.detail}>
+                                  <span class="menu-detail">{item.detail}</span>
+                                </Show>
+                              </span>
+                              <Show when={item.current}>
+                                <Icon path={TICK} size={14} />
+                              </Show>
+                            </span>
+                          </DropdownMenuItem>
+                        )}
+                      </For>
+                      <Show when={switcher.actions.length}>
+                        <DropdownMenuSeparator />
+                        <For each={switcher.actions}>
+                          {(action) => <DropdownMenuItem onSelect={() => s.switchTo(action.key, action.href)}>{action.label}</DropdownMenuItem>}
+                        </For>
+                      </Show>
+                    </DropdownMenuContent>
+                  </DropdownMenuPortal>
+                </DropdownMenu>
+              )}
+            </Show>
           </>
         )}
       </Show>

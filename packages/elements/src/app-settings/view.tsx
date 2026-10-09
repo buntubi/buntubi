@@ -32,10 +32,17 @@ export const appSettingsView = (s: AppSettingsLogic) => (
       .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
     `}</style>
-    <div class="intro">
-      <h2>{() => s.labels().title}</h2>
-      <p class="hint">{() => s.labels().intro}</p>
-    </div>
+    {/* A page that already names itself in its header gives no title: the card starts with the fields. */}
+    <Show when={s.labels().title || s.labels().intro}>
+      <div class="intro">
+        <Show when={s.labels().title}>
+          <h2>{() => s.labels().title}</h2>
+        </Show>
+        <Show when={s.labels().intro}>
+          <p class="hint">{() => s.labels().intro}</p>
+        </Show>
+      </div>
+    </Show>
     <div class="grid">
       <For each={s.fields()}>
         {(field) => (

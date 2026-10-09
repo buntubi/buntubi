@@ -14,7 +14,7 @@ export default function SettingsPage() {
   const data = useRouteData<AppPageData>();
   return (
     <Stack gap={5}>
-      <idp-page-header title={t('appws.basicInfo')} />
+      <idp-page-header title={t('appws.basicInfo')} intro={t('st.intro')} />
       <idp-app-settings
       app={data()?.app.app ?? null}
       canEdit={can(data()?.app.role, 'edit_apps')}

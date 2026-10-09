@@ -198,6 +198,29 @@
     font-size: 13.5px;
   }
 
+  /* The sidebar's context card when it switches between organizations or apps. */
+  [data-ui='idp'] :where([data-switcher]) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--idp-border);
+    border-radius: 10px;
+    background: var(--idp-surface-2);
+    color: var(--idp-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  [data-ui='idp'] :where([data-switcher]:hover, [data-switcher][data-state='open']) {
+    border-color: var(--idp-border-2);
+  }
+  [data-ui='idp'] :where([data-switcher]:focus-visible) {
+    outline: none;
+    box-shadow: var(--idp-skin-ring);
+  }
+
   /* The signed-in person at the sidebar's foot: a full-width row that opens the account menu. */
   [data-ui='idp'] :where([data-user-menu]) {
     display: flex;

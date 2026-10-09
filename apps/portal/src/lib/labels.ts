@@ -1,4 +1,5 @@
 /** Element words, built from the catalogue in one place so a language change reaches them all. */
+import type { PublicFrameLabels } from '@idp/shell/public-frame';
 import type { ReadinessLabels } from '@idp/elements/readiness/logic';
 import type { ReviewHistoryLabels } from '@idp/elements/review-history/logic';
 import type { ReviewRequestLabels } from '@idp/elements/review-request/logic';
@@ -203,8 +204,9 @@ export const permissionsLabels = (): PermissionsLabels => ({
 });
 
 export const appSettingsLabels = (): AppSettingsLabels => ({
-  title: t('appws.basicInfoTitle'),
-  intro: t('st.intro'),
+  // The page header names the page and says what it is for.
+  title: '',
+  intro: '',
   fields: {
     name: t('st.name'),
     description: t('st.description'),
@@ -475,3 +477,5 @@ export const needsAttentionLabels = (): NeedsAttentionLabels => ({
 });
 
 export const ideaToLiveLabels = (): IdeaToLiveLabels => ({ title: t('home.path'), steps: t('home.path.steps').split('|') });
+
+export const publicFrameLabels = (): PublicFrameLabels => ({ ...shellLabels(), product: t('shell.developers') });

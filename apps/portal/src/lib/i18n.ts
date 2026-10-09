@@ -418,6 +418,15 @@ const fr = {
   'tm.on': 'Activée',
   'tm.off': 'Désactivée',
   'tm.inviteMember': 'Inviter un membre',
+  'org.pick.title': 'Choisir une organisation',
+  'org.pick.intro': 'Les applications, les clés et l’équipe appartiennent à une organisation. Choisissez celle où travailler.',
+  'org.pick.empty': 'Vous n’avez pas encore d’organisation. Créez la première pour enregistrer des applications.',
+  'org.create': 'Créer une organisation',
+  'org.new.title': 'Nouvelle organisation',
+  'org.new.intro': 'Elle réunit vos applications, vos clés d’API et les personnes qui y travaillent.',
+  'org.new.back': 'Toutes les organisations',
+  'switch.organizations': 'Organisations',
+  'switch.apps': 'Applications',
 };
 
 const en: typeof fr = {
@@ -837,6 +846,15 @@ const en: typeof fr = {
   'tm.on': 'On',
   'tm.off': 'Off',
   'tm.inviteMember': 'Invite member',
+  'org.pick.title': 'Choose an organization',
+  'org.pick.intro': 'Apps, keys and the team belong to an organization. Choose the one to work in.',
+  'org.pick.empty': 'You have no organization yet. Create the first one to register apps.',
+  'org.create': 'Create organization',
+  'org.new.title': 'New organization',
+  'org.new.intro': 'It holds your apps, your API keys and the people who work on them.',
+  'org.new.back': 'All organizations',
+  'switch.organizations': 'Organizations',
+  'switch.apps': 'Apps',
 };
 
 export const i18n = createI18n({ locale: 'fr', locales: ['fr', 'en'] as const, messages: { fr, en } });

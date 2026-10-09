@@ -9,7 +9,8 @@
     "./preferences": "./src/preferences.ts",
     "./shell": "./src/shell.tsx",
     "./focused": "./src/focused.tsx",
-    "./theme-toggle": "./src/theme-toggle.tsx"
+    "./theme-toggle": "./src/theme-toggle.tsx",
+    "./public-frame": "./src/public-frame.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

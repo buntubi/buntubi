@@ -10,7 +10,7 @@ export const organizationTileView = (o: OrganizationTileLogic) => (
       strong { font-weight: 600; }
       span { color: var(--idp-muted); font-size: 12.5px; }
     `}</style>
-    <Link href={o.href()}>
+    <Link href={o.href()} onClick={() => o.choose()}>
       <strong>{() => o.name()}</strong>
       <span>{() => o.detail()}</span>
     </Link>

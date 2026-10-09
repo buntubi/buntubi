@@ -4,7 +4,7 @@
  * comes in as data; the page comes in as children.
  */
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link, useNavigate } from '@fluixi/core/router';
 import type { ComponentChild } from '@fluixi/dom';
 import '@idp/elements/sidebar';
 import type { SidebarContext, SidebarGroup, SidebarLabels } from '@idp/elements/sidebar/logic';
@@ -34,16 +34,21 @@ export interface ShellProps {
   sidebarLabels: SidebarLabels;
   collapsed: boolean;
   onToggle: (collapsed: boolean) => void;
+  /** Something was picked in the sidebar's switcher: the host keeps the choice and goes there. */
+  onSwitch?: (key: string, href: string) => void;
   crumbs: Crumb[];
   /** The signed-in person: the name, and a second line such as the role. */
   user: { name: string; detail: string } | null;
   signOutHref: string;
+  /** Runs just before signing out, to forget what this session chose. */
+  onSignOut?: () => void;
   onLanguage: () => void;
   labels: ShellLabels;
   children?: ComponentChild;
 }
 
 export function Shell(props: ShellProps): ComponentChild {
+  const navigate = useNavigate();
   const children = props.children;
   return (
     <div class="shell" data-collapsed={() => (props.collapsed ? '' : undefined)}>
@@ -78,6 +83,9 @@ export function Shell(props: ShellProps): ComponentChild {
             collapsed={props.collapsed}
             labels={props.sidebarLabels}
             onToggle={(event: CustomEvent<{ collapsed: boolean }>) => props.onToggle(event.detail.collapsed)}
+            onSwitch={(event: CustomEvent<{ key: string; href: string }>) =>
+              props.onSwitch ? props.onSwitch(event.detail.key, event.detail.href) : navigate(event.detail.href)
+            }
           />
           <Show when={props.user}>
             <div class="foot">
@@ -89,6 +97,7 @@ export function Shell(props: ShellProps): ComponentChild {
                 onLanguage={() => props.onLanguage()}
                 onSignout={() => {
                   // Signing out leaves the app: the provider ends the session, then sends us back.
+                  props.onSignOut?.();
                   window.location.assign(props.signOutHref);
                 }}
               />

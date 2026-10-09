@@ -13,7 +13,12 @@ const props = {
 
 export class IdpOrganizationTile extends typedElement(props) {
   protected override render(): unknown {
-    const logic: OrganizationTileLogic = { name: () => this.name, detail: () => this.detail, href: () => this.href };
+    const logic: OrganizationTileLogic = {
+      name: () => this.name,
+      detail: () => this.detail,
+      href: () => this.href,
+      choose: () => this.emit('choose', {}),
+    };
     return useView(OrganizationTileView)(logic);
   }
 }
@@ -25,6 +30,6 @@ declare global {
     'idp-organization-tile': IdpOrganizationTile;
   }
   interface JSXCustomElements {
-    'idp-organization-tile': ElementAttributes<typeof props>;
+    'idp-organization-tile': ElementAttributes<typeof props, { choose: Record<string, never> }>;
   }
 }

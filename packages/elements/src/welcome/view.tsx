@@ -6,7 +6,7 @@ import type { WelcomeLogic } from './logic.js';
 export const welcomeView = (w: WelcomeLogic) => (
   <section part="welcome" class="hero">
     <style scoped>{`
-      .hero { max-width: 640px; margin: 0 auto; padding: 72px 0 48px; display: grid; gap: 16px; justify-items: start; }
+      .hero { display: grid; gap: 16px; justify-items: start; padding-top: 24px; }
       h1 { margin: 0; font-size: clamp(28px, 5vw, 40px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
       p { margin: 0; font-size: 16px; color: var(--idp-muted); line-height: 1.55; }
     `}</style>

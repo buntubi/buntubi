@@ -6,4 +6,5 @@ export interface OrganizationTilesLogic {
   empty: () => string;
   organizations: () => Organization[];
   hrefOf: (organization: Organization) => string;
+  choose: (id: string) => void;
 }

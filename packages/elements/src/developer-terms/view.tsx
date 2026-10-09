@@ -7,7 +7,7 @@ import type { DeveloperTermsLogic } from './logic.js';
 export const developerTermsView = (d: DeveloperTermsLogic) => (
   <section part="terms" class="terms">
     <style scoped>{`
-      .terms { max-width: 560px; margin: 0 auto; padding: 48px 0; display: grid; gap: 14px; justify-items: start; }
+      .terms { display: grid; gap: 14px; justify-items: start; }
       h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
       p { margin: 0; color: var(--idp-muted); line-height: 1.55; }
       .alert { color: var(--idp-bad); font-size: 13px; }

@@ -23,59 +23,6 @@ body {
 .progress.active {
   transform: scaleX(0.7);
 }
-
-/* The frame of the pages outside a workspace: landing, terms, first organization. */
-.public .bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 18px 24px;
-}
-.public .brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: inherit;
-  font-weight: 700;
-  font-size: 16px;
-  text-decoration: none;
-}
-.public .brand-mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  background: var(--idp-accent);
-  color: var(--idp-accent-fg);
-  font-size: 13px;
-}
-.public .bar-links {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.public .bar-link {
-  color: var(--flx-ui-color-fg-muted);
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.public .page {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 16px 24px 64px;
-}
-/* The first organization: its tiles above the form. */
-.start {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 40px 0;
-  display: grid;
-  gap: 18px;
-}
 .page-intro {
   margin: 6px 0 0;
   max-width: 64ch;

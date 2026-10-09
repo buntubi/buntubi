@@ -24,6 +24,25 @@ export interface SidebarContext {
   mark: string;
   /** A link above it, such as back to all apps. */
   back?: { label: string; href: string };
+  /** The others of its kind to switch to: organizations, or an organization's apps. */
+  switcher?: SidebarSwitcher;
+}
+
+export interface SidebarSwitchItem {
+  key: string;
+  label: string;
+  detail?: string;
+  mark: string;
+  href: string;
+  current?: boolean;
+}
+
+export interface SidebarSwitcher {
+  /** What the menu lists, for assistive technology: "Organizations". */
+  label: string;
+  items: SidebarSwitchItem[];
+  /** Below the items: "All organizations", "Create organization". */
+  actions: { key: string; label: string; href: string }[];
 }
 
 export interface SidebarLabels {
@@ -48,6 +67,8 @@ export interface SidebarEvents {
   toggle: { collapsed: boolean };
   /** The search was asked for. */
   search: Record<string, never>;
+  /** An organization, an app or an action was picked from the switcher; the host goes there. */
+  switch: { key: string; href: string };
 }
 
 export interface SidebarLogic {
@@ -60,4 +81,5 @@ export interface SidebarLogic {
   /** Whether the host offers search; the button is shown only then. */
   searchable: () => boolean;
   search: () => void;
+  switchTo: (key: string, href: string) => void;
 }

@@ -11,7 +11,9 @@ export const organizationTilesView = (o: OrganizationTilesLogic) => (
       .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
       .muted { margin: 0; color: var(--idp-muted); }
     `}</style>
-    <h1>{() => o.title()}</h1>
+    <Show when={o.title()}>
+      <h1>{() => o.title()}</h1>
+    </Show>
     <Show when={o.organizations().length} fallback={<p class="muted">{() => o.empty()}</p>}>
       <div class="grid">
         <For each={o.organizations()} by={(organization) => organization.id}>
@@ -20,6 +22,7 @@ export const organizationTilesView = (o: OrganizationTilesLogic) => (
               name={organization().name}
               detail={organization().support_email ?? ''}
               href={o.hrefOf(organization())}
+              onChoose={() => o.choose(organization().id)}
             />
           )}
         </For>
