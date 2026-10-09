@@ -18,7 +18,7 @@ from pydantic import BaseModel, EmailStr, Field, HttpUrl
 from idp.db import db, utcnow
 from idp.models import ApiKey, ApiProduct, Client, ClientSecret, OrganizationMember, Scope, User
 from idp.oauth.server import require_token
-from idp.services import audit
+from idp.services import audit, mfa
 from idp.services import platform as p
 from idp.services.credentials import rotate_client_secret
 from idp.web.admin import Brand, review_json
@@ -161,6 +161,8 @@ def member_json(member: OrganizationMember) -> dict[str, Any]:
         "role": member.role,
         "apps": [by_id[a] for a in member.app_ids if a in by_id],
         "added_at": member.added_at.isoformat(),
+        # Whether the account signs in with a second factor: the team list shows who does not.
+        "two_step": mfa.is_enabled(member.user),
     }
 
 

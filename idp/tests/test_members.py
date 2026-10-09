@@ -172,3 +172,15 @@ def test_live_fields_still_apply_to_publishing(app: Flask, outbox: list[mail.Mes
     )
     call(dev_browser, dev, "PATCH", f"/apps/{client_id}", LIVE_FIELDS)
     assert call(dev_browser, dev, "POST", f"/apps/{client_id}/publish").json["state"] == "live"
+
+
+def test_each_member_says_whether_two_step_sign_in_is_on(app: Flask, outbox: list[mail.Message]) -> None:
+    # The team list shows it: a member without a second factor is the weak point of an organization.
+    dev_browser, dev, organization_id, _ = sandbox_app(app, outbox)
+    colleague(app, outbox, "ana@example.test")
+    add(dev_browser, dev, organization_id, email="ana@example.test", role="developer")
+    members = call(dev_browser, dev, "GET", f"/organizations/{organization_id}").json["members"]
+    assert {m["email"]: m["two_step"] for m in members} == {
+        "ana@example.test": False,
+        "dev@example.test": False,
+    }

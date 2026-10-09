@@ -211,6 +211,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "role": ROLE,
             "apps": STRINGS,
             "added_at": TIME,
+            "two_step": BOOL,
         }
     ),
     "Secret": obj(

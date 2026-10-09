@@ -32,6 +32,8 @@ export interface Member {
   /** Client ids the member works on; empty for all. */
   apps: string[];
   added_at: string;
+  /** Whether the account signs in with a second factor. */
+  two_step: boolean;
 }
 
 export interface Secret {
