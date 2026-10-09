@@ -35,7 +35,7 @@ export default function ReviewPage() {
             <p class="page-intro mono">{() => data()?.review?.client_id ?? ''}</p>
           </div>
         </header>
-        <dp-review-decision
+        <idp-review-decision
           review={data()?.review ?? null}
           scopes={data()?.scopes ?? []}
           platform={brand().name ?? ''}

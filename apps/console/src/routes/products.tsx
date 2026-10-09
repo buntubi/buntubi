@@ -56,7 +56,7 @@ export default function ProductsPage() {
           <p class="page-intro">{() => t('products.lead')}</p>
         </div>
       </header>
-      <dp-product-catalog products={catalog()} freeScopes={free()} labels={labels()} describe={errorText} />
+      <idp-product-catalog products={catalog()} freeScopes={free()} labels={labels()} describe={errorText} />
     </div>
   );
 }

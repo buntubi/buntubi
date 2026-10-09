@@ -14,7 +14,7 @@ const props = {
   labels: prop.object<Partial<ReviewQueueLabels>>({}),
 };
 
-export class DpReviewQueue extends typedElement(props) {
+export class IdpReviewQueue extends typedElement(props) {
   protected override render(): unknown {
     const labels = () => ({ ...reviewQueueLabels, ...this.labels });
     const waited = (since: string) => {
@@ -36,13 +36,13 @@ export class DpReviewQueue extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-review-queue', DpReviewQueue);
+defineCustomElement('idp-review-queue', IdpReviewQueue);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-review-queue': DpReviewQueue;
+    'idp-review-queue': IdpReviewQueue;
   }
   interface JSXCustomElements {
-    'dp-review-queue': ElementAttributes<typeof props>;
+    'idp-review-queue': ElementAttributes<typeof props>;
   }
 }

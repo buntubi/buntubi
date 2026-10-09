@@ -11,20 +11,20 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
   <div part="organization-settings" class="settings">
     <style scoped>{`
       .settings { display: grid; gap: 16px; }
-      .card { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); padding: 18px 20px; display: grid; gap: 16px; }
-      .danger { border-color: color-mix(in srgb, var(--dp-bad) 40%, var(--dp-border)); }
+      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 16px; }
+      .danger { border-color: color-mix(in srgb, var(--idp-bad) 40%, var(--idp-border)); }
       .intro { display: grid; gap: 4px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .hint { margin: 0; color: var(--dp-muted); font-size: 13px; }
+      .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
       .field { display: grid; gap: 6px; align-content: start; }
       .field[data-wide] { grid-column: 1 / -1; }
       .caption { font-size: 12.5px; font-weight: 500; }
-      .note { color: var(--dp-muted); font-size: 12px; }
+      .note { color: var(--idp-muted); font-size: 12px; }
       .actions { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
       .actions .field { flex: 1 1 260px; }
-      .ok { color: var(--dp-ok); font-size: 13px; }
-      .alert { margin: 0; color: var(--dp-bad); font-size: 13px; }
+      .ok { color: var(--idp-ok); font-size: 13px; }
+      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
     `}</style>
     <Show when={o.error()}>
@@ -75,9 +75,9 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
       </Show>
     </form>
     <Show when={o.canDelete()}>
-      <section class="card danger" part="danger" aria-labelledby="dp-org-danger">
+      <section class="card danger" part="danger" aria-labelledby="idp-org-danger">
         <div class="intro">
-          <h2 id="dp-org-danger">{() => o.labels().danger}</h2>
+          <h2 id="idp-org-danger">{() => o.labels().danger}</h2>
           <p class="hint">{() => o.labels().dangerText}</p>
         </div>
         <div class="actions">

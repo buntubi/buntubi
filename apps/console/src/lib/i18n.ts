@@ -157,6 +157,10 @@ const fr = {
   'rd.notPending': 'Cette application n’attend pas de revue.',
   'gate.signOut': 'Se déconnecter pour se reconnecter',
   'gate.otherAccount': 'Se connecter avec un autre compte',
+  'page.error.title': 'Cette page n’a pas pu s’afficher',
+  'page.error.retry': 'Réessayer',
+  'scopes.catalog': 'Portées',
+  'scopes.api': 'API',
 };
 
 const en: typeof fr = {
@@ -315,6 +319,10 @@ const en: typeof fr = {
   'rd.notPending': 'This app is not waiting for a review.',
   'gate.signOut': 'Sign out to sign in again',
   'gate.otherAccount': 'Sign in with another account',
+  'page.error.title': 'This page could not be shown',
+  'page.error.retry': 'Try again',
+  'scopes.catalog': 'Scopes',
+  'scopes.api': 'API',
 };
 
 export const i18n = createI18n({ locale: 'fr', locales: ['fr', 'en'] as const, messages: { fr, en } });

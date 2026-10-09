@@ -7,7 +7,9 @@
     "./brand": "./src/brand.ts",
     "./icons": "./src/icons.ts",
     "./preferences": "./src/preferences.ts",
-    "./shell": "./src/shell.tsx"
+    "./shell": "./src/shell.tsx",
+    "./focused": "./src/focused.tsx",
+    "./theme-toggle": "./src/theme-toggle.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

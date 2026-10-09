@@ -32,6 +32,8 @@ export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'te
 };
 
 export interface DeveloperService {
+  /** Makes the account a developer: the terms, accepted once. */
+  acceptTerms(): Promise<void>;
   createOrganization(input: { name: string; support_email?: string }): Promise<Organization>;
   updateOrganization(input: {
     organization: string;

@@ -1,0 +1,19 @@
+/** The default look: a grid that fits as many cards per row as the width allows. */
+import { For } from '@fluixi/core';
+import { viewToken } from '../view.js';
+import type { StatGroupLogic } from './logic.js';
+
+export const statGroupView = (g: StatGroupLogic) => (
+  <div part="stats" class="stats">
+    <style scoped>{`
+      .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+    `}</style>
+    <For each={g.stats()} by={(stat) => stat.key}>
+      {(stat) => (
+        <idp-stat-card label={stat().label} value={stat().value} href={stat().href ?? ''} attention={stat().attention ?? false} />
+      )}
+    </For>
+  </div>
+);
+
+export const StatGroupView = viewToken<StatGroupLogic>('StatGroupView', statGroupView);

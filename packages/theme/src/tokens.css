@@ -1,79 +1,79 @@
 /*
  * The portal's design tokens. Every element reads these, never a raw colour, so a deployment
- * restyles everything by overriding them, and a brand only sets --dp-accent.
+ * restyles everything by overriding them, and a brand only sets --idp-accent.
  * Light by default; [data-theme='dark'] on <html> switches (the colour scheme writes it).
  */
 :root {
-  --dp-accent: #5b5bd6;
-  --dp-accent-fg: #ffffff;
-  --dp-accent-ink: var(--dp-accent);
-  --dp-accent-soft: color-mix(in srgb, var(--dp-accent) 12%, transparent);
+  --idp-accent: #5b5bd6;
+  --idp-accent-fg: #ffffff;
+  --idp-accent-ink: var(--idp-accent);
+  --idp-accent-soft: color-mix(in srgb, var(--idp-accent) 12%, transparent);
 
-  --dp-bg: #f7f7f8;
-  --dp-surface: #ffffff;
-  --dp-surface-2: #f2f2f4;
-  --dp-border: #e6e6ea;
-  --dp-border-2: #d6d6dc;
-  --dp-text: #111216;
-  --dp-muted: #5f636d;
+  --idp-bg: #f7f7f8;
+  --idp-surface: #ffffff;
+  --idp-surface-2: #f2f2f4;
+  --idp-border: #e6e6ea;
+  --idp-border-2: #d6d6dc;
+  --idp-text: #111216;
+  --idp-muted: #5f636d;
 
-  --dp-ok: #15803d;
-  --dp-warn: #b45309;
-  --dp-bad: #b91c1c;
-  --dp-info: #1d4ed8;
+  --idp-ok: #15803d;
+  --idp-warn: #b45309;
+  --idp-bad: #b91c1c;
+  --idp-info: #1d4ed8;
 
-  --dp-radius: 12px;
-  --dp-radius-sm: 8px;
-  --dp-shadow: 0 1px 2px rgb(16 18 22 / 0.04);
-  --dp-font: 'Geist', ui-sans-serif, system-ui, sans-serif;
-  --dp-mono: 'Geist Mono', ui-monospace, monospace;
-  --dp-sidebar: 256px;
-  --dp-rail: 60px;
+  --idp-radius: 12px;
+  --idp-radius-sm: 8px;
+  --idp-shadow: 0 1px 2px rgb(16 18 22 / 0.04);
+  --idp-font: 'Geist Variable', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --idp-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+  --idp-sidebar: 256px;
+  --idp-rail: 60px;
 
   color-scheme: light;
 }
 
 [data-theme='dark'] {
-  --dp-accent-ink: color-mix(in srgb, var(--dp-accent) 55%, white);
-  --dp-bg: #0a0b0d;
-  --dp-surface: #111215;
-  --dp-surface-2: #1a1c20;
-  --dp-border: #24262c;
-  --dp-border-2: #34373f;
-  --dp-text: #edeef0;
-  --dp-muted: #9a9fa9;
-  --dp-ok: #4ade80;
-  --dp-warn: #fbbf24;
-  --dp-bad: #f87171;
-  --dp-info: #60a5fa;
-  --dp-shadow: none;
+  --idp-accent-ink: color-mix(in srgb, var(--idp-accent) 55%, white);
+  --idp-bg: #0a0b0d;
+  --idp-surface: #111215;
+  --idp-surface-2: #1a1c20;
+  --idp-border: #24262c;
+  --idp-border-2: #34373f;
+  --idp-text: #edeef0;
+  --idp-muted: #9a9fa9;
+  --idp-ok: #4ade80;
+  --idp-warn: #fbbf24;
+  --idp-bad: #f87171;
+  --idp-info: #60a5fa;
+  --idp-shadow: none;
   color-scheme: dark;
 }
 
 /* fluixi-ui components follow the same tokens. */
 :root,
 [data-theme='dark'] {
-  --flx-ui-color-primary: var(--dp-accent);
-  --flx-ui-color-primary-hover: color-mix(in srgb, var(--dp-accent) 88%, black);
-  --flx-ui-color-primary-active: color-mix(in srgb, var(--dp-accent) 78%, black);
-  --flx-ui-color-primary-fg: var(--dp-accent-fg);
-  --flx-ui-color-primary-subtle: var(--dp-accent-soft);
-  --flx-ui-color-primary-text: var(--dp-accent-ink);
-  --flx-ui-color-bg: var(--dp-surface);
-  --flx-ui-color-bg-subtle: var(--dp-surface-2);
-  --flx-ui-color-bg-muted: var(--dp-surface-2);
-  --flx-ui-color-fg: var(--dp-text);
-  --flx-ui-color-fg-muted: var(--dp-muted);
-  --flx-ui-color-border: var(--dp-border);
-  --flx-ui-color-border-strong: var(--dp-border-2);
-  --flx-ui-color-focus-ring: color-mix(in srgb, var(--dp-accent) 45%, transparent);
-  --flx-ui-color-danger: var(--dp-bad);
-  --flx-ui-color-success: var(--dp-ok);
-  --flx-ui-color-warning: var(--dp-warn);
+  --flx-ui-color-primary: var(--idp-accent);
+  --flx-ui-color-primary-hover: color-mix(in srgb, var(--idp-accent) 88%, black);
+  --flx-ui-color-primary-active: color-mix(in srgb, var(--idp-accent) 78%, black);
+  --flx-ui-color-primary-fg: var(--idp-accent-fg);
+  --flx-ui-color-primary-subtle: var(--idp-accent-soft);
+  --flx-ui-color-primary-text: var(--idp-accent-ink);
+  --flx-ui-color-bg: var(--idp-surface);
+  --flx-ui-color-bg-subtle: var(--idp-surface-2);
+  --flx-ui-color-bg-muted: var(--idp-surface-2);
+  --flx-ui-color-fg: var(--idp-text);
+  --flx-ui-color-fg-muted: var(--idp-muted);
+  --flx-ui-color-border: var(--idp-border);
+  --flx-ui-color-border-strong: var(--idp-border-2);
+  --flx-ui-color-focus-ring: color-mix(in srgb, var(--idp-accent) 45%, transparent);
+  --flx-ui-color-danger: var(--idp-bad);
+  --flx-ui-color-success: var(--idp-ok);
+  --flx-ui-color-warning: var(--idp-warn);
 }
 
 html {
-  background: var(--dp-bg);
-  color: var(--dp-text);
-  font-family: var(--dp-font);
+  background: var(--idp-bg);
+  color: var(--idp-text);
+  font-family: var(--idp-font);
 }

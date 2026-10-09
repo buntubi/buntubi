@@ -1,51 +1,14 @@
 /** What the provider's admin API answers with. */
-export interface Overview {
-  users: number;
-  developers: number;
-  organizations: number;
-  suspended_organizations: number;
-  live_apps: number;
-  sandbox_apps: number;
-  pending_reviews: number;
-}
+export type { AdminOverview as Overview } from '@idp/sdk/types';
 
 /** An app as a reviewer sees it: the SDK's shape, shared with the console's elements. */
 export type { ReviewRequest as Review } from '@idp/sdk/types';
 
-export interface OrganizationRow {
-  id: string;
-  name: string;
-  owner: { id: string; email: string } | null;
-  members: number;
-  support_email: string | null;
-  approved_scopes: string[];
-  apps: number;
-  suspended: boolean;
-  suspended_reason: string | null;
-  created_at: string;
-}
+export type { AdminOrganization as OrganizationRow } from '@idp/sdk/types';
 
-export interface UserRow {
-  id: string;
-  email: string;
-  email_verified: boolean;
-  given_name: string;
-  family_name: string;
-  roles: string[];
-  developer: boolean;
-  mfa: boolean;
-  disabled: boolean;
-  created_at: string;
-}
+export type { AdminUser as UserRow } from '@idp/sdk/types';
 
-export interface ScopeRow {
-  name: string;
-  sensitivity: 'public' | 'sensitive' | 'restricted';
-  descriptions: { fr?: string; en?: string };
-  resource: string;
-  notes: string;
-  product?: string | null;
-}
+export type { ScopeEntry as ScopeRow } from '@idp/sdk/types';
 
 export interface ProductRow {
   slug: string;

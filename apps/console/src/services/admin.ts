@@ -5,7 +5,16 @@
 import { defineModule } from '@fluixi/start/app';
 import { action } from '@fluixi/start/router';
 import { Admin, type AdminService } from '@idp/sdk/admin';
-import { createProduct, reviewApp, setAvailability, setScopeProduct } from '../server/admin.js';
+import {
+  createProduct,
+  createScope,
+  restoreOrganization,
+  reviewApp,
+  setAvailability,
+  setScopeProduct,
+  setUserDisabled,
+  suspendOrganization,
+} from '../server/admin.js';
 
 const catalog = { invalidates: ['products'] };
 
@@ -20,6 +29,10 @@ const service: AdminService = {
     'review.decide',
     { invalidates: ['reviews', 'review', 'overview'] },
   ),
+  suspendOrganization: action(suspendOrganization, 'organization.suspend', { invalidates: ['organizations', 'overview'] }),
+  restoreOrganization: action(restoreOrganization, 'organization.restore', { invalidates: ['organizations', 'overview'] }),
+  setUserDisabled: action(setUserDisabled, 'user.toggle', { invalidates: ['users', 'overview'] }),
+  createScope: action(createScope, 'scope.create', { invalidates: ['scopes'] }),
 };
 
 export const AdminModule = defineModule({ name: 'admin', providers: [{ provide: Admin, useValue: service }] });

@@ -30,7 +30,7 @@ function stored(organization: Organization | null, field: OrganizationField): st
   return (organization?.[field] as string | null | undefined) ?? '';
 }
 
-export class DpOrganizationSettings extends typedElement(props) {
+export class IdpOrganizationSettings extends typedElement(props) {
   protected override render(): unknown {
     const developer = inject(Developer);
     const labels = () => ({ ...organizationSettingsLabels, ...this.labels });
@@ -106,13 +106,13 @@ export class DpOrganizationSettings extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-organization-settings', DpOrganizationSettings);
+defineCustomElement('idp-organization-settings', IdpOrganizationSettings);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-organization-settings': DpOrganizationSettings;
+    'idp-organization-settings': IdpOrganizationSettings;
   }
   interface JSXCustomElements {
-    'dp-organization-settings': ElementAttributes<typeof props>;
+    'idp-organization-settings': ElementAttributes<typeof props>;
   }
 }

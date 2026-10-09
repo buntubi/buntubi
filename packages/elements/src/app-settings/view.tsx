@@ -18,18 +18,18 @@ export const appSettingsView = (s: AppSettingsLogic) => (
     }}
   >
     <style scoped>{`
-      .card { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); padding: 18px 20px; display: grid; gap: 16px; }
+      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 16px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .hint { margin: 0; color: var(--dp-muted); font-size: 13px; }
+      .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .intro { display: grid; gap: 4px; }
       .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
       .field { display: grid; gap: 6px; align-content: start; }
       .field[data-wide] { grid-column: 1 / -1; }
       .caption { font-size: 12.5px; font-weight: 500; }
-      .note { color: var(--dp-muted); font-size: 12px; }
+      .note { color: var(--idp-muted); font-size: 12px; }
       .actions { display: flex; align-items: center; gap: 10px; }
-      .ok { color: var(--dp-ok); font-size: 13px; }
-      .alert { margin: 0; color: var(--dp-bad); font-size: 13px; }
+      .ok { color: var(--idp-ok); font-size: 13px; }
+      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
     `}</style>
     <div class="intro">

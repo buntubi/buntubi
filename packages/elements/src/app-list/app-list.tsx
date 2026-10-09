@@ -12,7 +12,7 @@ const props = {
   labels: prop.object<Partial<AppListLabels>>({}),
 };
 
-export class DpAppList extends typedElement(props) {
+export class IdpAppList extends typedElement(props) {
   protected override render(): unknown {
     const filter = signal<AppFilter>('all');
     const rows = memo(() => this.apps.map((app) => ({ ...app, status: statusOf(app) })));
@@ -31,13 +31,13 @@ export class DpAppList extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-app-list', DpAppList);
+defineCustomElement('idp-app-list', IdpAppList);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-app-list': DpAppList;
+    'idp-app-list': IdpAppList;
   }
   interface JSXCustomElements {
-    'dp-app-list': ElementAttributes<typeof props>;
+    'idp-app-list': ElementAttributes<typeof props>;
   }
 }

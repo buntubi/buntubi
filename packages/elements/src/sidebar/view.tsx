@@ -36,29 +36,29 @@ export const sidebarView = (s: SidebarLogic) => {
       {/* A Link draws its own <a>, which the scope does not stamp: links are styled through a
           stamped parent with :deep(). */}
       <style scoped>{`
-        .sidebar { box-sizing: border-box; width: var(--dp-sidebar); height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 14px 12px; background: var(--dp-surface); border-right: 1px solid var(--dp-border); font-size: 14px; }
-        .sidebar[data-collapsed] { width: var(--dp-rail); padding: 12px 8px; align-items: center; }
+        .sidebar { box-sizing: border-box; width: var(--idp-sidebar); height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 14px 12px; background: var(--idp-surface); border-right: 1px solid var(--idp-border); font-size: 14px; }
+        .sidebar[data-collapsed] { width: var(--idp-rail); padding: 12px 8px; align-items: center; }
         .top { display: flex; align-items: center; gap: 8px; }
-        .top :deep(.brand) { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding: 4px 6px; color: var(--dp-text); text-decoration: none; font-weight: 600; font-size: 15px; }
-        .mark { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--dp-accent); color: var(--dp-accent-fg); font-weight: 700; font-size: 14px; }
-        .sub { color: var(--dp-muted); font-weight: 500; font-size: 12px; }
+        .top :deep(.brand) { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding: 4px 6px; color: var(--idp-text); text-decoration: none; font-weight: 600; font-size: 15px; }
+        .mark { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--idp-accent); color: var(--idp-accent-fg); font-weight: 700; font-size: 14px; }
+        .sub { color: var(--idp-muted); font-weight: 500; font-size: 12px; }
         /* Name over product, so a long product word ("Développeurs") fits beside the toggle. */
         .brand-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
         .brand-text > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .sidebar :deep(.back) { display: flex; align-items: center; gap: 8px; padding: 2px 8px; color: var(--dp-muted); font-size: 13px; text-decoration: none; }
-        .context { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--dp-border); border-radius: 10px; background: var(--dp-surface-2); }
-        .context-mark { flex: none; width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--dp-accent-soft); color: var(--dp-accent-ink); font-size: 12px; font-weight: 700; }
+        .sidebar :deep(.back) { display: flex; align-items: center; gap: 8px; padding: 2px 8px; color: var(--idp-muted); font-size: 13px; text-decoration: none; }
+        .context { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--idp-border); border-radius: 10px; background: var(--idp-surface-2); }
+        .context-mark { flex: none; width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--idp-accent-soft); color: var(--idp-accent-ink); font-size: 12px; font-weight: 700; }
         .context-text { display: flex; flex-direction: column; min-width: 0; }
         .context-name { font-weight: 600; font-size: 13px; }
-        .context-detail { color: var(--dp-muted); font-size: 12px; }
+        .context-detail { color: var(--idp-muted); font-size: 12px; }
         .groups { display: flex; flex-direction: column; gap: 14px; width: 100%; }
         .group { display: flex; flex-direction: column; gap: 1px; }
-        .heading { padding: 0 10px 6px; color: var(--dp-muted); font-size: 11.5px; font-weight: 500; }
-        .group :deep(.item) { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--dp-radius-sm); color: var(--dp-muted); text-decoration: none; font-weight: 500; }
-        .group :deep(.item:hover) { background: var(--dp-surface-2); color: var(--dp-text); }
-        .group :deep(.item[aria-current='page']) { background: var(--dp-surface-2); color: var(--dp-text); font-weight: 600; }
+        .heading { padding: 0 10px 6px; color: var(--idp-muted); font-size: 11.5px; font-weight: 500; }
+        .group :deep(.item) { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--idp-radius-sm); color: var(--idp-muted); text-decoration: none; font-weight: 500; }
+        .group :deep(.item:hover) { background: var(--idp-surface-2); color: var(--idp-text); }
+        .group :deep(.item[aria-current='page']) { background: var(--idp-surface-2); color: var(--idp-text); font-weight: 600; }
         .label { flex: 1; }
-        .count { padding: 0 7px; border-radius: 10px; background: color-mix(in srgb, var(--dp-warn) 16%, transparent); color: var(--dp-warn); font-size: 11.5px; font-weight: 600; }
+        .count { padding: 0 7px; border-radius: 10px; background: color-mix(in srgb, var(--idp-warn) 16%, transparent); color: var(--idp-warn); font-size: 11.5px; font-weight: 600; }
         .sidebar[data-collapsed] .label, .sidebar[data-collapsed] .count, .sidebar[data-collapsed] .sub, .sidebar[data-collapsed] .brand-text, .sidebar[data-collapsed] .heading, .sidebar[data-collapsed] .context-text, .sidebar[data-collapsed] :deep(.back span) { display: none; }
         .sidebar[data-collapsed] .top { flex-direction: column; }
         .sidebar[data-collapsed] .group :deep(.item) { justify-content: center; padding: 10px; }

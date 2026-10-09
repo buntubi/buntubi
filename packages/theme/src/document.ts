@@ -5,7 +5,7 @@
  */
 import { createColorScheme, useColorScheme, type ColorScheme } from '@fluixi/core';
 
-export const schemeKey = 'dp-scheme';
+export const schemeKey = 'idp-scheme';
 
 export function createDocumentScheme(): ColorScheme {
   return createColorScheme({ storageKey: schemeKey, themeColor: { light: '#f7f7f8', dark: '#0a0b0d' } });

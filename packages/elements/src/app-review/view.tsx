@@ -8,13 +8,13 @@ import type { AppReviewLogic } from './logic.js';
 
 const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
 const TONE = {
-  draft: 'var(--dp-muted)',
-  in_review: 'var(--dp-info)',
-  changes_requested: 'var(--dp-warn)',
-  live: 'var(--dp-ok)',
-  pending: 'var(--dp-info)',
-  approved: 'var(--dp-ok)',
-  rejected: 'var(--dp-warn)',
+  draft: 'var(--idp-muted)',
+  in_review: 'var(--idp-info)',
+  changes_requested: 'var(--idp-warn)',
+  live: 'var(--idp-ok)',
+  pending: 'var(--idp-info)',
+  approved: 'var(--idp-ok)',
+  rejected: 'var(--idp-warn)',
 } as const;
 
 export const appReviewView = (r: AppReviewLogic) => (
@@ -22,42 +22,42 @@ export const appReviewView = (r: AppReviewLogic) => (
     <style scoped>{`
       .review { display: grid; gap: 16px; }
       .top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
-      .card { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); padding: 18px 20px; display: grid; gap: 12px; align-content: start; }
+      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 12px; align-content: start; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .hint { margin: 0; color: var(--dp-muted); font-size: 13px; }
-      .meter { height: 8px; border-radius: 999px; background: var(--dp-surface-2); overflow: hidden; }
-      .meter span { display: block; height: 100%; background: var(--dp-accent); border-radius: inherit; }
+      .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
+      .meter { height: 8px; border-radius: 999px; background: var(--idp-surface-2); overflow: hidden; }
+      .meter span { display: block; height: 100%; background: var(--idp-accent); border-radius: inherit; }
       .figure { display: flex; align-items: baseline; gap: 10px; }
       .figure strong { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
       ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
       li.open { display: flex; justify-content: space-between; gap: 8px; font-size: 13.5px; }
-      li.open :deep(a), .card :deep(a.fix) { color: var(--dp-accent-ink); text-decoration: none; font-weight: 500; font-size: 13px; }
+      li.open :deep(a), .card :deep(a.fix) { color: var(--idp-accent-ink); text-decoration: none; font-weight: 500; font-size: 13px; }
       .pill { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--tone); background: color-mix(in srgb, var(--tone) 14%, transparent); }
       .pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-      .feedback { display: grid; gap: 4px; padding: 12px 14px; border-radius: var(--dp-radius-sm); background: color-mix(in srgb, var(--dp-warn) 9%, transparent); border: 1px solid color-mix(in srgb, var(--dp-warn) 35%, transparent); font-size: 13.5px; }
+      .feedback { display: grid; gap: 4px; padding: 12px 14px; border-radius: var(--idp-radius-sm); background: color-mix(in srgb, var(--idp-warn) 9%, transparent); border: 1px solid color-mix(in srgb, var(--idp-warn) 35%, transparent); font-size: 13.5px; }
       .field { display: grid; gap: 6px; }
       .caption { font-size: 13px; font-weight: 500; }
-      .caption code { font-family: var(--dp-mono); font-size: 12.5px; }
-      .note { color: var(--dp-muted); font-size: 12px; }
+      .caption code { font-family: var(--idp-mono); font-size: 12.5px; }
+      .note { color: var(--idp-muted); font-size: 12px; }
       .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-      .ok { color: var(--dp-ok); font-size: 13px; }
-      .alert { margin: 0; color: var(--dp-bad); font-size: 13px; }
+      .ok { color: var(--idp-ok); font-size: 13px; }
+      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-      li.entry { display: grid; gap: 6px; padding: 12px 0 12px 18px; border-left: 2px solid var(--dp-border); position: relative; }
+      li.entry { display: grid; gap: 6px; padding: 12px 0 12px 18px; border-left: 2px solid var(--idp-border); position: relative; }
       li.entry::before { content: ''; position: absolute; left: -6px; top: 16px; width: 10px; height: 10px; border-radius: 50%; background: var(--tone); }
-      .line { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--dp-muted); }
-      code.scope { font-family: var(--dp-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 6px; background: var(--dp-surface-2); border: 1px solid var(--dp-border); }
+      .line { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--idp-muted); }
+      code.scope { font-family: var(--idp-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 6px; background: var(--idp-surface-2); border: 1px solid var(--idp-border); }
       details { font-size: 13px; }
-      summary { cursor: pointer; color: var(--dp-accent-ink); }
+      summary { cursor: pointer; color: var(--idp-accent-ink); }
       dl { margin: 8px 0 0; display: grid; gap: 6px; }
-      dt { font-family: var(--dp-mono); font-size: 12px; }
-      dd { margin: 0; color: var(--dp-muted); white-space: pre-wrap; }
+      dt { font-family: var(--idp-mono); font-size: 12px; }
+      dd { margin: 0; color: var(--idp-muted); white-space: pre-wrap; }
       @media (max-width: 860px) { .top { grid-template-columns: 1fr; } }
     `}</style>
 
     <div class="top">
-      <section class="card" part="readiness" aria-labelledby="dp-review-readiness">
-        <h2 id="dp-review-readiness">{() => r.labels().readiness}</h2>
+      <section class="card" part="readiness" aria-labelledby="idp-review-readiness">
+        <h2 id="idp-review-readiness">{() => r.labels().readiness}</h2>
         <div class="figure">
           <strong>{() => `${r.percent()} %`}</strong>
           <span class="hint">{() => r.readinessCount()}</span>
@@ -80,8 +80,8 @@ export const appReviewView = (r: AppReviewLogic) => (
           </ul>
         </Show>
       </section>
-      <section class="card" part="status" aria-labelledby="dp-review-status">
-        <h2 id="dp-review-status">{() => r.labels().status}</h2>
+      <section class="card" part="status" aria-labelledby="idp-review-status">
+        <h2 id="idp-review-status">{() => r.labels().status}</h2>
         <span class="pill" style={() => `--tone: ${TONE[r.stage()]}`}>
           {() => r.labels().stages[r.stage()]}
         </span>
@@ -99,13 +99,13 @@ export const appReviewView = (r: AppReviewLogic) => (
       <form
         class="card"
         part="submission"
-        aria-labelledby="dp-review-submission"
+        aria-labelledby="idp-review-submission"
         onSubmit={(event: SubmitEvent) => {
           event.preventDefault();
           void r.submit();
         }}
       >
-        <h2 id="dp-review-submission">{() => r.labels().submission}</h2>
+        <h2 id="idp-review-submission">{() => r.labels().submission}</h2>
         <p class="hint">{() => r.labels().submissionIntro}</p>
         <For each={r.waiting()} by={(entry) => entry.scope}>
           {(entry) => (
@@ -156,8 +156,8 @@ export const appReviewView = (r: AppReviewLogic) => (
       <p class="hint">{() => r.labels().noReviewNeeded}</p>
     </Show>
 
-    <section class="card" part="history" aria-labelledby="dp-review-history">
-      <h2 id="dp-review-history">{() => r.labels().history}</h2>
+    <section class="card" part="history" aria-labelledby="idp-review-history">
+      <h2 id="idp-review-history">{() => r.labels().history}</h2>
       <Show when={r.history().length} fallback={<p class="hint">{() => r.labels().noHistory}</p>}>
         <ol>
           <For each={r.history()} by={(entry) => entry.id}>

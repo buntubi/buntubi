@@ -3,6 +3,7 @@
  * progress bar, a refused sign-in's notice, and the matched route.
  */
 import { cache, useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
+import '@idp/elements/access-gate';
 import '@idp/elements/auth-notice';
 import type { SidebarGroup } from '@idp/elements/sidebar/logic';
 import { BrandContext, markOf } from '@idp/shell/brand';
@@ -11,12 +12,12 @@ import { usePreferences } from '@idp/shell/preferences';
 import { Shell, type Crumb } from '@idp/shell/shell';
 import type { Brand } from '@idp/sdk/types';
 import type { Gate as GateCode } from '../lib/types.js';
-import { Gate } from '../components/gate.js';
+import { PageBoundary } from '../components/page-boundary.js';
 import { authNoticeLabels } from '../lib/auth-notice.js';
 import { locale, setLocale, t } from '../lib/i18n.js';
-import { shellLabels, sidebarLabels } from '../lib/labels.js';
+import { accessGateLabels, shellLabels, sidebarLabels } from '../lib/labels.js';
 import { loadBrand, loadOverview } from '../server/admin.js';
-import { auth } from '../services/auth.js';
+import { auth, idpUrl } from '../services/auth.js';
 
 const brand = cache(() => loadBrand(), 'brand');
 // The same entry the overview page reads, so the count costs no second request.
@@ -78,7 +79,18 @@ export default function RootLayout() {
     <BrandContext.Provider value={() => data()?.brand ?? {}}>
       <div class="progress" classList={{ active: routing() }} aria-hidden="true" />
       {/* Closed: no page renders, so no page asks the admin API what it would refuse. */}
-      <Show when={!data()?.gate} fallback={<Gate gate={data()?.gate ?? null} />}>
+      <Show
+        when={!data()?.gate}
+        fallback={
+          <idp-access-gate
+            reason={data()?.gate ?? 'signed_out'}
+            accountHref={`${idpUrl}/account`}
+            signOutHref="/auth/logout"
+            labels={accessGateLabels()}
+            onSignin={() => auth.signIn({ returnTo: '/' })}
+          />
+        }
+      >
       <Shell
         brand={{ name: platform(), href: '/' }}
         context={{ name: platform(), detail: t('shell.product'), mark: markOf(platform()) }}
@@ -92,14 +104,16 @@ export default function RootLayout() {
         onLanguage={switchLanguage}
         labels={shellLabels()}
       >
-        <dp-auth-notice
+        <idp-auth-notice
           error={location.query.auth_error ?? ''}
           labels={authNoticeLabels()}
           onRetry={() => auth.signIn({ returnTo: location.pathname })}
           onDismiss={dismissAuthError}
         />
         <Suspense fallback={<p class="page-intro">{() => t('common.loading')}</p>}>
-          <Outlet />
+          <PageBoundary>
+            <Outlet />
+          </PageBoundary>
         </Suspense>
       </Shell>
       </Show>

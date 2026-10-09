@@ -12,7 +12,7 @@ const props = {
   labels: prop.object<Partial<AuthNoticeLabels>>({}),
 };
 
-export class DpAuthNotice extends typedElement(props) {
+export class IdpAuthNotice extends typedElement(props) {
   protected override render(): unknown {
     const labels = () => ({ ...authNoticeLabels, ...this.labels });
     const logic: AuthNoticeLogic = {
@@ -26,13 +26,13 @@ export class DpAuthNotice extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-auth-notice', DpAuthNotice);
+defineCustomElement('idp-auth-notice', IdpAuthNotice);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-auth-notice': DpAuthNotice;
+    'idp-auth-notice': IdpAuthNotice;
   }
   interface JSXCustomElements {
-    'dp-auth-notice': ElementAttributes<typeof props, AuthNoticeEvents>;
+    'idp-auth-notice': ElementAttributes<typeof props, AuthNoticeEvents>;
   }
 }

@@ -22,7 +22,7 @@ function storedValue(app: App | null, field: SettingsField): string {
   return app[field] ?? '';
 }
 
-export class DpAppSettings extends typedElement(props) {
+export class IdpAppSettings extends typedElement(props) {
   protected override render(): unknown {
     const developer = inject(Developer);
     const labels = () => ({ ...appSettingsLabels, ...this.labels });
@@ -80,13 +80,13 @@ export class DpAppSettings extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-app-settings', DpAppSettings);
+defineCustomElement('idp-app-settings', IdpAppSettings);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-app-settings': DpAppSettings;
+    'idp-app-settings': IdpAppSettings;
   }
   interface JSXCustomElements {
-    'dp-app-settings': ElementAttributes<typeof props>;
+    'idp-app-settings': ElementAttributes<typeof props>;
   }
 }

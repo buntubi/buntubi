@@ -7,13 +7,16 @@ import type { SidebarContext, SidebarGroup } from '@idp/elements/sidebar/logic';
 import { markOf, useBrand } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
 import { usePreferences } from '@idp/shell/preferences';
+import { Focused } from '@idp/shell/focused';
 import { Shell, type Crumb } from '@idp/shell/shell';
+import '@idp/elements/not-found';
 import { locale, setLocale, t } from '../../../lib/i18n.js';
-import { shellLabels, sidebarLabels } from '../../../lib/labels.js';
+import { shellLabels, sidebarLabels, workspaceNotFoundLabels } from '../../../lib/labels.js';
 import type { Workspace } from '../../../lib/types.js';
 import { paramOf } from '../../../lib/params.js';
 import { appPath } from '../../../lib/paths.js';
 import { loadWorkspace } from '../../../server/developer.js';
+import { PageBoundary } from '../../../components/page-boundary.js';
 
 export const workspace = cache((organization: string) => loadWorkspace(organization), 'workspace');
 export const routeData = (args: RouteDataArgs) => workspace(paramOf(args, 'org'));
@@ -82,8 +85,22 @@ export default function WorkspaceLayout() {
   const focused = () => location.pathname === `${base()}/apps/new`;
 
   return (
-    <Show when={organization()} fallback={<NotFound />}>
-      <Show when={!focused()} fallback={<Focused brand={brand().name ?? ''} close={base()} />}>
+    <Show when={organization()} fallback={<idp-not-found href="/" labels={workspaceNotFoundLabels()} />}>
+      <Show
+        when={!focused()}
+        fallback={
+          <Focused
+            brand={{ name: brand().name ?? '', href: base() }}
+            title={t('shell.createApp')}
+            close={{ label: t('shell.close'), href: base() }}
+            labels={shellLabels()}
+          >
+            <PageBoundary>
+              <Outlet />
+            </PageBoundary>
+          </Focused>
+        }
+      >
       <Shell
         brand={{ name: brand().name ?? '', href: base() }}
         context={context()}
@@ -97,47 +114,11 @@ export default function WorkspaceLayout() {
         onLanguage={switchLanguage}
         labels={shellLabels()}
       >
-        <Outlet />
+        <PageBoundary>
+          <Outlet />
+        </PageBoundary>
       </Shell>
       </Show>
     </Show>
-  );
-}
-
-function Focused(props: { brand: string; close: string }) {
-  return (
-    <div class="focused">
-      <style scoped>{`
-        .focused { min-height: 100vh; display: flex; flex-direction: column; }
-        header { display: flex; align-items: center; gap: 12px; padding: 12px 28px; border-bottom: 1px solid var(--dp-border); background: var(--dp-surface); }
-        .mark { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--dp-accent); color: var(--dp-accent-fg); font-weight: 700; font-size: 14px; }
-        .title { flex: 1; font-weight: 600; }
-        header :deep(a) { color: var(--dp-muted); text-decoration: none; font-size: 13.5px; }
-        main { width: 100%; max-width: 1040px; box-sizing: border-box; margin: 0 auto; padding: 32px 28px 56px; }
-      `}</style>
-      <header>
-        <span class="mark" aria-hidden="true">{() => markOf(props.brand)}</span>
-        <span class="title">{() => t('shell.newApp')}</span>
-        <Link href={props.close}>{() => t('shell.close')}</Link>
-      </header>
-      <main>
-        <Outlet />
-      </main>
-    </div>
-  );
-}
-
-function NotFound() {
-  return (
-    <main class="missing">
-      <style scoped>{`
-        .missing { max-width: 640px; margin: 0 auto; padding: 72px 24px; display: grid; gap: 12px; }
-        h1 { margin: 0; font-size: 26px; }
-        p { margin: 0; color: var(--dp-muted); }
-      `}</style>
-      <h1>{() => t('workspace.notFound')}</h1>
-      <p>{() => t('workspace.notFoundText')}</p>
-      <Link href="/">{() => t('workspace.backHome')}</Link>
-    </main>
   );
 }

@@ -13,20 +13,20 @@ export const teamView = (t: TeamLogic) => (
   <div part="team" class="team">
     <style scoped>{`
       .team { display: grid; gap: 16px; }
-      .card { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); padding: 18px 20px; display: grid; gap: 14px; }
+      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 14px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .hint { margin: 0; color: var(--dp-muted); font-size: 13px; }
+      .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .scroll { overflow-x: auto; }
       table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 13.5px; }
-      th { text-align: left; padding: 8px 10px; color: var(--dp-muted); font-weight: 500; font-size: 12px; border-bottom: 1px solid var(--dp-border); }
-      td { padding: 10px; border-bottom: 1px solid var(--dp-border); vertical-align: middle; }
+      th { text-align: left; padding: 8px 10px; color: var(--idp-muted); font-weight: 500; font-size: 12px; border-bottom: 1px solid var(--idp-border); }
+      td { padding: 10px; border-bottom: 1px solid var(--idp-border); vertical-align: middle; }
       .who { display: flex; align-items: center; gap: 10px; }
-      .initial { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 600; background: var(--dp-accent-soft); color: var(--dp-accent-ink); flex: none; }
+      .initial { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 600; background: var(--idp-accent-soft); color: var(--idp-accent-ink); flex: none; }
       .names { display: flex; flex-direction: column; }
-      .email { color: var(--dp-muted); font-size: 12.5px; }
-      .you { margin-left: 6px; font-size: 11.5px; color: var(--dp-muted); }
+      .email { color: var(--idp-muted); font-size: 12.5px; }
+      .you { margin-left: 6px; font-size: 11.5px; color: var(--idp-muted); }
       .end { text-align: right; white-space: nowrap; }
-      .access-edit td { background: var(--dp-surface-2); }
+      .access-edit td { background: var(--idp-surface-2); }
       .chips { display: flex; flex-wrap: wrap; gap: 6px; }
       .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
       .invite { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 220px) auto; gap: 8px; align-items: end; }
@@ -35,12 +35,12 @@ export const teamView = (t: TeamLogic) => (
       .caption { font-size: 12.5px; font-weight: 500; }
       .roles { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 16px; margin: 0; font-size: 12.5px; }
       .roles dt { font-weight: 600; }
-      .roles dd { margin: 0; color: var(--dp-muted); }
+      .roles dd { margin: 0; color: var(--idp-muted); }
       ul { list-style: none; margin: 0; padding: 0; display: grid; }
-      li.tester { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--dp-border); font-size: 13.5px; }
-      .meta { color: var(--dp-muted); font-size: 12.5px; }
+      li.tester { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--idp-border); font-size: 13.5px; }
+      .meta { color: var(--idp-muted); font-size: 12.5px; }
       .add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
-      .alert { margin: 0; color: var(--dp-bad); font-size: 13px; }
+      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 720px) { .invite, .add { grid-template-columns: 1fr; } }
     `}</style>
     <Show when={t.error()}>
@@ -49,9 +49,9 @@ export const teamView = (t: TeamLogic) => (
       </p>
     </Show>
 
-    <section class="card" part="members" aria-labelledby="dp-team-members">
+    <section class="card" part="members" aria-labelledby="idp-team-members">
       <div>
-        <h2 id="dp-team-members">{() => t.labels().members}</h2>
+        <h2 id="idp-team-members">{() => t.labels().members}</h2>
         <p class="hint">{() => t.labels().membersIntro}</p>
       </div>
       <div class="scroll">
@@ -192,9 +192,9 @@ export const teamView = (t: TeamLogic) => (
       </dl>
     </section>
 
-    <section class="card" part="testers" aria-labelledby="dp-team-testers">
+    <section class="card" part="testers" aria-labelledby="idp-team-testers">
       <div>
-        <h2 id="dp-team-testers">{() => t.labels().testers}</h2>
+        <h2 id="idp-team-testers">{() => t.labels().testers}</h2>
         <p class="hint">{() => t.labels().testersIntro}</p>
       </div>
       <Show when={t.testers().length} fallback={<p class="hint">{() => t.labels().noTesters}</p>}>

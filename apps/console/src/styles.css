@@ -1,12 +1,12 @@
-/* Layer order first, then fluixi-ui's tokens. Colours come from @idp/theme's --dp-* tokens. */
+/* Layer order first, then fluixi-ui's tokens. Colours come from @idp/theme's --idp-* tokens. */
 @layer flx.reset, flx.base, flx.tokens, flx.components, flx.skin, flx.fx;
 @import '@fluixi-ui/tokens/tokens.css';
 
 body {
   margin: 0;
-  background: var(--dp-bg);
-  color: var(--dp-text);
-  font-family: var(--dp-font);
+  background: var(--idp-bg);
+  color: var(--idp-text);
+  font-family: var(--idp-font);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -15,7 +15,7 @@ body {
   inset: 0 0 auto;
   height: 2px;
   z-index: 10;
-  background: var(--dp-accent);
+  background: var(--idp-accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s;
@@ -46,10 +46,10 @@ body {
 .page-intro {
   margin: 6px 0 0;
   max-width: 64ch;
-  color: var(--dp-muted);
+  color: var(--idp-muted);
 }
 .page-intro.mono {
-  font-family: var(--dp-mono);
+  font-family: var(--idp-mono);
   font-size: 12.5px;
 }
 .eyebrow {
@@ -57,234 +57,6 @@ body {
   font-size: 13px;
 }
 .eyebrow a {
-  color: var(--dp-muted);
+  color: var(--idp-muted);
   text-decoration: none;
-}
-
-/* The pages not rebuilt yet, kept under their root so their generic classes never reach the
-   elements in the shell. */
-.legacy .page {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 16px 24px 64px;
-}
-.legacy h1 {
-  margin: 8px 0 20px;
-  font-size: 30px;
-  letter-spacing: -0.02em;
-}
-.legacy h2 {
-  margin: 0 0 14px;
-  font-size: 18px;
-}
-.legacy h3 {
-  margin: 20px 0 10px;
-  font-size: 15px;
-}
-.legacy .lead {
-  max-width: 560px;
-  color: var(--flx-ui-color-fg-muted);
-  font-size: 16px;
-  line-height: 1.55;
-}
-.legacy .muted {
-  color: var(--flx-ui-color-fg-muted);
-  font-size: 13.5px;
-}
-.legacy .mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
-  word-break: break-all;
-}
-.legacy .hero {
-  padding: 72px 0;
-}
-.legacy .hero h1 {
-  max-width: 640px;
-  font-size: clamp(32px, 5vw, 52px);
-  line-height: 1.05;
-}
-.legacy .narrow {
-  max-width: 560px;
-}
-.legacy .wide {
-  min-width: 200px;
-}
-.legacy .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
-.legacy .tile {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 18px;
-  border-radius: 14px;
-  background: var(--flx-ui-color-bg-subtle, rgba(127, 127, 127, 0.08));
-  color: inherit;
-  text-decoration: none;
-}
-.legacy .tile:hover {
-  background: var(--flx-ui-color-bg-muted, rgba(127, 127, 127, 0.14));
-}
-.legacy .panel {
-  margin-bottom: 16px;
-}
-.legacy .back {
-  color: var(--flx-ui-color-fg-muted);
-  font-size: 14px;
-  text-decoration: none;
-}
-.legacy .title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.legacy .badges {
-  display: inline-flex;
-  gap: 6px;
-}
-.legacy .rows {
-  display: flex;
-  flex-direction: column;
-  margin: 0 0 12px;
-  padding: 0;
-  list-style: none;
-}
-.legacy .rows li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--flx-ui-color-border, rgba(127, 127, 127, 0.18));
-}
-.legacy .rows li.inactive {
-  opacity: 0.5;
-}
-.legacy .row-link,
-.legacy .row-text {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-  color: inherit;
-  text-decoration: none;
-}
-.legacy .form-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 12px;
-}
-.legacy .form-row .field {
-  flex: 1 1 200px;
-}
-.legacy .form-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-width: 560px;
-}
-.legacy .field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.legacy .field-label {
-  font-size: 13px;
-  font-weight: 600;
-}
-.legacy .field-hint {
-  color: var(--flx-ui-color-fg-muted);
-  font-size: 12.5px;
-}
-.legacy .choice {
-  display: flex;
-  gap: 6px;
-}
-.legacy .alert {
-  margin: 12px 0 0;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: var(--flx-ui-color-danger-subtle);
-  color: var(--flx-ui-color-danger-text);
-  font-size: 14px;
-}
-.legacy .alert p {
-  margin: 0;
-}
-.legacy .reveal {
-  margin: 0 0 14px;
-  padding: 14px;
-  border-radius: 12px;
-  background: var(--flx-ui-color-bg-subtle, rgba(127, 127, 127, 0.08));
-}
-.legacy .reveal p {
-  margin: 0 0 10px;
-  font-size: 14px;
-}
-.legacy .reveal-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.legacy .reveal-row code {
-  flex: 1;
-}
-.legacy .stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
-.legacy .stat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-  border-radius: 14px;
-  background: var(--flx-ui-color-bg-subtle, rgba(127, 127, 127, 0.08));
-  color: inherit;
-  text-decoration: none;
-}
-.legacy .stat.attention {
-  background: var(--flx-ui-color-fg);
-  color: var(--flx-ui-color-bg);
-}
-.legacy .stat.attention .muted {
-  color: inherit;
-  opacity: 0.75;
-}
-.legacy .stat-value {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-.legacy .links {
-  display: flex;
-  gap: 14px;
-  font-size: 14px;
-}
-.legacy .links a,
-.legacy .button-link {
-  color: var(--flx-ui-color-fg);
-  font-weight: 600;
-}
-.legacy .search {
-  max-width: 480px;
-  margin-bottom: 16px;
-}
-.legacy .search > :first-child {
-  flex: 1 1 240px;
-}
-.legacy .panel .field + .field,
-.legacy .panel .field + .form-row {
-  margin-top: 12px;
-}
-.legacy .panel .title-row + .muted {
-  margin-top: 0;
 }

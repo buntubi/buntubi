@@ -6,6 +6,7 @@ import { defineModule } from '@fluixi/start/app';
 import { action } from '@fluixi/start/router';
 import { Developer, type DeveloperService } from '@idp/sdk/developer';
 import {
+  acceptTerms,
   addMember,
   addTestUser,
   changeMember,
@@ -26,9 +27,10 @@ import {
 const app = { invalidates: ['workspace', 'app'] };
 // Going live also writes the app's review history.
 const submission = { invalidates: ['workspace', 'app', 'reviews'] };
-const organization = { invalidates: ['workspace'] };
+const organization = { invalidates: ['workspace', 'home'] };
 
 const service: DeveloperService = {
+  acceptTerms: action(() => acceptTerms(), 'developer.terms', { invalidates: ['home'] }),
   createOrganization: action(createOrganization, 'organization.create', organization),
   updateOrganization: action(({ organization: id, patch }) => updateOrganization(id, patch), 'organization.update', organization),
   deleteOrganization: action((id: string) => deleteOrganization(id), 'organization.delete', { invalidates: ['workspace', 'home'] }),

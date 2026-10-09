@@ -11,7 +11,7 @@ export const routeData = appRouteData;
 export default function SettingsPage() {
   const data = useRouteData<AppPageData>();
   return (
-    <dp-app-settings
+    <idp-app-settings
       app={data()?.app.app ?? null}
       canEdit={can(data()?.app.role, 'edit_apps')}
       labels={appSettingsLabels()}

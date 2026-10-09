@@ -29,7 +29,7 @@ export default function ReviewPage() {
     <div class="stack">
       <style scoped>{`h2 { margin: 0; font-size: 18px; font-weight: 600; }`}</style>
       <h2>{() => t('rv.title')}</h2>
-      <dp-app-review
+      <idp-app-review
         clientId={app()?.client_id ?? ''}
         overview={data()?.app.overview ?? null}
         reviews={data()?.reviews ?? []}

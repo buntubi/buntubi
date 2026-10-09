@@ -12,30 +12,30 @@ export const credentialsView = (c: CredentialsLogic) => (
     <style scoped>{`
       .credentials { display: grid; gap: 16px; }
       .bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
-      .intro { margin: 0; color: var(--dp-muted); font-size: 13.5px; max-width: 62ch; }
-      .switch { display: flex; gap: 2px; padding: 3px; border-radius: 9px; background: var(--dp-surface-2); }
-      .card { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); padding: 18px 20px; display: grid; gap: 14px; }
+      .intro { margin: 0; color: var(--idp-muted); font-size: 13.5px; max-width: 62ch; }
+      .switch { display: flex; gap: 2px; padding: 3px; border-radius: 9px; background: var(--idp-surface-2); }
+      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 14px; }
       .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .hint { margin: 0; color: var(--dp-muted); font-size: 13px; }
+      .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .field { display: grid; gap: 6px; }
-      .caption { font-size: 12px; color: var(--dp-muted); font-weight: 500; }
+      .caption { font-size: 12px; color: var(--idp-muted); font-weight: 500; }
       .copyable { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-      code { font-family: var(--dp-mono); font-size: 12.5px; padding: 5px 8px; border-radius: var(--dp-radius-sm); background: var(--dp-surface-2); border: 1px solid var(--dp-border); overflow-wrap: anywhere; }
+      code { font-family: var(--idp-mono); font-size: 12.5px; padding: 5px 8px; border-radius: var(--idp-radius-sm); background: var(--idp-surface-2); border: 1px solid var(--idp-border); overflow-wrap: anywhere; }
       .scroll { overflow-x: auto; }
       table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
-      th { text-align: left; padding: 8px 10px; color: var(--dp-muted); font-weight: 500; font-size: 12px; border-bottom: 1px solid var(--dp-border); }
-      td { padding: 9px 10px; border-bottom: 1px solid var(--dp-border); }
-      tr[data-active='false'] td { color: var(--dp-muted); }
+      th { text-align: left; padding: 8px 10px; color: var(--idp-muted); font-weight: 500; font-size: 12px; border-bottom: 1px solid var(--idp-border); }
+      td { padding: 9px 10px; border-bottom: 1px solid var(--idp-border); }
+      tr[data-active='false'] td { color: var(--idp-muted); }
       .end { text-align: right; }
-      .once { display: grid; gap: 6px; padding: 12px 14px; border-radius: var(--dp-radius-sm); background: color-mix(in srgb, var(--dp-warn) 10%, transparent); border: 1px solid color-mix(in srgb, var(--dp-warn) 35%, transparent); font-size: 13px; }
+      .once { display: grid; gap: 6px; padding: 12px 14px; border-radius: var(--idp-radius-sm); background: color-mix(in srgb, var(--idp-warn) 10%, transparent); border: 1px solid color-mix(in srgb, var(--idp-warn) 35%, transparent); font-size: 13px; }
       ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
       li.uri, li.key { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
-      .meta { color: var(--dp-muted); font-size: 12.5px; }
+      .meta { color: var(--idp-muted); font-size: 12.5px; }
       .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
       .key-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 8px; align-items: end; }
       .actions { display: flex; gap: 8px; }
-      .alert { margin: 0; color: var(--dp-bad); font-size: 13px; }
+      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 720px) { .key-form, .row { grid-template-columns: 1fr; } }
     `}</style>
     <div class="bar">
@@ -69,9 +69,9 @@ export const credentialsView = (c: CredentialsLogic) => (
       </p>
     </Show>
 
-    <section class="card" part="client" aria-labelledby="dp-cred-client">
+    <section class="card" part="client" aria-labelledby="idp-cred-client">
       <div class="head">
-        <h2 id="dp-cred-client">{() => c.labels().client}</h2>
+        <h2 id="idp-cred-client">{() => c.labels().client}</h2>
         <Show when={c.confidential() && c.canManage()}>
           <Button variant="outline" tone="neutral" size="sm" disabled={c.busy() === 'rotate'} onPress={c.rotate}>
             {() => c.labels().rotate}
@@ -128,9 +128,9 @@ export const credentialsView = (c: CredentialsLogic) => (
       </Show>
     </section>
 
-    <section class="card" part="redirects" aria-labelledby="dp-cred-redirects">
+    <section class="card" part="redirects" aria-labelledby="idp-cred-redirects">
       <div class="head">
-        <h2 id="dp-cred-redirects">{() => c.labels().redirects}</h2>
+        <h2 id="idp-cred-redirects">{() => c.labels().redirects}</h2>
       </div>
       <p class="hint">{() => c.labels().redirectsHint}</p>
       <ul>
@@ -170,9 +170,9 @@ export const credentialsView = (c: CredentialsLogic) => (
       </Show>
     </section>
 
-    <section class="card" part="keys" aria-labelledby="dp-cred-keys">
+    <section class="card" part="keys" aria-labelledby="idp-cred-keys">
       <div class="head">
-        <h2 id="dp-cred-keys">{() => c.labels().keys}</h2>
+        <h2 id="idp-cred-keys">{() => c.labels().keys}</h2>
       </div>
       <p class="hint">{() => c.labels().keysHint}</p>
       <Show when={c.keys().length} fallback={<p class="hint">{() => c.labels().noKeys}</p>}>
@@ -214,8 +214,8 @@ export const credentialsView = (c: CredentialsLogic) => (
       </Show>
     </section>
 
-    <section class="card" part="signing" aria-labelledby="dp-cred-signing">
-      <h2 id="dp-cred-signing">{() => c.labels().signing}</h2>
+    <section class="card" part="signing" aria-labelledby="idp-cred-signing">
+      <h2 id="idp-cred-signing">{() => c.labels().signing}</h2>
       <p class="hint">{() => c.labels().signingText}</p>
       <code>{() => `GET ${c.jwksUrl()}`}</code>
     </section>

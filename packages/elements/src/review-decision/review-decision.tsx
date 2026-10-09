@@ -22,7 +22,7 @@ const props = {
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
-export class DpReviewDecision extends typedElement(props) {
+export class IdpReviewDecision extends typedElement(props) {
   protected override render(): unknown {
     const admin = inject(Admin);
     const labels = () => ({ ...reviewDecisionLabels, ...this.labels });
@@ -97,13 +97,13 @@ export class DpReviewDecision extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-review-decision', DpReviewDecision);
+defineCustomElement('idp-review-decision', IdpReviewDecision);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-review-decision': DpReviewDecision;
+    'idp-review-decision': IdpReviewDecision;
   }
   interface JSXCustomElements {
-    'dp-review-decision': ElementAttributes<typeof props>;
+    'idp-review-decision': ElementAttributes<typeof props>;
   }
 }

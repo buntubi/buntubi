@@ -25,7 +25,7 @@ const props = {
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
-export class DpTeam extends typedElement(props) {
+export class IdpTeam extends typedElement(props) {
   protected override render(): unknown {
     const developer = inject(Developer);
     const labels = () => ({ ...teamLabels, ...this.labels });
@@ -119,13 +119,13 @@ export class DpTeam extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-team', DpTeam);
+defineCustomElement('idp-team', IdpTeam);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-team': DpTeam;
+    'idp-team': IdpTeam;
   }
   interface JSXCustomElements {
-    'dp-team': ElementAttributes<typeof props>;
+    'idp-team': ElementAttributes<typeof props>;
   }
 }

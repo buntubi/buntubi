@@ -26,7 +26,7 @@ const props = {
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
-export class DpLaunchPath extends typedElement(props) {
+export class IdpLaunchPath extends typedElement(props) {
   protected override render(): unknown {
     const developer = inject(Developer);
     const busy = signal(false);
@@ -81,13 +81,13 @@ export class DpLaunchPath extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-launch-path', DpLaunchPath);
+defineCustomElement('idp-launch-path', IdpLaunchPath);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-launch-path': DpLaunchPath;
+    'idp-launch-path': IdpLaunchPath;
   }
   interface JSXCustomElements {
-    'dp-launch-path': ElementAttributes<typeof props>;
+    'idp-launch-path': ElementAttributes<typeof props>;
   }
 }

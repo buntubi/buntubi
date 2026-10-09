@@ -1,4 +1,10 @@
 /** Element words, built from the catalogue in one place so a language change reaches them all. */
+import type { AppScopesLabels } from '@idp/elements/app-scopes/logic';
+import type { DeveloperTermsLabels } from '@idp/elements/developer-terms/logic';
+import type { OrganizationFormLabels } from '@idp/elements/organization-form/logic';
+import type { WelcomeLabels } from '@idp/elements/welcome/logic';
+import type { NotFoundLabels } from '@idp/elements/not-found/logic';
+import type { PageErrorLabels } from '@idp/elements/page-error/logic';
 import type { AppListLabels } from '@idp/elements/app-list/logic';
 import type { AppReviewLabels } from '@idp/elements/app-review/logic';
 import type { AppSettingsLabels } from '@idp/elements/app-settings/logic';
@@ -160,41 +166,45 @@ export const appSettingsLabels = (): AppSettingsLabels => ({
 
 export const createAppLabels = (): CreateAppLabels => ({
   steps: { 1: t('ca.step1'), 2: t('ca.step2'), 3: t('ca.step3') },
+  stepsLabel: t('ca.stepsLabel'),
   kindTitle: t('ca.kindTitle'),
   kindIntro: t('ca.kindIntro'),
   kinds: {
-    web: { title: t('ca.kind.web'), text: t('ca.kind.webText') },
-    mobile: { title: t('ca.kind.mobile'), text: t('ca.kind.mobileText') },
     consumer: { title: t('ca.kind.consumer'), text: t('ca.kind.consumerText') },
     business: { title: t('ca.kind.business'), text: t('ca.kind.businessText') },
+    web: { title: t('ca.kind.web'), text: t('ca.kind.webText') },
+    mobile: { title: t('ca.kind.mobile'), text: t('ca.kind.mobileText') },
     backend: { title: t('ca.kind.backend'), text: t('ca.kind.backendText') },
     internal: { title: t('ca.kind.internal'), text: t('ca.kind.internalText') },
   },
-  infoTitle: t('ca.infoTitle'),
-  fields: {
-    name: t('st.name'),
-    description: t('st.description'),
-    redirect_uri: t('ca.redirect'),
-    homepage_url: t('st.homepage'),
-    privacy_url: t('st.privacy'),
-    terms_url: t('st.terms'),
-    logo: t('st.logo'),
+  info: {
+    title: t('ca.infoTitle'),
+    fields: {
+      logo: t('ca.iconUrl'),
+      name: t('st.name'),
+      description: t('st.description'),
+      homepage_url: t('ca.website'),
+      category: t('ca.category'),
+      privacy_url: t('ca.privacyUrl'),
+      terms_url: t('ca.termsUrl'),
+    },
+    placeholders: {
+      logo: 'https://',
+      homepage_url: 'https://',
+      category: t('ca.categoryPlaceholder'),
+      privacy_url: 'https://',
+      terms_url: 'https://',
+    },
+    logoHint: t('ca.iconHint'),
+    platforms: t('ca.platforms'),
   },
-  hints: { redirect_uri: t('ca.redirectHint'), logo: t('st.logoHint') },
-  clientType: t('ca.clientType'),
-  clientTypes: {
-    confidential: { title: t('ca.confidential'), text: t('ca.confidentialText') },
-    public: { title: t('ca.public'), text: t('ca.publicText') },
-  },
-  platforms: t('ca.platforms'),
-  platformNames: { web: 'Web', ios: 'iOS', android: 'Android', backend: t('ca.platform.server') },
-  preview: t('ca.preview'),
-  previewText: t('ca.previewText'),
-  previewLinks: t('ca.previewLinks'),
-  previewNote: t('ca.previewNote'),
+  platformNames: { web: 'Web', ios: 'iOS', android: 'Android', backend: 'Backend' },
+  preview: { title: t('ca.preview'), text: t('ca.previewText'), links: t('ca.previewLinks'), note: t('ca.previewNote') },
   productsTitle: t('ca.productsTitle'),
   productsIntro: t('ca.productsIntro'),
   approvals: { none: t('ca.approval.none'), review: t('ca.approval.review'), restricted: t('ca.approval.restricted') },
+  availability: { ga: t('ca.availability.ga'), beta: t('ca.availability.beta'), sandbox: t('ca.availability.sandbox') },
+  auth: { oauth2: 'OAuth 2', oidc: 'OpenID Connect', api_key: t('ca.auth.api_key'), webhooks: 'Webhooks' },
   noProducts: t('pm.empty'),
   back: t('ca.back'),
   next: t('ca.next'),
@@ -309,4 +319,42 @@ export const shellLabels = (): ShellLabels => ({
   navigation: t('shell.navigation'),
   language: t('nav.language'),
   signOut: t('nav.signOut'),
+});
+
+export const pageErrorLabels = (): PageErrorLabels => ({ title: t('page.error.title'), retry: t('page.error.retry') });
+
+export const workspaceNotFoundLabels = (): NotFoundLabels => ({
+  title: t('workspace.notFound'),
+  text: t('workspace.notFoundText'),
+  back: t('workspace.backHome'),
+});
+
+export const welcomeLabels = (): WelcomeLabels => ({
+  title: t('landing.title'),
+  text: t('landing.text'),
+  signIn: t('landing.signIn'),
+});
+
+export const developerTermsLabels = (): DeveloperTermsLabels => ({
+  title: t('terms.title'),
+  text: t('terms.text'),
+  accept: t('terms.accept'),
+  error: t('error.generic'),
+});
+
+export const organizationFormLabels = (): OrganizationFormLabels => ({
+  title: t('organizations.new'),
+  name: t('organizations.name'),
+  supportEmail: t('organizations.supportEmail'),
+  create: t('common.create'),
+  error: t('error.generic'),
+});
+
+export const appScopesLabels = (): AppScopesLabels => ({
+  title: t('appws.access'),
+  manage: t('appws.manage'),
+  live: t('appws.scopesLive'),
+  waiting: t('appws.scopesWaiting'),
+  sandbox: t('appws.scopesSandbox'),
+  none: t('appws.none'),
 });

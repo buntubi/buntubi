@@ -19,7 +19,7 @@ export default function ProductsPage() {
           <p class="page-intro">{() => t('page.productsIntro')}</p>
         </div>
       </header>
-      <dp-product-browser products={data()?.products ?? []} locale={locale()} labels={productBrowserLabels()} />
+      <idp-product-browser products={data()?.products ?? []} locale={locale()} labels={productBrowserLabels()} />
     </div>
   );
 }

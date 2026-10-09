@@ -15,7 +15,7 @@ export default function PermissionsPage() {
     <div class="stack">
       <style scoped>{`h2 { margin: 0; font-size: 18px; font-weight: 600; }`}</style>
       <h2>{() => t('appws.permissionsTitle')}</h2>
-      <dp-permissions
+      <idp-permissions
         app={app()}
         products={data()?.workspace.products ?? []}
         overview={data()?.app.overview ?? null}

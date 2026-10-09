@@ -10,6 +10,7 @@ import { t } from '../lib/i18n.js';
 import type { Brand } from '../lib/types.js';
 import { loadBrand } from '../server/developer.js';
 import { auth } from '../services/auth.js';
+import { PageBoundary } from '../components/page-boundary.js';
 
 const brand = cache(() => loadBrand(), 'brand');
 export const routeData = () => brand();
@@ -28,15 +29,17 @@ export default function RootLayout() {
   return (
     <BrandContext.Provider value={() => data() ?? {}}>
       <div class="progress" classList={{ active: routing() }} aria-hidden="true" />
-      <dp-auth-notice
+      <idp-auth-notice
         class="auth-notice"
         error={location.query.auth_error ?? ''}
         labels={authNoticeLabels()}
         onRetry={() => auth.signIn({ returnTo: location.pathname })}
         onDismiss={dismissAuthError}
       />
-      <Suspense fallback={<p class="muted loading">{() => t('common.loading')}</p>}>
-        <Outlet />
+      <Suspense fallback={<p class="page-intro">{() => t('common.loading')}</p>}>
+        <PageBoundary>
+          <Outlet />
+        </PageBoundary>
       </Suspense>
     </BrandContext.Provider>
   );

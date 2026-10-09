@@ -7,22 +7,22 @@ import type { ReviewQueueLogic } from './logic.js';
 export const reviewQueueView = (q: ReviewQueueLogic) => (
   <section part="queue" class="queue">
     <style scoped>{`
-      .queue { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); }
+      .queue { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
       .scroll { overflow-x: auto; }
       table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 13.5px; }
-      th { padding: 10px 18px; text-align: left; color: var(--dp-muted); font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--dp-border); }
-      td { padding: 12px 18px; border-bottom: 1px solid var(--dp-border); vertical-align: middle; }
+      th { padding: 10px 18px; text-align: left; color: var(--idp-muted); font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--idp-border); }
+      td { padding: 12px 18px; border-bottom: 1px solid var(--idp-border); vertical-align: middle; }
       tr:last-child td { border-bottom: 0; }
       .app { display: flex; align-items: center; gap: 12px; }
-      .mark { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-weight: 600; background: var(--dp-accent-soft); color: var(--dp-accent-ink); flex: none; }
+      .mark { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-weight: 600; background: var(--idp-accent-soft); color: var(--idp-accent-ink); flex: none; }
       .names { display: flex; flex-direction: column; }
-      .id, .meta { font-size: 12px; color: var(--dp-muted); }
-      .id { font-family: var(--dp-mono); }
+      .id, .meta { font-size: 12px; color: var(--idp-muted); }
+      .id { font-family: var(--idp-mono); }
       .chips { display: flex; flex-wrap: wrap; gap: 4px; }
-      code { font-family: var(--dp-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 6px; color: var(--dp-warn); background: color-mix(in srgb, var(--dp-warn) 12%, transparent); }
+      code { font-family: var(--idp-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 6px; color: var(--idp-warn); background: color-mix(in srgb, var(--idp-warn) 12%, transparent); }
       .end { text-align: right; }
-      td :deep(a) { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: var(--dp-radius-sm); background: var(--dp-accent); color: var(--dp-accent-fg); font-weight: 500; font-size: 13px; text-decoration: none; }
-      .empty { margin: 0; padding: 28px 18px; color: var(--dp-muted); text-align: center; }
+      td :deep(a) { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: var(--idp-radius-sm); background: var(--idp-accent); color: var(--idp-accent-fg); font-weight: 500; font-size: 13px; text-decoration: none; }
+      .empty { margin: 0; padding: 28px 18px; color: var(--idp-muted); text-align: center; }
     `}</style>
     <Show when={q.rows().length} fallback={<p class="empty">{() => q.labels().empty}</p>}>
       <div class="scroll">

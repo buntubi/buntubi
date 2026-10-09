@@ -12,7 +12,7 @@ const props = {
   labels: prop.object<Partial<ProductBrowserLabels>>({}),
 };
 
-export class DpProductBrowser extends typedElement(props) {
+export class IdpProductBrowser extends typedElement(props) {
   protected override render(): unknown {
     const labels = () => ({ ...productBrowserLabels, ...this.labels });
     const query = signal('');
@@ -59,13 +59,13 @@ export class DpProductBrowser extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-product-browser', DpProductBrowser);
+defineCustomElement('idp-product-browser', IdpProductBrowser);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-product-browser': DpProductBrowser;
+    'idp-product-browser': IdpProductBrowser;
   }
   interface JSXCustomElements {
-    'dp-product-browser': ElementAttributes<typeof props>;
+    'idp-product-browser': ElementAttributes<typeof props>;
   }
 }

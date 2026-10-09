@@ -28,7 +28,7 @@ const props = {
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
-export class DpAppReview extends typedElement(props) {
+export class IdpAppReview extends typedElement(props) {
   protected override render(): unknown {
     const developer = inject(Developer);
     const labels = () => ({ ...appReviewLabels, ...this.labels });
@@ -116,13 +116,13 @@ export class DpAppReview extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-app-review', DpAppReview);
+defineCustomElement('idp-app-review', IdpAppReview);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-app-review': DpAppReview;
+    'idp-app-review': IdpAppReview;
   }
   interface JSXCustomElements {
-    'dp-app-review': ElementAttributes<typeof props>;
+    'idp-app-review': ElementAttributes<typeof props>;
   }
 }

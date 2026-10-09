@@ -18,7 +18,7 @@ export default function CredentialsPage() {
     <div class="stack">
       <style scoped>{`h2 { margin: 0; font-size: 18px; font-weight: 600; }`}</style>
       <h2>{() => t('appws.credentialsTitle')}</h2>
-      <dp-credentials
+      <idp-credentials
         app={app()}
         keys={data()?.workspace.current?.keys ?? []}
         organization={app()?.organization_id ?? ''}

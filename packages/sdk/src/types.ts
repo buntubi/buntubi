@@ -93,6 +93,57 @@ export interface AppOverview {
   scopes: { live: string[]; waiting: string[]; sandbox: string[] };
 }
 
+/** The platform at a glance, for its owner. */
+export interface AdminOverview {
+  users: number;
+  developers: number;
+  organizations: number;
+  suspended_organizations: number;
+  live_apps: number;
+  sandbox_apps: number;
+  pending_reviews: number;
+}
+
+/** An organization as the platform owner sees it. */
+export interface AdminOrganization {
+  id: string;
+  name: string;
+  owner: { id: string; email: string } | null;
+  members: number;
+  support_email: string | null;
+  approved_scopes: string[];
+  apps: number;
+  suspended: boolean;
+  suspended_reason: string | null;
+  created_at: string;
+}
+
+/** An account as the platform owner sees it. */
+export interface AdminUser {
+  id: string;
+  email: string;
+  email_verified: boolean;
+  given_name: string;
+  family_name: string;
+  roles: string[];
+  developer: boolean;
+  mfa: boolean;
+  disabled: boolean;
+  created_at: string;
+}
+
+export type Sensitivity = 'public' | 'sensitive' | 'restricted';
+
+/** A scope in the platform's catalogue. */
+export interface ScopeEntry {
+  name: string;
+  sensitivity: Sensitivity;
+  descriptions: Localized;
+  resource: string;
+  notes: string;
+  product?: string | null;
+}
+
 /** One request to go live with sensitive scopes, and the platform owner's answer. */
 export interface AppReview {
   id: string;

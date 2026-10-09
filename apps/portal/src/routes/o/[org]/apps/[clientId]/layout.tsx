@@ -22,18 +22,18 @@ export default function AppLayout() {
       <div class="stack">
         <style scoped>{`
           .app-head { display: flex; align-items: center; gap: 14px; }
-          .app-mark { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; font-weight: 700; background: var(--dp-accent-soft); color: var(--dp-accent-ink); }
+          .app-mark { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; font-weight: 700; background: var(--idp-accent-soft); color: var(--idp-accent-ink); }
           .app-title { display: grid; gap: 4px; min-width: 0; }
           .app-name { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
           h1 { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -0.01em; }
           .pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--tone); background: color-mix(in srgb, var(--tone) 14%, transparent); }
           .pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-          .pill[data-tone='ok'] { --tone: var(--dp-ok); }
-          .pill[data-tone='info'] { --tone: var(--dp-info); }
-          .pill[data-tone='warn'] { --tone: var(--dp-warn); }
-          .pill[data-tone='muted'] { --tone: var(--dp-muted); }
-          .app-meta { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--dp-muted); font-size: 13px; }
-          code { font-family: var(--dp-mono); font-size: 12px; color: var(--dp-text); }
+          .pill[data-tone='ok'] { --tone: var(--idp-ok); }
+          .pill[data-tone='info'] { --tone: var(--idp-info); }
+          .pill[data-tone='warn'] { --tone: var(--idp-warn); }
+          .pill[data-tone='muted'] { --tone: var(--idp-muted); }
+          .app-meta { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--idp-muted); font-size: 13px; }
+          code { font-family: var(--idp-mono); font-size: 12px; color: var(--idp-text); }
         `}</style>
         <header class="app-head">
           <span class="app-mark">{() => markOf(app()?.name)}</span>
@@ -64,7 +64,7 @@ function AppNotFound(props: { organization: string }) {
     <div class="stack">
       <style scoped>{`
         h1 { margin: 0; font-size: 24px; }
-        p { margin: 0; color: var(--dp-muted); }
+        p { margin: 0; color: var(--idp-muted); }
       `}</style>
       <h1>{() => t('appws.notFound')}</h1>
       <p>{() => t('appws.notFoundText')}</p>

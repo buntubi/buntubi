@@ -40,7 +40,7 @@ export default function DeveloperHome() {
           </Link>
         </div>
       </header>
-      <dp-app-list apps={rows()} labels={appListLabels()} />
+      <idp-app-list apps={rows()} labels={appListLabels()} />
     </div>
   );
 }

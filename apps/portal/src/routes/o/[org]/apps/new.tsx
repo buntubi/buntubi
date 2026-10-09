@@ -25,7 +25,7 @@ export default function NewAppPage() {
   };
   return (
     <Show when={can(organization()?.role, 'edit_apps')} fallback={<p class="page-intro">{() => t('error.forbidden')}</p>}>
-      <dp-create-app
+      <idp-create-app
         organization={organization()?.id ?? ''}
         products={data()?.products ?? []}
         platform={brand().name ?? ''}
@@ -33,6 +33,7 @@ export default function NewAppPage() {
         labels={createAppLabels()}
         describe={errorText}
         onCreated={created}
+        onCancel={() => navigate(`/o/${organization()?.id ?? ''}`)}
       />
     </Show>
   );

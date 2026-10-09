@@ -94,22 +94,22 @@ export const productCatalogView = (c: ProductCatalogLogic) => {
       <style scoped>{`
         .catalog { display: flex; flex-direction: column; gap: 16px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
-        .product, .new { display: flex; flex-direction: column; gap: 12px; padding: 18px; border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); }
+        .product, .new { display: flex; flex-direction: column; gap: 12px; padding: 18px; border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
         .product[aria-busy='true'] { opacity: 0.7; }
         .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
         .title { display: flex; flex-direction: column; gap: 2px; }
         h3, h2 { margin: 0; font-size: 15px; font-weight: 600; }
-        code { font-family: var(--dp-mono); font-size: 12px; color: var(--dp-muted); }
-        .description { margin: 0; color: var(--dp-muted); }
+        code { font-family: var(--idp-mono); font-size: 12px; color: var(--idp-muted); }
+        .description { margin: 0; color: var(--idp-muted); }
         .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .muted { color: var(--dp-muted); font-size: 13px; }
+        .muted { color: var(--idp-muted); font-size: 13px; }
         .scopes { display: flex; flex-wrap: wrap; gap: 6px; }
-        .chip { display: inline-flex; align-items: center; gap: 2px; padding-left: 8px; border: 1px solid var(--dp-border); border-radius: 7px; background: var(--dp-surface-2); }
-        .chip code { color: var(--dp-text); }
+        .chip { display: inline-flex; align-items: center; gap: 2px; padding-left: 8px; border: 1px solid var(--idp-border); border-radius: 7px; background: var(--idp-surface-2); }
+        .chip code { color: var(--idp-text); }
         .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
         .field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; }
-        .alert { margin: 0; padding: 10px 12px; border-radius: var(--dp-radius-sm); background: color-mix(in srgb, var(--dp-bad) 10%, transparent); color: var(--dp-bad); }
-        .empty { margin: 0; color: var(--dp-muted); }
+        .alert { margin: 0; padding: 10px 12px; border-radius: var(--idp-radius-sm); background: color-mix(in srgb, var(--idp-bad) 10%, transparent); color: var(--idp-bad); }
+        .empty { margin: 0; color: var(--idp-muted); }
       `}</style>
       <Show when={c.error()}>
         <p class="alert" role="alert">{() => c.error()}</p>

@@ -18,7 +18,7 @@ const props = {
   labels: prop.object<Partial<typeof sidebarLabels>>({}),
 };
 
-export class DpSidebar extends typedElement(props) {
+export class IdpSidebar extends typedElement(props) {
   protected override render(): unknown {
     const logic: SidebarLogic = {
       brand: () => this.brand,
@@ -34,13 +34,13 @@ export class DpSidebar extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-sidebar', DpSidebar);
+defineCustomElement('idp-sidebar', IdpSidebar);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-sidebar': DpSidebar;
+    'idp-sidebar': IdpSidebar;
   }
   interface JSXCustomElements {
-    'dp-sidebar': ElementAttributes<typeof props, SidebarEvents>;
+    'idp-sidebar': ElementAttributes<typeof props, SidebarEvents>;
   }
 }

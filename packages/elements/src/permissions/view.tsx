@@ -6,12 +6,12 @@ import { viewToken } from '../view.js';
 import type { PermissionsLogic, ScopeState } from './logic.js';
 
 const TONE: Record<ScopeState, string> = {
-  live: 'var(--dp-ok)',
-  waiting: 'var(--dp-warn)',
-  sandbox: 'var(--dp-info)',
-  added: 'var(--dp-accent-ink)',
-  available: 'var(--dp-muted)',
-  restricted: 'var(--dp-muted)',
+  live: 'var(--idp-ok)',
+  waiting: 'var(--idp-warn)',
+  sandbox: 'var(--idp-info)',
+  added: 'var(--idp-accent-ink)',
+  available: 'var(--idp-muted)',
+  restricted: 'var(--idp-muted)',
 };
 
 export const permissionsView = (p: PermissionsLogic) => (
@@ -19,26 +19,26 @@ export const permissionsView = (p: PermissionsLogic) => (
     <style scoped>{`
       .permissions { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
       .groups { display: grid; gap: 16px; }
-      .intro { grid-column: 1 / -1; margin: 0; color: var(--dp-muted); font-size: 13.5px; max-width: 70ch; }
-      .card { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); padding: 18px 20px; display: grid; gap: 12px; }
+      .intro { grid-column: 1 / -1; margin: 0; color: var(--idp-muted); font-size: 13.5px; max-width: 70ch; }
+      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .hint { margin: 0; color: var(--dp-muted); font-size: 13px; }
+      .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .scopes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
       .scopes :deep(button) { height: auto; min-height: 0; padding: 12px 14px; justify-content: flex-start; text-align: left; white-space: normal; }
       .scope { display: grid; gap: 6px; width: 100%; }
       .top { display: flex; align-items: center; gap: 8px; }
       .top .pill { margin-left: auto; }
-      code { font-family: var(--dp-mono); font-size: 12.5px; font-weight: 600; }
-      .desc { color: var(--dp-muted); font-size: 12.5px; font-weight: 400; }
+      code { font-family: var(--idp-mono); font-size: 12.5px; font-weight: 600; }
+      .desc { color: var(--idp-muted); font-size: 12.5px; font-weight: 400; }
       .pill { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--tone); background: color-mix(in srgb, var(--tone) 14%, transparent); }
-      .tick { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid var(--dp-border-2); display: grid; place-items: center; flex: none; }
-      .scope[data-selected] .tick { border-color: var(--dp-accent); background: var(--dp-accent); color: var(--dp-accent-fg); }
+      .tick { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid var(--idp-border-2); display: grid; place-items: center; flex: none; }
+      .scope[data-selected] .tick { border-color: var(--idp-accent); background: var(--idp-accent); color: var(--idp-accent-fg); }
       .aside { position: sticky; top: 16px; }
       ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
       .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-      .actions :deep(a) { font-size: 13px; color: var(--dp-accent-ink); text-decoration: none; font-weight: 500; }
-      .ok { color: var(--dp-ok); font-size: 13px; }
-      .alert { margin: 0; color: var(--dp-bad); font-size: 13px; }
+      .actions :deep(a) { font-size: 13px; color: var(--idp-accent-ink); text-decoration: none; font-weight: 500; }
+      .ok { color: var(--idp-ok); font-size: 13px; }
+      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 960px) { .permissions { grid-template-columns: 1fr; } .aside { position: static; } }
     `}</style>
     <p class="intro">{() => p.labels().intro}</p>
@@ -90,8 +90,8 @@ export const permissionsView = (p: PermissionsLogic) => (
         </For>
       </Show>
     </div>
-    <aside class="card aside" part="summary" aria-labelledby="dp-perm-summary">
-      <h2 id="dp-perm-summary">{() => p.labels().summaryTitle}</h2>
+    <aside class="card aside" part="summary" aria-labelledby="idp-perm-summary">
+      <h2 id="idp-perm-summary">{() => p.labels().summaryTitle}</h2>
       <p class="hint">
         {() =>
           p

@@ -19,7 +19,7 @@ export default function SettingsPage() {
       <header class="page-head">
         <h1>{() => t('page.settings')}</h1>
       </header>
-      <dp-organization-settings
+      <idp-organization-settings
         organization={organization()}
         canEdit={can(organization()?.role, 'settings')}
         canDelete={can(organization()?.role, 'delete')}

@@ -19,7 +19,7 @@ export default function ReviewsPage() {
           <p class="page-intro">{() => t('reviews.intro')}</p>
         </div>
       </header>
-      <dp-review-queue reviews={data()?.reviews ?? []} now={data()?.now ?? ''} href="/reviews/{client_id}" labels={reviewQueueLabels()} />
+      <idp-review-queue reviews={data()?.reviews ?? []} now={data()?.now ?? ''} href="/reviews/{client_id}" labels={reviewQueueLabels()} />
     </div>
   );
 }

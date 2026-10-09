@@ -19,7 +19,7 @@ export default function TeamPage() {
       <header class="page-head">
         <h1>{() => t('page.team')}</h1>
       </header>
-      <dp-team
+      <idp-team
         organization={current()?.organization.id ?? ''}
         members={current()?.members ?? []}
         testUsers={current()?.test_users ?? []}

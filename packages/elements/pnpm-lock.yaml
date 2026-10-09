@@ -14,12 +14,21 @@ importers:
       '@fluixi-ui/button':
         specifier: link:../../../../fluixi-ui/packages/button
         version: link:../../../../fluixi-ui/packages/button
+      '@fluixi-ui/checkbox':
+        specifier: link:../../../../fluixi-ui/packages/checkbox
+        version: link:../../../../fluixi-ui/packages/checkbox
       '@fluixi-ui/input':
         specifier: link:../../../../fluixi-ui/packages/input
         version: link:../../../../fluixi-ui/packages/input
+      '@fluixi-ui/layout':
+        specifier: link:../../../../fluixi-ui/packages/layout
+        version: link:../../../../fluixi-ui/packages/layout
       '@fluixi-ui/select':
         specifier: link:../../../../fluixi-ui/packages/select
         version: link:../../../../fluixi-ui/packages/select
+      '@fluixi-ui/toggle':
+        specifier: link:../../../../fluixi-ui/packages/toggle
+        version: link:../../../../fluixi-ui/packages/toggle
       '@fluixi/core':
         specifier: link:../../../../fluixi-core/packages/core
         version: link:../../../../fluixi-core/packages/core

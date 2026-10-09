@@ -29,7 +29,7 @@ const props = {
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
-export class DpPermissions extends typedElement(props) {
+export class IdpPermissions extends typedElement(props) {
   protected override render(): unknown {
     const developer = inject(Developer);
     const labels = () => ({ ...permissionsLabels, ...this.labels });
@@ -122,13 +122,13 @@ export class DpPermissions extends typedElement(props) {
   }
 }
 
-defineCustomElement('dp-permissions', DpPermissions);
+defineCustomElement('idp-permissions', IdpPermissions);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dp-permissions': DpPermissions;
+    'idp-permissions': IdpPermissions;
   }
   interface JSXCustomElements {
-    'dp-permissions': ElementAttributes<typeof props>;
+    'idp-permissions': ElementAttributes<typeof props>;
   }
 }

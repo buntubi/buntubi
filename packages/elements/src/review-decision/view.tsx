@@ -6,7 +6,7 @@ import { viewToken } from '../view.js';
 import type { ReviewDecisionLogic } from './logic.js';
 
 const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
-const TONE = { pending: 'var(--dp-info)', approved: 'var(--dp-ok)', rejected: 'var(--dp-warn)' } as const;
+const TONE = { pending: 'var(--idp-info)', approved: 'var(--idp-ok)', rejected: 'var(--idp-warn)' } as const;
 
 export const reviewDecisionView = (d: ReviewDecisionLogic) => (
   <div part="review-decision" class="decision">
@@ -14,42 +14,42 @@ export const reviewDecisionView = (d: ReviewDecisionLogic) => (
       .decision { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
       .column { display: grid; gap: 16px; }
       .aside { position: sticky; top: 16px; }
-      .card { border: 1px solid var(--dp-border); border-radius: var(--dp-radius); background: var(--dp-surface); box-shadow: var(--dp-shadow); padding: 18px 20px; display: grid; gap: 12px; }
+      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .hint { margin: 0; color: var(--dp-muted); font-size: 13px; }
-      .scope { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--dp-border); }
+      .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
+      .scope { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--idp-border); }
       .scope:first-of-type { border-top: 0; padding-top: 0; }
-      code { font-family: var(--dp-mono); font-size: 12.5px; font-weight: 600; }
-      .desc { color: var(--dp-muted); font-size: 12.5px; }
-      blockquote { margin: 0; padding: 10px 12px; border-radius: var(--dp-radius-sm); background: var(--dp-surface-2); font-size: 13.5px; white-space: pre-wrap; }
-      .empty { color: var(--dp-bad); }
-      .consent { display: grid; justify-items: center; gap: 10px; padding: 18px; border-radius: var(--dp-radius-sm); background: var(--dp-surface-2); text-align: center; font-size: 13.5px; }
-      .mark { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; font-weight: 700; background: var(--dp-accent-soft); color: var(--dp-accent-ink); overflow: hidden; }
+      code { font-family: var(--idp-mono); font-size: 12.5px; font-weight: 600; }
+      .desc { color: var(--idp-muted); font-size: 12.5px; }
+      blockquote { margin: 0; padding: 10px 12px; border-radius: var(--idp-radius-sm); background: var(--idp-surface-2); font-size: 13.5px; white-space: pre-wrap; }
+      .empty { color: var(--idp-bad); }
+      .consent { display: grid; justify-items: center; gap: 10px; padding: 18px; border-radius: var(--idp-radius-sm); background: var(--idp-surface-2); text-align: center; font-size: 13.5px; }
+      .mark { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; font-weight: 700; background: var(--idp-accent-soft); color: var(--idp-accent-ink); overflow: hidden; }
       .mark img { width: 100%; height: 100%; object-fit: cover; }
       dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 13px; }
-      dt { color: var(--dp-muted); }
+      dt { color: var(--idp-muted); }
       dd { margin: 0; overflow-wrap: anywhere; }
       ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
-      a { color: var(--dp-accent-ink); text-decoration: none; }
-      .missing { color: var(--dp-bad); }
-      .mono { font-family: var(--dp-mono); font-size: 12px; overflow-wrap: anywhere; }
+      a { color: var(--idp-accent-ink); text-decoration: none; }
+      .missing { color: var(--idp-bad); }
+      .mono { font-family: var(--idp-mono); font-size: 12px; overflow-wrap: anywhere; }
       ol { list-style: none; margin: 0; padding: 0; display: grid; }
-      li.entry { display: grid; gap: 4px; padding: 10px 0 10px 16px; border-left: 2px solid var(--dp-border); position: relative; font-size: 13px; }
+      li.entry { display: grid; gap: 4px; padding: 10px 0 10px 16px; border-left: 2px solid var(--idp-border); position: relative; font-size: 13px; }
       li.entry::before { content: ''; position: absolute; left: -6px; top: 14px; width: 10px; height: 10px; border-radius: 50%; background: var(--tone); }
       .pill { width: fit-content; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--tone); background: color-mix(in srgb, var(--tone) 14%, transparent); }
-      .line { color: var(--dp-muted); }
+      .line { color: var(--idp-muted); }
       .field { display: grid; gap: 6px; }
       .caption { font-size: 12.5px; font-weight: 500; }
-      .note { color: var(--dp-muted); font-size: 12px; }
+      .note { color: var(--idp-muted); font-size: 12px; }
       .actions { display: flex; flex-wrap: wrap; gap: 8px; }
-      .ok { color: var(--dp-ok); font-size: 13px; }
-      .alert { margin: 0; color: var(--dp-bad); font-size: 13px; }
+      .ok { color: var(--idp-ok); font-size: 13px; }
+      .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 960px) { .decision { grid-template-columns: 1fr; } .aside { position: static; } }
     `}</style>
 
     <div class="column">
-      <section class="card" part="request" aria-labelledby="dp-decision-request">
-        <h2 id="dp-decision-request">{() => d.labels().request}</h2>
+      <section class="card" part="request" aria-labelledby="idp-decision-request">
+        <h2 id="idp-decision-request">{() => d.labels().request}</h2>
         <For each={d.requested()} by={(entry) => entry.scope}>
           {(entry) => (
             <div class="scope">
@@ -65,14 +65,14 @@ export const reviewDecisionView = (d: ReviewDecisionLogic) => (
           )}
         </For>
       </section>
-      <section class="card" part="instructions" aria-labelledby="dp-decision-instructions">
-        <h2 id="dp-decision-instructions">{() => d.labels().instructions}</h2>
+      <section class="card" part="instructions" aria-labelledby="idp-decision-instructions">
+        <h2 id="idp-decision-instructions">{() => d.labels().instructions}</h2>
         <Show when={d.instructions()} fallback={<p class="hint">{() => d.labels().noInstructions}</p>}>
           <blockquote>{() => d.instructions()}</blockquote>
         </Show>
       </section>
-      <section class="card" part="history" aria-labelledby="dp-decision-history">
-        <h2 id="dp-decision-history">{() => d.labels().history}</h2>
+      <section class="card" part="history" aria-labelledby="idp-decision-history">
+        <h2 id="idp-decision-history">{() => d.labels().history}</h2>
         <ol>
           <For each={d.history()} by={(entry) => entry.id}>
             {(entry) => (
@@ -151,8 +151,8 @@ export const reviewDecisionView = (d: ReviewDecisionLogic) => (
           <For each={d.review()?.redirect_uris ?? []}>{(uri) => <li class="mono">{uri}</li>}</For>
         </ul>
       </section>
-      <section class="card" part="answer" aria-labelledby="dp-decision-answer">
-        <h2 id="dp-decision-answer">{() => d.labels().decision}</h2>
+      <section class="card" part="answer" aria-labelledby="idp-decision-answer">
+        <h2 id="idp-decision-answer">{() => d.labels().decision}</h2>
         <Show when={d.pending() && !d.done()} fallback={<p class="hint">{() => (d.done() ? d.labels().decided : d.labels().notPending)}</p>}>
           <label class="field">
             <span class="caption">{() => d.labels().note}</span>
