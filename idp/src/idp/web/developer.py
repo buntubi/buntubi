@@ -263,8 +263,8 @@ def accept_terms(me: User) -> Response:
 @bp.get("/products")
 @developer()
 def list_products(me: User) -> Response:
-    grouped = p.scopes_by_product()
-    return jsonify(items=[product_json(x, grouped.get(x.slug, [])) for x in p.products()])
+    grouped = p.scopes_by_product(offered=True)
+    return jsonify(items=[product_json(x, grouped.get(x.slug, [])) for x in p.products(offered=True)])
 
 
 # ── Organizations ─────────────────────────────────────────────────────────────────────────────

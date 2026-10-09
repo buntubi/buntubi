@@ -12,6 +12,7 @@ from datetime import timedelta
 from email_validator import EmailNotValidError, validate_email
 from sqlalchemy import select, update
 
+from idp import plugins
 from idp.config import get_settings
 from idp.db import db, utcnow
 from idp.models import AccessTokenRecord, EmailToken, LoginSession, RefreshToken, User
@@ -99,6 +100,7 @@ def register(data: NewAccount) -> User:
     db().add(user)
     db().flush()
     send_verification_code(user)
+    plugins.emit("account.created", {"user": str(user.id), "email": user.email})
     return user
 
 

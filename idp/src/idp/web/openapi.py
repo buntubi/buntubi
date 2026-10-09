@@ -52,6 +52,12 @@ BOOL: dict[str, Any] = {"type": "boolean"}
 TIME: dict[str, Any] = {"type": "string", "format": "date-time"}
 MAYBE_TIME: dict[str, Any] = {"type": ["string", "null"], "format": "date-time"}
 MAYBE_STRING: dict[str, Any] = {"type": ["string", "null"]}
+# A catalogue entry a plugin declares is read-only here (`managed_by_plugin`); one it no longer
+# declares is deprecated: kept for the apps holding it, offered to no new one.
+MANAGED: dict[str, Any] = {
+    "managed_by": {**MAYBE_STRING, "description": "The plugin that declares it; null when made here."},
+    "deprecated_at": MAYBE_TIME,
+}
 STRINGS: dict[str, Any] = {"type": "array", "items": STRING}
 ENVIRONMENT: dict[str, Any] = {"type": "string", "enum": ["sandbox", "live"]}
 KIND: dict[str, Any] = {
@@ -173,19 +179,17 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                     {
                         "key": {
                             "type": "string",
-                            "enum": [
-                                "basic_info",
-                                "redirect_uri",
-                                "products",
-                                "policies",
-                                "support_email",
-                                "permissions",
-                                "review",
-                            ],
+                            "description": "The provider's own: basic_info, redirect_uri, products, "
+                            "policies, support_email, permissions, review. A plugin adds its own, "
+                            "with a label.",
                         },
                         "state": {"type": "string", "enum": ["done", "warn", "todo"]},
                         "items": STRINGS,
                         "required": BOOL,
+                        "label": {
+                            "anyOf": [obj({"fr": STRING, "en": STRING}), {"type": "null"}],
+                            "description": "Words for a plugin's line; null for the provider's own.",
+                        },
                     }
                 ),
             },
@@ -342,6 +346,16 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "resource": STRING,
             "notes": STRING,
             "product": MAYBE_STRING,
+            **MANAGED,
+        }
+    ),
+    "Plugin": obj(
+        {
+            "id": STRING,
+            "version": STRING,
+            "products": STRINGS,
+            "scopes": STRINGS,
+            "ui": {"type": "object", "description": "What the console and the portal show for it."},
         }
     ),
     "AdminProduct": obj(
@@ -349,6 +363,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             **PRODUCT_FIELDS,
             "position": INT,
             "scopes": STRINGS,
+            **MANAGED,
         }
     ),
     "AuditEvent": obj(
@@ -872,6 +887,9 @@ def paths() -> dict[str, dict[str, Any]]:
                 request=body(ref("ProductPatch")),
                 params=["slug"],
             )
+        },
+        "/admin/api/plugins": {
+            "get": op("The plugins this deployment runs", a, ADMIN, listing("Plugin")),
         },
         "/admin/api/clients": {
             "get": op("All clients", a, ADMIN, listing("AdminClient")),

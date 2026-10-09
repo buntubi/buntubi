@@ -46,6 +46,12 @@ class Settings(BaseSettings):
     # Secure cookies need HTTPS; browsers accept them on http://localhost too.
     secure_cookies: bool = True
 
+    # Plugins this deployment runs, by entry point name, in order (see idp.plugins).
+    plugins: list[str] = []
+    # Bring the catalogue in line with the plugins when the app starts. Turn off where several
+    # workers start at once, and run `flask plugins sync` on deploy instead.
+    plugins_sync_on_start: bool = True
+
     @field_validator("brand_accent")
     @classmethod
     def _hex_colour(cls, value: str) -> str:

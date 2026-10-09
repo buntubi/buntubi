@@ -186,6 +186,10 @@ class ApiProduct(Base):
     docs_url: Mapped[str | None] = mapped_column(String(2048))
     # Catalog order, smallest first.
     position: Mapped[int] = mapped_column(default=0, server_default="0")
+    # The plugin that declares it, or None for one made in the console.
+    managed_by: Mapped[str | None] = mapped_column(String(64))
+    # Set when its plugin stops declaring it: kept for the apps that use it, offered to no new one.
+    deprecated_at: Mapped[datetime | None] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
 
 
@@ -205,4 +209,8 @@ class Scope(Base):
         ForeignKey("api_products.slug", ondelete="SET NULL"), index=True
     )
     notes: Mapped[str] = mapped_column(Text, default="")
+    # The plugin that declares it, or None for one made in the console.
+    managed_by: Mapped[str | None] = mapped_column(String(64))
+    # Set when its plugin stops declaring it: apps holding it keep it, no app may add it.
+    deprecated_at: Mapped[datetime | None] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(default=utcnow)

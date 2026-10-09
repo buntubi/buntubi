@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from sqlalchemy import func, select, update
 
+from idp import plugins
 from idp.db import db, utcnow
 from idp.models import (
     AccessTokenRecord,
@@ -165,6 +166,7 @@ def create_organization(user: User, name: str, description: str, support_email: 
     organization.members.append(OrganizationMember(user_id=user.id, role="owner"))
     db().add(organization)
     db().flush()
+    plugins.emit("organization.created", {"organization": str(organization.id), "owner": str(user.id)})
     return organization
 
 
@@ -265,16 +267,21 @@ class ScopeCheck:
     sensitive: list[str] = field(default_factory=list)
 
 
-def check_scopes(requested: list[str], *, for_key: bool) -> ScopeCheck:
+def check_scopes(requested: list[str], *, for_key: bool, held: list[str] | None = None) -> ScopeCheck:
     """
     The catalog decides: an unknown or restricted scope is refused. An app asks for sign-in scopes
-    and platform scopes; a key, being server to server, only platform scopes.
+    and platform scopes; a key, being server to server, only platform scopes. A deprecated scope
+    stays with whoever `held` it and goes to nobody new.
     """
     wanted = sorted(set(requested))
     rows = {s.name: s for s in db().scalars(select(Scope).where(Scope.name.in_(wanted)))}
     unknown = [name for name in wanted if name not in rows]
     if unknown:
         raise PlatformError("unknown_scope", 422, scopes=unknown)
+    kept = set(held or [])
+    deprecated = [name for name in wanted if rows[name].deprecated_at is not None and name not in kept]
+    if deprecated:
+        raise PlatformError("deprecated_scope", 422, scopes=deprecated)
     restricted = [name for name in wanted if rows[name].sensitivity == "restricted"]
     if restricted:
         raise PlatformError("restricted_scope", 422, scopes=restricted)
@@ -288,13 +295,20 @@ def check_scopes(requested: list[str], *, for_key: bool) -> ScopeCheck:
 # ── API products ──────────────────────────────────────────────────────────────────────────────
 
 
-def products() -> list[ApiProduct]:
-    return list(db().scalars(select(ApiProduct).order_by(ApiProduct.position, ApiProduct.slug)))
+def products(*, offered: bool = False) -> list[ApiProduct]:
+    """The catalog; `offered` leaves out what a plugin deprecated, for apps choosing products."""
+    query = select(ApiProduct).order_by(ApiProduct.position, ApiProduct.slug)
+    if offered:
+        query = query.where(ApiProduct.deprecated_at.is_(None))
+    return list(db().scalars(query))
 
 
-def scopes_by_product() -> dict[str, list[Scope]]:
+def scopes_by_product(*, offered: bool = False) -> dict[str, list[Scope]]:
     grouped: dict[str, list[Scope]] = {}
-    for scope in db().scalars(select(Scope).where(Scope.product.is_not(None)).order_by(Scope.name)):
+    query = select(Scope).where(Scope.product.is_not(None)).order_by(Scope.name)
+    if offered:
+        query = query.where(Scope.deprecated_at.is_(None))
+    for scope in db().scalars(query):
         assert scope.product is not None
         grouped.setdefault(scope.product, []).append(scope)
     return grouped
@@ -406,12 +420,16 @@ def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | 
         platforms=sorted(set(data.platforms)),
         products=checked_products(data.products),
     )
+    refusal = plugins.scope_refusal(client, scopes.granted)
+    if refusal:
+        raise PlatformError("scope_refused", 422, reason=refusal)
     db().add(client)
     secret = issue_client_secret(client) if confidential else None
     db().flush()
     # A member limited to some apps keeps the one they just made.
     if member.app_ids and member.role not in ALL_APPS_ROLES:
         member.app_ids = [*member.app_ids, client.id]
+    plugins.emit("app.created", {"app": client.client_id, "organization": str(organization.id)})
     return client, secret
 
 
@@ -423,7 +441,10 @@ def set_redirect_uris(client: Client, uris: list[str]) -> None:
 
 
 def set_app_scopes(client: Client, scopes: list[str]) -> None:
-    checked = check_scopes(["openid", *scopes], for_key=False)
+    checked = check_scopes(["openid", *scopes], for_key=False, held=scope_to_list(client.scope) or [])
+    refusal = plugins.scope_refusal(client, checked.granted)
+    if refusal:
+        raise PlatformError("scope_refused", 422, reason=refusal)
     client.scope = list_to_scope(checked.granted)
     # A live app that adds a sensitive scope its organization was not approved for goes back to review.
     unapproved = set(checked.sensitive) - set(
@@ -461,6 +482,9 @@ class Check:
     items: list[str] = field(default_factory=list)
     # Publishing refuses while it is not done.
     required: bool = False
+    # Words for a line a plugin added ({"fr": ..., "en": ...}); the provider's own lines have
+    # theirs in the portal.
+    label: dict[str, str] | None = None
 
 
 def _check(key: str, missing: list[str], *, required: bool = False) -> Check:
@@ -483,7 +507,7 @@ def overview(client: Client, organization: Organization) -> Overview:
     """
     live_missing = missing_for_live(client, organization)
     scopes = scope_to_list(client.scope) or []
-    sensitive = check_scopes(scopes, for_key=False).sensitive
+    sensitive = check_scopes(scopes, for_key=False, held=scopes).sensitive
     waiting = sorted(set(sensitive) - set(organization.approved_scopes))
     checks = [
         _check(
@@ -510,6 +534,8 @@ def overview(client: Client, organization: Organization) -> Overview:
         checks.append(Check("permissions", "warn", waiting))
     else:
         checks.append(Check("permissions", "done"))
+    for extra in plugins.live_checks(client):
+        checks.append(Check(extra.key, extra.state, extra.items, extra.required, extra.label.as_dict()))
     review = {"pending": "warn", "rejected": "warn", "approved": "done"}.get(client.review_status, "todo")
     checks.append(Check("review", "done" if client.is_live else review, [client.review_status]))
     stage = (
@@ -546,7 +572,12 @@ def publish(
     missing = missing_for_live(client, organization)
     if missing:
         raise PlatformError("missing_for_live", 422, fields=missing)
-    sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
+    # A plugin's required line on the checklist holds the app back as the provider's own do.
+    unmet = [check.key for check in plugins.live_checks(client) if check.required and check.state != "done"]
+    if unmet:
+        raise PlatformError("plugin_checks", 422, checks=unmet)
+    held = scope_to_list(client.scope) or []
+    sensitive = check_scopes(held, for_key=False, held=held).sensitive
     waiting = sorted(set(sensitive) - set(organization.approved_scopes))
     if not waiting:
         client.environment = "live"
@@ -610,10 +641,15 @@ def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
     record.decided_by_id = reviewer.id
     db().add(record)
     if approve:
-        sensitive = check_scopes(scope_to_list(client.scope) or [], for_key=False).sensitive
+        held = scope_to_list(client.scope) or []
+        sensitive = check_scopes(held, for_key=False, held=held).sensitive
         organization = client.organization
         organization.approved_scopes = sorted(set(organization.approved_scopes) | set(sensitive))
         client.environment = "live"
+    plugins.emit(
+        "app.approved" if approve else "app.rejected",
+        {"app": client.client_id, "organization": str(client.organization.id), "note": note},
+    )
 
 
 def suspend(organization: Organization, reason: str) -> None:
@@ -622,6 +658,7 @@ def suspend(organization: Organization, reason: str) -> None:
     organization.suspended_reason = reason
     for client in apps_of(organization):
         _revoke_tokens(client)
+    plugins.emit("organization.suspended", {"organization": str(organization.id), "reason": reason})
 
 
 def remove_test_user(organization: Organization, email: str) -> None:
@@ -636,6 +673,7 @@ def remove_test_user(organization: Organization, email: str) -> None:
 def restore(organization: Organization) -> None:
     organization.suspended_at = None
     organization.suspended_reason = None
+    plugins.emit("organization.restored", {"organization": str(organization.id)})
 
 
 # ── Test users ────────────────────────────────────────────────────────────────────────────────

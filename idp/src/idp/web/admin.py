@@ -17,6 +17,7 @@ from flask import Blueprint, Response, abort, jsonify, request
 from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy import func, select
 
+from idp import plugins
 from idp.db import db, utcnow
 from idp.models import ApiProduct, AppReview, AuditEvent, Client, Organization, Scope, User
 from idp.models.clients import GRANT_TYPES
@@ -502,6 +503,8 @@ def _scope_json(scope: Scope) -> dict[str, Any]:
         "resource": scope.resource,
         "notes": scope.notes,
         "product": scope.product,
+        "managed_by": scope.managed_by,
+        "deprecated_at": scope.deprecated_at.isoformat() if scope.deprecated_at else None,
     }
 
 
@@ -537,6 +540,9 @@ def update_scope(name: str, admin: User) -> Response:
     scope = db().get(Scope, name)
     if scope is None:
         refuse("not_found", 404)
+    # Declared in code: changed by a new version of its plugin, not here.
+    if scope.managed_by:
+        refuse("managed_by_plugin", 409, plugin=scope.managed_by)
     patch = parse(ScopePatch)
     if patch.sensitivity is not None:
         scope.sensitivity = patch.sensitivity
@@ -590,6 +596,8 @@ def _product_json(product: ApiProduct) -> dict[str, Any]:
         "position": product.position,
         "approval": p.approval_of(scopes),
         "scopes": [s.name for s in scopes],
+        "managed_by": product.managed_by,
+        "deprecated_at": product.deprecated_at.isoformat() if product.deprecated_at else None,
     }
 
 
@@ -627,6 +635,8 @@ def update_product(slug: str, admin: User) -> Response:
     product = db().get(ApiProduct, slug)
     if product is None:
         refuse("not_found", 404)
+    if product.managed_by:
+        refuse("managed_by_plugin", 409, plugin=product.managed_by)
     patch = parse(ProductPatch)
     for name in ("names", "descriptions"):
         if (value := getattr(patch, name)) is not None:
@@ -641,3 +651,25 @@ def update_product(slug: str, admin: User) -> Response:
     audit.record("admin.product_updated", user=admin, product=slug, fields=sorted(patch.model_fields_set))
     db().commit()
     return jsonify(product=_product_json(product))
+
+
+# ── Plugins ───────────────────────────────────────────────────────────────────────────────────
+
+
+@bp.get("/plugins")
+@admin_only
+def list_plugins(admin: User) -> Response:
+    """The plugins this deployment runs, what their catalogue declares, and what their UI shows."""
+    items = []
+    for plugin in plugins.active():
+        catalogue = plugin.catalogue()
+        items.append(
+            {
+                "id": plugin.id,
+                "version": plugin.version,
+                "products": [product.slug for product in catalogue.products],
+                "scopes": [scope.name for scope in catalogue.scopes],
+                "ui": plugin.ui(),
+            }
+        )
+    return jsonify(items=items)

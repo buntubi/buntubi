@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from flask import Flask, Response, request
 
-from idp import cli
+from idp import cli, plugins
 from idp.config import Settings, get_settings
 from idp.db import init_db
 from idp.extensions import limiter
@@ -44,6 +44,7 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.register_blueprint(admin.bp)
     app.register_blueprint(developer.bp)
     app.register_blueprint(openapi.bp)
+    _init_plugins(app, settings)
     cli.register(app)
 
     @app.after_request
@@ -72,3 +73,18 @@ def create_app(settings: Settings | None = None) -> Flask:
         return response
 
     return app
+
+
+def _init_plugins(app: Flask, settings: Settings) -> None:
+    """Load the deployment's plugins, mount their APIs, and sync their catalogue if asked."""
+    loaded = plugins.load(settings.plugins)
+    plugins.use(loaded)
+    for plugin in loaded:
+        blueprint = plugin.blueprint()
+        if blueprint is not None:
+            app.register_blueprint(blueprint, url_prefix=f"/api/plugins/{plugin.id}")
+    if loaded and settings.plugins_sync_on_start:
+        from idp.plugins.sync import sync
+
+        with app.app_context():
+            sync(loaded)

@@ -19,9 +19,10 @@ from flask import request as flask_request
 from joserfc import jwt as jose_jwt
 from sqlalchemy import select
 
+from idp import plugins
 from idp.config import get_settings
 from idp.db import db, utcnow
-from idp.models import AccessTokenRecord, ApiKey, Client, DeviceCode, RefreshToken, User
+from idp.models import AccessTokenRecord, ApiKey, Client, DeviceCode, RefreshToken, Scope, User
 from idp.oauth.grants import (
     AuthorizationCodeGrant,
     ClientCredentialsGrant,
@@ -68,9 +69,17 @@ def _access_token(client: Client, grant_type: str, user: User | None, scope: str
     # A developer's app says which side it is on, so the platform APIs keep sandbox data apart.
     if client.organization_id is not None:
         extra["env"] = client.environment
+    granted = scope_to_list(scope) or []
+    # Minted for the app and for every API its scopes open, so each API checks tokens addressed
+    # to it whichever app holds them. The app comes first: the userinfo endpoint reads it there.
+    resources = sorted(
+        set(db().scalars(select(Scope.resource).where(Scope.name.in_(granted), Scope.resource != "")))
+    )
+    audience: str | list[str] = [client.client_id, *resources] if resources else client.client_id
+    extra.update(plugins.token_claims(client, user, granted))
     claims = access_token_claims(
         issuer=settings.issuer,
-        audience=client.client_id,
+        audience=audience,
         client_id=client.client_id,
         subject=str(user.id) if user is not None else None,
         scope=scope or "",

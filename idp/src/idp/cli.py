@@ -1,7 +1,7 @@
 """
 Operator commands: `flask keys generate`, `flask clients create`, `flask admin create`,
-`flask users admins | promote | demote | delete`. A client secret is printed once, at creation, and never
-stored in the clear.
+`flask users admins | promote | demote | delete`, `flask plugins list | sync`. A client secret
+is printed once, at creation, and never stored in the clear.
 
 The admin role is granted here and nowhere else: no screen can make anyone an admin, so the
 person who controls the server is the root of trust.
@@ -204,6 +204,39 @@ def register(app: Flask) -> None:
             db().delete(user)
         db().commit()
         click.echo(f"Deleted {len(found)} accounts and {len(orphaned)} organizations.")
+
+    @app.cli.group("plugins")
+    def plugins_group() -> None:
+        """The deployment's plugins (IDP_PLUGINS)."""
+
+    @plugins_group.command("list")
+    def plugins_list() -> None:
+        """The plugins this deployment runs, and what their catalogue declares."""
+        from idp import plugins
+
+        running = plugins.active()
+        if not running:
+            click.echo("No plugin. Name them in IDP_PLUGINS.")
+        for plugin in running:
+            catalogue = plugin.catalogue()
+            counts = f"{len(catalogue.products)} products, {len(catalogue.scopes)} scopes"
+            click.echo(f"{plugin.id} {plugin.version}: {counts}")
+
+    @plugins_group.command("sync")
+    def plugins_sync() -> None:
+        """Bring products and scopes in line with what the plugins declare. Run it on deploy."""
+        from idp import plugins
+        from idp.plugins.sync import CatalogueError, sync
+
+        try:
+            report = sync(plugins.active())
+        except CatalogueError as error:
+            raise click.ClickException(str(error)) from error
+        if not report:
+            click.echo("The catalogue is up to date.")
+        for kind in ("added", "updated", "adopted", "restored", "deprecated"):
+            for entry in getattr(report, kind):
+                click.echo(f"{kind:<10} {entry}")
 
     @app.cli.group("admin")
     def admin_group() -> None:
