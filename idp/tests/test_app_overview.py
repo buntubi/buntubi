@@ -179,3 +179,24 @@ def test_a_code_flow_app_keeps_a_redirect_uri(app: Flask, outbox: list[mail.Mess
     assert call(browser, dev, "GET", f"/apps/{client_id}").json["app"]["redirect_uris"] == [
         "https://web.example/cb"
     ]
+
+
+def test_an_app_is_created_before_its_redirect_uri_and_the_checklist_asks_for_it(
+    app: Flask, outbox: list[mail.Message]
+) -> None:
+    # The create flow asks for none: redirect addresses are set on the credentials page.
+    _, _, browser, dev = setup_people(app, outbox)
+    organization_id = new_organization(browser, dev)
+    created = call(
+        browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {"name": "Atelier", "client_type": "confidential"},
+    )
+    assert created.status_code == 201, created.json
+    client_id = created.json["app"]["client_id"]
+    overview = call(browser, dev, "GET", f"/apps/{client_id}/overview").json
+    assert states(overview)["redirect_uri"] == "todo"
+    call(browser, dev, "PATCH", f"/apps/{client_id}", {"redirect_uris": ["https://atelier.example/cb"]})
+    assert states(call(browser, dev, "GET", f"/apps/{client_id}/overview").json)["redirect_uri"] == "done"

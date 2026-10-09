@@ -381,8 +381,9 @@ def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | 
     allowed = CONFIDENTIAL_GRANTS if confidential else PUBLIC_GRANTS
     if not set(data.grant_types) <= set(allowed):
         raise PlatformError("grant_not_allowed", 422, allowed=list(allowed))
-    if "authorization_code" in data.grant_types and not data.redirect_uris:
-        raise PlatformError("redirect_uri_required", 422)
+    # No redirect address yet is allowed: the create flow leaves it to the credentials page, and
+    # the checklist asks for it before the app can go live. Authorize refuses any address that is
+    # not registered, so an app without one cannot sign anyone in meanwhile.
     client = Client(
         client_id=f"app_{new_token()[:22]}",
         organization_id=organization.id,
