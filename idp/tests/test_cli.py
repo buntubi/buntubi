@@ -113,3 +113,50 @@ def test_listing_promoting_and_demoting(app: Flask, outbox: list[mail.Message]) 
         events = {e.event for e in db().query(AuditEvent)}
         assert {"admin.role_granted", "admin.role_removed"} <= events
     assert "no account" in run(app, "users", "demote", "nobody@example.test")
+
+
+def test_users_delete_removes_accounts_and_the_organizations_they_alone_ran(app: Flask, outbox: list) -> None:
+    from test_platform_gates import sandbox_app
+
+    from idp.models import Client, Organization
+
+    sandbox_app(app, outbox)
+    browser = app.test_client()
+    sign_up(browser, outbox, "keep@example.test")
+
+    listed = run(app, "users", "delete", "dev@*", input="n\n")
+    assert "dev@example.test" in listed and "Shop" in listed, "lists what will go"
+    assert "Aborted" in listed
+    with app.app_context():
+        assert db().query(User).filter_by(email="dev@example.test").count() == 1, "nothing without a yes"
+
+    out = run(app, "users", "delete", "dev@*", "--yes")
+    assert "Deleted 1 accounts and 1 organizations." in out
+    with app.app_context():
+        assert db().query(User).filter_by(email="dev@example.test").count() == 0
+        assert db().query(Organization).count() == 0
+        assert db().query(Client).filter(Client.organization_id.isnot(None)).count() == 0, (
+            "its apps went with it"
+        )
+        assert db().query(User).filter_by(email="keep@example.test").count() == 1
+        assert db().query(AuditEvent).filter_by(event="account.deleted").count() == 1
+
+
+def test_users_delete_keeps_an_admin_and_needs_a_match(app: Flask, outbox: list) -> None:
+    run(
+        app,
+        "admin",
+        "create",
+        "--email",
+        "owner@example.test",
+        "--given-name",
+        "A",
+        "--family-name",
+        "B",
+        "--password",
+        "a long owner passphrase",
+    )
+    assert "every admin" in run(app, "users", "delete", "owner@example.test", "--yes")
+    assert "no account matches" in run(app, "users", "delete", "nobody@*", "--yes")
+    with app.app_context():
+        assert db().query(User).filter_by(email="owner@example.test").count() == 1

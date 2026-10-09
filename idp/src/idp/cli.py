@@ -1,12 +1,13 @@
 """
 Operator commands: `flask keys generate`, `flask clients create`, `flask admin create`,
-`flask users admins | promote | demote`. A client secret is printed once, at creation, and never
+`flask users admins | promote | demote | delete`. A client secret is printed once, at creation, and never
 stored in the clear.
 
 The admin role is granted here and nowhere else: no screen can make anyone an admin, so the
 person who controls the server is the root of trust.
 """
 
+from fnmatch import fnmatchcase
 from urllib.parse import urlparse
 
 from email_validator import EmailNotValidError, validate_email
@@ -15,7 +16,7 @@ from sqlalchemy import select
 
 from idp.config import get_settings
 from idp.db import db, utcnow
-from idp.models import Client, User
+from idp.models import Client, Organization, OrganizationMember, User
 from idp.models.clients import AUTH_METHODS, GRANT_TYPES
 from idp.security import passwords
 from idp.security.keys import generate_key
@@ -152,6 +153,57 @@ def register(app: Flask) -> None:
         click.echo(f"{user.email} is no longer an admin.")
         if not admins():
             click.echo("No admin remains. Create one with `flask admin create` when you need the console.")
+
+    @users.command("delete")
+    @click.argument("emails", nargs=-1, required=True)
+    @click.option("--yes", is_flag=True, help="Delete without asking.")
+    def users_delete(emails: tuple[str, ...], yes: bool) -> None:
+        """Delete accounts for good, with every organization left without a member.
+
+        Each argument is an address or a pattern with `*` (quote it for the shell). What will go
+        is listed first; nothing happens until it is confirmed. The last admin is never deleted.
+        """
+        everyone = list(db().scalars(select(User).order_by(User.email)))
+        found: list[User] = []
+        for wanted in emails:
+            pattern = wanted.strip().lower()
+            matched = [u for u in everyone if fnmatchcase(u.email, pattern)]
+            if not matched:
+                raise click.ClickException(f"no account matches {wanted}")
+            found += [u for u in matched if u not in found]
+        ids = {user.id for user in found}
+        if admins() and all(user.id in ids for user in admins()):
+            raise click.ClickException("that would delete every admin; keep one, or create another first")
+        # The organizations whose members are all going: nobody would be left to run them.
+        orphaned = [
+            organization
+            for organization in db().scalars(
+                select(Organization)
+                .join(OrganizationMember)
+                .where(OrganizationMember.user_id.in_(ids))
+                .distinct()
+            )
+            if all(member.user_id in ids for member in organization.members)
+        ]
+        for user in found:
+            click.echo(f"account       {user.email}{'  (admin)' if user.is_admin else ''}")
+        for organization in orphaned:
+            click.echo(f"organization  {organization.name}  ({organization.id})")
+        if not yes:
+            click.confirm(f"Delete {len(found)} accounts and {len(orphaned)} organizations?", abort=True)
+        for organization in orphaned:
+            audit.record(
+                "organization.deleted",
+                source="cli",
+                organization=str(organization.id),
+                name=organization.name,
+            )
+            db().delete(organization)
+        for user in found:
+            audit.record("account.deleted", source="cli", email=user.email)
+            db().delete(user)
+        db().commit()
+        click.echo(f"Deleted {len(found)} accounts and {len(orphaned)} organizations.")
 
     @app.cli.group("admin")
     def admin_group() -> None:
