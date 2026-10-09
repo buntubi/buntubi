@@ -18,6 +18,18 @@ export interface PluginSection {
   load: () => Promise<unknown>;
 }
 
+/**
+ * A look for the provider's sign-in pages, which the provider plugin hands to the clients it
+ * chooses (`page_brand` returns `look`). Its stylesheet is bundled with the pages, so every rule
+ * sits under `:root[data-look='<name>']`.
+ */
+export interface PluginLook {
+  /** Takes the place of the hero beside the form; the element gets `locale` and `brand`. */
+  aside?: { element: string; load: () => Promise<unknown> };
+  /** Imports the look's stylesheet. */
+  styles?: () => Promise<unknown>;
+}
+
 export interface IdpUiPlugin {
   /** The id of its server half, the provider plugin of the same name. */
   id: string;
@@ -28,6 +40,18 @@ export interface IdpUiPlugin {
    * app's (`organization`, `app`, `locale`).
    */
   portal?: { organization?: PluginSection[]; app?: PluginSection[] };
+  /** Looks for the sign-in pages, by name. */
+  looks?: Record<string, PluginLook>;
+}
+
+/** The look of that name from any plugin, or null. */
+export function lookOf(plugins: IdpUiPlugin[], name: string | undefined): PluginLook | null {
+  if (!name) return null;
+  for (const plugin of plugins) {
+    const look = plugin.looks?.[name];
+    if (look) return look;
+  }
+  return null;
 }
 
 /** Types a UI plugin, nothing more. */

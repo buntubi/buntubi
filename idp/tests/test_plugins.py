@@ -62,6 +62,13 @@ class ShopPlugin(Plugin):
     def on_event(self, name: str, payload: dict[str, Any]) -> None:
         self.events.append((name, payload))
 
+    def page_brand(self, client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
+        return (
+            {"look": "shop", "tagline": "Ship it", "secret": "dropped"}
+            if client is None
+            else {"look": "Not A Slug"}
+        )
+
 
 @pytest.fixture
 def shop(app: Flask) -> Iterator[ShopPlugin]:
@@ -219,3 +226,9 @@ def test_plugins_hear_what_happens(app: Flask, outbox: list[mail.Message], shop:
     new_app(dev_browser, dev, ["shop.orders:read"])
     names = [name for name, _ in shop.events]
     assert "account.created" in names and "organization.created" in names and "app.created" in names
+
+
+def test_a_plugin_gives_the_sign_in_pages_their_look(app: Flask, shop: ShopPlugin) -> None:
+    page = app.test_client().get("/signin").get_data(as_text=True)
+    assert 'data-look="shop"' in page
+    assert '"tagline": "Ship it"' in page and "dropped" not in page, "only brand keys pass"

@@ -25,6 +25,7 @@
     "@fluixi/jsx": "link:../../../fluixi-core/packages/jsx",
     "@fluixi/reactive": "link:../../../fluixi-core/packages/reactive",
     "@fluixi/web-components": "link:../../../fluixi-core/packages/web-components",
+    "@idp/sdk": "link:../packages/sdk",
     "zod": "^4.1.0"
   },
   "devDependencies": {

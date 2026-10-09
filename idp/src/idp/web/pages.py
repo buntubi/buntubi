@@ -12,6 +12,7 @@ from authlib.oauth2.rfc6749 import scope_to_list
 from flask import Blueprint, redirect, render_template, request, session, url_for
 from werkzeug.wrappers import Response
 
+from idp import plugins
 from idp.config import get_settings
 from idp.db import db
 from idp.oauth.server import authorization, query_client
@@ -37,9 +38,11 @@ def _brand() -> dict[str, Any]:
     client_id = parse_qs(urlparse(return_to).query).get("client_id", [None])[0]
     client = query_client(client_id) if client_id else None
     if client is not None:
-        return {"name": client.name, **client.brand}
+        return plugins.page_brand(client, {"name": client.name, **client.brand})
     platform = get_settings().brand()
-    return {key: platform[key] for key in ("name", "accent", "logo") if key in platform}
+    return plugins.page_brand(
+        None, {key: platform[key] for key in ("name", "accent", "logo") if key in platform}
+    )
 
 
 def shell(element: str, **props: Any) -> str:

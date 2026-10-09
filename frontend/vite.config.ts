@@ -1,15 +1,17 @@
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { fluixi } from '@fluixi/vite-plugin';
+import { idpUiPlugins } from '@idp/sdk/vite';
 
 // One script and one stylesheet, written where the provider serves its static files, under
 // fixed names the page shell links directly. Fonts stay files: the CSP allows no data: URLs.
-export default defineConfig({
-  plugins: [fluixi()],
+// The deployment's UI plugins (IDP_UI_PLUGINS, see @idp/sdk/vite): their looks for these pages.
+export default defineConfig(({ mode }) => ({
+  plugins: [fluixi(), idpUiPlugins(loadEnv(mode, process.cwd(), '').IDP_UI_PLUGINS)],
   // fluixi-ui is linked from its own checkout, whose node_modules hold a published runtime; one
   // copy only, the one this app links, or two builds of @fluixi/reactive drive one graph.
   resolve: {
-    dedupe: ['@fluixi/core', '@fluixi/reactive', '@fluixi/jsx', '@fluixi/dom', '@fluixi/web-components'],
+    dedupe: ['@fluixi/core', '@fluixi/reactive', '@fluixi/jsx', '@fluixi/dom', '@fluixi/web-components', '@idp/sdk'],
   },
   base: '/static/idp/',
   build: {
@@ -25,4 +27,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

@@ -23,6 +23,8 @@ import type { MfaEnrolment } from './elements/mfa-setup/mfa-setup.js';
 import type { AccountItem } from './elements/account-select/account-select.js';
 import type { AppLink } from './elements/app-links/app-links.js';
 import { createApi, type Redirect } from './host/api.js';
+import { lookOf } from '@idp/sdk/plugins';
+import uiPlugins from 'virtual:idp-ui-plugins';
 import { applyBrand } from './host/brand.js';
 import { readConfig } from './host/config.js';
 import { text } from './host/i18n.js';
@@ -298,11 +300,16 @@ const screens: Record<string, () => Screen> = {
 applyBrand(config.brand);
 const root = document.getElementById('idp-root');
 const screen = screens[config.element]?.();
+// A look a plugin gives this client: its stylesheet, and the element beside the form, both
+// ready before the page draws so it does not change under the reader.
+const look = lookOf(uiPlugins, config.brand.look);
+await Promise.all([look?.styles?.(), look?.aside?.load()]);
 if (root && screen) {
   render(
     () => (
       <Page
         brand={config.brand}
+        aside={look?.aside?.element}
         locale={config.locale}
         title={t.titles[screen.key]}
         subtitle={t.subtitles[screen.key]}

@@ -12,6 +12,7 @@ issuance is a call rather than a network round trip.
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from importlib.metadata import entry_points
 from typing import TYPE_CHECKING, Any
@@ -134,6 +135,13 @@ class Plugin:
         """What the console and the portal show for it; free-form, read by their UI plugins."""
         return {}
 
+    def page_brand(self, client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
+        """
+        Changes to the sign-in pages' brand for this client (None: the platform's own pages):
+        `name`, `accent`, `logo`, `skin`, `tagline`, and `look`, a look a UI plugin defines.
+        """
+        return {}
+
 
 _active: list[Plugin] = []
 
@@ -188,6 +196,25 @@ def scope_refusal(client: Client, scopes: list[str]) -> str | None:
 
 def live_checks(client: Client) -> list[LiveCheck]:
     return [check for plugin in _active for check in plugin.live_checks(client)]
+
+
+BRAND_KEYS = frozenset({"name", "accent", "logo", "skin", "tagline", "look"})
+_SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,39}$")
+
+
+def page_brand(client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
+    """The brand after every plugin's changes, in order; keys outside BRAND_KEYS are dropped."""
+    result = dict(brand)
+    for plugin in _active:
+        for key, value in plugin.page_brand(client, result).items():
+            if key not in BRAND_KEYS:
+                continue
+            # A look names an attribute value and a CSS selector: a plain slug only.
+            if key == "look" and not (isinstance(value, str) and _SLUG.match(value)):
+                log.warning("plugin %s gave an invalid look %r", plugin.id, value)
+                continue
+            result[key] = value
+    return result
 
 
 def emit(name: str, payload: dict[str, Any]) -> None:

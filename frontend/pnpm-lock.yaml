@@ -46,16 +46,19 @@ importers:
         version: link:../../../fluixi-core/packages/dom
       '@fluixi/forms':
         specifier: alpha
-        version: 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
+        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
       '@fluixi/jsx':
         specifier: link:../../../fluixi-core/packages/jsx
         version: link:../../../fluixi-core/packages/jsx
       '@fluixi/reactive':
         specifier: link:../../../fluixi-core/packages/reactive
-        version: link:../../../fluixi-core/packages/reactive
+        version: 1.0.0-alpha.95
       '@fluixi/web-components':
         specifier: link:../../../fluixi-core/packages/web-components
         version: link:../../../fluixi-core/packages/web-components
+      '@idp/sdk':
+        specifier: link:../packages/sdk
+        version: link:../packages/sdk
       zod:
         specifier: ^4.1.0
         version: 4.6.5
@@ -93,6 +96,9 @@ packages:
 
   '@fluixi/forms@0.2.1-alpha.2':
     resolution: {integrity: sha512-KN1wTndkmCUqEZPqQmHJECI3jF0cWaSJkDwcpv45CsvoDdXtVk334uLhJEyt71G8C6r9vmqnncrFBnN8pRRZWQ==}
+
+  '@fluixi/reactive@1.0.0-alpha.95':
+    resolution: {integrity: sha512-9dreH3hj6hNaTW9SWQJovKzJQLrQ+XF4vXJdeU9rRikPwY2m97pk6gA1X4mKaSuc5o2MRCtKQVTxnDZVbG5GPw==}
 
   '@oxc-project/types@0.152.0':
     resolution: {integrity: sha512-oM/5rLBm2tPkg0iBgkH/FOeR3PCDpY19GTgAZjMFM8h9WI9VW7cLgzp6nwtarYKmovavIQZ+Fe/RKX/8C8O/Rw==}
@@ -480,42 +486,44 @@ packages:
 
 snapshots:
 
-  '@fluixi/forms-core@0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)':
+  '@fluixi/forms-core@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)':
     dependencies:
-      '@fluixi/reactive': link:../../../fluixi-core/packages/reactive
+      '@fluixi/reactive': 1.0.0-alpha.95
 
-  '@fluixi/forms-devtools@0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)':
+  '@fluixi/forms-devtools@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
-      '@fluixi/reactive': link:../../../fluixi-core/packages/reactive
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
+      '@fluixi/reactive': 1.0.0-alpha.95
 
-  '@fluixi/forms-framework@0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)':
+  '@fluixi/forms-framework@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
     transitivePeerDependencies:
       - '@fluixi/reactive'
 
-  '@fluixi/forms-valibot@0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)':
+  '@fluixi/forms-valibot@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
     transitivePeerDependencies:
       - '@fluixi/reactive'
 
-  '@fluixi/forms-zod@0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)':
+  '@fluixi/forms-zod@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
     transitivePeerDependencies:
       - '@fluixi/reactive'
 
-  '@fluixi/forms@0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)':
+  '@fluixi/forms@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
-      '@fluixi/forms-devtools': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
-      '@fluixi/forms-framework': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
-      '@fluixi/forms-valibot': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
-      '@fluixi/forms-zod': 0.2.1-alpha.2(@fluixi/reactive@..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
+      '@fluixi/forms-devtools': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
+      '@fluixi/forms-framework': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
+      '@fluixi/forms-valibot': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
+      '@fluixi/forms-zod': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.95)
     transitivePeerDependencies:
       - '@fluixi/reactive'
+
+  '@fluixi/reactive@1.0.0-alpha.95': {}
 
   '@oxc-project/types@0.152.0': {}
 

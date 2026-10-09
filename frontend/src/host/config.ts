@@ -8,6 +8,8 @@ export interface Brand {
   skin?: string;
   /** The hero's headline, in place of the provider's own. */
   tagline?: string;
+  /** A look a UI plugin defines (`looks`), given by a provider plugin for this client. */
+  look?: string;
 }
 
 export interface PageConfig {

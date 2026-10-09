@@ -2,11 +2,14 @@
  * The frame every screen sits in: a flat hero in the client's colour beside the form, which
  * stands on the page itself. On a phone the hero folds into a brand row above the form.
  */
+import { Dynamic, Show } from '@fluixi/core';
 import type { ComponentChild } from '@fluixi/dom';
 import type { Brand, Locale } from './config.js';
 
 export interface PageProps {
   brand: Brand;
+  /** A plugin look's element, in place of the hero (it gets `locale` and `brand`). */
+  aside?: string;
   locale: Locale;
   title: string;
   subtitle?: string;
@@ -36,20 +39,31 @@ export function Page(props: PageProps): ComponentChild {
   };
   return (
     <div class="idp-shell">
-      <aside class="idp-hero">
-        <div class="idp-mark">
-          <BrandMark brand={props.brand} />
-        </div>
-        <div class="idp-hero-copy">
-          <p class="idp-hero-title">{() => props.heroTitle}</p>
-          <p class="idp-hero-text">{() => props.heroText}</p>
-        </div>
-        <div class="idp-hero-art" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-      </aside>
+      <Show
+        when={props.aside}
+        fallback={
+          <aside class="idp-hero">
+            <div class="idp-mark">
+              <BrandMark brand={props.brand} />
+            </div>
+            <div class="idp-hero-copy">
+              <p class="idp-hero-title">{() => props.heroTitle}</p>
+              <p class="idp-hero-text">{() => props.heroText}</p>
+            </div>
+            <div class="idp-hero-art" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+          </aside>
+        }
+      >
+        {(tag: string) => (
+          <aside class="idp-hero idp-hero-look">
+            <Dynamic component={tag} locale={props.locale} brand={props.brand} />
+          </aside>
+        )}
+      </Show>
       <main class="idp-main">
         <div class="idp-mark idp-mark-compact">
           <BrandMark brand={props.brand} />
