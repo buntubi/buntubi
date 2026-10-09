@@ -7,6 +7,13 @@ export const ROLES: Role[] = ['owner', 'admin', 'developer', 'reviewer', 'viewer
 export const LIMITABLE: Role[] = ['developer', 'reviewer', 'viewer'];
 
 export interface TeamLabels {
+  /** The tab strip: members, test users. */
+  tabs: { members: string; testers: string; label: string };
+  /** "{apps} apps · {members} members". */
+  counts: string;
+  twoStep: string;
+  on: string;
+  off: string;
   members: string;
   membersIntro: string;
   member: string;
@@ -34,6 +41,11 @@ export interface TeamLabels {
 }
 
 export const teamLabels: TeamLabels = {
+  tabs: { members: 'Members', testers: 'Test users', label: 'Team' },
+  counts: '{apps} apps · {members} members',
+  twoStep: 'Two-step',
+  on: 'On',
+  off: 'Off',
   members: 'Members',
   membersIntro: 'People who build and run this organization’s apps.',
   member: 'Member',
@@ -48,7 +60,7 @@ export const teamLabels: TeamLabels = {
     reviewer: { name: 'Reviewer', text: 'Reads apps and their review state.' },
     viewer: { name: 'Viewer', text: 'Reads only.' },
   },
-  invite: 'Add member',
+  invite: 'Invite member',
   inviteEmail: 'Email address',
   inviteHint: 'The person needs an account on the platform first.',
   editAccess: 'Access',
@@ -74,25 +86,18 @@ export interface MemberRow extends Member {
 
 export interface TeamLogic {
   labels: () => TeamLabels;
+  name: () => string;
+  mark: () => string;
+  counts: () => string;
+  tab: () => string;
+  tabs: () => { value: string; label: string }[];
+  choose: (tab: string) => void;
+  organization: () => string;
   members: () => MemberRow[];
+  apps: () => { client_id: string; name: string }[];
+  testUsers: () => { email: string; added_at: string }[];
   canManage: () => boolean;
   canManageTesters: () => boolean;
-  changeRole: (member: string, role: Role) => Promise<void>;
-  remove: (member: string) => Promise<void>;
-  inviteEmail: () => string;
-  inviteRole: () => Role;
-  editInvite: (field: 'email' | 'role', value: string) => void;
-  invite: () => Promise<void>;
-  /** The member whose app access is being edited, and the apps picked so far. */
-  editing: () => string | null;
-  editAccess: (member: string | null) => void;
-  accessChoices: () => { client_id: string; name: string; picked: boolean; toggle: () => void }[];
-  saveAccess: () => Promise<void>;
-  testers: () => { email: string; added: string }[];
-  testerEmail: () => string;
-  editTester: (value: string) => void;
-  addTester: () => Promise<void>;
-  removeTester: (email: string) => Promise<void>;
-  busy: () => string | null;
-  error: () => string | null;
+  locale: () => string;
+  describe: () => ((error: unknown) => string) | undefined;
 }

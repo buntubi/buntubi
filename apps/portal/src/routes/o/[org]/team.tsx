@@ -1,5 +1,4 @@
 /** The organization's members and its sandbox test users. */
-import { Stack } from '@fluixi-ui/layout';
 import { useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { can } from '@idp/sdk/roles';
 import '@idp/elements/team';
@@ -8,7 +7,6 @@ import { teamLabels } from '../../../lib/labels.js';
 import { paramOf } from '../../../lib/params.js';
 import type { Workspace } from '../../../lib/types.js';
 import { workspace } from '../../../data/developer.js';
-import '@idp/elements/page-header';
 
 export const routeData = (args: RouteDataArgs) => workspace(paramOf(args, 'org'));
 
@@ -17,20 +15,18 @@ export default function TeamPage() {
   const current = () => data()?.current;
   const role = () => current()?.organization.role;
   return (
-    <Stack gap={5}>
-      <idp-page-header title={t('page.team')} />
-      <idp-team
-        organization={current()?.organization.id ?? ''}
-        members={current()?.members ?? []}
-        testUsers={current()?.test_users ?? []}
-        apps={(current()?.apps ?? []).map((app) => ({ client_id: app.client_id, name: app.name }))}
-        me={data()?.me.email ?? ''}
-        canManage={can(role(), 'members')}
-        canManageTesters={can(role(), 'test_users')}
-        locale={locale()}
-        labels={teamLabels()}
-        describe={errorText}
-      />
-    </Stack>
+    <idp-team
+      organization={current()?.organization.id ?? ''}
+      name={current()?.organization.name ?? ''}
+      members={current()?.members ?? []}
+      testUsers={current()?.test_users ?? []}
+      apps={(current()?.apps ?? []).map((app) => ({ client_id: app.client_id, name: app.name }))}
+      me={data()?.me.email ?? ''}
+      canManage={can(role(), 'members')}
+      canManageTesters={can(role(), 'test_users')}
+      locale={locale()}
+      labels={teamLabels()}
+      describe={errorText}
+    />
   );
 }

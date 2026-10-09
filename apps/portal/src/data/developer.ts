@@ -4,7 +4,7 @@
  */
 import { cache, type RouteDataArgs } from '@fluixi/start/router';
 import { paramOf } from '../lib/params.js';
-import type { AppWorkspace, Workspace } from '../lib/types.js';
+import type { AppReview, AppWorkspace, Workspace } from '../lib/types.js';
 import {
   loadApp,
   loadAppReviews,
@@ -32,4 +32,14 @@ export interface AppPageData {
 export const appRouteData = async (args: RouteDataArgs): Promise<AppPageData> => {
   const [shell, app] = await Promise.all([workspace(paramOf(args, 'org')), appWorkspace(paramOf(args, 'clientId'))]);
   return { workspace: shell, app };
+};
+
+/** What the review pages read: the app's pages' data and its review history. */
+export interface ReviewPageData extends AppPageData {
+  reviews: AppReview[];
+}
+
+export const reviewRouteData = async (args: RouteDataArgs): Promise<ReviewPageData> => {
+  const [page, history] = await Promise.all([appRouteData(args), appReviews(paramOf(args, 'clientId'))]);
+  return { ...page, reviews: history };
 };

@@ -1,4 +1,9 @@
 /** Element words, built from the catalogue in one place so a language change reaches them all. */
+import type { ReadinessLabels } from '@idp/elements/readiness/logic';
+import type { ReviewHistoryLabels } from '@idp/elements/review-history/logic';
+import type { ReviewRequestLabels } from '@idp/elements/review-request/logic';
+import type { ReviewStagesLabels } from '@idp/elements/review-stages/logic';
+import type { ReviewSubmissionLabels } from '@idp/elements/review-submission/logic';
 import type { IdeaToLiveLabels } from '@idp/elements/idea-to-live/logic';
 import type { NeedsAttentionLabels } from '@idp/elements/needs-attention/logic';
 import type { Stat } from '@idp/elements/stat-group/logic';
@@ -9,7 +14,6 @@ import type { WelcomeLabels } from '@idp/elements/welcome/logic';
 import type { NotFoundLabels } from '@idp/elements/not-found/logic';
 import type { PageErrorLabels } from '@idp/elements/page-error/logic';
 import type { AppListLabels } from '@idp/elements/app-list/logic';
-import type { AppReviewLabels } from '@idp/elements/app-review/logic';
 import type { AppSettingsLabels } from '@idp/elements/app-settings/logic';
 import type { CreateAppLabels } from '@idp/elements/create-app/logic';
 import type { OrganizationSettingsLabels } from '@idp/elements/organization-settings/logic';
@@ -273,6 +277,11 @@ const role = (name: 'owner' | 'admin' | 'developer' | 'reviewer' | 'viewer') => 
 });
 
 export const teamLabels = (): TeamLabels => ({
+  tabs: { members: t('tm.tab.members'), testers: t('tm.tab.testers'), label: t('tm.tabs') },
+  counts: t('tm.counts'),
+  twoStep: t('tm.twoStep'),
+  on: t('tm.on'),
+  off: t('tm.off'),
   members: t('tm.members'),
   membersIntro: t('tm.membersIntro'),
   member: t('tm.member'),
@@ -281,7 +290,7 @@ export const teamLabels = (): TeamLabels => ({
   allApps: t('tm.allApps'),
   you: t('tm.you'),
   roles: { owner: role('owner'), admin: role('admin'), developer: role('developer'), reviewer: role('reviewer'), viewer: role('viewer') },
-  invite: t('tm.invite'),
+  invite: t('tm.inviteMember'),
   inviteEmail: t('tm.inviteEmail'),
   inviteHint: t('tm.inviteHint'),
   editAccess: t('tm.editAccess'),
@@ -332,44 +341,65 @@ export const productBrowserLabels = (): ProductBrowserLabels => ({
   noMatch: t('pb.noMatch'),
 });
 
-export const appReviewLabels = (): AppReviewLabels => ({
-  readiness: t('rv.readiness'),
-  readinessCount: t('rv.readinessCount'),
-  ready: t('rv.ready'),
-  checks: launchChecklistLabels().checks,
-  fix: t('lp.fix'),
-  status: t('rv.status'),
+const STAGES = ['draft', 'in_review', 'changes_requested', 'live'] as const;
+const byStage = (prefix: string) => Object.fromEntries(STAGES.map((stage) => [stage, t(`${prefix}.${stage}`)])) as Record<(typeof STAGES)[number], string>;
+
+export const reviewStagesLabels = (): ReviewStagesLabels => ({
+  label: t('rv.stages'),
   stages: {
     draft: t('rv.stage.draft'),
+    submitted: t('rv.stage.submitted'),
     in_review: t('rv.stage.in_review'),
     changes_requested: t('rv.stage.changes_requested'),
+    approved: t('rv.stage.approved'),
     live: t('rv.stage.live'),
   },
-  stageTexts: {
-    draft: t('rv.text.draft'),
-    in_review: t('rv.text.in_review'),
-    changes_requested: t('rv.text.changes_requested'),
-    live: t('rv.text.live'),
-  },
-  feedback: t('rv.feedback'),
-  submission: t('rv.submission'),
-  submissionIntro: t('rv.submissionIntro'),
-  noReviewNeeded: t('rv.noReviewNeeded'),
-  justify: t('rv.justify'),
-  justifyHint: t('rv.justifyHint'),
+});
+
+export const reviewRequestLabels = (): ReviewRequestLabels => ({
+  titles: byStage('rv.head'),
+  texts: byStage('rv.text'),
+  concerns: t('rv.concerns'),
+  reviewer: 'R',
+  update: t('rv.update'),
+  submit: t('rv.prepare'),
+  resubmit: t('rv.resubmit'),
+});
+
+export const reviewHistoryLabels = (): ReviewHistoryLabels => ({
+  title: t('rv.history'),
+  empty: t('rv.noHistory'),
+  submitted: t('rv.event.submitted'),
+  inReview: t('rv.decision.pending'),
+  approved: t('rv.event.approved'),
+  rejected: t('rv.decision.rejected'),
+  reviewer: t('rv.reviewer'),
+  submission: t('rv.submissionN'),
+});
+
+export const readinessLabels = (): ReadinessLabels => ({
+  ready: t('rv.readyTitle'),
+  left: t('rv.left'),
+  submit: t('rv.submission'),
+  note: t('rv.readyNote'),
+});
+
+export const reviewSubmissionLabels = (): ReviewSubmissionLabels => ({
+  checks: launchChecklistLabels().checks,
+  complete: t('rv.complete'),
+  permissions: t('rv.permissions'),
+  explained: t('rv.explained'),
+  question: t('rv.justify'),
+  hint: t('rv.justifyHint'),
+  explainedLabel: t('rv.explainedLabel'),
+  missingLabel: t('rv.required'),
   instructions: t('rv.instructions'),
   instructionsHint: t('rv.instructionsHint'),
   submit: t('rv.submission'),
   resubmit: t('rv.resubmit'),
   submitted: t('rv.submitted'),
   missing: t('lp.missing'),
-  history: t('rv.history'),
-  showSubmission: t('rv.showSubmission'),
-  noHistory: t('rv.noHistory'),
-  decisions: { pending: t('rv.decision.pending'), approved: t('rv.decision.approved'), rejected: t('rv.decision.rejected') },
-  submittedOn: t('rv.submittedOn'),
-  decidedOn: t('rv.decidedOn'),
-  asked: t('rv.asked'),
+  noReviewNeeded: t('rv.noReviewNeeded'),
   error: t('error.generic'),
 });
 

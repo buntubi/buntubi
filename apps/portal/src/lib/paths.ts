@@ -19,6 +19,8 @@ export const paths = {
   /** An app's overview, or one of its sections. */
   app: (organization: string, clientId: string, section?: AppSection) =>
     `/o/${segment(organization)}/apps/${segment(clientId)}${section ? `/${section}` : ''}`,
+  /** Where an app's review is submitted. */
+  reviewSubmission: (organization: string, clientId: string) => `${paths.app(organization, clientId, 'review')}/submit`,
   /** For an element that fills in the organization itself: `{id}` is replaced. */
   organizationPattern: () => '/o/{id}',
 } as const;
