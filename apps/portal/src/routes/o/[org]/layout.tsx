@@ -2,7 +2,7 @@
  * The workspace shell around every page of an organization: the sidebar, the top bar, and the
  * page. The organization comes from the address, so a page can be shared and reloaded as is.
  */
-import { cache, useLocation, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
+import { useLocation, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import type { SidebarContext, SidebarGroup } from '@idp/elements/sidebar/logic';
 import { markOf, useBrand } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
@@ -14,11 +14,10 @@ import { locale, setLocale, t } from '../../../lib/i18n.js';
 import { shellLabels, sidebarLabels, workspaceNotFoundLabels } from '../../../lib/labels.js';
 import type { Workspace } from '../../../lib/types.js';
 import { paramOf } from '../../../lib/params.js';
-import { appPath } from '../../../lib/paths.js';
-import { loadWorkspace } from '../../../server/developer.js';
+import { paths, type AppSection } from '../../../lib/paths.js';
 import { PageBoundary } from '../../../components/page-boundary.js';
+import { workspace } from '../../../data/developer.js';
 
-export const workspace = cache((organization: string) => loadWorkspace(organization), 'workspace');
 export const routeData = (args: RouteDataArgs) => workspace(paramOf(args, 'org'));
 
 export default function WorkspaceLayout() {
@@ -28,7 +27,8 @@ export default function WorkspaceLayout() {
   const { switchLanguage, sidebarFolded: collapsed } = usePreferences('portal', { locale, setLocale });
 
   const organization = () => data()?.current?.organization ?? null;
-  const base = () => `/o/${organization()?.id ?? ''}`;
+  const id = () => organization()?.id ?? '';
+  const base = () => paths.organization(id());
   // Inside an app, the sidebar is the app's: its sections, and the way back to all apps.
   const app = () => {
     const id = location.pathname.slice(base().length).match(/^\/apps\/([^/]+)/)?.[1];
@@ -49,7 +49,7 @@ export default function WorkspaceLayout() {
     const item = (label: string, href: string, icon: string) => ({ label, href, icon, current: here === href });
     const current = app();
     if (current) {
-      const section = (name = '') => appPath(organization()?.id ?? '', current.client_id, name);
+      const section = (name?: AppSection) => paths.app(id(), current.client_id, name);
       return [
         { label: '', items: [item(t('appws.overview'), section(), icons.overview)] },
         { label: t('appws.configure'), items: [item(t('appws.basicInfo'), section('settings'), icons.sliders)] },
@@ -66,23 +66,38 @@ export default function WorkspaceLayout() {
     return [
       {
         label: t('shell.build'),
-        items: [item(t('shell.home'), base(), icons.home), item(t('shell.products'), `${base()}/products`, icons.box)],
+        items: [item(t('shell.home'), base(), icons.home), item(t('shell.products'), paths.organization(id(), 'products'), icons.box)],
       },
       {
         label: t('shell.operate'),
-        items: [item(t('shell.team'), `${base()}/team`, icons.users), item(t('shell.settings'), `${base()}/settings`, icons.sliders)],
+        items: [item(t('shell.team'), paths.organization(id(), 'team'), icons.users), item(t('shell.settings'), paths.organization(id(), 'settings'), icons.sliders)],
       },
     ];
   };
 
+  // The organization and the page; inside an app, the app and its section.
+  const ORG_PAGES: Record<string, string> = { '': 'shell.home', products: 'shell.products', team: 'shell.team', settings: 'shell.settings' };
+  const APP_PAGES: Record<string, string> = {
+    settings: 'appws.basicInfo',
+    permissions: 'appws.permissions',
+    credentials: 'appws.credentials',
+    review: 'appws.review',
+  };
   const crumbs = (): Crumb[] => {
     const current = app();
-    if (!current) return [{ label: organization()?.name ?? '' }];
-    return [{ label: organization()?.name ?? '', href: base() }, { label: current.name }];
+    const rest = location.pathname.slice(base().length).replace(/^\//, '');
+    if (!current) {
+      const page = ORG_PAGES[rest.split('/')[0] ?? ''];
+      return [{ label: organization()?.name ?? '', href: base() }, ...(page ? [{ label: t(page) }] : [])];
+    }
+    const section = rest.split('/')[2] ?? '';
+    const page = APP_PAGES[section];
+    if (!page) return [{ label: organization()?.name ?? '', href: base() }, { label: t('shell.apps'), href: base() }, { label: current.name }];
+    return [{ label: current.name, href: paths.app(id(), current.client_id) }, { label: t(page) }];
   };
 
   // Creating an app is a focused flow: the page alone, with a way out.
-  const focused = () => location.pathname === `${base()}/apps/new`;
+  const focused = () => location.pathname === paths.newApp(id());
 
   return (
     <Show when={organization()} fallback={<idp-not-found href="/" labels={workspaceNotFoundLabels()} />}>
@@ -109,7 +124,11 @@ export default function WorkspaceLayout() {
         collapsed={collapsed()}
         onToggle={(folded) => collapsed.set(folded)}
         crumbs={crumbs()}
-        user={data()?.me ?? null}
+        user={
+          data()?.me
+            ? { name: data()?.me?.name || data()?.me?.email || '', detail: organization()?.role ? t(`tm.role.${organization()?.role}`) : '' }
+            : null
+        }
         signOutHref="/auth/logout"
         onLanguage={switchLanguage}
         labels={shellLabels()}

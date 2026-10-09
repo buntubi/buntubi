@@ -1,4 +1,7 @@
 /** Element words, built from the catalogue in one place so a language change reaches them all. */
+import type { IdeaToLiveLabels } from '@idp/elements/idea-to-live/logic';
+import type { NeedsAttentionLabels } from '@idp/elements/needs-attention/logic';
+import type { Stat } from '@idp/elements/stat-group/logic';
 import type { AppScopesLabels } from '@idp/elements/app-scopes/logic';
 import type { DeveloperTermsLabels } from '@idp/elements/developer-terms/logic';
 import type { OrganizationFormLabels } from '@idp/elements/organization-form/logic';
@@ -14,7 +17,9 @@ import type { ProductBrowserLabels } from '@idp/elements/product-browser/logic';
 import type { TeamLabels } from '@idp/elements/team/logic';
 import type { ShellLabels } from '@idp/shell/shell';
 import type { CredentialsLabels } from '@idp/elements/credentials/logic';
-import type { LaunchPathLabels } from '@idp/elements/launch-path/logic';
+import type { AppHeaderLabels } from '@idp/elements/app-header/logic';
+import type { LaunchChecklistLabels } from '@idp/elements/launch-checklist/logic';
+import type { PathToLiveLabels } from '@idp/elements/path-to-live/logic';
 import type { PermissionsLabels } from '@idp/elements/permissions/logic';
 import type { SidebarLabels } from '@idp/elements/sidebar/logic';
 import { t } from './i18n.js';
@@ -37,17 +42,26 @@ export const appListLabels = (): AppListLabels => ({
     all: t('apps.all'),
     live: t('apps.live'),
     in_review: t('apps.inReview'),
-    changes_requested: t('apps.changes'),
     draft: t('apps.draft'),
   },
   statuses: { live: t('apps.live'), in_review: t('apps.inReview'), changes_requested: t('apps.changes'), draft: t('apps.draft') },
   environments: { sandbox: t('apps.sandbox'), live: t('apps.production') },
 });
 
-export const launchPathLabels = (): LaunchPathLabels => ({
-  path: t('lp.path'),
+/** Field names as a developer knows them, for what is still missing. */
+export const fieldNames = (): Record<string, string> => ({
+  name: t('lp.field.name'),
+  description: t('lp.field.description'),
+  homepage_url: t('lp.field.homepage_url'),
+  privacy_url: t('lp.field.privacy_url'),
+  terms_url: t('lp.field.terms_url'),
+  logo: t('lp.field.logo'),
+  support_email: t('lp.field.support_email'),
+});
+
+export const pathToLiveLabels = (): PathToLiveLabels => ({
+  title: t('lp.path'),
   stepOf: t('lp.stepOf'),
-  checklist: t('lp.checklist'),
   steps: {
     create: t('lp.step.create'),
     configure: t('lp.step.configure'),
@@ -58,6 +72,10 @@ export const launchPathLabels = (): LaunchPathLabels => ({
     approved: t('lp.step.approved'),
     live: t('lp.step.live'),
   },
+});
+
+export const launchChecklistLabels = (): LaunchChecklistLabels => ({
+  title: t('lp.checklist'),
   checks: {
     basic_info: t('lp.check.basic_info'),
     redirect_uri: t('lp.check.redirect_uri'),
@@ -67,21 +85,28 @@ export const launchPathLabels = (): LaunchPathLabels => ({
     permissions: t('lp.check.permissions'),
     review: t('lp.check.review'),
   },
-  fields: {
-    name: t('lp.field.name'),
-    description: t('lp.field.description'),
-    homepage_url: t('lp.field.homepage_url'),
-    privacy_url: t('lp.field.privacy_url'),
-    terms_url: t('lp.field.terms_url'),
-    logo: t('lp.field.logo'),
-    support_email: t('lp.field.support_email'),
-  },
-  required: t('lp.required'),
+  fields: fieldNames(),
+  feedback: t('appws.feedback'),
+  openReview: t('lp.openReview'),
   fix: t('lp.fix'),
+  edit: t('lp.edit'),
+});
+
+export const appHeaderLabels = (): AppHeaderLabels => ({
+  appId: t('appws.appId'),
+  kinds: {
+    consumer: t('ca.kind.consumer'),
+    business: t('ca.kind.business'),
+    web: t('ca.kind.web'),
+    mobile: t('ca.kind.mobile'),
+    backend: t('ca.kind.backend'),
+    internal: t('ca.kind.internal'),
+  },
+  environments: { sandbox: t('apps.sandbox'), live: t('apps.production') },
+  stages: { draft: t('apps.draft'), in_review: t('apps.inReview'), changes_requested: t('apps.changes'), live: t('apps.live') },
   goLive: t('lp.goLive'),
   submit: t('lp.submit'),
-  live: t('lp.live'),
-  inReview: t('lp.inReview'),
+  resubmit: t('lp.resubmit'),
   missing: t('lp.missing'),
   error: t('error.generic'),
 });
@@ -268,6 +293,14 @@ export const productBrowserLabels = (): ProductBrowserLabels => ({
   availability: { ga: t('pb.ga'), beta: t('pb.beta'), sandbox: t('pb.sandboxOnly') },
   approval: { none: t('pb.approval.none'), review: t('ca.approval.review'), restricted: t('ca.approval.restricted') },
   docs: t('pb.docs'),
+  categories: {
+    identity: t('pb.category.identity'),
+    profile: t('pb.category.profile'),
+    content: t('pb.category.content'),
+    communication: t('pb.category.communication'),
+    insights: t('pb.category.insights'),
+    platform: t('pb.category.platform'),
+  },
   empty: t('pm.empty'),
   noMatch: t('pb.noMatch'),
 });
@@ -276,7 +309,7 @@ export const appReviewLabels = (): AppReviewLabels => ({
   readiness: t('rv.readiness'),
   readinessCount: t('rv.readinessCount'),
   ready: t('rv.ready'),
-  checks: launchPathLabels().checks,
+  checks: launchChecklistLabels().checks,
   fix: t('lp.fix'),
   status: t('rv.status'),
   stages: {
@@ -319,6 +352,7 @@ export const shellLabels = (): ShellLabels => ({
   navigation: t('shell.navigation'),
   language: t('nav.language'),
   signOut: t('nav.signOut'),
+  account: t('shell.account'),
 });
 
 export const pageErrorLabels = (): PageErrorLabels => ({ title: t('page.error.title'), retry: t('page.error.retry') });
@@ -358,3 +392,29 @@ export const appScopesLabels = (): AppScopesLabels => ({
   sandbox: t('appws.scopesSandbox'),
   none: t('appws.none'),
 });
+
+/** Home's counts: the apps and how many are live, and what waits on the members. */
+export const homeStats = (apps: { environment: string; review_status: string }[]): Stat[] => {
+  const live = apps.filter((app) => app.environment === 'live').length;
+  const waiting = apps.filter((app) => app.review_status === 'rejected').length;
+  return [
+    { key: 'apps', label: t('home.stat.apps'), value: apps.length, note: t('home.stat.live', { n: live }), tone: 'muted' },
+    {
+      key: 'awaiting',
+      label: t('home.stat.awaiting'),
+      value: waiting,
+      note: waiting ? t('home.stat.changes') : t('home.stat.nothing'),
+      tone: waiting ? 'warn' : 'muted',
+    },
+  ];
+};
+
+export const needsAttentionLabels = (): NeedsAttentionLabels => ({
+  title: t('home.attention'),
+  empty: t('home.stat.nothing'),
+  changes: t('home.attention.changes'),
+  inReview: t('home.attention.inReview'),
+  inReviewText: t('home.attention.inReviewText'),
+});
+
+export const ideaToLiveLabels = (): IdeaToLiveLabels => ({ title: t('home.path'), steps: t('home.path.steps').split('|') });

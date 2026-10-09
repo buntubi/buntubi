@@ -10,6 +10,8 @@ export interface ProductBrowserLabels {
   availability: Record<Product['availability'], string>;
   approval: Record<Product['approval'], string>;
   docs: string;
+  /** A category's name; its slug when absent. */
+  categories: Record<string, string>;
   empty: string;
   noMatch: string;
 }
@@ -20,7 +22,8 @@ export const productBrowserLabels: ProductBrowserLabels = {
   auth: { oauth2: 'OAuth 2.0', oidc: 'OpenID Connect', api_key: 'API key', webhooks: 'Signed webhooks' },
   availability: { ga: 'GA', beta: 'Beta', sandbox: 'Sandbox' },
   approval: { none: 'No review for basic scopes', review: 'App review', restricted: 'Restricted' },
-  docs: 'Documentation',
+  docs: 'Docs',
+  categories: {},
   empty: 'No API product is available yet.',
   noMatch: 'No product matches.',
 };
@@ -41,7 +44,9 @@ export interface ProductBrowserLogic {
   labels: () => ProductBrowserLabels;
   query: () => string;
   search: (value: string) => void;
-  categories: () => { value: string; current: boolean; choose: () => void }[];
+  category: () => string;
+  categories: () => { value: string; label: string }[];
+  choose: (category: string) => void;
   products: () => ProductCard[];
   total: () => number;
 }

@@ -36,15 +36,13 @@ export const sidebarView = (s: SidebarLogic) => {
       {/* A Link draws its own <a>, which the scope does not stamp: links are styled through a
           stamped parent with :deep(). */}
       <style scoped>{`
-        .sidebar { box-sizing: border-box; width: var(--idp-sidebar); height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 14px 12px; background: var(--idp-surface); border-right: 1px solid var(--idp-border); font-size: 14px; }
+        .sidebar { box-sizing: border-box; width: var(--idp-sidebar); display: flex; flex-direction: column; gap: 12px; padding: 14px 12px; font-size: 14px; }
         .sidebar[data-collapsed] { width: var(--idp-rail); padding: 12px 8px; align-items: center; }
         .top { display: flex; align-items: center; gap: 8px; }
         .top :deep(.brand) { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding: 4px 6px; color: var(--idp-text); text-decoration: none; font-weight: 600; font-size: 15px; }
         .mark { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--idp-accent); color: var(--idp-accent-fg); font-weight: 700; font-size: 14px; }
-        .sub { color: var(--idp-muted); font-weight: 500; font-size: 12px; }
-        /* Name over product, so a long product word ("Développeurs") fits beside the toggle. */
-        .brand-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
-        .brand-text > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub { color: var(--idp-muted); font-weight: 500; }
+        .brand-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .sidebar :deep(.back) { display: flex; align-items: center; gap: 8px; padding: 2px 8px; color: var(--idp-muted); font-size: 13px; text-decoration: none; }
         .context { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--idp-border); border-radius: 10px; background: var(--idp-surface-2); }
         .context-mark { flex: none; width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--idp-accent-soft); color: var(--idp-accent-ink); font-size: 12px; font-weight: 700; }
@@ -69,8 +67,7 @@ export const sidebarView = (s: SidebarLogic) => {
         <Link href={() => s.brand().href} class="brand">
           <span class="mark">{() => s.brand().mark}</span>
           <span class="brand-text">
-            <span>{() => s.brand().name}</span>
-            <span class="sub">{() => s.labels().product}</span>
+            {() => s.brand().name} <span class="sub">{() => s.labels().product}</span>
           </span>
         </Link>
         <Button

@@ -16,6 +16,7 @@
     "@fluixi-ui/field": "link:../../../../fluixi-ui/packages/field",
     "@fluixi-ui/form": "link:../../../../fluixi-ui/packages/form",
     "@fluixi-ui/input": "link:../../../../fluixi-ui/packages/input",
+    "@fluixi-ui/layout": "link:../../../../fluixi-ui/packages/layout",
     "@fluixi-ui/select": "link:../../../../fluixi-ui/packages/select",
     "@fluixi-ui/tokens": "link:../../../../fluixi-ui/packages/tokens",
     "@fluixi/cli": "link:../../../../fluixi-core/packages/cli",

@@ -1,94 +1,64 @@
-/** The product browser's default look: search and categories, then one card per product. */
+/** The default look: a search and the category filter, then three product tiles to a row. */
 import { For, Show } from '@fluixi/core';
-import { Button } from '@fluixi-ui/button';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { ProductBrowserLogic } from './logic.js';
 
-const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
-const TONE = { none: 'var(--idp-ok)', review: 'var(--idp-warn)', restricted: 'var(--idp-bad)' } as const;
+const SEARCH = 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14M20 20l-3.5-3.5';
 
 export const productBrowserView = (b: ProductBrowserLogic) => (
-  <div part="product-browser" class="browser">
+  <div part="products" class="browser">
     <style scoped>{`
-      .browser { display: grid; gap: 16px; }
-      .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-      .search { flex: 0 1 360px; }
-      .filters { display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 9px; background: var(--idp-surface-2); }
-      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-      article { display: flex; flex-direction: column; gap: 12px; padding: 18px; border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
-      .top { display: flex; gap: 12px; align-items: flex-start; }
-      .names { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-      h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      .meta { color: var(--idp-muted); font-size: 12.5px; }
-      .badge { padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; border: 1px solid var(--idp-border-2); color: var(--idp-muted); white-space: nowrap; }
-      p { margin: 0; color: var(--idp-muted); font-size: 13.5px; }
-      .scopes { display: flex; flex-wrap: wrap; gap: 6px; }
-      code { font-family: var(--idp-mono); font-size: 11.5px; padding: 1px 7px; border-radius: 6px; background: var(--idp-surface-2); border: 1px solid var(--idp-border); }
-      .foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--idp-border); font-size: 13px; }
-      .approval { display: inline-flex; align-items: center; gap: 6px; color: var(--tone); }
-      .approval::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-      .foot a { color: var(--idp-accent-ink); font-weight: 500; text-decoration: none; }
+      .browser { display: grid; gap: 18px; }
+      .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+      .search { position: relative; flex: 0 1 380px; }
+      .search svg { position: absolute; left: 12px; top: 50%; translate: 0 -50%; color: var(--idp-muted); pointer-events: none; }
+      .search :deep([data-input]) { padding-left: 36px; }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+      .grid > :deep(idp-product-tile) { display: block; }
       .empty { margin: 0; color: var(--idp-muted); }
+      @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .search { flex-basis: 100%; } }
     `}</style>
-    <div class="tools">
-      <div class="search">
+    <div class="bar">
+      <label class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d={SEARCH} />
+        </svg>
         <Input
           type="search"
           value={() => b.query()}
           placeholder={() => b.labels().search}
           aria-label={() => b.labels().search}
-          onInput={(event: Event) => b.search(valueOf(event))}
+          onInput={(event: Event) => b.search((event.target as HTMLInputElement).value)}
         />
-      </div>
+      </label>
       <Show when={b.categories().length > 2}>
-        <div class="filters" role="group" part="categories">
-          <For each={b.categories()} by={(entry) => entry.value}>
-            {(entry) => (
-              <Button
-                variant={entry().current ? 'outline' : 'ghost'}
-                tone="neutral"
-                size="sm"
-                aria-pressed={entry().current ? 'true' : 'false'}
-                onPress={() => entry().choose()}
-              >
-                {() => entry().value || b.labels().all}
-              </Button>
-            )}
-          </For>
-        </div>
+        <idp-segmented
+          options={b.categories()}
+          value={b.category()}
+          label={b.labels().all}
+          onChange={(event) => b.choose(event.detail.value)}
+        />
       </Show>
     </div>
     <Show when={b.total()} fallback={<p class="empty">{() => b.labels().empty}</p>}>
       <Show when={b.products().length} fallback={<p class="empty">{() => b.labels().noMatch}</p>}>
         <div class="grid">
-          <For each={b.products()} by={(product) => product.slug}>
-            {(product) => (
-              <article part="product">
-                <div class="top">
-                  <div class="names">
-                    <h2>{() => product().name}</h2>
-                    <span class="meta">{() => [product().category, product().auth].filter(Boolean).join(' · ')}</span>
-                  </div>
-                  <span class="badge">{() => b.labels().availability[product().availability]}</span>
-                </div>
-                <Show when={product().description}>
-                  <p>{() => product().description}</p>
-                </Show>
-                <div class="scopes">
-                  <For each={product().scopes}>{(scope) => <code>{scope}</code>}</For>
-                </div>
-                <div class="foot">
-                  <span class="approval" style={() => `--tone: ${TONE[product().approval]}`}>
-                    {() => b.labels().approval[product().approval]}
-                  </span>
-                  <Show when={product().docs}>
-                    <a href={() => product().docs ?? ''} target="_blank" rel="noopener noreferrer">
-                      {() => b.labels().docs}
-                    </a>
-                  </Show>
-                </div>
-              </article>
+          <For each={b.products()} by={(card) => card.slug}>
+            {(card) => (
+              <idp-product-tile
+                name={card().name}
+                category={card().category}
+                meta={[b.labels().categories[card().category] ?? card().category, card().auth].filter(Boolean).join(' · ')}
+                text={card().description}
+                scopes={card().scopes}
+                availability={b.labels().availability[card().availability]}
+                approval={card().approval}
+                approvalLabel={b.labels().approval[card().approval]}
+                docs={card().docs ?? ''}
+                docsLabel={b.labels().docs}
+              />
             )}
           </For>
         </div>

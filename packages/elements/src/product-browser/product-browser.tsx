@@ -2,6 +2,8 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { memo, signal } from '@fluixi/reactive/signal';
 import type { Localized, Product } from '@idp/sdk/types';
+import '../product-tile/product-tile.js';
+import '../segmented/segmented.js';
 import { useView } from '../view.js';
 import { productBrowserLabels, type ProductBrowserLabels, type ProductBrowserLogic, type ProductCard } from './logic.js';
 import { ProductBrowserView } from './view.js';
@@ -37,13 +39,13 @@ export class IdpProductBrowser extends typedElement(props) {
       labels,
       query,
       search: (value) => query.set(value),
+      category: () => category() ?? '',
       categories: () => {
         const names = [...new Set(cards().map((card) => card.category).filter(Boolean))].sort();
-        return [
-          { value: '', current: category() === null, choose: () => category.set(null) },
-          ...names.map((value) => ({ value, current: category() === value, choose: () => category.set(value) })),
-        ];
+        const name = (value: string) => labels().categories[value] ?? value.charAt(0).toUpperCase() + value.slice(1);
+        return [{ value: '', label: labels().all }, ...names.map((value) => ({ value, label: name(value) }))];
       },
+      choose: (value) => category.set(value || null),
       products: () => {
         const needle = query().trim().toLowerCase();
         return cards().filter(

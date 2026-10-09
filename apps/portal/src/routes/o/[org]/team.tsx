@@ -1,4 +1,5 @@
 /** The organization's members and its sandbox test users. */
+import { Stack } from '@fluixi-ui/layout';
 import { useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { can } from '@idp/sdk/roles';
 import '@idp/elements/team';
@@ -6,7 +7,8 @@ import { errorText, locale, t } from '../../../lib/i18n.js';
 import { teamLabels } from '../../../lib/labels.js';
 import { paramOf } from '../../../lib/params.js';
 import type { Workspace } from '../../../lib/types.js';
-import { workspace } from './layout.js';
+import { workspace } from '../../../data/developer.js';
+import '@idp/elements/page-header';
 
 export const routeData = (args: RouteDataArgs) => workspace(paramOf(args, 'org'));
 
@@ -15,10 +17,8 @@ export default function TeamPage() {
   const current = () => data()?.current;
   const role = () => current()?.organization.role;
   return (
-    <div class="stack">
-      <header class="page-head">
-        <h1>{() => t('page.team')}</h1>
-      </header>
+    <Stack gap={5}>
+      <idp-page-header title={t('page.team')} />
       <idp-team
         organization={current()?.organization.id ?? ''}
         members={current()?.members ?? []}
@@ -31,6 +31,6 @@ export default function TeamPage() {
         labels={teamLabels()}
         describe={errorText}
       />
-    </div>
+    </Stack>
   );
 }

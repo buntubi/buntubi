@@ -8,7 +8,7 @@ import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Developer } from '@idp/sdk/developer';
 import type { AppOverview, AppReview, Localized, Product } from '@idp/sdk/types';
-import type { CheckKey } from '../launch-path/logic.js';
+import type { CheckKey } from '../launch-checklist/logic.js';
 import { useView } from '../view.js';
 import { appReviewLabels, type AppReviewLabels, type AppReviewLogic } from './logic.js';
 import { AppReviewView } from './view.js';

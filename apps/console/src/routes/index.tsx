@@ -1,26 +1,26 @@
 /** The entrance: the counts, and the way to what needs an answer. */
-import { cache, useRouteData } from '@fluixi/start/router';
+import { Stack } from '@fluixi-ui/layout';
+import { useRouteData } from '@fluixi/start/router';
 import '@idp/elements/review-waiting';
 import '@idp/elements/stat-group';
 import { t } from '../lib/i18n.js';
 import { overviewStats, reviewWaitingLabels } from '../lib/labels.js';
-import { loadOverview } from '../server/admin.js';
+import { paths } from '../lib/paths.js';
+import '@idp/elements/page-header';
+import { overview } from '../data/admin.js';
 
-const overview = cache(() => loadOverview(), 'overview');
 export const routeData = () => overview();
 
-type Data = Awaited<ReturnType<typeof loadOverview>>;
+type Data = Awaited<ReturnType<typeof overview>>;
 
 /** The gate is the root layout's; a visitor who reaches this page may use the console. */
 export default function OverviewPage() {
   const data = useRouteData<Data>();
   return (
-    <div class="stack">
-      <header class="page-head">
-        <h1>{() => t('nav.overview')}</h1>
-      </header>
+    <Stack gap={5}>
+      <idp-page-header title={t('nav.overview')} />
       <idp-stat-group stats={overviewStats(data()?.overview ?? null)} />
-      <idp-review-waiting reviews={data()?.reviews ?? []} href="/reviews/{client_id}" labels={reviewWaitingLabels()} />
-    </div>
+      <idp-review-waiting reviews={data()?.reviews ?? []} href={paths.reviewPattern()} labels={reviewWaitingLabels()} />
+    </Stack>
   );
 }

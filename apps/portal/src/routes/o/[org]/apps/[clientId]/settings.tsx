@@ -1,21 +1,26 @@
 /** An app's basic information. */
+import { Stack } from '@fluixi-ui/layout';
 import { useRouteData } from '@fluixi/start/router';
 import { can } from '@idp/sdk/roles';
 import '@idp/elements/app-settings';
-import { appRouteData, type AppPageData } from '../../../../../lib/app-route.js';
-import { errorText } from '../../../../../lib/i18n.js';
+import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
+import { errorText, t } from '../../../../../lib/i18n.js';
 import { appSettingsLabels } from '../../../../../lib/labels.js';
+import '@idp/elements/page-header';
 
 export const routeData = appRouteData;
 
 export default function SettingsPage() {
   const data = useRouteData<AppPageData>();
   return (
-    <idp-app-settings
+    <Stack gap={5}>
+      <idp-page-header title={t('appws.basicInfo')} />
+      <idp-app-settings
       app={data()?.app.app ?? null}
       canEdit={can(data()?.app.role, 'edit_apps')}
       labels={appSettingsLabels()}
       describe={errorText}
-    />
+      />
+    </Stack>
   );
 }

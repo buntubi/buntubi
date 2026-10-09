@@ -17,6 +17,9 @@ importers:
       '@fluixi-ui/checkbox':
         specifier: link:../../../../fluixi-ui/packages/checkbox
         version: link:../../../../fluixi-ui/packages/checkbox
+      '@fluixi-ui/dropdown-menu':
+        specifier: link:../../../../fluixi-ui/packages/dropdown-menu
+        version: link:../../../../fluixi-ui/packages/dropdown-menu
       '@fluixi-ui/input':
         specifier: link:../../../../fluixi-ui/packages/input
         version: link:../../../../fluixi-ui/packages/input
@@ -29,6 +32,9 @@ importers:
       '@fluixi-ui/toggle':
         specifier: link:../../../../fluixi-ui/packages/toggle
         version: link:../../../../fluixi-ui/packages/toggle
+      '@fluixi-ui/toggle-group':
+        specifier: link:../../../../fluixi-ui/packages/toggle-group
+        version: link:../../../../fluixi-ui/packages/toggle-group
       '@fluixi/core':
         specifier: link:../../../../fluixi-core/packages/core
         version: link:../../../../fluixi-core/packages/core

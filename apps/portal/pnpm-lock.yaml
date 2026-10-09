@@ -26,6 +26,9 @@ importers:
       '@fluixi-ui/input':
         specifier: link:../../../../fluixi-ui/packages/input
         version: link:../../../../fluixi-ui/packages/input
+      '@fluixi-ui/layout':
+        specifier: link:../../../../fluixi-ui/packages/layout
+        version: link:../../../../fluixi-ui/packages/layout
       '@fluixi-ui/select':
         specifier: link:../../../../fluixi-ui/packages/select
         version: link:../../../../fluixi-ui/packages/select

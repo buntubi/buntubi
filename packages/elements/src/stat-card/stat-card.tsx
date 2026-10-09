@@ -1,7 +1,7 @@
 /** One count as a card that opens the page behind it. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { useView } from '../view.js';
-import type { StatCardLogic } from './logic.js';
+import type { StatCardLogic, StatTone } from './logic.js';
 import { StatCardView } from './view.js';
 
 const props = {
@@ -10,6 +10,9 @@ const props = {
   /** Where the card leads; none makes it a plain card. */
   href: prop.string(''),
   attention: prop.boolean(false),
+  note: prop.string(''),
+  /** The note's colour. */
+  tone: prop.string('muted'),
 };
 
 export class IdpStatCard extends typedElement(props) {
@@ -19,6 +22,8 @@ export class IdpStatCard extends typedElement(props) {
       value: () => String(this.value),
       href: () => this.href,
       attention: () => this.attention,
+      note: () => this.note,
+      tone: () => this.tone as StatTone,
     };
     return useView(StatCardView)(logic);
   }

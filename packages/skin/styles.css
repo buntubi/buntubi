@@ -158,6 +158,68 @@
     color: var(--idp-accent-fg);
   }
 
+  /* Segmented choice: a toggle group marked data-segmented, a tinted track with the picked
+     option raised on the surface. */
+  [data-ui='idp'] :where([role='group'][data-segmented]) {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 3px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--idp-surface-2);
+    box-shadow: none;
+  }
+  [data-ui='idp'] :where([role='group'][data-segmented] > [aria-pressed]) {
+    height: 28px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--idp-muted);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  [data-ui='idp'] :where([role='group'][data-segmented] > [aria-pressed]:hover:not([data-disabled])) {
+    color: var(--idp-text);
+    background: transparent;
+  }
+  [data-ui='idp'] :where([role='group'][data-segmented] > [aria-pressed][data-state='on']) {
+    background: var(--idp-surface);
+    color: var(--idp-text);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  }
+  [data-ui='idp'] :where([role='group'][data-segmented][data-size='md'] > [aria-pressed]) {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 13.5px;
+  }
+
+  /* The signed-in person at the sidebar's foot: a full-width row that opens the account menu. */
+  [data-ui='idp'] :where([data-user-menu]) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--idp-text);
+    font: inherit;
+    cursor: pointer;
+  }
+  [data-ui='idp'] :where([data-user-menu]:hover, [data-user-menu][data-state='open']) {
+    background: var(--idp-surface-2);
+  }
+  [data-ui='idp'] :where([data-user-menu]:focus-visible) {
+    outline: none;
+    box-shadow: var(--idp-skin-ring);
+  }
+
   [data-ui='idp'] :where(code, kbd, pre) {
     font-family: var(--flx-ui-font-family-mono);
   }

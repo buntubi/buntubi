@@ -13,7 +13,8 @@ export interface AppRow {
 }
 
 export type AppStatus = 'live' | 'in_review' | 'changes_requested' | 'draft';
-export type AppFilter = 'all' | AppStatus;
+/** The board's filters: changes requested counts as in review. */
+export type AppFilter = 'all' | 'live' | 'in_review' | 'draft';
 
 /** Where an app stands, as the list shows it. */
 export function statusOf(app: Pick<AppRow, 'environment' | 'review_status'>): AppStatus {
@@ -40,13 +41,15 @@ export const appListLabels: AppListLabels = {
   status: 'Status',
   apis: 'APIs',
   empty: 'No app yet.',
-  filters: { all: 'All', live: 'Live', in_review: 'In review', changes_requested: 'Changes requested', draft: 'Draft' },
+  filters: { all: 'All', live: 'Live', in_review: 'In review', draft: 'Draft' },
   statuses: { live: 'Live', in_review: 'In review', changes_requested: 'Changes requested', draft: 'Draft' },
   environments: { sandbox: 'Sandbox', live: 'Production' },
 };
 
 export interface AppListLogic {
   labels: () => AppListLabels;
-  filters: () => { value: AppFilter; count: number; current: boolean; choose: () => void }[];
+  filter: () => AppFilter;
+  filters: () => { value: string; label: string }[];
+  choose: (filter: string) => void;
   rows: () => (AppRow & { status: AppStatus })[];
 }

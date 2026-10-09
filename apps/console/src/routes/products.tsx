@@ -1,13 +1,13 @@
 /** The API product catalog: availability, the review each product needs, its scopes. */
-import { cache, useRouteData } from '@fluixi/start/router';
+import { Stack } from '@fluixi-ui/layout';
+import { useRouteData } from '@fluixi/start/router';
 import '@idp/elements/product-catalog';
 import type { CatalogProduct, ProductCatalogLabels } from '@idp/elements/product-catalog/logic';
 import { errorText, locale, t } from '../lib/i18n.js';
 import type { ProductRow, ScopeRow } from '../lib/types.js';
-import { loadProducts, loadScopes } from '../server/admin.js';
+import '@idp/elements/page-header';
+import { products, scopes } from '../data/admin.js';
 
-const products = cache(() => loadProducts(), 'products');
-const scopes = cache(() => loadScopes(), 'scopes');
 export const routeData = () => Promise.all([products(), scopes()]);
 
 const labels = (): ProductCatalogLabels => ({
@@ -49,14 +49,9 @@ export default function ProductsPage() {
   const free = () =>
     (data()?.[1] ?? []).filter((scope) => !scope.product && scope.sensitivity !== 'restricted').map((scope) => scope.name);
   return (
-    <div class="stack">
-      <header class="page-head">
-        <div>
-          <h1>{() => t('products.title')}</h1>
-          <p class="page-intro">{() => t('products.lead')}</p>
-        </div>
-      </header>
+    <Stack gap={5}>
+      <idp-page-header title={t('products.title')} intro={t('products.lead')} />
       <idp-product-catalog products={catalog()} freeScopes={free()} labels={labels()} describe={errorText} />
-    </div>
+    </Stack>
   );
 }

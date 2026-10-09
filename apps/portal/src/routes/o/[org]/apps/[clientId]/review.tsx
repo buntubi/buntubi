@@ -1,53 +1,45 @@
 /** An app's review: readiness, the submission, where it stands, and the history. */
-import { cache, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
+import { Stack } from '@fluixi-ui/layout';
+import { useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { can } from '@idp/sdk/roles';
 import '@idp/elements/app-review';
-import { appRouteData, type AppPageData } from '../../../../../lib/app-route.js';
+import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { errorText, locale, t } from '../../../../../lib/i18n.js';
-import { appReviewLabels, launchPathLabels } from '../../../../../lib/labels.js';
+import { appReviewLabels, fieldNames } from '../../../../../lib/labels.js';
 import { paramOf } from '../../../../../lib/params.js';
-import { appPath } from '../../../../../lib/paths.js';
+import { checkLinks } from '../../../../../lib/paths.js';
 import type { AppReview } from '../../../../../lib/types.js';
-import { loadAppReviews } from '../../../../../server/developer.js';
+import '@idp/elements/page-header';
+import { appReviews } from '../../../../../data/developer.js';
 
-const reviews = cache((clientId: string) => loadAppReviews(clientId), 'reviews');
 
 interface ReviewPageData extends AppPageData {
   reviews: AppReview[];
 }
 
 export const routeData = async (args: RouteDataArgs): Promise<ReviewPageData> => {
-  const [page, history] = await Promise.all([appRouteData(args), reviews(paramOf(args, 'clientId'))]);
+  const [page, history] = await Promise.all([appRouteData(args), appReviews(paramOf(args, 'clientId'))]);
   return { ...page, reviews: history };
 };
 
 export default function ReviewPage() {
   const data = useRouteData<ReviewPageData>();
   const app = () => data()?.app.app ?? null;
-  const section = (name: string) => appPath(app()?.organization_id ?? '', app()?.client_id ?? '', name);
   return (
-    <div class="stack">
-      <style scoped>{`h2 { margin: 0; font-size: 18px; font-weight: 600; }`}</style>
-      <h2>{() => t('rv.title')}</h2>
+    <Stack gap={5}>
+      <idp-page-header title={t('rv.title')} />
       <idp-app-review
         clientId={app()?.client_id ?? ''}
         overview={data()?.app.overview ?? null}
         reviews={data()?.reviews ?? []}
         products={data()?.workspace.products ?? []}
-        links={{
-          basic_info: section('settings'),
-          policies: section('settings'),
-          redirect_uri: section('credentials'),
-          products: section('permissions'),
-          permissions: section('permissions'),
-          support_email: `/o/${app()?.organization_id ?? ''}/settings`,
-        }}
+        links={checkLinks(app()?.organization_id ?? '', app()?.client_id ?? '')}
         canPublish={can(data()?.app.role, 'publish')}
-        fields={launchPathLabels().fields}
+        fields={fieldNames()}
         locale={locale()}
         labels={appReviewLabels()}
         describe={errorText}
       />
-    </div>
+    </Stack>
   );
 }

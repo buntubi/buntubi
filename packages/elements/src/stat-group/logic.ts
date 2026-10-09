@@ -6,6 +6,8 @@ export interface Stat {
   value: number;
   href?: string;
   attention?: boolean;
+  note?: string;
+  tone?: 'muted' | 'ok' | 'warn' | 'bad' | 'info';
 }
 
 export interface StatGroupLogic {

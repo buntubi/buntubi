@@ -1,14 +1,17 @@
 /** One app's review: what it asks for and why, its history, and the answer. */
-import { cache, useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
+import { Stack } from '@fluixi-ui/layout';
+import { useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { useBrand } from '@idp/shell/brand';
 import '@idp/elements/review-decision';
 import { errorText, locale, t } from '../../lib/i18n.js';
 import { reviewDecisionLabels } from '../../lib/labels.js';
 import { paramOf } from '../../lib/params.js';
 import type { Review, ScopeRow } from '../../lib/types.js';
-import { loadReview } from '../../server/admin.js';
+import { paths } from '../../lib/paths.js';
+import '@idp/elements/page-header';
+import '@idp/elements/not-found';
+import { review } from '../../data/admin.js';
 
-const review = cache((clientId: string) => loadReview(clientId), 'review');
 export const routeData = (args: RouteDataArgs) => review(paramOf(args, 'clientId'));
 
 export default function ReviewPage() {
@@ -19,22 +22,15 @@ export default function ReviewPage() {
     <Show
       when={data()?.review}
       fallback={
-        <div class="stack">
-          <h1>{() => t('reviews.notFound')}</h1>
-          <Link href="/reviews">{() => t('reviews.back')}</Link>
-        </div>
+        <idp-not-found href={paths.reviews()} labels={{ title: t('reviews.notFound'), text: '', back: t('reviews.back') }} />
       }
     >
-      <div class="stack">
-        <header class="page-head">
-          <div>
-            <p class="eyebrow">
-              <Link href="/reviews">{() => t('reviews.back')}</Link>
-            </p>
-            <h1>{() => data()?.review?.name ?? ''}</h1>
-            <p class="page-intro mono">{() => data()?.review?.client_id ?? ''}</p>
-          </div>
-        </header>
+      <Stack gap={5}>
+        <idp-page-header
+          title={data()?.review?.name ?? ''}
+          intro={data()?.review?.client_id ?? ''}
+          actions={[{ label: t('reviews.back'), href: paths.reviews(), variant: 'outline' }]}
+        />
         <idp-review-decision
           review={data()?.review ?? null}
           scopes={data()?.scopes ?? []}
@@ -42,9 +38,9 @@ export default function ReviewPage() {
           locale={locale()}
           labels={reviewDecisionLabels()}
           describe={errorText}
-          onDecided={() => navigate('/reviews')}
+          onDecided={() => navigate(paths.reviews())}
         />
-      </div>
+      </Stack>
     </Show>
   );
 }

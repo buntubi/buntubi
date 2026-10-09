@@ -2,17 +2,16 @@
  * Every page: the brand handed down, the navigation progress bar, a refused sign-in's notice,
  * and the matched route. Frames (public pages, the workspace shell) draw their own chrome.
  */
-import { cache, useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
+import { useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/auth-notice';
 import { authNoticeLabels } from '../lib/auth-notice.js';
 import { BrandContext } from '@idp/shell/brand';
 import { t } from '../lib/i18n.js';
 import type { Brand } from '../lib/types.js';
-import { loadBrand } from '../server/developer.js';
 import { auth } from '../services/auth.js';
 import { PageBoundary } from '../components/page-boundary.js';
+import { brand } from '../data/developer.js';
 
-const brand = cache(() => loadBrand(), 'brand');
 export const routeData = () => brand();
 
 export default function RootLayout() {

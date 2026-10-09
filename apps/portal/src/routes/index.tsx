@@ -2,7 +2,7 @@
  * The way in: an invitation to sign in, the developer terms, a first organization, or for a
  * developer with organizations, their first workspace.
  */
-import { cache, Redirect, useNavigate, useRouteData } from '@fluixi/start/router';
+import { Redirect, useNavigate, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/developer-terms';
 import '@idp/elements/organization-form';
 import '@idp/elements/organization-tiles';
@@ -11,10 +11,10 @@ import { PublicFrame } from '../components/public-frame.js';
 import { errorText, t } from '../lib/i18n.js';
 import { developerTermsLabels, organizationFormLabels, welcomeLabels } from '../lib/labels.js';
 import type { Home } from '../lib/types.js';
-import { loadHome } from '../server/developer.js';
+import { paths } from '../lib/paths.js';
 import { auth } from '../services/auth.js';
+import { home } from '../data/developer.js';
 
-const home = cache(() => loadHome(), 'home');
 export const routeData = () => home();
 
 export default function HomePage() {
@@ -31,12 +31,12 @@ export default function HomePage() {
               organizations={data()?.organizations ?? []}
               title={t('organizations.title')}
               empty={t('organizations.empty')}
-              href="/o/{id}"
+              href={paths.organizationPattern()}
             />
             <idp-organization-form
               labels={organizationFormLabels()}
               describe={errorText}
-              onCreated={(event) => navigate(`/o/${encodeURIComponent(event.detail.id)}`)}
+              onCreated={(event) => navigate(paths.organization(event.detail.id))}
             />
           </div>
         }
@@ -48,7 +48,7 @@ export default function HomePage() {
           <idp-developer-terms labels={developerTermsLabels()} describe={errorText} />
         </Match>
         <Match when={first()}>
-          {(id: string) => <Redirect to={`/o/${id}`} />}
+          {(id: string) => <Redirect to={paths.organization(id)} />}
         </Match>
       </Switch>
     </PublicFrame>

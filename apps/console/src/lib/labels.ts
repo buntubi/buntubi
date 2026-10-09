@@ -13,6 +13,7 @@ import type { ReviewQueueLabels } from '@idp/elements/review-queue/logic';
 import type { SidebarLabels } from '@idp/elements/sidebar/logic';
 import type { ShellLabels } from '@idp/shell/shell';
 import { t } from './i18n.js';
+import { paths } from './paths.js';
 
 export const sidebarLabels = (): SidebarLabels => ({
   product: t('shell.product'),
@@ -28,6 +29,7 @@ export const shellLabels = (): ShellLabels => ({
   navigation: t('shell.navigation'),
   language: t('nav.language'),
   signOut: t('nav.signOut'),
+  account: t('shell.account'),
 });
 
 export const reviewQueueLabels = (): ReviewQueueLabels => ({
@@ -94,13 +96,13 @@ export const overviewStats = (counts: AdminOverview | null): Stat[] => {
     attention: key === 'pending_reviews' && (counts?.[key] ?? 0) > 0,
   });
   return [
-    stat('pending_reviews', 'overview.pending', '/reviews'),
-    stat('users', 'overview.users', '/users'),
-    stat('developers', 'overview.developers', '/users'),
-    stat('organizations', 'overview.organizations', '/organizations'),
-    stat('suspended_organizations', 'overview.suspended', '/organizations'),
-    stat('live_apps', 'overview.live', '/organizations'),
-    stat('sandbox_apps', 'overview.sandbox', '/organizations'),
+    stat('pending_reviews', 'overview.pending', paths.reviews()),
+    stat('users', 'overview.users', paths.users()),
+    stat('developers', 'overview.developers', paths.users()),
+    stat('organizations', 'overview.organizations', paths.organizations()),
+    stat('suspended_organizations', 'overview.suspended', paths.organizations()),
+    stat('live_apps', 'overview.live', paths.organizations()),
+    stat('sandbox_apps', 'overview.sandbox', paths.organizations()),
   ];
 };
 

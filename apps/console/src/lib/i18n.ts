@@ -161,6 +161,7 @@ const fr = {
   'page.error.retry': 'Réessayer',
   'scopes.catalog': 'Portées',
   'scopes.api': 'API',
+  'shell.account': 'Compte',
 };
 
 const en: typeof fr = {
@@ -323,6 +324,7 @@ const en: typeof fr = {
   'page.error.retry': 'Try again',
   'scopes.catalog': 'Scopes',
   'scopes.api': 'API',
+  'shell.account': 'Account',
 };
 
 export const i18n = createI18n({ locale: 'fr', locales: ['fr', 'en'] as const, messages: { fr, en } });
