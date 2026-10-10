@@ -4,7 +4,7 @@ import { useRouteData } from '@fluixi/start/router';
 import '@idp/elements/scope-form';
 import '@idp/elements/scope-list';
 import { errorText, locale, t } from '../lib/i18n.js';
-import { scopeFormLabels, scopeListLabels, scopeRowLabels } from '../lib/labels.js';
+import { scopeFormLabels, scopeListLabels, scopeRowLabels, formMessages } from '../lib/labels.js';
 import type { ScopeRow } from '../lib/types.js';
 import '@idp/elements/page-header';
 import { scopes } from '../data/admin.js';
@@ -17,7 +17,7 @@ export default function ScopesPage() {
     <Stack gap={5}>
       <idp-page-header title={t('scopes.title')} />
       <idp-scope-list scopes={data() ?? []} locale={locale()} labels={scopeListLabels()} rowLabels={scopeRowLabels()} />
-      <idp-scope-form labels={scopeFormLabels()} describe={errorText} />
+      <idp-scope-form labels={scopeFormLabels()} messages={formMessages()} describe={errorText} />
     </Stack>
   );
 }

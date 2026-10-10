@@ -1,4 +1,6 @@
 /** Adding a scope to the catalogue; apart from the look. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ScopeInput } from '@idp/sdk/schemas/catalogue';
 import type { Sensitivity } from '@idp/sdk/types';
 
 export interface ScopeFormLabels {
@@ -27,20 +29,19 @@ export const scopeFormLabels: ScopeFormLabels = {
 
 export const SENSITIVITIES: Sensitivity[] = ['public', 'sensitive', 'restricted'];
 
-export interface ScopeDraft {
-  name: string;
-  sensitivity: Sensitivity;
-  resource: string;
-  fr: string;
-  en: string;
+/** The form's values: the engine widens a field to `string`, so the sensitivity is narrowed at submit. */
+export type ScopeValues = Omit<ScopeInput, 'sensitivity'> & { sensitivity: string };
+
+/** The form engine's root, typed per field. */
+export interface ScopeForm extends ReactiveForm<ScopeValues> {
+  get<K extends keyof ScopeValues>(key: K): ReactiveControl<ScopeValues[K]>;
 }
 
 export interface ScopeFormLogic {
   labels: () => ScopeFormLabels;
-  draft: () => ScopeDraft;
-  edit: <K extends keyof ScopeDraft>(key: K, value: ScopeDraft[K]) => void;
-  canCreate: () => boolean;
-  create: () => Promise<void>;
+  form: ScopeForm;
+  create: (values: ScopeValues) => Promise<void>;
+  busy: () => boolean;
   error: () => string | null;
 }
 

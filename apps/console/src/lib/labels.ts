@@ -242,6 +242,7 @@ export const formMessages = (): Messages => ({
   'form.passwordShort': t('form.passwordShort'),
   'form.country': t('form.country'),
   'form.phone': t('form.phone'),
+  'form.scopeName': t('form.scopeName'),
 });
 
 const languages = () => ({ fr: t('users.lang.fr'), en: t('users.lang.en') });
