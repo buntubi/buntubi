@@ -1,5 +1,6 @@
 /** The contact card: the address, its change by link, and the phone; apart from the look. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { EmailChangeInput, PhoneInput } from '@idp/sdk/schemas/account';
 
 export interface ContactSectionLabels {
@@ -56,11 +57,11 @@ export const contactSectionLabels: ContactSectionLabels = {
 };
 
 export interface EmailForm extends ReactiveForm<EmailChangeInput> {
-  get<K extends keyof EmailChangeInput>(key: K): ReactiveControl<EmailChangeInput[K]>;
+  get<K extends keyof EmailChangeInput>(key: K): FieldControl<EmailChangeInput[K]>;
 }
 
 export interface PhoneForm extends ReactiveForm<PhoneInput> {
-  get<K extends keyof PhoneInput>(key: K): ReactiveControl<PhoneInput[K]>;
+  get<K extends keyof PhoneInput>(key: K): FieldControl<PhoneInput[K]>;
 }
 
 export type ContactEditing = 'email' | 'phone' | null;

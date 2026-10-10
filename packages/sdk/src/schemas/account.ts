@@ -22,7 +22,23 @@ export const emailChangeSchema = z.object({
   password: z.string().min(1, 'form.required'),
 });
 
+export const passwordChangeSchema = z.object({
+  current_password: z.string().min(1, 'form.required'),
+  new_password: z.string().min(10, 'form.passwordShort').max(256, 'form.tooLong'),
+  sign_out_others: z.boolean(),
+});
+
+/** A code from the authenticator app, or a backup code (ABCD-EFGH). */
+export const twoStepCodeSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .regex(/^([0-9]{6}|[A-Za-z0-9]{4}-?[A-Za-z0-9]{4})$/, 'form.code'),
+});
+
 export type NameInput = z.infer<typeof nameSchema>;
 export type PhoneInput = z.infer<typeof phoneSchema>;
 export type CountryInput = z.infer<typeof countrySchema>;
 export type EmailChangeInput = z.infer<typeof emailChangeSchema>;
+export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
+export type TwoStepCodeInput = z.infer<typeof twoStepCodeSchema>;

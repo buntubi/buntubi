@@ -16,6 +16,7 @@ def record(event: str, *, user: User | None = None, client: Client | None = None
             client_id=client.id if client is not None else None,
             # None from the command line, where there is no request.
             ip=request.remote_addr if has_request_context() else None,
+            user_agent=(request.user_agent.string[:512] or None) if has_request_context() else None,
             details=details,
         )
     )

@@ -76,10 +76,10 @@ export class IdpContactSection extends typedElement(props) {
         error.set(null);
         notice.set(null);
         if (what === 'email') {
-          emailForm.get('email').setValue('');
-          emailForm.get('password').setValue('');
+          emailForm.get('email').reset('');
+          emailForm.get('password').reset('');
         }
-        if (what === 'phone') phoneForm.get('phone').setValue(this.phone);
+        if (what === 'phone') phoneForm.get('phone').reset(this.phone);
         editing.set(what);
       },
       emailForm,

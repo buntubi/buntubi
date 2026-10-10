@@ -18,6 +18,8 @@ class User(IdMixin, TimestampMixin, Base):
     email_verified_at: Mapped[datetime | None]
     # None for an account that only signs in through an outside identity.
     password_hash: Mapped[str | None] = mapped_column(String(255))
+    # None: unchanged since the account was made.
+    password_changed_at: Mapped[datetime | None]
     given_name: Mapped[str] = mapped_column(String(100), default="")
     family_name: Mapped[str] = mapped_column(String(100), default="")
     locale: Mapped[str] = mapped_column(String(10), default="fr")

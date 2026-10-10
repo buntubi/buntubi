@@ -8,7 +8,6 @@ import type { ConsentLabels } from '../elements/consent/consent.js';
 import type { AccountSelectLabels } from '../elements/account-select/account-select.js';
 import type { DeviceActivateLabels } from '../elements/device-activate/device-activate.js';
 import type { MfaVerifyLabels } from '../elements/mfa-verify/mfa-verify.js';
-import type { MfaSetupLabels } from '../elements/mfa-setup/mfa-setup.js';
 import type { Messages } from '../elements/shared/messages.js';
 import type { Locale } from './config.js';
 
@@ -65,7 +64,6 @@ export interface Text {
   accountSelect: AccountSelectLabels;
   deviceActivate: DeviceActivateLabels;
   mfaVerify: MfaVerifyLabels;
-  mfaSetup: MfaSetupLabels;
   scopes: Record<string, string>;
   messages: Messages;
 }
@@ -178,25 +176,6 @@ const fr: Text = {
     useBackup: 'Utiliser un code de secours',
     useApp: 'Utiliser l’application',
   },
-  mfaSetup: {
-    off: 'Ajoutez une deuxième étape à votre connexion : un code donné par une application d’authentification sur votre téléphone.',
-    start: 'Activer la validation en deux étapes',
-    scan: 'Scannez ce code avec votre application d’authentification, puis saisissez le code à 6 chiffres qu’elle affiche.',
-    manual: 'Ou saisissez cette clé dans l’application :',
-    code: 'Code de l’application',
-    confirm: 'Activer',
-    cancel: 'Annuler',
-    saveCodes: 'Gardez ces codes de secours en lieu sûr. Chacun vous connecte une fois si vous perdez votre téléphone. Ils ne seront plus affichés.',
-    copy: 'Copier les codes',
-    copied: 'Copiés',
-    done: 'Je les ai enregistrés',
-    on: 'La validation en deux étapes est activée.',
-    codesLeft: 'Codes de secours restants :',
-    renew: 'Nouveaux codes',
-    disable: 'Désactiver',
-    confirmWithCode: 'Saisissez un code de l’application pour confirmer.',
-    pending: 'Un instant',
-  },
   deviceActivate: {
     intro: 'Saisissez le code affiché sur votre appareil. N’autorisez qu’un appareil que vous utilisez en ce moment.',
     code: 'Code de l’appareil',
@@ -223,6 +202,7 @@ const fr: Text = {
     'form.country': 'Deux lettres, par exemple SN ou FR.',
     'form.phone': 'Format international, par exemple +221771234567.',
     wrong_password: 'Mot de passe incorrect.',
+    same_password: 'Choisissez un mot de passe différent de l’actuel.',
     same_email: 'C’est déjà votre adresse.',
     invalid_phone: 'Ce numéro n’est pas valide.',
     invalid_country: 'Ce pays n’est pas reconnu.',
@@ -358,25 +338,6 @@ const en: Text = {
     useBackup: 'Use a backup code',
     useApp: 'Use the authenticator app',
   },
-  mfaSetup: {
-    off: 'Add a second step to your sign-in: a code from an authenticator app on your phone.',
-    start: 'Set up two-step sign-in',
-    scan: 'Scan this code with your authenticator app, then enter the 6-digit code it shows.',
-    manual: 'Or type this key into the app:',
-    code: 'Code from the app',
-    confirm: 'Turn on',
-    cancel: 'Cancel',
-    saveCodes: 'Save these backup codes somewhere safe. Each one signs you in once if you lose your phone. They will not be shown again.',
-    copy: 'Copy the codes',
-    copied: 'Copied',
-    done: 'I saved them',
-    on: 'Two-step sign-in is on.',
-    codesLeft: 'Backup codes left:',
-    renew: 'New codes',
-    disable: 'Turn off',
-    confirmWithCode: 'Enter a code from the app to confirm.',
-    pending: 'One moment',
-  },
   deviceActivate: {
     intro: 'Enter the code shown on your device. Only allow a device you are using right now.',
     code: 'Device code',
@@ -403,6 +364,7 @@ const en: Text = {
     'form.country': 'Two letters, such as SN or FR.',
     'form.phone': 'International format, such as +221771234567.',
     wrong_password: 'Wrong password.',
+    same_password: 'Pick a password different from the current one.',
     same_email: 'This is already your address.',
     invalid_phone: 'This number is not valid.',
     invalid_country: 'This country is not recognised.',

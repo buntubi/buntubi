@@ -26,7 +26,7 @@ def test_the_summary_says_who_and_how_safe(
     sign_up(browser, outbox)
     summary = browser.get("/api/account").json
     assert summary["user"]["email"] == "awa@example.test" and summary["user"]["email_verified"]
-    assert summary["mfa"] == {"enabled": False, "backup_codes_left": 0}
+    assert summary["mfa"] == {"enabled": False, "since": None, "backup_codes_left": 0}
     assert summary["devices"] == 1 and summary["connected_apps"] == 0
     assert [a["current"] for a in summary["accounts"]] == [True]
 

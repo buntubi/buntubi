@@ -4,6 +4,7 @@ check is rate-limited. Errors are {"error": "<code>"}, which the screens transla
 """
 
 import re
+from datetime import datetime
 from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, url_for
@@ -15,7 +16,7 @@ from idp.extensions import limiter
 from idp.models import Consent, DeviceCode, LoginSession, User
 from idp.security import csrf
 from idp.security.tokens import normalize_user_code
-from idp.services import accounts, audit, mail, mfa, own_apps, platform, profile, sessions
+from idp.services import accounts, activity, audit, mail, mfa, own_apps, platform, profile, sessions
 from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -54,7 +55,7 @@ def _text(data: dict[str, Any], key: str, limit: int = 320) -> str:
 
 def _signed_in(user: User, methods: list[str], event: str) -> Response:
     sessions.start(user, methods)
-    audit.record(event, user=user)
+    audit.record(event, user=user, methods=methods)
     db().commit()
     return jsonify(redirect=sessions.take_return_to(url_for("pages.account")))
 
@@ -99,6 +100,11 @@ def sign_in() -> Any:
     data = _body()
     user = accounts.authenticate(_text(data, "email"), _text(data, "password", 256))
     if user is None:
+        # Shown to the account's owner on their security page; the answer stays the same.
+        known = accounts.user_by_email(_text(data, "email"))
+        if known is not None:
+            audit.record("sign_in_failed", user=known)
+            db().commit()
         return jsonify(error="invalid_credentials"), 401
     if not user.email_verified:
         accounts.send_verification_code(user)
@@ -273,6 +279,10 @@ def device_decision() -> Any:
 # ── The account area ──────────────────────────────────────────────────────────────────────────
 
 
+def _iso(moment: datetime | None) -> str | None:
+    return moment.isoformat() if moment else None
+
+
 def _count(model: Any, *where: Any) -> int:
     return int(db().scalar(select(func.count()).select_from(model).where(*where)) or 0)
 
@@ -300,8 +310,14 @@ def account_summary() -> Any:
             "picture": user.picture,
             "pending_email": profile.pending_email(user),
             "created_at": user.created_at.isoformat(),
+            "has_password": user.password_hash is not None,
+            "password_changed_at": _iso(user.password_changed_at),
         },
-        mfa={"enabled": mfa.is_enabled(user), "backup_codes_left": mfa.remaining_backup_codes(user)},
+        mfa={
+            "enabled": mfa.is_enabled(user),
+            "since": _iso(totp.confirmed_at) if (totp := mfa.credential(user)) else None,
+            "backup_codes_left": mfa.remaining_backup_codes(user),
+        },
         devices=_count(
             LoginSession,
             LoginSession.user_id == user.id,
@@ -390,6 +406,28 @@ def request_email_change() -> Response:
     audit.record("email_change_requested", user=user, new_email=address)
     db().commit()
     return jsonify(pending_email=address)
+
+
+@bp.post("/account/password")
+@limiter.limit("5 per minute")
+def change_password() -> Response:
+    data = _body()
+    login = sessions.current()
+    if login is None:
+        raise AccountError("not_signed_in")
+    others = data.get("sign_out_others") is True
+    current, new = _text(data, "current_password", 256), _text(data, "new_password", 256)
+    accounts.change_password(login.user, current, new, keep=login if others else None)
+    audit.record("password_changed", user=login.user)
+    if others:
+        audit.record("signed_out_others", user=login.user)
+    db().commit()
+    return jsonify(ok=True)
+
+
+@bp.get("/account/activity")
+def recent_activity() -> Response:
+    return jsonify(days=activity.DAYS, events=activity.recent(_me()))
 
 
 @bp.delete("/account/email")

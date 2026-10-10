@@ -274,7 +274,16 @@
     "./preferences-section": "./src/preferences-section/preferences-section.tsx",
     "./preferences-section/view": "./src/preferences-section/view.tsx",
     "./preferences-section/logic": "./src/preferences-section/logic.ts",
-    "./countries": "./src/countries.ts"
+    "./countries": "./src/countries.ts",
+    "./password-section": "./src/password-section/password-section.tsx",
+    "./password-section/view": "./src/password-section/view.tsx",
+    "./password-section/logic": "./src/password-section/logic.ts",
+    "./security-activity": "./src/security-activity/security-activity.tsx",
+    "./security-activity/view": "./src/security-activity/view.tsx",
+    "./security-activity/logic": "./src/security-activity/logic.ts",
+    "./two-step-section": "./src/two-step-section/two-step-section.tsx",
+    "./two-step-section/view": "./src/two-step-section/view.tsx",
+    "./two-step-section/logic": "./src/two-step-section/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

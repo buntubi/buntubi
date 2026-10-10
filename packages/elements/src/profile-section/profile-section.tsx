@@ -76,8 +76,8 @@ export class IdpProfileSection extends typedElement(props) {
       editing,
       setEditing: (on) => {
         if (on) {
-          form.get('given_name').setValue(this.givenName);
-          form.get('family_name').setValue(this.familyName);
+          form.get('given_name').reset(this.givenName);
+          form.get('family_name').reset(this.familyName);
         }
         editing.set(on);
       },

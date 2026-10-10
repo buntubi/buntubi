@@ -12,7 +12,7 @@ import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
 import { provideRoot } from '@fluixi/start/di';
 import { Grid, Stack } from '@fluixi-ui/layout';
-import { Account, type AccountService, type AccountSummary } from '@idp/sdk/account';
+import { Account, type AccountActivity, type AccountService, type AccountSummary, type TwoStepEnrolment } from '@idp/sdk/account';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
 import type { AccountCheck } from '@idp/elements/account-check/logic';
@@ -23,13 +23,14 @@ import '@idp/elements/contact-section';
 import '@idp/elements/preferences-section';
 import '@idp/elements/profile-section';
 import '@idp/elements/page-header';
+import '@idp/elements/password-section';
+import '@idp/elements/security-activity';
+import '@idp/elements/two-step-section';
 import { Shell, type Crumb } from '@idp/shell/shell';
 import { createDocumentScheme } from '@idp/theme/document';
 import type { Api, Redirect } from '../host/api.js';
 import type { PageConfig } from '../host/config.js';
 import type { Text } from '../host/i18n.js';
-import type { MfaEnrolment } from '../elements/mfa-setup/mfa-setup.js';
-import '../elements/mfa-setup/mfa-setup.js';
 import { accountWords, type AccountWords } from './i18n.js';
 
 const ICONS = {
@@ -82,6 +83,11 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     await call;
     revalidate(() => true);
   };
+  const backupCodes = async (call: Promise<{ backup_codes: string[] }>) => {
+    const { backup_codes } = await call;
+    revalidate(() => true);
+    return backup_codes;
+  };
   const service: AccountService = {
     switchTo: async (id) => (await api<Redirect>('POST', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
     signOut: async (id) => (await api<Redirect>('DELETE', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
@@ -92,9 +98,18 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     requestEmailChange: (input) => changed(api('POST', '/api/account/email', input)),
     cancelEmailChange: () => changed(api('DELETE', '/api/account/email')),
     confirmEmailChange: async (token) => (await api<{ email: string }>('POST', '/api/account/email/confirm', { token })).email,
+    changePassword: (input) => changed(api('POST', '/api/account/password', input)),
+    beginTwoStep: () => api<TwoStepEnrolment>('POST', '/api/mfa/totp', {}),
+    confirmTwoStep: (code) => backupCodes(api('POST', '/api/mfa/totp/confirm', { code })),
+    renewBackupCodes: (code) => backupCodes(api('POST', '/api/mfa/backup-codes', { code })),
+    disableTwoStep: (code) => changed(api('POST', '/api/mfa/disable', { code })),
   };
   provideRoot([{ provide: Account, useValue: service }]);
   const summary = () => api<AccountSummary>('GET', '/api/account');
+  const security = async () => {
+    const [account, activity] = await Promise.all([summary(), api<AccountActivity>('GET', '/api/account/activity')]);
+    return { account, activity };
+  };
   const describe = (error: unknown) => {
     const code = error instanceof Error ? error.message : 'generic';
     return context.text.messages[code] ?? context.text.messages.generic ?? '';
@@ -240,25 +255,36 @@ export function mountAccount(root: HTMLElement, context: Context): void {
   }
 
   function Security(): ComponentChild {
-    const data = useRouteData<AccountSummary>();
+    const loaded = useRouteData<{ account: AccountSummary; activity: AccountActivity }>();
+    const data = () => loaded()?.account;
     const t = context.text;
     return (
       <Stack gap={5}>
         <idp-page-header title={w.security.title} intro={w.security.intro} />
         <Show when={data()} fallback={<p>{w.loading}</p>}>
-          <section class="account-card" aria-label={w.security.twoStep}>
-            <h2>{w.security.twoStep}</h2>
-            <idp-mfa-setup
-              enabled={data()?.mfa.enabled === true}
-              backupCodesLeft={data()?.mfa.backup_codes_left ?? 0}
-              beginAction={() => api<MfaEnrolment>('POST', '/api/mfa/totp', {})}
-              confirmAction={(input) => api<{ backup_codes: string[] }>('POST', '/api/mfa/totp/confirm', input)}
-              renewAction={(input) => api<{ backup_codes: string[] }>('POST', '/api/mfa/backup-codes', input)}
-              disableAction={(input) => api('POST', '/api/mfa/disable', input)}
-              labels={t.mfaSetup}
-              messages={t.messages}
-            />
-          </section>
+          <idp-password-section
+            hasPassword={data()?.user.has_password !== false}
+            changedAt={data()?.user.password_changed_at ?? ''}
+            locale={config.locale}
+            labels={w.security.password}
+            messages={t.messages}
+            describe={describe}
+          />
+          <idp-two-step-section
+            enabled={data()?.mfa.enabled === true}
+            since={data()?.mfa.since ?? ''}
+            backupCodesLeft={data()?.mfa.backup_codes_left ?? 0}
+            locale={config.locale}
+            labels={w.security.twoStepCard}
+            messages={t.messages}
+            describe={describe}
+          />
+          <idp-security-activity
+            events={loaded()?.activity.events ?? []}
+            days={loaded()?.activity.days ?? 30}
+            locale={config.locale}
+            labels={w.security.activity}
+          />
         </Show>
       </Stack>
     );
@@ -273,7 +299,7 @@ export function mountAccount(root: HTMLElement, context: Context): void {
         { path: paths.home(), component: Home, data: summary },
         { path: paths.info(), component: Info, data: summary },
         { path: paths.emailConfirm(), component: EmailConfirm, data: confirmEmail },
-        { path: paths.security(), component: Security, data: summary },
+        { path: paths.security(), component: Security, data: security },
       ],
     },
   ];

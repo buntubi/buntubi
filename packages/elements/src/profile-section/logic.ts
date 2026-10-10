@@ -1,5 +1,6 @@
 /** The profile card: the photo and the name; apart from the look. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { NameInput } from '@idp/sdk/schemas/account';
 
 export interface ProfileSectionLabels {
@@ -36,7 +37,7 @@ export const profileSectionLabels: ProfileSectionLabels = {
 
 /** The form engine's root, typed per field. */
 export interface NameForm extends ReactiveForm<NameInput> {
-  get<K extends keyof NameInput>(key: K): ReactiveControl<NameInput[K]>;
+  get<K extends keyof NameInput>(key: K): FieldControl<NameInput[K]>;
 }
 
 export interface ProfileSectionLogic {

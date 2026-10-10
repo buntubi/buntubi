@@ -211,6 +211,10 @@ def send_password_reset(user: User, reset_url: str) -> None:
     mail.send(mail.Message(user.email, text.reset_subject, body_text, body_html))
 
 
+def user_by_email(email: str) -> User | None:
+    return db().scalar(select(User).where(User.email == normalize_email(email)))
+
+
 def authenticate(email: str, password: str) -> User | None:
     """The user, or None: unknown address, wrong password and disabled account look alike."""
     user = db().scalar(select(User).where(User.email == normalize_email(email)))
@@ -267,11 +271,63 @@ def reset_password(token: str, new_password: str) -> User:
         raise AccountError("link_expired")
     row.used_at = utcnow()
     user.password_hash = passwords.hash_password(new_password)
+    user.password_changed_at = utcnow()
     sign_out_everywhere(user)
     # Proving the inbox also proves the address.
     if user.email_verified_at is None:
         user.email_verified_at = utcnow()
     return user
+
+
+def change_password(user: User, current: str, new_password: str, keep: LoginSession | None) -> None:
+    """
+    The owner, signed in, sets a new password. With `keep`, every other session and the tokens
+    issued from them end; this one and its apps stay signed in.
+    """
+    if user.password_hash is None or not passwords.verify_password(user.password_hash, current):
+        raise AccountError("wrong_password")
+    if not passwords.is_acceptable(new_password):
+        raise AccountError("weak_password")
+    if passwords.verify_password(user.password_hash, new_password):
+        raise AccountError("same_password")
+    user.password_hash = passwords.hash_password(new_password)
+    user.password_changed_at = utcnow()
+    if keep is not None:
+        sign_out_others(user, keep)
+
+
+def sign_out_others(user: User, keep: LoginSession) -> None:
+    """
+    Ends every session but `keep`, and the refresh tokens from them with their access tokens. A
+    bare access token is not tied to a session and runs out on its own.
+    """
+    now = utcnow()
+    db().execute(
+        update(LoginSession)
+        .where(LoginSession.user_id == user.id, LoginSession.id != keep.id, LoginSession.revoked_at.is_(None))
+        .values(revoked_at=now)
+    )
+    families = select(RefreshToken.family_id).where(
+        RefreshToken.user_id == user.id, RefreshToken.session_id.is_distinct_from(keep.id)
+    )
+    db().execute(
+        update(AccessTokenRecord)
+        .where(
+            AccessTokenRecord.user_id == user.id,
+            AccessTokenRecord.revoked_at.is_(None),
+            AccessTokenRecord.refresh_family_id.in_(families),
+        )
+        .values(revoked_at=now)
+    )
+    db().execute(
+        update(RefreshToken)
+        .where(
+            RefreshToken.user_id == user.id,
+            RefreshToken.session_id.is_distinct_from(keep.id),
+            RefreshToken.revoked_at.is_(None),
+        )
+        .values(revoked_at=now)
+    )
 
 
 def sign_out_everywhere(user: User) -> None:

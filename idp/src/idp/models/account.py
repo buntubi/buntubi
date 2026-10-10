@@ -109,5 +109,6 @@ class AuditEvent(IdMixin, Base):
     user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), index=True)
     client_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("clients.id", ondelete="SET NULL"))
     ip: Mapped[str | None] = mapped_column(String(45))
+    user_agent: Mapped[str | None] = mapped_column(String(512))
     details: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     tags: Mapped[list[str]] = mapped_column(ARRAY(String(32)), default=list)
