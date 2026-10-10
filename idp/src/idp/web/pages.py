@@ -17,7 +17,7 @@ from idp.config import get_settings
 from idp.db import db
 from idp.oauth.server import authorization, query_client
 from idp.security import csrf
-from idp.services import mfa, own_apps, platform, sessions
+from idp.services import platform, sessions
 
 bp = Blueprint("pages", __name__)
 
@@ -45,9 +45,11 @@ def _brand() -> dict[str, Any]:
     )
 
 
-def shell(element: str, **props: Any) -> str:
+def shell(element: str, *, account: bool = False, **props: Any) -> str:
     config = {
         "element": element,
+        # The account area wears the platform's own look, whichever app the person came from.
+        "account": account,
         "locale": _locale(),
         "csrf": csrf.token(),
         "brand": _brand(),
@@ -149,22 +151,15 @@ def accounts() -> str:
 
 
 @bp.get("/account")
-def account() -> Any:
+@bp.get("/account/<path:section>")
+def account(section: str = "") -> Any:
+    """The person's own account area: one app, its pages routed in the browser."""
     login = sessions.current()
     db().commit()
     if login is None:
+        sessions.remember_return_to(request.full_path.rstrip("?"))
         return redirect(url_for("pages.signin"))
-    return shell(
-        "idp-account",
-        email=login.user.email,
-        name=login.user.name,
-        mfa=mfa.is_enabled(login.user),
-        backup_codes_left=mfa.remaining_backup_codes(login.user),
-        apps=[
-            {"name": c.name, "url": c.homepage_url, "logo": c.brand.get("logo")}
-            for c in own_apps.own_apps_for(login.user)
-        ],
-    )
+    return shell("idp-account-app", account=True)
 
 
 @bp.get("/device")

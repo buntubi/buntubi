@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv } from 'vite';
+import fluixiCss from '@fluixi-css/vite';
 import { fluixi } from '@fluixi/vite-plugin';
 import { idpUiPlugins } from '@idp/sdk/vite';
 
@@ -7,11 +8,13 @@ import { idpUiPlugins } from '@idp/sdk/vite';
 // fixed names the page shell links directly. Fonts stay files: the CSP allows no data: URLs.
 // The deployment's UI plugins (IDP_UI_PLUGINS, see @idp/sdk/vite): their looks for these pages.
 export default defineConfig(({ mode }) => ({
-  plugins: [fluixi(), idpUiPlugins(loadEnv(mode, process.cwd(), '').IDP_UI_PLUGINS)],
+  // fluixi-css compiles the shared elements' and shell's scoped styles (`:deep` included), as in
+  // the portal and the console; colours come from @idp/theme.
+  plugins: [fluixi(), fluixiCss({ theme: false, emitUiTokens: false }), idpUiPlugins(loadEnv(mode, process.cwd(), '').IDP_UI_PLUGINS)],
   // fluixi-ui is linked from its own checkout, whose node_modules hold a published runtime; one
   // copy only, the one this app links, or two builds of @fluixi/reactive drive one graph.
   resolve: {
-    dedupe: ['@fluixi/core', '@fluixi/reactive', '@fluixi/jsx', '@fluixi/dom', '@fluixi/web-components', '@idp/sdk'],
+    dedupe: ['@fluixi/core', '@fluixi/reactive', '@fluixi/jsx', '@fluixi/dom', '@fluixi/web-components', '@fluixi/start', '@idp/sdk'],
   },
   base: '/static/idp/',
   build: {

@@ -10,6 +10,7 @@ import * as __fluixi_dom from '@fluixi/dom';
 import * as __fluixi_reactive_cached_resource from '@fluixi/reactive/cached-resource';
 import * as __fluixi_reactive_signal from '@fluixi/reactive/signal';
 import * as __fluixi_reactive_store from '@fluixi/reactive/store';
+import * as __fluixi_start_env from '@fluixi/start/env';
 
 declare global {
   export import Await = __fluixi_core.Await;
@@ -46,6 +47,7 @@ declare global {
   const $storage: typeof __fluixi_core_storage.useStorage;
   const $asyncStorage: typeof __fluixi_core_storage.useAsyncStorage;
   const $persisted: typeof __fluixi_core_storage.persisted;
+  const $env: typeof __fluixi_start_env.env;
   const $html: typeof __fluixi_core.html;
   const $svg: typeof __fluixi_core.svg;
   const $css: typeof __fluixi_core.css;

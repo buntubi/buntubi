@@ -6,15 +6,15 @@ check is rate-limited. Errors are {"error": "<code>"}, which the screens transla
 from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, url_for
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from idp.config import get_settings
 from idp.db import db, utcnow
 from idp.extensions import limiter
-from idp.models import DeviceCode, User
+from idp.models import Consent, DeviceCode, LoginSession, User
 from idp.security import csrf
 from idp.security.tokens import normalize_user_code
-from idp.services import accounts, audit, mail, mfa, platform, sessions
+from idp.services import accounts, audit, mail, mfa, own_apps, platform, sessions
 from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -267,6 +267,76 @@ def device_decision() -> Any:
     audit.record("device", user=login.user, client=row.client, approved=approve)
     db().commit()
     return jsonify(done=True, client={"name": row.client.name})
+
+
+# ── The account area ──────────────────────────────────────────────────────────────────────────
+
+
+def _count(model: Any, *where: Any) -> int:
+    return int(db().scalar(select(func.count()).select_from(model).where(*where)) or 0)
+
+
+@bp.get("/account")
+def account_summary() -> Any:
+    """What the account home shows: who, the account's health, and the accounts on this browser."""
+    login = sessions.current()
+    if login is None:
+        return jsonify(error="not_signed_in"), 401
+    user = login.user
+    here = sessions.all_signed_in()
+    now = utcnow()
+    summary = jsonify(
+        user={
+            "id": str(user.id),
+            "email": user.email,
+            "email_verified": user.email_verified,
+            "name": user.name,
+            "given_name": user.given_name,
+            "family_name": user.family_name,
+            "locale": user.locale,
+            "created_at": user.created_at.isoformat(),
+        },
+        mfa={"enabled": mfa.is_enabled(user), "backup_codes_left": mfa.remaining_backup_codes(user)},
+        devices=_count(
+            LoginSession,
+            LoginSession.user_id == user.id,
+            LoginSession.revoked_at.is_(None),
+            LoginSession.expires_at > now,
+        ),
+        connected_apps=_count(Consent, Consent.user_id == user.id),
+        apps=[
+            {"name": c.name, "url": c.homepage_url, "logo": c.brand.get("logo")}
+            for c in own_apps.own_apps_for(user)
+        ],
+        accounts=[
+            {"id": str(a.id), "email": a.user.email, "name": a.user.name, "current": a.id == login.id}
+            for a in here
+        ],
+    )
+    db().commit()
+    return summary
+
+
+@bp.delete("/accounts/<session_id>")
+def sign_out_account(session_id: str) -> Any:
+    """Signs one account out of this browser; another one signed in here becomes current."""
+    login = sessions.sign_out_here(session_id)
+    if login is None:
+        return jsonify(error="unknown_account"), 404
+    audit.record("sign_out", user=login.user)
+    left = sessions.current()
+    db().commit()
+    return jsonify(redirect=url_for("pages.account") if left else url_for("pages.signin"))
+
+
+@bp.delete("/accounts")
+def sign_out_all() -> Response:
+    """Signs every account out of this browser."""
+    for login in sessions.all_signed_in():
+        audit.record("sign_out", user=login.user)
+    sessions.end_all_here()
+    db().commit()
+    return jsonify(redirect=url_for("pages.signin"))
 
 
 @bp.post("/accounts/<session_id>")

@@ -10,11 +10,11 @@ from idp.db import db, utcnow
 from idp.models import Client, User
 from idp.services import mail
 
-from conftest import add_client, page_config, sign_up
+from conftest import add_client, sign_up
 
 
 def listed(browser: FlaskClient) -> list[str]:
-    return [app["name"] for app in page_config(browser, "/account")["props"]["apps"]]
+    return [app["name"] for app in browser.get("/api/account").json["apps"]]
 
 
 def test_an_account_page_lists_the_platform_apps_its_owner_may_open(
@@ -49,7 +49,7 @@ def test_an_account_page_lists_the_platform_apps_its_owner_may_open(
         assert user is not None
         user.roles = ["admin"]
         db().commit()
-    apps = page_config(browser, "/account")["props"]["apps"]
+    apps = browser.get("/api/account").json["apps"]
     assert apps == [
         {"name": "Console", "url": "https://console.test/", "logo": "https://console.test/logo.png"},
         {"name": "Portal", "url": "https://portal.test/", "logo": None},

@@ -32,6 +32,9 @@ importers:
       '@fluixi-ui/layout':
         specifier: link:../../../../fluixi-ui/packages/layout
         version: link:../../../../fluixi-ui/packages/layout
+      '@fluixi-ui/popover':
+        specifier: link:../../../../fluixi-ui/packages/popover
+        version: link:../../../../fluixi-ui/packages/popover
       '@fluixi-ui/select':
         specifier: link:../../../../fluixi-ui/packages/select
         version: link:../../../../fluixi-ui/packages/select

@@ -14,6 +14,7 @@
     "@fluixi-ui/field": "link:../../../fluixi-ui/packages/field",
     "@fluixi-ui/form": "link:../../../fluixi-ui/packages/form",
     "@fluixi-ui/input": "link:../../../fluixi-ui/packages/input",
+    "@fluixi-ui/layout": "link:../../../fluixi-ui/packages/layout",
     "@fluixi-ui/pin-input": "link:../../../fluixi-ui/packages/pin-input",
     "@fluixi-ui/skin-material": "link:../../../fluixi-ui/packages/skin-material",
     "@fluixi-ui/skin-paper": "link:../../../fluixi-ui/packages/skin-paper",
@@ -24,11 +25,18 @@
     "@fluixi/forms": "alpha",
     "@fluixi/jsx": "link:../../../fluixi-core/packages/jsx",
     "@fluixi/reactive": "link:../../../fluixi-core/packages/reactive",
+    "@fluixi/start": "link:../../../fluixi-core/packages/start",
     "@fluixi/web-components": "link:../../../fluixi-core/packages/web-components",
+    "@idp/elements": "link:../packages/elements",
     "@idp/sdk": "link:../packages/sdk",
+    "@idp/shell": "link:../packages/shell",
+    "@idp/skin": "link:../packages/skin",
+    "@idp/theme": "link:../packages/theme",
     "zod": "^4.1.0"
   },
   "devDependencies": {
+    "@fluixi-css/core": "1.0.0-next.5",
+    "@fluixi-css/vite": "1.0.0-next.5",
     "@fluixi/vite-plugin": "link:../../../fluixi-core/packages/vite-plugin",
     "typescript": "^7.0.2",
     "vite": "^8.3.2"

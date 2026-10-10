@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ locale }}"{% if config.brand.skin %} data-ui="{{ config.brand.skin }}"{% endif %}{% if config.brand.look %} data-look="{{ config.brand.look }}"{% endif %}>
+<html lang="{{ locale }}"{% if config.account %} data-ui="idp"{% elif config.brand.skin %} data-ui="{{ config.brand.skin }}"{% endif %}{% if config.brand.look and not config.account %} data-look="{{ config.brand.look }}"{% endif %}>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

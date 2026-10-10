@@ -44,12 +44,15 @@ export interface ShellProps {
   onSignOut?: () => void;
   onLanguage: () => void;
   labels: ShellLabels;
+  /** Controls at the end of the top bar, after the theme: the account area's account menu. */
+  actions?: ComponentChild;
   children?: ComponentChild;
 }
 
 export function Shell(props: ShellProps): ComponentChild {
   const navigate = useNavigate();
   const children = props.children;
+  const actions = props.actions;
   return (
     <div class="shell" data-collapsed={() => (props.collapsed ? '' : undefined)}>
       <style scoped>{`
@@ -124,6 +127,7 @@ export function Shell(props: ShellProps): ComponentChild {
             </For>
           </nav>
           <ThemeToggle labels={props.labels} />
+          {actions}
         </header>
         <main>{children}</main>
       </div>

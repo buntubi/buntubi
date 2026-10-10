@@ -17,11 +17,7 @@ import './elements/consent/consent.js';
 import './elements/account-select/account-select.js';
 import './elements/device-activate/device-activate.js';
 import './elements/mfa-verify/mfa-verify.js';
-import './elements/mfa-setup/mfa-setup.js';
-import './elements/app-links/app-links.js';
-import type { MfaEnrolment } from './elements/mfa-setup/mfa-setup.js';
 import type { AccountItem } from './elements/account-select/account-select.js';
-import type { AppLink } from './elements/app-links/app-links.js';
 import { createApi, type Redirect } from './host/api.js';
 import { lookOf } from '@idp/sdk/plugins';
 import uiPlugins from 'virtual:idp-ui-plugins';
@@ -230,44 +226,6 @@ const screens: Record<string, () => Screen> = {
     };
   },
 
-  'idp-account': () => ({
-    key: 'account',
-    body: () => (
-      <div class="idp-done">
-        <p>
-          {t.notes.signedInAs} <strong>{str('email')}</strong>
-        </p>
-        <Show when={((props.apps as AppLink[] | undefined) ?? []).length}>
-          <section class="idp-section">
-            <h2>{t.titles.yourApps}</h2>
-            <idp-app-links apps={(props.apps as AppLink[] | undefined) ?? []} labels={t.appLinks} />
-          </section>
-        </Show>
-        <section class="idp-section">
-          <h2>{t.titles.twoStep}</h2>
-          <idp-mfa-setup
-            enabled={props.mfa === true}
-            backupCodesLeft={typeof props.backup_codes_left === 'number' ? props.backup_codes_left : 0}
-            beginAction={() => api<MfaEnrolment>('POST', '/api/mfa/totp', {})}
-            confirmAction={(input) => api<{ backup_codes: string[] }>('POST', '/api/mfa/totp/confirm', input)}
-            renewAction={(input) => api<{ backup_codes: string[] }>('POST', '/api/mfa/backup-codes', input)}
-            disableAction={(input) => api('POST', '/api/mfa/disable', input)}
-            labels={t.mfaSetup}
-            messages={t.messages}
-          />
-        </section>
-        <Button
-          variant="outline"
-          class="idp-wide"
-          onPress={() => api<Redirect>('DELETE', '/api/session').then(follow, () => go('/signin'))}
-        >
-          {t.links.signOut}
-        </Button>
-      </div>
-    ),
-    footer: () => <FooterLink href="/accounts">{t.links.switchAccount}</FooterLink>,
-  }),
-
   'idp-blocked': () => {
     const contact = str('support_email');
     return {
@@ -299,6 +257,12 @@ const screens: Record<string, () => Screen> = {
 
 applyBrand(config.brand);
 const root = document.getElementById('idp-root');
+// The account area is its own app, in the portal's frame: loaded only on its pages.
+if (root && config.element === 'idp-account-app') {
+  const { mountAccount } = await import('./account/app.js');
+  const { accountWords } = await import('./account/i18n.js');
+  mountAccount(root, { api, words: accountWords[config.locale] ?? accountWords.fr, text: t, config });
+}
 const screen = screens[config.element]?.();
 // A look a plugin gives this client: its stylesheet, and the element beside the form, both
 // ready before the page draws so it does not change under the reader.

@@ -83,6 +83,24 @@ def end_replaced(pending: "Pending") -> None:
         end(login)
 
 
+def sign_out_here(session_id: str) -> LoginSession | None:
+    """
+    Ends one of the accounts signed in on this browser. When it was the current one, the next
+    signed-in account becomes current. None: no such account here.
+    """
+    if session_id not in session.get(_SIDS, []):
+        return None
+    login = _load(session_id)
+    if login is None:
+        return None
+    end(login)
+    if session.get(_CURRENT) is None:
+        remaining = all_signed_in()
+        if remaining:
+            session[_CURRENT] = str(remaining[0].id)
+    return login
+
+
 def end_all_here() -> None:
     for login in all_signed_in():
         login.revoked_at = utcnow()
