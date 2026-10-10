@@ -3,16 +3,21 @@
  * injected `Developer` service; `deleted` tells the host the organization is gone.
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
+import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Developer } from '@idp/sdk/developer';
+import { organizationSchema, type OrganizationInput } from '@idp/sdk/schemas/organizations';
 import type { Organization } from '@idp/sdk/types';
 import { freshest } from '../fresh.js';
+import { messageReader, type Messages } from '../messages.js';
+import { fieldValidator, type FormSchema } from '../validators.js';
 import { useView } from '../view.js';
 import {
   ORGANIZATION_FIELDS,
   organizationSettingsLabels,
   type OrganizationField,
+  type OrganizationSettingsForm,
   type OrganizationSettingsLabels,
   type OrganizationSettingsLogic,
 } from './logic.js';
@@ -23,6 +28,10 @@ const props = {
   canEdit: prop.boolean(false),
   canDelete: prop.boolean(false),
   labels: prop.object<Partial<OrganizationSettingsLabels>>({}),
+  /** Checks each field before it is saved; messages are keys read through `messages`. */
+  schema: prop.any<FormSchema<OrganizationInput>>(organizationSchema),
+  /** Text for validation keys; see messages.ts. */
+  messages: prop.object<Messages>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
@@ -35,43 +44,42 @@ export class IdpOrganizationSettings extends typedElement(props) {
     const developer = inject(Developer);
     const labels = () => ({ ...organizationSettingsLabels, ...this.labels });
     const organization = freshest(() => this.organization);
-    const edits = signal<Partial<Record<OrganizationField, string>>>({});
+    const text = messageReader(() => this.messages);
+    const check = <K extends keyof OrganizationInput & string>(field: K) =>
+      fieldValidator<OrganizationInput, K>(() => this.schema, field, text);
+    const start = organization.current();
+    const form: OrganizationSettingsForm = createForm({
+      name: createField(stored(start, 'name'), { validators: [check('name')] }),
+      description: createField(stored(start, 'description'), { validators: [check('description')] }),
+      support_email: createField(stored(start, 'support_email'), { validators: [check('support_email')] }),
+    });
     const confirmation = signal('');
     const busy = signal<string | null>(null);
     const saved = signal(false);
     const error = signal<string | null>(null);
-    const value = (field: OrganizationField) => edits()[field] ?? stored(organization.current(), field);
     const id = () => organization.current()?.id ?? '';
 
     const logic: OrganizationSettingsLogic = {
       labels,
       fields: () => ORGANIZATION_FIELDS,
-      value,
-      edit: (field, next) => {
-        edits.set({ ...edits(), [field]: next });
-        saved.set(false);
-      },
-      changed: () => ORGANIZATION_FIELDS.some((field) => value(field) !== stored(organization.current(), field)),
+      form,
+      changed: () => ORGANIZATION_FIELDS.some((field) => form.get(field).value() !== stored(organization.current(), field)),
       canEdit: () => this.canEdit,
-      save: async () => {
-        if (!value('name').trim()) {
-          error.set(labels().nameRequired);
-          return;
-        }
+      save: async (values) => {
         busy.set('save');
         error.set(null);
+        saved.set(false);
         try {
           organization.adopt(
             await developer.updateOrganization({
               organization: id(),
               patch: {
-                name: value('name').trim(),
-                description: value('description').trim(),
-                support_email: value('support_email').trim() || null,
+                name: values.name.trim(),
+                description: values.description.trim(),
+                support_email: values.support_email.trim() || null,
               },
             }),
           );
-          edits.set({});
           saved.set(true);
         } catch (failure) {
           error.set(this.describe?.(failure) ?? labels().error);

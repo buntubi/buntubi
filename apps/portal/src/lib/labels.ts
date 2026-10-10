@@ -318,7 +318,6 @@ export const organizationSettingsLabels = (): OrganizationSettingsLabels => ({
   hints: { support_email: t('os.supportHint') },
   save: t('common.save'),
   saved: t('st.saved'),
-  nameRequired: t('os.nameRequired'),
   danger: t('os.danger'),
   dangerText: t('os.dangerText'),
   confirm: t('os.confirm'),

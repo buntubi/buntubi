@@ -1,4 +1,6 @@
 /** An organization's settings and its deletion, apart from how they look. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { OrganizationInput } from '@idp/sdk/schemas/organizations';
 
 export type OrganizationField = 'name' | 'description' | 'support_email';
 export const ORGANIZATION_FIELDS: OrganizationField[] = ['name', 'support_email', 'description'];
@@ -10,7 +12,6 @@ export interface OrganizationSettingsLabels {
   hints: Partial<Record<OrganizationField, string>>;
   save: string;
   saved: string;
-  nameRequired: string;
   danger: string;
   dangerText: string;
   /** "Type {name} to confirm". */
@@ -26,7 +27,6 @@ export const organizationSettingsLabels: OrganizationSettingsLabels = {
   hints: { support_email: 'Shown on consent screens; required before an app goes live.' },
   save: 'Save',
   saved: 'Saved',
-  nameRequired: 'The organization needs a name.',
   danger: 'Delete the organization',
   dangerText: 'Deletes its apps, keys, members and test users. People signed in to its apps lose access. This cannot be undone.',
   confirm: 'Type {name} to confirm',
@@ -34,14 +34,18 @@ export const organizationSettingsLabels: OrganizationSettingsLabels = {
   error: 'Something went wrong. Try again.',
 };
 
+/** The form engine's root, typed per field. */
+export interface OrganizationSettingsForm extends ReactiveForm<OrganizationInput> {
+  get<K extends keyof OrganizationInput>(key: K): ReactiveControl<OrganizationInput[K]>;
+}
+
 export interface OrganizationSettingsLogic {
   labels: () => OrganizationSettingsLabels;
   fields: () => OrganizationField[];
-  value: (field: OrganizationField) => string;
-  edit: (field: OrganizationField, value: string) => void;
+  form: OrganizationSettingsForm;
   changed: () => boolean;
   canEdit: () => boolean;
-  save: () => Promise<void>;
+  save: (values: OrganizationInput) => Promise<void>;
   saved: () => boolean;
   canDelete: () => boolean;
   name: () => string;

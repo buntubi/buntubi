@@ -1,6 +1,7 @@
 /** The organization settings' default look: a form card, then the deletion set apart. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { OrganizationSettingsLogic } from './logic.js';
@@ -32,48 +33,49 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
         {() => o.error()}
       </p>
     </Show>
-    <form
-      class="card"
-      part="details"
-      onSubmit={(event: SubmitEvent) => {
-        event.preventDefault();
-        void o.save();
-      }}
-    >
-      <div class="intro">
-        <h2>{() => o.labels().title}</h2>
-        <p class="hint">{() => o.labels().intro}</p>
-      </div>
-      <div class="grid">
-        <For each={o.fields()}>
-          {(field) => (
-            <label class="field" data-wide={field === 'description' ? '' : undefined}>
-              <span class="caption">{() => o.labels().fields[field]}</span>
-              <Input
-                type={field === 'support_email' ? 'email' : 'text'}
-                value={() => o.value(field)}
-                disabled={!o.canEdit()}
-                required={field === 'name'}
-                onInput={(event: Event) => o.edit(field, valueOf(event))}
-              />
-              <Show when={o.labels().hints[field]}>
-                <span class="note">{() => o.labels().hints[field] ?? ''}</span>
-              </Show>
-            </label>
-          )}
-        </For>
-      </div>
-      <Show when={o.canEdit()}>
-        <div class="actions">
-          <Button type="submit" variant="solid" disabled={!o.changed() || o.busy() === 'save'}>
-            {() => o.labels().save}
-          </Button>
-          <Show when={o.saved()}>
-            <span class="ok" role="status">{() => o.labels().saved}</span>
-          </Show>
+    <Form form={o.form} onSubmit={(values) => o.save(values)} novalidate>
+      <div class="card" part="details">
+        <div class="intro">
+          <h2>{() => o.labels().title}</h2>
+          <p class="hint">{() => o.labels().intro}</p>
         </div>
-      </Show>
-    </form>
+        <div class="grid">
+          <For each={o.fields()}>
+            {(field) => (
+              <div class="field" data-wide={field === 'description' ? '' : undefined}>
+                <FormField
+                  control={o.form.get(field)}
+                  label={() => o.labels().fields[field]}
+                  description={() => o.labels().hints[field] ?? ''}
+                  required={field === 'name'}
+                >
+                  {(b) => (
+                    <Input
+                      type={field === 'support_email' ? 'email' : 'text'}
+                      name={field}
+                      value={b.value()}
+                      disabled={!o.canEdit()}
+                      onInput={b.onInput}
+                      onBlur={b.onBlur}
+                    />
+                  )}
+                </FormField>
+              </div>
+            )}
+          </For>
+        </div>
+        <Show when={o.canEdit()}>
+          <div class="actions">
+            <Button type="submit" variant="solid" disabled={!o.changed() || o.busy() === 'save'}>
+              {() => o.labels().save}
+            </Button>
+            <Show when={o.saved()}>
+              <span class="ok" role="status">{() => o.labels().saved}</span>
+            </Show>
+          </div>
+        </Show>
+      </div>
+    </Form>
     <Show when={o.canDelete()}>
       <section class="card danger" part="danger" aria-labelledby="idp-org-danger">
         <div class="intro">

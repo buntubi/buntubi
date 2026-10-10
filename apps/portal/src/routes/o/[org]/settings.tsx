@@ -4,7 +4,7 @@ import { useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/rou
 import { can } from '@idp/sdk/roles';
 import '@idp/elements/organization-settings';
 import { errorText, t } from '../../../lib/i18n.js';
-import { organizationSettingsLabels } from '../../../lib/labels.js';
+import { organizationSettingsLabels, formMessages } from '../../../lib/labels.js';
 import { paramOf } from '../../../lib/params.js';
 import type { Workspace } from '../../../lib/types.js';
 import { workspace } from '../../../data/developer.js';
@@ -25,6 +25,7 @@ export default function SettingsPage() {
         canEdit={can(organization()?.role, 'settings')}
         canDelete={can(organization()?.role, 'delete')}
         labels={organizationSettingsLabels()}
+        messages={formMessages()}
         describe={errorText}
         onDeleted={() => navigate(paths.start())}
       />
