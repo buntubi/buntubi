@@ -1,6 +1,6 @@
 /** What the provider's developer API answers with, as the portal and its elements see it. */
 
-export type Role = 'owner' | 'admin' | 'developer' | 'reviewer' | 'viewer';
+export type Role = 'owner' | 'manager' | 'developer' | 'reviewer' | 'viewer';
 export type Environment = 'sandbox' | 'live';
 export type AppKind = 'consumer' | 'business' | 'web' | 'mobile' | 'backend' | 'internal';
 export type Platform = 'web' | 'ios' | 'android' | 'backend';

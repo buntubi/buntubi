@@ -20,7 +20,7 @@ const MANAGER: Ability[] = ['read', 'edit_apps', 'test_users', 'sandbox_keys', '
 
 export const ABILITIES: Record<Role, ReadonlySet<Ability>> = {
   owner: new Set([...MANAGER, 'delete']),
-  admin: new Set(MANAGER),
+  manager: new Set(MANAGER),
   developer: new Set(['read', 'edit_apps', 'test_users', 'sandbox_keys']),
   reviewer: new Set(['read']),
   viewer: new Set(['read']),

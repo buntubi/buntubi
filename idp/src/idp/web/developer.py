@@ -120,7 +120,7 @@ class KeyIn(BaseModel):
     scopes: list[str] = []
 
 
-Role = Literal["owner", "admin", "developer", "reviewer", "viewer"]
+Role = Literal["owner", "manager", "developer", "reviewer", "viewer"]
 
 
 class MemberIn(BaseModel):
@@ -148,6 +148,7 @@ def organization_json(member: OrganizationMember) -> dict[str, Any]:
         "description": organization.description,
         "support_email": organization.support_email,
         "suspended": organization.is_suspended,
+        "platform": organization.is_platform,
         "role": member.role,
         "created_at": organization.created_at.isoformat(),
     }
@@ -244,8 +245,9 @@ def me_view(me: User) -> Response:
     return jsonify(
         email=me.email,
         name=me.name,
-        developer=me.developer_since is not None,
+        developer=me.developer_since is not None or me.is_admin,
         developer_since=me.developer_since.isoformat() if me.developer_since else None,
+        platform_admin=me.is_admin,
     )
 
 

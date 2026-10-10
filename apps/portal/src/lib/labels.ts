@@ -273,7 +273,7 @@ export const createAppLabels = (): CreateAppLabels => ({
   error: t('error.generic'),
 });
 
-const role = (name: 'owner' | 'admin' | 'developer' | 'reviewer' | 'viewer') => ({
+const role = (name: 'owner' | 'manager' | 'developer' | 'reviewer' | 'viewer') => ({
   name: t(`tm.role.${name}`),
   text: t(`tm.role.${name}Text`),
 });
@@ -291,7 +291,7 @@ export const teamLabels = (): TeamLabels => ({
   access: t('tm.access'),
   allApps: t('tm.allApps'),
   you: t('tm.you'),
-  roles: { owner: role('owner'), admin: role('admin'), developer: role('developer'), reviewer: role('reviewer'), viewer: role('viewer') },
+  roles: { owner: role('owner'), manager: role('manager'), developer: role('developer'), reviewer: role('reviewer'), viewer: role('viewer') },
   invite: t('tm.inviteMember'),
   inviteEmail: t('tm.inviteEmail'),
   inviteHint: t('tm.inviteHint'),

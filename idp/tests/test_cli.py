@@ -14,7 +14,7 @@ def run(app: Flask, *args: str, input: str | None = None) -> str:
     return result.output
 
 
-def test_admin_create_makes_a_verified_admin(app: Flask) -> None:
+def test_admin_create_makes_a_verified_superadmin(app: Flask) -> None:
     out = run(
         app,
         "admin",
@@ -28,11 +28,11 @@ def test_admin_create_makes_a_verified_admin(app: Flask) -> None:
         "--password",
         "a long owner passphrase",
     )
-    assert "Created owner@example.com with the admin role." in out
+    assert "Created owner@example.com, superadmin." in out
     assert "/account" in out, "says what comes next"
     with app.app_context():
         user = db().query(User).filter_by(email="owner@example.com").one()
-        assert user.is_admin and user.email_verified and user.password_hash
+        assert user.is_admin and user.is_superadmin and user.email_verified and user.password_hash
         assert db().query(AuditEvent).filter_by(event="admin.account_created").count() == 1
 
     again = run(

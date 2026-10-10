@@ -106,7 +106,7 @@ def test_only_admins_join_the_platform_organization(app: Flask, outbox: list[mai
         organization = p.platform_organization()
         actor = organization.members[0]
         with pytest.raises(p.PlatformError, match="platform_members_are_admins"):
-            p.add_member(actor, "dev@example.test", "admin", [])
+            p.add_member(actor, "dev@example.test", "manager", [])
         admin = db().scalar(select(User).where(User.roles.contains(["admin"])))
         assert admin is not None
         p.leave_platform(admin)
@@ -120,3 +120,49 @@ def test_only_admins_join_the_platform_organization(app: Flask, outbox: list[mai
         p.platform_organization()
         assert admin.id in members(), "and an admin is always an owner"
         db().rollback()
+
+
+def test_a_superadmin_gives_and_takes_the_admin_role(app: Flask, outbox: list[mail.Message]) -> None:
+    owner_browser, owner, _, _ = setup_people(app, outbox)
+    platform_client(owner_browser, owner)
+    with app.app_context():
+        developer = db().scalar(select(User).where(User.email == "dev@example.test"))
+        assert developer is not None
+        target = str(developer.id)
+    refused = admin_call(owner_browser, owner, "POST", f"/users/{target}/admin")
+    assert refused.status_code == 403 and refused.json["error"] == "superadmin_only"
+
+    with app.app_context():
+        me = next(u for u in db().scalars(select(User)) if u.is_admin)
+        me.roles = [*me.roles, "superadmin"]
+        db().commit()
+        my_id = str(me.id)
+    granted = admin_call(owner_browser, owner, "POST", f"/users/{target}/admin")
+    assert granted.status_code == 200 and "admin" in granted.json["user"]["roles"]
+    with app.app_context():
+        organization = db().scalar(select(Organization).where(Organization.is_platform))
+        assert organization is not None
+        assert any(str(m.user_id) == target and m.role == "owner" for m in organization.members)
+    for method, path in (("DELETE", f"/users/{my_id}/admin"), ("POST", f"/users/{my_id}/disable")):
+        protected = admin_call(owner_browser, owner, method, path)
+        assert protected.status_code == 422 and protected.json["error"] in {
+            "superadmin_protected",
+            "cannot_disable_yourself",
+        }
+    removed = admin_call(owner_browser, owner, "DELETE", f"/users/{target}/admin")
+    assert removed.status_code == 200 and "admin" not in removed.json["user"]["roles"]
+    with app.app_context():
+        organization = db().scalar(select(Organization).where(Organization.is_platform))
+        assert organization is not None
+        assert all(str(m.user_id) != target for m in organization.members)
+
+
+def test_an_admin_uses_the_portal_without_the_developer_terms(app: Flask, outbox: list[mail.Message]) -> None:
+    owner_browser, owner, _, _ = setup_people(app, outbox)
+    platform_client(owner_browser, owner)
+    with app.app_context():
+        admin = next(u for u in db().scalars(select(User)) if u.is_admin)
+        assert admin.developer_since is None
+        p.require_developer(admin)
+        listed = [m.organization for m in p.memberships_of(admin)]
+        assert listed and listed[0].is_platform, "the platform organization first"

@@ -64,13 +64,14 @@ def become_developer(user: User) -> None:
 
 
 def require_developer(user: User) -> None:
-    if user.developer_since is None:
+    # The platform's admins run it: its developer terms are not theirs to accept.
+    if user.developer_since is None and not user.is_admin:
         raise PlatformError("terms_required", 403)
 
 
 # ── Organizations and members ─────────────────────────────────────────────────────────────────
 
-# What each role may do. Owners and admins act on every app of the organization; developers,
+# What each role may do. Owners and managers act on every app of the organization; developers,
 # reviewers and viewers on the apps their membership lists, or all of them when it lists none.
 ABILITIES: dict[str, frozenset[str]] = {
     "owner": frozenset(
@@ -86,14 +87,14 @@ ABILITIES: dict[str, frozenset[str]] = {
             "delete",
         }
     ),
-    "admin": frozenset(
+    "manager": frozenset(
         {"read", "edit_apps", "test_users", "sandbox_keys", "live_keys", "publish", "members", "settings"}
     ),
     "developer": frozenset({"read", "edit_apps", "test_users", "sandbox_keys"}),
     "reviewer": frozenset({"read"}),
     "viewer": frozenset({"read"}),
 }
-ALL_APPS_ROLES = ("owner", "admin")
+ALL_APPS_ROLES = ("owner", "manager")
 
 
 def can(member: OrganizationMember, ability: str) -> bool:
@@ -117,7 +118,8 @@ def memberships_of(user: User) -> list[OrganizationMember]:
             select(OrganizationMember)
             .join(Organization, OrganizationMember.organization_id == Organization.id)
             .where(OrganizationMember.user_id == user.id)
-            .order_by(Organization.created_at)
+            # The platform's own organization first, for the admins who belong to it.
+            .order_by(Organization.is_platform.desc(), Organization.created_at)
         )
     )
 
@@ -323,6 +325,19 @@ def join_platform(admin: User, organization: Organization | None = None) -> None
         return
     organization.members.append(OrganizationMember(user_id=admin.id, role="owner"))
     db().flush()
+
+
+def grant_admin(user: User) -> None:
+    """The admin role: the console, and an owner's seat in the platform organization."""
+    if not user.is_admin:
+        user.roles = [*user.roles, "admin"]
+    join_platform(user)
+
+
+def revoke_admin(user: User) -> None:
+    """Takes the roles and the platform seat away; the admin API refuses the account from its next call."""
+    user.roles = [role for role in user.roles if role not in ("admin", "superadmin")]
+    leave_platform(user)
 
 
 def leave_platform(user: User) -> None:

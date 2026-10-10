@@ -1,13 +1,15 @@
 """
-Operator commands: `flask keys generate`, `flask clients create`, `flask admin create`,
-`flask users admins | promote | demote | delete`, `flask plugins list | sync`. A client secret
-is printed once, at creation, and never stored in the clear.
+Operator commands: `flask admin create`, `flask platform setup`, `flask keys generate`,
+`flask clients create`, `flask users admins | promote | demote | delete`,
+`flask plugins list | sync`. A client secret is printed once, at creation, and never stored in
+the clear.
 
-The admin role is granted here and nowhere else: no screen can make anyone an admin, so the
-person who controls the server is the root of trust.
+A superadmin is made here and nowhere else, before the platform is deployed: the person who
+controls the server is the root of trust. The console then lets a superadmin manage the admins.
 """
 
 from fnmatch import fnmatchcase
+from pathlib import Path
 from urllib.parse import urlparse
 
 from email_validator import EmailNotValidError, validate_email
@@ -131,13 +133,16 @@ def register(app: Flask) -> None:
 
     @users.command("promote")
     @click.argument("email")
-    def users_promote(email: str) -> None:
+    @click.option("--super", "superadmin", is_flag=True, help="Superadmin: also manages the admins.")
+    def users_promote(email: str, superadmin: bool) -> None:
         """Give an existing account the admin role."""
         user = account(email)
-        if "admin" not in user.roles:
-            user.roles = [*user.roles, "admin"]
+        if not user.is_admin:
             audit.record("admin.role_granted", user=user, source="cli")
-        platform.join_platform(user)
+        platform.grant_admin(user)
+        if superadmin and not user.is_superadmin:
+            user.roles = [*user.roles, "superadmin"]
+            audit.record("admin.superadmin_granted", user=user, source="cli")
         db().commit()
         click.echo(f"{user.email} is an admin.")
         if not mfa.is_enabled(user):
@@ -148,10 +153,9 @@ def register(app: Flask) -> None:
     def users_demote(email: str) -> None:
         """Take the admin role away. The admin API refuses the account from its next request."""
         user = account(email)
-        if "admin" in user.roles:
-            user.roles = [role for role in user.roles if role != "admin"]
+        if user.is_admin:
             audit.record("admin.role_removed", user=user, source="cli")
-            platform.leave_platform(user)
+            platform.revoke_admin(user)
         db().commit()
         click.echo(f"{user.email} is no longer an admin.")
         if not admins():
@@ -251,7 +255,7 @@ def register(app: Flask) -> None:
     @click.option("--family-name", prompt="Last name")
     @click.password_option(prompt="Password (at least 10 characters)")
     def admin_create(email: str, given_name: str, family_name: str, password: str) -> None:
-        """Create the owner's account: email verified, admin role. Two-step sign-in comes next."""
+        """Create a superadmin: email verified, admin and superadmin roles. Two-step sign-in comes next."""
         try:
             address = validate_email(email.strip(), check_deliverability=False).normalized.lower()
         except EmailNotValidError as error:
@@ -268,7 +272,7 @@ def register(app: Flask) -> None:
             given_name=given_name.strip()[:100],
             family_name=family_name.strip()[:100],
             email_verified_at=utcnow(),
-            roles=["admin"],
+            roles=["admin", "superadmin"],
         )
         db().add(user)
         db().flush()
@@ -276,5 +280,43 @@ def register(app: Flask) -> None:
         audit.record("admin.account_created", user=user, source="cli")
         db().commit()
         issuer = get_settings().issuer
-        click.echo(f"Created {address} with the admin role.")
+        click.echo(f"Created {address}, superadmin.")
         click.echo(f"Next: sign in at {issuer}/account and turn on two-step sign-in; the console needs it.")
+
+    @app.cli.group("platform")
+    def platform_group() -> None:
+        """First install."""
+
+    @platform_group.command("setup")
+    @click.option(
+        "--file",
+        "path",
+        type=click.Path(exists=True, dir_okay=False, path_type=Path),
+        default="platform.toml",
+        show_default=True,
+    )
+    @click.option(
+        "--rotate-secrets", is_flag=True, help="New secrets for apps that exist, written to their files."
+    )
+    def platform_setup(path: Path, rotate_secrets: bool) -> None:
+        """The platform organization, the apps in the file, the plugins' catalogue. Safe to run again."""
+        from idp import plugins
+        from idp.plugins.sync import CatalogueError, sync
+        from idp.services import setup
+
+        if not any(u.is_superadmin for u in db().scalars(select(User))):
+            raise click.ClickException("no superadmin yet: run `flask admin create` first")
+        try:
+            report = setup.apply(setup.read(path), rotate_secrets=rotate_secrets)
+            catalogue = sync(plugins.active())
+        except (setup.SetupError, CatalogueError) as error:
+            raise click.ClickException(str(error)) from error
+        for client_id in report.created:
+            click.echo(f"created   {client_id}")
+        for client_id in report.kept:
+            click.echo(f"kept      {client_id}")
+        for target in report.secrets:
+            click.echo(f"secret    {target}")
+        for kind in ("added", "updated", "adopted", "restored", "deprecated"):
+            for entry in getattr(catalogue, kind):
+                click.echo(f"{kind:<10}{entry}")

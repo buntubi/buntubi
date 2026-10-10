@@ -25,7 +25,8 @@ class User(IdMixin, TimestampMixin, Base):
     # Two-letter ISO 3166 code, and a phone number in E.164.
     country: Mapped[str | None] = mapped_column(String(2))
     phone: Mapped[str | None] = mapped_column(String(20))
-    # "admin" opens the admin API; more roles can come later.
+    # "admin" opens the admin API. "superadmin", given only from the command line, also gives and
+    # takes the admin role in the console, and the console cannot disable or demote it.
     roles: Mapped[list[str]] = mapped_column(ARRAY(String(32)), default=list)
     disabled_at: Mapped[datetime | None]
     # When the user accepted the developer terms, which opens the developer portal.
@@ -44,6 +45,10 @@ class User(IdMixin, TimestampMixin, Base):
     @property
     def is_admin(self) -> bool:
         return "admin" in self.roles
+
+    @property
+    def is_superadmin(self) -> bool:
+        return "superadmin" in self.roles
 
     def get_user_id(self) -> str:
         """Authlib's name for the subject."""

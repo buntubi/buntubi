@@ -76,7 +76,7 @@ PRODUCT_FIELDS: dict[str, Any] = {
     "docs_url": MAYBE_STRING,
     "approval": {"type": "string", "enum": ["none", "review", "restricted"]},
 }
-ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "admin", "developer", "reviewer", "viewer"]}
+ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "manager", "developer", "reviewer", "viewer"]}
 
 
 def ref(name: str) -> dict[str, str]:
@@ -158,7 +158,15 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
         ["active"],
     ),
     # Developer API
-    "Me": obj({"email": STRING, "name": STRING, "developer": BOOL, "developer_since": MAYBE_TIME}),
+    "Me": obj(
+        {
+            "email": STRING,
+            "name": STRING,
+            "developer": BOOL,
+            "developer_since": MAYBE_TIME,
+            "platform_admin": BOOL,
+        }
+    ),
     "Organization": obj(
         {
             "id": STRING,
@@ -166,6 +174,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "description": STRING,
             "support_email": MAYBE_STRING,
             "suspended": BOOL,
+            "platform": BOOL,
             "role": ROLE,
             "created_at": TIME,
         }
@@ -320,6 +329,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "given_name": STRING,
             "family_name": STRING,
             "roles": STRINGS,
+            "superadmin": BOOL,
             "developer": BOOL,
             "mfa": BOOL,
             "disabled": BOOL,
@@ -946,6 +956,22 @@ def paths() -> dict[str, dict[str, Any]]:
         },
         "/admin/api/users/{user_id}/enable": {
             "post": op("Enable a user", a, ADMIN, one("user", "AdminUser"), params=["user_id"])
+        },
+        "/admin/api/users/{user_id}/admin": {
+            "post": op(
+                "Give the admin role and a seat in the platform organization (superadmins only)",
+                a,
+                ADMIN,
+                one("user", "AdminUser"),
+                params=["user_id"],
+            ),
+            "delete": op(
+                "Take the admin role away (superadmins only; never from a superadmin)",
+                a,
+                ADMIN,
+                one("user", "AdminUser"),
+                params=["user_id"],
+            ),
         },
         "/admin/api/audit": {"get": op("Audit trail", a, ADMIN, listing("AuditEvent"), query=["user"])},
     }

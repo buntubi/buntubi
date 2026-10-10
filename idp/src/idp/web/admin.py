@@ -123,6 +123,7 @@ def _user_json(user: User) -> dict[str, Any]:
         "given_name": user.given_name,
         "family_name": user.family_name,
         "roles": user.roles,
+        "superadmin": user.is_superadmin,
         "developer": user.developer_since is not None,
         "mfa": mfa.is_enabled(user),
         "disabled": user.disabled_at is not None,
@@ -256,9 +257,40 @@ def disable_user(user_id: str, admin: User) -> Any:
     user = _user_or_404(user_id)
     if user.id == admin.id:
         return jsonify(error="cannot_disable_yourself"), 422
+    if user.is_superadmin:
+        return jsonify(error="superadmin_protected"), 422
     user.disabled_at = utcnow()
     sign_out_everywhere(user)
     audit.record("admin.user_disabled", user=admin, target=str(user.id))
+    db().commit()
+    return jsonify(user=_user_json(user))
+
+
+@bp.post("/users/<user_id>/admin")
+@admin_only
+def grant_admin(user_id: str, admin: User) -> Any:
+    if not admin.is_superadmin:
+        return jsonify(error="superadmin_only"), 403
+    user = _user_or_404(user_id)
+    if user.disabled_at is not None or not user.email_verified:
+        return jsonify(error="cannot_be_admin"), 422
+    p.grant_admin(user)
+    audit.record("admin.role_granted", user=admin, target=str(user.id))
+    db().commit()
+    return jsonify(user=_user_json(user))
+
+
+@bp.delete("/users/<user_id>/admin")
+@admin_only
+def revoke_admin(user_id: str, admin: User) -> Any:
+    if not admin.is_superadmin:
+        return jsonify(error="superadmin_only"), 403
+    user = _user_or_404(user_id)
+    # A superadmin is made and unmade from the command line only.
+    if user.is_superadmin:
+        return jsonify(error="superadmin_protected"), 422
+    p.revoke_admin(user)
+    audit.record("admin.role_removed", user=admin, target=str(user.id))
     db().commit()
     return jsonify(user=_user_json(user))
 

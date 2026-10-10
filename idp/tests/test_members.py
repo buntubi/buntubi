@@ -82,13 +82,13 @@ def test_roles_decide_what_a_member_may_do(app: Flask, outbox: list[mail.Message
     assert call(vic_browser, vic, "PATCH", f"/apps/{client_id}", {"name": "x"}).status_code == 403
     assert call(vic_browser, vic, "POST", f"{org}/test-users", {"email": "t@example.test"}).status_code == 403
 
-    # An admin manages members but cannot make an owner.
+    # A manager manages members but cannot make an owner.
     call(
         dev_browser,
         dev,
         "PATCH",
         f"{org}/members/{member_id(dev_browser, dev, org, 'ana')}",
-        {"role": "admin"},
+        {"role": "manager"},
     )
     assert call(ana_browser, ana, "POST", f"/apps/{client_id}/publish").status_code != 403
     promote = call(
@@ -127,8 +127,8 @@ def test_a_member_limited_to_some_apps_sees_only_those(app: Flask, outbox: list[
     ]
     assert call(ana_browser, ana, "GET", f"/apps/{made['client_id']}").status_code == 200
 
-    # Owners and admins see every app whatever the list says.
-    call(dev_browser, dev, "PATCH", f"{org}/members/{added.json['member']['id']}", {"role": "admin"})
+    # Owners and managers see every app whatever the list says.
+    call(dev_browser, dev, "PATCH", f"{org}/members/{added.json['member']['id']}", {"role": "manager"})
     assert len(call(ana_browser, ana, "GET", org).json["apps"]) == 3
 
 
@@ -137,7 +137,7 @@ def test_an_organization_always_keeps_an_owner(app: Flask, outbox: list[mail.Mes
     org = f"/organizations/{organization_id}"
     mine = member_id(dev_browser, dev, org, "dev")
     assert call(dev_browser, dev, "DELETE", f"{org}/members/{mine}").json == {"error": "last_owner"}
-    assert call(dev_browser, dev, "PATCH", f"{org}/members/{mine}", {"role": "admin"}).json == {
+    assert call(dev_browser, dev, "PATCH", f"{org}/members/{mine}", {"role": "manager"}).json == {
         "error": "last_owner"
     }
 

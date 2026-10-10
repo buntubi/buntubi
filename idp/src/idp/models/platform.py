@@ -21,7 +21,7 @@ ENVIRONMENTS = ("sandbox", "live")
 # restricted: the platform's own apps only.
 SENSITIVITIES = ("public", "sensitive", "restricted")
 # Strongest first. What each may do is decided in services/platform.py.
-ROLES = ("owner", "admin", "developer", "reviewer", "viewer")
+ROLES = ("owner", "manager", "developer", "reviewer", "viewer")
 # ga: generally available; beta: live, may still change; sandbox: not live yet.
 AVAILABILITIES = ("ga", "beta", "sandbox")
 PRODUCT_AUTH = ("oauth2", "oidc", "api_key", "webhooks")

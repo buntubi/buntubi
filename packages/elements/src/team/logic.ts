@@ -1,9 +1,9 @@
 /** An organization's people: members with their roles and app access, and sandbox test users. */
 import type { Member, Role } from '@idp/sdk/types';
 
-export const ROLES: Role[] = ['owner', 'admin', 'developer', 'reviewer', 'viewer'];
+export const ROLES: Role[] = ['owner', 'manager', 'developer', 'reviewer', 'viewer'];
 
-/** Roles whose access can be limited to some apps; owners and admins always see every app. */
+/** Roles whose access can be limited to some apps; owners and managers always see every app. */
 export const LIMITABLE: Role[] = ['developer', 'reviewer', 'viewer'];
 
 export interface TeamLabels {
@@ -55,7 +55,7 @@ export const teamLabels: TeamLabels = {
   you: 'you',
   roles: {
     owner: { name: 'Owner', text: 'Everything, including deleting the organization.' },
-    admin: { name: 'Admin', text: 'Manages members, settings, live keys and publishing.' },
+    manager: { name: 'Manager', text: 'Manages members, settings, live keys and publishing.' },
     developer: { name: 'Developer', text: 'Builds and tests apps, sandbox keys and test users.' },
     reviewer: { name: 'Reviewer', text: 'Reads apps and their review state.' },
     viewer: { name: 'Viewer', text: 'Reads only.' },
