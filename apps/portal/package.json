@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "fluixi dev",
-    "build": "fluixi build",
+    "dev": "pnpm --dir ../../packages/sdk build && fluixi dev",
+    "build": "pnpm --dir ../../packages/sdk build && fluixi build",
     "start": "fluixi start",
     "typecheck": "tsc --noEmit"
   },

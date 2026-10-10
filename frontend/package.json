@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch",
-    "build": "vite build",
+    "dev": "pnpm --dir ../packages/sdk build && vite build --watch",
+    "build": "pnpm --dir ../packages/sdk build && vite build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

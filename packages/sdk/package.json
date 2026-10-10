@@ -10,11 +10,12 @@
     "./roles": "./src/roles.ts",
     "./plugins": "./src/plugins.ts",
     "./vite": {
-      "types": "./src/vite.d.ts",
-      "default": "./src/vite.js"
+      "types": "./dist/vite.d.ts",
+      "default": "./dist/vite.js"
     }
   },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,7 +23,6 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
-    "typescript": "^7.0.2",
-    "vite": "^8.3.4"
+    "typescript": "^7.0.2"
   }
 }
