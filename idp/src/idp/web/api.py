@@ -167,6 +167,7 @@ def mfa_verify() -> Any:
         raise
     if method == "backup":
         audit.record("mfa_backup_code_used", user=pending.user, left=mfa.remaining_backup_codes(pending.user))
+    sessions.end_replaced(pending)
     return _signed_in(pending.user, [*pending.methods, method, "mfa"], "sign_in")
 
 

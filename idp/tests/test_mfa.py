@@ -104,3 +104,67 @@ def test_disabling_needs_a_code(app: Flask, browser: FlaskClient, outbox: list[m
     assert api(browser, "POST", "/api/mfa/disable", {"code": code}, csrf).json == {"enabled": False}
     _, _, reply = password_step(app)
     assert "redirect" in reply.json, "no second step any more"
+
+
+def test_the_console_scope_asks_a_password_only_session_for_the_second_step(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    from urllib.parse import parse_qs, urlparse
+
+    from sqlalchemy import select
+    from test_platform_gates import authorize
+    from test_plugins import claims_of
+
+    from idp.db import db
+    from idp.models import User
+    from idp.models.grants import LoginSession
+
+    from conftest import REDIRECT, add_client
+
+    # Signed in with a password, then two-step turned on: the session never used it.
+    secret, _ = enable(browser, sign_up(browser, outbox))
+    with app.app_context():
+        user = db().scalar(select(User).where(User.email == "awa@example.test"))
+        assert user is not None
+        user.roles = ["admin"]
+        db().commit()
+    add_client(app, client_id="console", first_party=True, scope="openid profile email admin")
+
+    asked, verifier = authorize(browser, "console", scope="openid admin")
+    assert asked.status_code == 302 and urlparse(asked.location).path == "/mfa", "the code, not a token"
+
+    csrf = page_config(browser, "/mfa")["csrf"]
+    later = totp.code_at(secret, totp.current_step() + 1)
+    done = api(browser, "POST", "/api/mfa/verify", {"code": later}, csrf)
+    back = browser.get(done.json["redirect"])
+    assert back.status_code == 302 and back.location.startswith(REDIRECT), "back to the authorization"
+    code = parse_qs(urlparse(back.location).query)["code"][0]
+    tokens = browser.post(
+        "/oauth/token",
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": REDIRECT,
+            "client_id": "console",
+            "code_verifier": verifier,
+        },
+    ).json
+    assert "mfa" in claims_of(tokens["access_token"])["amr"]
+    with app.app_context():
+        live = db().scalars(select(LoginSession).where(LoginSession.revoked_at.is_(None))).all()
+        assert len(live) == 1 and "mfa" in live[0].auth_methods, "the password-only login was replaced"
+
+
+def test_an_account_without_two_step_is_not_asked(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    from test_platform_gates import authorize
+
+    from conftest import REDIRECT, add_client
+
+    sign_up(browser, outbox)
+    add_client(app, client_id="console", first_party=True, scope="openid profile email admin")
+    answered, _ = authorize(browser, "console", scope="openid admin")
+    assert answered.status_code == 302 and answered.location.startswith(REDIRECT), (
+        "the console says what to do"
+    )

@@ -76,6 +76,13 @@ def end(login: LoginSession) -> None:
         session.pop(_CURRENT, None)
 
 
+def end_replaced(pending: "Pending") -> None:
+    """Ends the login a finished step-up takes over, so the account is not listed twice."""
+    login = _load(pending.replaces) if pending.replaces else None
+    if login is not None and login.user_id == pending.user.id:
+        end(login)
+
+
 def end_all_here() -> None:
     for login in all_signed_in():
         login.revoked_at = utcnow()
@@ -90,10 +97,12 @@ class Pending:
     methods: list[str]
     # "verify_email": the address is not proven yet; "mfa": the second factor is due.
     stage: str
+    # A login this one takes over once done: the same person, signed in without the second factor.
+    replaces: str | None = None
 
 
-def set_pending(user: User, methods: list[str], stage: str) -> None:
-    session[_PENDING] = {"user_id": str(user.id), "methods": methods, "stage": stage}
+def set_pending(user: User, methods: list[str], stage: str, replaces: str | None = None) -> None:
+    session[_PENDING] = {"user_id": str(user.id), "methods": methods, "stage": stage, "replaces": replaces}
 
 
 def pending(stage: str | None = None) -> Pending | None:
@@ -105,7 +114,7 @@ def pending(stage: str | None = None) -> Pending | None:
     if user is None or user.disabled_at is not None:
         session.pop(_PENDING, None)
         return None
-    return Pending(user, list(value["methods"]), value["stage"])
+    return Pending(user, list(value["methods"]), value["stage"], value.get("replaces"))
 
 
 def count_failure() -> int:

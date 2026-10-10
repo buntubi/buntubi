@@ -19,7 +19,7 @@ from idp.oauth.claims import SCOPES, user_claims
 from idp.oauth.grants import GRANT_TYPES_SUPPORTED
 from idp.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
 from idp.security import csrf
-from idp.services import audit, consent, platform, session_check, sessions
+from idp.services import audit, consent, mfa, platform, session_check, sessions
 from idp.web import pages
 
 bp = Blueprint("oidc", __name__)
@@ -109,6 +109,16 @@ def authorize() -> Any:
             return _error_redirect(grant, "login_required")
         sessions.remember_return_to(_authorize_path(drop_prompt=True))
         return redirect(url_for("pages.signin"))
+
+    # Some scopes need a second factor at sign-in (the console's `admin`). A session signed in
+    # without one, for instance before two-step was turned on, is asked for the code here and
+    # comes back, rather than being handed a token the app will refuse.
+    if _needs_second_factor(login, request.args.get("scope", "")):
+        if "none" in prompt:
+            return _error_redirect(grant, "interaction_required")
+        sessions.set_pending(login.user, list(login.auth_methods), "mfa", replaces=str(login.id))
+        sessions.remember_return_to(_authorize_path(drop_prompt=True))
+        return redirect(url_for("pages.mfa_step"))
 
     if "select_account" in prompt:
         sessions.remember_return_to(_authorize_path(drop_prompt=True))
@@ -221,6 +231,20 @@ def logout() -> Any:
             target + (("&" if "?" in target else "?") + urlencode({"state": state}) if state else "")
         )
     return redirect(url_for("pages.signed_out"))
+
+
+# Scopes whose tokens are only issued to a sign-in that used the second factor.
+SECOND_FACTOR_SCOPES = frozenset({"admin"})
+
+
+def _needs_second_factor(login: Any, scope: str) -> bool:
+    """A step-up is due: the scope needs it, the account has it, this sign-in did not use it."""
+    wanted = set(scope_to_list(scope) or [])
+    return (
+        bool(wanted & SECOND_FACTOR_SCOPES)
+        and "mfa" not in (login.auth_methods or [])
+        and mfa.is_enabled(login.user)
+    )
 
 
 def _too_old(login: Any) -> bool:
