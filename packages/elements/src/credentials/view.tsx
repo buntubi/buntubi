@@ -14,6 +14,7 @@ export interface CredentialsHost {
   secret: () => string;
   locale: () => string;
   describe: () => ((error: unknown) => string) | undefined;
+  messages: () => Record<string, string>;
 }
 
 export const credentialsView = (c: CredentialsLogic & CredentialsHost) => (
@@ -52,6 +53,7 @@ export const credentialsView = (c: CredentialsLogic & CredentialsHost) => (
         canManage={c.canManage()}
         locale={c.locale()}
         labels={c.labels().keys}
+        messages={c.messages()}
         describe={c.describe()}
       />
       <idp-signing-keys jwksUrl={c.jwksUrl()} labels={c.labels().signing} />

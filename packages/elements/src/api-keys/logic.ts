@@ -1,4 +1,6 @@
 /** An organization's API keys in one environment, and making one; apart from the look. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ApiKeyInput } from '@idp/sdk/schemas/apps';
 import type { ApiKey } from '@idp/sdk/types';
 
 export interface ApiKeysLabels {
@@ -36,6 +38,11 @@ export const apiKeysLabels: ApiKeysLabels = {
   error: 'Something went wrong. Try again.',
 };
 
+/** The form engine's root, typed per field. */
+export interface ApiKeyForm extends ReactiveForm<ApiKeyInput> {
+  get<K extends keyof ApiKeyInput>(key: K): ReactiveControl<ApiKeyInput[K]>;
+}
+
 export interface ApiKeysLogic {
   labels: () => ApiKeysLabels;
   keys: () => ApiKey[];
@@ -44,10 +51,8 @@ export interface ApiKeysLogic {
   creating: () => boolean;
   open: () => void;
   close: () => void;
-  name: () => string;
-  scopes: () => string;
-  edit: (field: 'name' | 'scopes', value: string) => void;
-  create: () => Promise<void>;
+  form: ApiKeyForm;
+  create: (values: ApiKeyInput) => Promise<void>;
   revoke: (id: string) => Promise<void>;
   fresh: () => string;
   busy: () => string | null;

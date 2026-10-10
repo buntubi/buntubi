@@ -1,11 +1,10 @@
 /** The default look: a card, the title and Create key, the form when asked for, one row per key. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { ApiKeysLogic } from './logic.js';
-
-const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
 
 export const apiKeysView = (k: ApiKeysLogic) => (
   <section part="api-keys" class="card" aria-labelledby="idp-api-keys-title">
@@ -16,8 +15,7 @@ export const apiKeysView = (k: ApiKeysLogic) => (
       p { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .list { display: grid; gap: 8px; }
       .list > :deep(idp-key-row) { display: block; }
-      form { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--idp-border); border-radius: 10px; }
-      label { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
+      .new { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--idp-border); border-radius: 10px; }
       .actions { display: flex; gap: 8px; }
       .alert { color: var(--idp-bad); }
     `}</style>
@@ -34,29 +32,24 @@ export const apiKeysView = (k: ApiKeysLogic) => (
       <idp-one-time-value value={k.fresh()} note={k.labels().keyOnce} copyLabel={k.labels().copy} copiedLabel={k.labels().copied} />
     </Show>
     <Show when={k.creating()}>
-      <form
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          if (k.name().trim()) void k.create();
-        }}
-      >
-        <label>
-          {() => k.labels().name}
-          <Input value={() => k.name()} onInput={(event: Event) => k.edit('name', valueOf(event))} />
-        </label>
-        <label>
-          {() => k.labels().scopes}
-          <Input value={() => k.scopes()} onInput={(event: Event) => k.edit('scopes', valueOf(event))} />
-        </label>
-        <div class="actions">
-          <Button type="submit" variant="solid" size="sm" disabled={!k.name().trim() || k.busy() === 'create'}>
-            {() => k.labels().create}
-          </Button>
-          <Button variant="ghost" tone="neutral" size="sm" onPress={k.close}>
-            {() => k.labels().cancel}
-          </Button>
+      <Form form={k.form} onSubmit={(values) => k.create(values)} novalidate>
+        <div class="new">
+          <FormField control={k.form.get('name')} label={() => k.labels().name} required>
+            {(b) => <Input name="name" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+          </FormField>
+          <FormField control={k.form.get('scopes')} label={() => k.labels().scopes}>
+            {(b) => <Input name="scopes" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+          </FormField>
+          <div class="actions">
+            <Button type="submit" variant="solid" size="sm" disabled={k.busy() === 'create'}>
+              {() => k.labels().create}
+            </Button>
+            <Button variant="ghost" tone="neutral" size="sm" onPress={k.close}>
+              {() => k.labels().cancel}
+            </Button>
+          </div>
         </div>
-      </form>
+      </Form>
     </Show>
     <Show when={k.keys().length} fallback={<p>{() => k.labels().empty}</p>}>
       <div class="list">

@@ -496,4 +496,5 @@ export const formMessages = (): Messages => ({
   'form.url': t('form.url'),
   'form.https': t('form.https'),
   'form.redirectUri': t('form.redirectUri'),
+  'form.scopeList': t('form.scopeList'),
 });

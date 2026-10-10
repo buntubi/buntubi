@@ -26,3 +26,15 @@ export const redirectUriSchema = z.object({
 });
 
 export type RedirectUriInput = z.infer<typeof redirectUriSchema>;
+
+/** Scope names as the catalogue writes them, separated by spaces; empty means every scope. */
+const SCOPE_NAME = /^[a-z][a-z0-9_.:-]{1,63}$/;
+
+export const apiKeySchema = z.object({
+  name: z.string().trim().min(1, 'form.required').max(80, 'form.tooLong'),
+  scopes: z
+    .string()
+    .refine((value) => value.split(/\s+/).filter(Boolean).every((scope) => SCOPE_NAME.test(scope)), 'form.scopeList'),
+});
+
+export type ApiKeyInput = z.infer<typeof apiKeySchema>;

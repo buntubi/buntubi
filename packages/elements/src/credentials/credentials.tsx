@@ -31,6 +31,8 @@ const props = {
   locale: prop.string('en'),
   labels: prop.object<Partial<CredentialsLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
+  /** Text for validation keys, handed to the API keys; see messages.ts. */
+  messages: prop.object<Record<string, string>>({}),
 };
 
 export class IdpCredentials extends typedElement(props) {
@@ -51,6 +53,7 @@ export class IdpCredentials extends typedElement(props) {
       secret: () => this.secret,
       locale: () => this.locale,
       describe: () => this.describe,
+      messages: () => this.messages,
     };
     return useView(CredentialsView)(logic);
   }

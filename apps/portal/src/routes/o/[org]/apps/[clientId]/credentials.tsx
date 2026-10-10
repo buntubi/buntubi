@@ -4,7 +4,7 @@ import { can } from '@idp/sdk/roles';
 import '@idp/elements/credentials';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { errorText, locale, t } from '../../../../../lib/i18n.js';
-import { credentialsLabels } from '../../../../../lib/labels.js';
+import { credentialsLabels, formMessages } from '../../../../../lib/labels.js';
 import { takeSecret } from '../../../../../lib/one-time.js';
 import { paths } from '../../../../../lib/paths.js';
 
@@ -26,6 +26,7 @@ export default function CredentialsPage() {
         secret={secret}
         locale={locale()}
         labels={credentialsLabels()}
+        messages={formMessages()}
         describe={errorText}
       />
   );

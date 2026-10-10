@@ -15,6 +15,7 @@ export const defaultMessages: Messages = {
   'form.scopeName': 'Lowercase letters, digits and . _ : - only, starting with a letter (2 to 64 characters).',
   'form.url': 'Enter a full web address, such as https://example.com.',
   'form.redirectUri': 'Use https://, http://localhost for testing, or your app’s own scheme (com.example.app:/callback), without a #.',
+  'form.scopeList': 'Scope names separated by spaces, such as orders.read orders.write.',
   'form.https': 'The address must start with https:// (http://localhost is accepted for testing).',
 };
 
