@@ -1,6 +1,6 @@
 /**
  * What the console checks before it adds to the catalogue: the provider's rules (idp
- * web/admin.py ScopeIn and Descriptions). Messages are i18n keys.
+ * web/admin.py ScopeIn, ProductIn and Descriptions). Messages are i18n keys.
  */
 import { z } from 'zod';
 
@@ -19,3 +19,18 @@ export const scopeSchema = z.object({
 });
 
 export type ScopeInput = z.infer<typeof scopeSchema>;
+
+export const productSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(1, 'form.required')
+    .regex(/^[a-z][a-z0-9-]{1,39}$/, 'form.productSlug'),
+  category: z.string().trim().max(40, 'form.tooLong'),
+  nameFr: consent,
+  nameEn: consent,
+  descriptionFr: consent,
+  descriptionEn: consent,
+});
+
+export type ProductInput = z.infer<typeof productSchema>;

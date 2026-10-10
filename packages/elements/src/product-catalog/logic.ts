@@ -1,4 +1,6 @@
 /** The product catalog's data, words and behaviour, apart from how it looks. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ProductInput } from '@idp/sdk/schemas/catalogue';
 import type { Availability } from '@idp/sdk/admin';
 
 export interface CatalogProduct {
@@ -52,14 +54,9 @@ export const productCatalogLabels: ProductCatalogLabels = {
   error: 'Something went wrong. Try again.',
 };
 
-export interface ProductDraft {
-  slug: string;
-  nameFr: string;
-  nameEn: string;
-  descriptionFr: string;
-  descriptionEn: string;
-  category: string;
-  availability: Availability;
+/** The form engine's root, typed per field. */
+export interface ProductForm extends ReactiveForm<ProductInput> {
+  get<K extends keyof ProductInput>(key: K): ReactiveControl<ProductInput[K]>;
 }
 
 export interface ProductCatalogLogic {
@@ -70,9 +67,8 @@ export interface ProductCatalogLogic {
   /** What is being saved: a product slug, a scope name, or `new`. */
   busy: () => string | null;
   error: () => string | null;
-  draft: () => ProductDraft;
-  edit: (field: keyof ProductDraft, value: string) => void;
-  create: () => Promise<void>;
+  form: ProductForm;
+  create: (values: ProductInput) => Promise<void>;
   setAvailability: (slug: string, availability: Availability) => Promise<void>;
   addScope: (slug: string, scope: string) => Promise<void>;
   removeScope: (scope: string) => Promise<void>;

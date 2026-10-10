@@ -243,6 +243,7 @@ export const formMessages = (): Messages => ({
   'form.country': t('form.country'),
   'form.phone': t('form.phone'),
   'form.scopeName': t('form.scopeName'),
+  'form.productSlug': t('form.productSlug'),
 });
 
 const languages = () => ({ fr: t('users.lang.fr'), en: t('users.lang.en') });

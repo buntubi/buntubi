@@ -4,6 +4,7 @@ import { useRouteData } from '@fluixi/start/router';
 import '@idp/elements/product-catalog';
 import type { CatalogProduct, ProductCatalogLabels } from '@idp/elements/product-catalog/logic';
 import { errorText, locale, t } from '../lib/i18n.js';
+import { formMessages } from '../lib/labels.js';
 import type { ProductRow, ScopeRow } from '../lib/types.js';
 import '@idp/elements/page-header';
 import { products, scopes } from '../data/admin.js';
@@ -51,7 +52,7 @@ export default function ProductsPage() {
   return (
     <Stack gap={5}>
       <idp-page-header title={t('products.title')} intro={t('products.lead')} />
-      <idp-product-catalog products={catalog()} freeScopes={free()} labels={labels()} describe={errorText} />
+      <idp-product-catalog products={catalog()} freeScopes={free()} labels={labels()} messages={formMessages()} describe={errorText} />
     </Stack>
   );
 }

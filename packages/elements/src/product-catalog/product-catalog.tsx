@@ -4,28 +4,23 @@
  * data its service invalidates.
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
+import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Admin } from '@idp/sdk/admin';
+import { productSchema, type ProductInput } from '@idp/sdk/schemas/catalogue';
+import { messageReader, type Messages } from '../messages.js';
+import { fieldValidator, type FormSchema } from '../validators.js';
 import { useView } from '../view.js';
 import {
   productCatalogLabels,
   type CatalogProduct,
   type ProductCatalogLabels,
   type ProductCatalogLogic,
-  type ProductDraft,
-} from './logic.js';
+  type ProductForm, } from './logic.js';
 import { ProductCatalogView } from './view.js';
 
-const EMPTY: ProductDraft = {
-  slug: '',
-  nameFr: '',
-  nameEn: '',
-  descriptionFr: '',
-  descriptionEn: '',
-  category: '',
-  availability: 'ga',
-};
+const PRODUCT_FIELDS = ['slug', 'category', 'nameFr', 'nameEn', 'descriptionFr', 'descriptionEn'] as const;
 
 const props = {
   products: prop.object<CatalogProduct[]>([]),
@@ -33,6 +28,10 @@ const props = {
   labels: prop.object<Partial<ProductCatalogLabels>>({}),
   /** Words a refusal for the reader; the generic label when absent. */
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
+  /** Checks a new product before it is sent; messages are keys read through `messages`. */
+  schema: prop.any<FormSchema<ProductInput>>(productSchema),
+  /** Text for validation keys; see messages.ts. */
+  messages: prop.object<Messages>({}),
 };
 
 export class IdpProductCatalog extends typedElement(props) {
@@ -40,7 +39,17 @@ export class IdpProductCatalog extends typedElement(props) {
     const admin = inject(Admin);
     const busy = signal<string | null>(null);
     const error = signal<string | null>(null);
-    const draft = signal<ProductDraft>({ ...EMPTY });
+    const text = messageReader(() => this.messages);
+    const check = <K extends keyof ProductInput & string>(field: K) =>
+      fieldValidator<ProductInput, K>(() => this.schema, field, text);
+    const form: ProductForm = createForm({
+      slug: createField('', { validators: [check('slug')] }),
+      category: createField('', { validators: [check('category')] }),
+      nameFr: createField('', { validators: [check('nameFr')] }),
+      nameEn: createField('', { validators: [check('nameEn')] }),
+      descriptionFr: createField('', { validators: [check('descriptionFr')] }),
+      descriptionEn: createField('', { validators: [check('descriptionEn')] }),
+    });
     const labels = () => ({ ...productCatalogLabels, ...this.labels });
     const run = async (key: string, work: () => Promise<void>): Promise<boolean> => {
       busy.set(key);
@@ -61,20 +70,18 @@ export class IdpProductCatalog extends typedElement(props) {
       labels,
       busy,
       error,
-      draft,
-      edit: (field, value) => draft.set({ ...draft(), [field]: value }),
-      create: async () => {
-        const d = draft();
+      form,
+      create: async (values) => {
         const done = await run('new', () =>
           admin.createProduct({
-            slug: d.slug.trim(),
-            names: { fr: d.nameFr.trim(), en: d.nameEn.trim() },
-            descriptions: { fr: d.descriptionFr.trim(), en: d.descriptionEn.trim() },
-            category: d.category.trim(),
-            availability: d.availability,
+            slug: values.slug.trim(),
+            names: { fr: values.nameFr.trim(), en: values.nameEn.trim() },
+            descriptions: { fr: values.descriptionFr.trim(), en: values.descriptionEn.trim() },
+            category: values.category.trim(),
+            availability: 'ga',
           }),
         );
-        if (done) draft.set({ ...EMPTY });
+        if (done) for (const key of PRODUCT_FIELDS) form.get(key).setValue('');
       },
       setAvailability: async (slug, availability) => {
         await run(slug, () => admin.setAvailability({ slug, availability }));

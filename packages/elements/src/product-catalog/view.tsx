@@ -1,24 +1,23 @@
 /** The catalog's default look: a card per product, then the form for a new one. */
 import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
 import { For, Show } from '@fluixi/core';
 import type { Availability } from '@idp/sdk/admin';
 import { viewToken } from '../view.js';
-import type { CatalogProduct, ProductCatalogLogic, ProductDraft } from './logic.js';
+import type { ProductInput } from '@idp/sdk/schemas/catalogue';
+import type { CatalogProduct, ProductCatalogLogic } from './logic.js';
 
 const AVAILABILITIES: Availability[] = ['ga', 'beta', 'sandbox'];
 const APPROVAL_TONE = { none: 'success', review: 'warning', restricted: 'danger' } as const;
 
-const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
-
 export const productCatalogView = (c: ProductCatalogLogic) => {
-  const field = (key: keyof ProductDraft, label: () => string, placeholder = '') => (
-    <label class="field">
-      <span>{label}</span>
-      <Input value={() => c.draft()[key]} placeholder={placeholder} onInput={(event: Event) => c.edit(key, valueOf(event))} />
-    </label>
+  const field = (key: keyof ProductInput, label: () => string, placeholder = '') => (
+    <FormField control={c.form.get(key)} label={label} required={key !== 'category'}>
+      {(b) => <Input name={key} placeholder={placeholder} value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+    </FormField>
   );
   const product = (entry: CatalogProduct) => (
     <article part="product" class="product" aria-busy={() => (c.busy() === entry.slug ? 'true' : 'false')}>
@@ -119,14 +118,8 @@ export const productCatalogView = (c: ProductCatalogLogic) => {
           <For each={c.products()}>{product}</For>
         </div>
       </Show>
-      <form
-        part="new"
-        class="new"
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          void c.create();
-        }}
-      >
+      <Form form={c.form} onSubmit={(values) => c.create(values)} novalidate>
+      <div part="new" class="new">
         <h2>{() => c.labels().newProduct}</h2>
         <div class="fields">
           {field('slug', () => c.labels().slug, 'payments')}
@@ -141,7 +134,8 @@ export const productCatalogView = (c: ProductCatalogLogic) => {
             {() => c.labels().create}
           </Button>
         </div>
-      </form>
+      </div>
+      </Form>
     </div>
   );
 };
