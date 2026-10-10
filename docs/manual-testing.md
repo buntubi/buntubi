@@ -13,10 +13,11 @@ cd ~/Developer/libs/oauth/identity-provider
 ./scripts/reset-local.sh
 ```
 
-This empties the database, seeds the scope catalog, registers the portal, console and Postman
-clients, and writes the portal's and console's client secrets into their `.env` files. It
-refuses to run when the issuer in `idp/.env` is not a localhost address. Restart the portal and
-console after a reset.
+This empties the database and asks for the superadmin's email, name and password. Then it runs
+`flask platform setup`, which creates the platform organization and the apps listed in
+`idp/platform.toml` (copied from `platform.example.toml` on the first run), and writes their
+secrets into the env files the file names. It refuses to run when the issuer in `idp/.env` is
+not a localhost address. Restart the portal, the console and any app whose secret changed.
 
 ## 1. Start the servers
 
@@ -43,10 +44,11 @@ cd ~/Developer/libs/oauth/identity-provider/idp
 alias idp='../.venv/bin/flask --app idp.app:create_app'
 ```
 
-## 2. Create the admin account
+## 2. The superadmin
+
+The reset created it. Check it:
 
 ```bash
-idp admin create      # email, first and last name, password (asked twice, hidden)
 idp users admins      # your email, "two-step OFF"
 ```
 
@@ -70,7 +72,8 @@ a private window, or **Se déconnecter** first (it ends the provider session too
 1. **Se connecter**. Signed out: "Créer un compte" with a second email, then the 6-digit code
    printed by the provider. Signed in: you come straight back.
 2. Accept the developer terms (**J'accepte**). This is the portal's own page, not a consent
-   screen: the provider asks no consent for its own first-party apps.
+   screen: the provider asks no consent for its own first-party apps. An admin skips this step and
+   finds the Platform organization first in the list.
 3. Create an organization with a support email. You are its owner.
 4. Create an app: type **Confidentielle**, redirect URI `http://localhost:3000/callback`. Copy
    the secret, shown once.
