@@ -35,6 +35,7 @@ cd "$root"
   exit 1
 }
 .venv/bin/pip install --quiet -e "./idp[dev]"
+echo "$(.venv/bin/python --version) in .venv, provider installed."
 python="$root/.venv/bin/python"
 flask() { "$root/.venv/bin/flask" --app idp.app:create_app "$@"; }
 
@@ -44,6 +45,8 @@ if [ ! -f .env ]; then
   cp .env.example .env
   chmod 600 .env
   echo "Created idp/.env from the example."
+else
+  echo "Using idp/.env."
 fi
 "$python" - <<'PY'
 import re, secrets
@@ -52,6 +55,8 @@ if not re.search(r"^IDP_SECRET_KEY=.{32,}$", text, flags=re.M):
     text = re.sub(r"^IDP_SECRET_KEY=.*$", f"IDP_SECRET_KEY={secrets.token_urlsafe(48)}", text, flags=re.M)
     open(".env", "w").write(text)
     print("Generated IDP_SECRET_KEY.")
+else:
+    print("IDP_SECRET_KEY is set.")
 PY
 
 step "Database"
@@ -65,18 +70,19 @@ server = url.set(drivername="postgresql", database="postgres").render_as_string(
 with psycopg.connect(server, autocommit=True) as connection:
     exists = connection.execute("select 1 from pg_database where datname = %s", (url.database,)).fetchone()
     if exists:
-        print(f"{url.database} exists.")
+        print(f"Using the existing database {url.database}.")
     else:
         connection.execute(f'create database "{url.database}"')
         print(f"Created {url.database}.")
 PY
 IDP_DATABASE_URL="$("$python" -c 'from idp.config import get_settings; print(get_settings().database_url)')" \
   "$root/.venv/bin/alembic" upgrade head 2>&1 | grep -v '^INFO' || true
+echo "Migrations at $(IDP_DATABASE_URL="$("$python" -c 'from idp.config import get_settings; print(get_settings().database_url)')" "$root/.venv/bin/alembic" current 2>/dev/null | tail -1)."
 
 step "Signing key"
 keys="$("$python" -c 'from idp.config import get_settings; print(get_settings().signing_keys_dir)')"
 if ls "$keys"/*.json >/dev/null 2>&1; then
-  echo "A signing key exists."
+  echo "Signing keys in $keys: $(ls "$keys"/*.json | wc -l | tr -d ' '). Kept: tokens they signed stay valid."
 else
   flask keys generate
 fi
@@ -97,6 +103,8 @@ if [ "$web" = 1 ]; then
       cp "$root/apps/$app/.env.example" "$file"
       chmod 600 "$file"
       echo "Created apps/$app/.env from the example."
+    else
+      echo "Using apps/$app/.env."
     fi
     "$python" - "$file" <<'PY'
 import re, secrets, sys
@@ -106,6 +114,8 @@ if not re.search(r"^SESSION_SECRET=.{32,}$", text, flags=re.M):
     text = re.sub(r"^SESSION_SECRET=.*$", f"SESSION_SECRET={secrets.token_urlsafe(48)}", text, flags=re.M)
     open(path, "w").write(text)
     print(f"Generated SESSION_SECRET in {path}.")
+else:
+    print("SESSION_SECRET is set.")
 PY
   done
 fi
