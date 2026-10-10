@@ -16,7 +16,6 @@ def own_apps_for(user: User) -> list[Client]:
         select(Client)
         .where(
             Client.first_party.is_(True),
-            Client.organization_id.is_(None),
             Client.disabled_at.is_(None),
             Client.homepage_url.is_not(None),
         )

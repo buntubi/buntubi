@@ -107,6 +107,8 @@ def _client_json(client: Client) -> dict[str, Any]:
         "homepage_url": client.homepage_url,
         "disabled": client.disabled_at is not None,
         "organization_id": str(client.organization_id) if client.organization_id else None,
+        "organization": client.organization.name if client.organization else None,
+        "platform": client.organization is None or client.organization.is_platform,
         "environment": client.environment,
         "review_status": client.review_status,
         "created_at": client.created_at.isoformat(),
@@ -165,7 +167,8 @@ def create_client(admin: User) -> Any:
         client_id=data.client_id,
         name=data.name,
         client_type=data.client_type,
-        # The owner's own apps: no organization, live from the start.
+        # The platform's own apps, live from the start.
+        organization=p.platform_organization(),
         environment="live",
         redirect_uris=[str(u) for u in data.redirect_uris],
         post_logout_redirect_uris=[str(u) for u in data.post_logout_redirect_uris],
@@ -199,6 +202,9 @@ def update_client(client_id: str, admin: User) -> Response:
     if patch.scope is not None:
         client.scope = patch.scope
     if patch.first_party is not None:
+        # Skipping consent is for the platform's own apps, never a developer's.
+        if patch.first_party and client.organization is not None and not client.organization.is_platform:
+            raise PlatformError("not_a_platform_app", 422)
         client.first_party = patch.first_party
     if patch.brand is not None:
         client.brand = patch.brand.model_dump(mode="json", exclude_none=True)
@@ -304,8 +310,8 @@ def overview(admin: User) -> Response:
         developers=_count(User, User.developer_since.is_not(None)),
         organizations=_count(Organization),
         suspended_organizations=_count(Organization, Organization.suspended_at.is_not(None)),
-        live_apps=_count(Client, Client.organization_id.is_not(None), Client.environment == "live"),
-        sandbox_apps=_count(Client, Client.organization_id.is_not(None), Client.environment == "sandbox"),
+        live_apps=_count(Client, Client.first_party.is_(False), Client.environment == "live"),
+        sandbox_apps=_count(Client, Client.first_party.is_(False), Client.environment == "sandbox"),
         pending_reviews=_count(Client, Client.review_status == "pending"),
     )
 

@@ -67,7 +67,7 @@ def _access_token(client: Client, grant_type: str, user: User | None, scope: str
             "sid": str(context.session_id) if context.session_id else None,
         }
     # A developer's app says which side it is on, so the platform APIs keep sandbox data apart.
-    if client.organization_id is not None:
+    if client.organization_id is not None and not client.first_party:
         extra["env"] = client.environment
     granted = scope_to_list(scope) or []
     # Minted for the app and for every API its scopes open, so each API checks tokens addressed

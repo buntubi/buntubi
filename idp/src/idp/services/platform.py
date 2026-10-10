@@ -11,7 +11,7 @@ import uuid
 from dataclasses import dataclass, field
 
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
-from sqlalchemy import func, select, update
+from sqlalchemy import delete, func, select, update
 
 from idp import plugins
 from idp.db import db, utcnow
@@ -205,6 +205,9 @@ def add_member(actor: OrganizationMember, email: str, role: str, client_ids: lis
     user = db().scalar(select(User).where(User.email == normalize_email(email)))
     if user is None or user.disabled_at is not None:
         raise PlatformError("no_such_account", 422)
+    # The platform's apps are the admins' to change: the admin role is the way in.
+    if organization.is_platform and not user.is_admin:
+        raise PlatformError("platform_members_are_admins", 422)
     if any(m.user_id == user.id for m in organization.members):
         raise PlatformError("already_member", 409)
     member = OrganizationMember(user_id=user.id, role=role, app_ids=_app_ids(organization, client_ids))
@@ -282,7 +285,8 @@ def check_scopes(requested: list[str], *, for_key: bool, held: list[str] | None 
     deprecated = [name for name in wanted if rows[name].deprecated_at is not None and name not in kept]
     if deprecated:
         raise PlatformError("deprecated_scope", 422, scopes=deprecated)
-    restricted = [name for name in wanted if rows[name].sensitivity == "restricted"]
+    # Only the console gives a restricted scope; an app editing its scopes keeps the ones it has.
+    restricted = [name for name in wanted if rows[name].sensitivity == "restricted" and name not in kept]
     if restricted:
         raise PlatformError("restricted_scope", 422, scopes=restricted)
     if for_key:
@@ -290,6 +294,45 @@ def check_scopes(requested: list[str], *, for_key: bool, held: list[str] | None 
         if not_platform:
             raise PlatformError("not_a_platform_scope", 422, scopes=not_platform)
     return ScopeCheck(wanted, [name for name in wanted if rows[name].sensitivity == "sensitive"])
+
+
+# ── The platform organization ─────────────────────────────────────────────────────────────────
+
+
+def platform_organization() -> Organization:
+    """
+    The organization holding the platform's own apps, made on first use. Every admin is one of
+    its owners, so the console's apps are managed on the same pages as anyone's.
+    """
+    organization = db().scalar(select(Organization).where(Organization.is_platform.is_(True)))
+    if organization is None:
+        organization = Organization(name="Platform", description="The platform's own apps.", is_platform=True)
+        db().add(organization)
+        db().flush()
+    for admin in db().scalars(select(User).where(User.roles.contains(["admin"]))):
+        join_platform(admin, organization)
+    return organization
+
+
+def join_platform(admin: User, organization: Organization | None = None) -> None:
+    """Makes an admin an owner of the platform organization; nothing if they are one already."""
+    organization = organization or db().scalar(select(Organization).where(Organization.is_platform.is_(True)))
+    if organization is None:
+        return
+    if any(m.user_id == admin.id for m in organization.members):
+        return
+    organization.members.append(OrganizationMember(user_id=admin.id, role="owner"))
+    db().flush()
+
+
+def leave_platform(user: User) -> None:
+    """Takes a former admin out of the platform organization."""
+    db().execute(
+        delete(OrganizationMember).where(
+            OrganizationMember.user_id == user.id,
+            OrganizationMember.organization_id.in_(select(Organization.id).where(Organization.is_platform)),
+        )
+    )
 
 
 # ── API products ──────────────────────────────────────────────────────────────────────────────
@@ -654,6 +697,8 @@ def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
 
 def suspend(organization: Organization, reason: str) -> None:
     """Stops the organization at once: its apps get no new tokens, and the ones they hold are revoked."""
+    if organization.is_platform:
+        raise PlatformError("platform_organization", 409)
     organization.suspended_at = organization.suspended_at or utcnow()
     organization.suspended_reason = reason
     for client in apps_of(organization):
@@ -699,13 +744,19 @@ def is_test_user(organization: Organization, user: User) -> bool:
     return any(row.email == user.email for row in organization.test_users)
 
 
+def is_trusted(client: Client) -> bool:
+    """One of the platform's own apps: first-party, which only an admin sets. A client with no
+    organization predates the platform organization and counts as one."""
+    return bool(client.first_party) or client.organization is None
+
+
 def may_sign_in(client: Client, user: User) -> bool:
     """
     A sandbox app is for the members who work on it and the organization's test users; a live app,
     or one of the platform's own, for anyone.
     """
     organization = client.organization
-    if organization is None or client.is_live:
+    if organization is None or is_trusted(client) or client.is_live:
         return True
     member = next((m for m in organization.members if m.user_id == user.id), None)
     return (member is not None and sees_app(member, client)) or is_test_user(organization, user)
@@ -717,7 +768,7 @@ def cut_sandbox_access(client: Client) -> None:
     back in the sandbox): their refresh tokens and access tokens for it, revoked now. An API that
     introspects sees it at once; one that only checks signatures, when the access token expires.
     """
-    if client.organization is None or client.is_live:
+    if is_trusted(client) or client.is_live:
         return
     holders = set(
         db().scalars(
@@ -755,7 +806,7 @@ def _revoke_tokens(client: Client, user_ids: list[uuid.UUID] | None = None) -> N
 
 def is_verified(client: Client) -> bool:
     """What consent tells the user: live, so reviewed where its scopes needed it. Platform apps are."""
-    return client.organization is None or client.is_live
+    return is_trusted(client) or client.is_live
 
 
 # ── API keys ──────────────────────────────────────────────────────────────────────────────────

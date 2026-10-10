@@ -305,6 +305,8 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "homepage_url": MAYBE_STRING,
             "disabled": BOOL,
             "organization_id": MAYBE_STRING,
+            "organization": MAYBE_STRING,
+            "platform": BOOL,
             "environment": ENVIRONMENT,
             "review_status": STRING,
             "created_at": TIME,

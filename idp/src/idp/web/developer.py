@@ -328,6 +328,8 @@ def update_organization(organization_id: str, me: User) -> Response:
 @developer()
 def delete_organization(organization_id: str, me: User) -> Response:
     organization = p.organization_of(me, organization_id, "delete")
+    if organization.is_platform:
+        raise p.PlatformError("platform_organization", 409)
     audit.record(
         "developer.organization_deleted", user=me, organization=str(organization.id), name=organization.name
     )

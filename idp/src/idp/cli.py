@@ -20,7 +20,7 @@ from idp.models import Client, Organization, OrganizationMember, User
 from idp.models.clients import AUTH_METHODS, GRANT_TYPES
 from idp.security import passwords
 from idp.security.keys import generate_key
-from idp.services import audit, mfa
+from idp.services import audit, mfa, platform
 from idp.services.credentials import issue_client_secret
 
 
@@ -74,6 +74,7 @@ def register(app: Flask) -> None:
             client_id=client_id,
             name=name,
             client_type=client_type,
+            organization=platform.platform_organization(),
             environment="live",
             redirect_uris=list(redirect_uris),
             post_logout_redirect_uris=list(logout_uris),
@@ -136,6 +137,7 @@ def register(app: Flask) -> None:
         if "admin" not in user.roles:
             user.roles = [*user.roles, "admin"]
             audit.record("admin.role_granted", user=user, source="cli")
+        platform.join_platform(user)
         db().commit()
         click.echo(f"{user.email} is an admin.")
         if not mfa.is_enabled(user):
@@ -149,6 +151,7 @@ def register(app: Flask) -> None:
         if "admin" in user.roles:
             user.roles = [role for role in user.roles if role != "admin"]
             audit.record("admin.role_removed", user=user, source="cli")
+            platform.leave_platform(user)
         db().commit()
         click.echo(f"{user.email} is no longer an admin.")
         if not admins():
@@ -269,6 +272,7 @@ def register(app: Flask) -> None:
         )
         db().add(user)
         db().flush()
+        platform.join_platform(user)
         audit.record("admin.account_created", user=user, source="cli")
         db().commit()
         issuer = get_settings().issuer

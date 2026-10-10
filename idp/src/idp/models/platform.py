@@ -44,6 +44,10 @@ class Organization(IdMixin, TimestampMixin, Base):
     # Sensitive scopes the platform owner approved for this organization, in a review: its live apps and
     # live keys may carry them without asking again.
     approved_scopes: Mapped[list[str]] = mapped_column(ARRAY(String(64)), default=list, server_default="{}")
+    # The platform owner's own organization: it holds the platform's apps (the console, the
+    # portal, the products the deployment runs), the only ones an admin may make first-party.
+    # One at most.
+    is_platform: Mapped[bool] = mapped_column(default=False, server_default="false")
 
     test_users: Mapped[list["OrganizationTestUser"]] = relationship(
         back_populates="organization", cascade="all, delete-orphan"
