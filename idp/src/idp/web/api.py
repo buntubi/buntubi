@@ -14,7 +14,7 @@ from idp.extensions import limiter
 from idp.models import DeviceCode, User
 from idp.security import csrf
 from idp.security.tokens import normalize_user_code
-from idp.services import accounts, audit, mfa, platform, sessions
+from idp.services import accounts, audit, mail, mfa, platform, sessions
 from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -32,6 +32,13 @@ def _csrf() -> None:
 def _refused(error: AccountError) -> tuple[Response, int]:
     db().rollback()
     return jsonify(error=error.code), 400
+
+
+@bp.errorhandler(mail.MailError)
+def _mail_failed(error: mail.MailError) -> tuple[Response, int]:
+    # Nothing is kept: a sign-up whose code never left can be made again once email works.
+    db().rollback()
+    return jsonify(error="email_not_sent"), 503
 
 
 def _body() -> dict[str, Any]:

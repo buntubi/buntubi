@@ -5,8 +5,10 @@ import re
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlparse
 
+import pytest
 from flask import Flask
 from flask.testing import FlaskClient
+from sqlalchemy import select
 
 from idp.db import db
 from idp.models import Client, ClientSecret, User
@@ -406,3 +408,20 @@ def test_sign_up_refuses_a_malformed_email(browser: FlaskClient) -> None:
     csrf = page_config(browser, "/signup")["csrf"]
     reply = api(browser, "POST", "/api/signup", {"email": "not an email", "password": PASSWORD}, csrf)
     assert reply.json == {"error": "invalid_email"}
+
+
+def test_an_email_that_cannot_leave_is_said_and_nothing_is_kept(
+    app: Flask, browser: FlaskClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def refuse(message: mail.Message) -> None:
+        raise mail.MailError("the email could not be sent")
+
+    monkeypatch.setattr(mail, "send", refuse)
+    csrf = page_config(browser, "/signup")["csrf"]
+    body = {"email": "awa@example.test", "password": PASSWORD, "given_name": "Awa", "family_name": "Diop"}
+    reply = api(browser, "POST", "/api/signup", body, csrf)
+    assert reply.status_code == 503 and reply.json == {"error": "email_not_sent"}
+    with app.app_context():
+        assert db().scalar(select(User).where(User.email == "awa@example.test")) is None, (
+            "signing up again works"
+        )
