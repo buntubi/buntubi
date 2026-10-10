@@ -1,5 +1,5 @@
 /**
- * A client's accent colour on the primary tokens and the hero. The skin is the page's `data-ui`, set by the
+ * A client's accent colour on the primary tokens, the account theme's accent and the hero. The skin is the page's `data-ui`, set by the
  * server; the logo and name are drawn by the page.
  */
 import type { Brand } from './config.js';
@@ -11,6 +11,9 @@ export function applyBrand(brand: Brand): void {
   const root = document.documentElement.style;
   root.setProperty('--flx-ui-color-primary', brand.accent);
   root.setProperty('--flx-ui-color-primary-fg', readableOn(brand.accent));
+  // The account pages' theme derives hover, soft and ink colours from it.
+  root.setProperty('--idp-accent', brand.accent);
+  root.setProperty('--idp-accent-fg', readableOn(brand.accent));
   root.setProperty('--idp-hero', brand.accent);
   root.setProperty('--idp-hero-fg', readableOn(brand.accent));
 }
