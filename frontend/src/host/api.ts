@@ -7,14 +7,16 @@ export interface Redirect {
 }
 
 export function createApi(csrf: string) {
-  return async function call<T>(method: 'GET' | 'POST' | 'DELETE', path: string, body?: unknown): Promise<T> {
+  return async function call<T>(method: 'GET' | 'POST' | 'PATCH' | 'DELETE', path: string, body?: unknown): Promise<T> {
+    // A Blob (a photo) goes as is, with its own type; anything else as JSON.
+    const raw = body instanceof Blob;
     let response: Response;
     try {
       response = await fetch(path, {
         method,
         credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
-        body: body === undefined ? undefined : JSON.stringify(body),
+        headers: { 'Content-Type': raw ? body.type : 'application/json', 'X-CSRF-Token': csrf },
+        body: raw ? body : body === undefined ? undefined : JSON.stringify(body),
       });
     } catch {
       throw new Error('network');

@@ -21,5 +21,6 @@ export interface AccountHelloLogic {
   email: () => string;
   since: () => string;
   initials: () => string;
+  picture: () => string;
   editHref: () => string;
 }

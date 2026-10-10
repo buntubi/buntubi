@@ -4,3 +4,4 @@
 
 /* The account area's page: the portal's ground, type and colours. */
 html[data-ui='idp'] body { margin: 0; background: var(--idp-bg); color: var(--idp-text); font-family: var(--idp-font); -webkit-font-smoothing: antialiased; }
+.account-alert { margin: 0; color: var(--idp-bad); }

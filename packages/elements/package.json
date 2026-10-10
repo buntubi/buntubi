@@ -264,7 +264,17 @@
     "./account-area/view": "./src/account-area/view.tsx",
     "./app-launcher": "./src/app-launcher/app-launcher.tsx",
     "./app-launcher/logic": "./src/app-launcher/logic.ts",
-    "./app-launcher/view": "./src/app-launcher/view.tsx"
+    "./app-launcher/view": "./src/app-launcher/view.tsx",
+    "./profile-section": "./src/profile-section/profile-section.tsx",
+    "./profile-section/view": "./src/profile-section/view.tsx",
+    "./profile-section/logic": "./src/profile-section/logic.ts",
+    "./contact-section": "./src/contact-section/contact-section.tsx",
+    "./contact-section/view": "./src/contact-section/view.tsx",
+    "./contact-section/logic": "./src/contact-section/logic.ts",
+    "./preferences-section": "./src/preferences-section/preferences-section.tsx",
+    "./preferences-section/view": "./src/preferences-section/view.tsx",
+    "./preferences-section/logic": "./src/preferences-section/logic.ts",
+    "./countries": "./src/countries.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

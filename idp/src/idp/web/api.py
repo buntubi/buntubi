@@ -3,6 +3,7 @@ The JSON endpoints the sign-in screens call. Every state change is CSRF-checked;
 check is rate-limited. Errors are {"error": "<code>"}, which the screens translate.
 """
 
+import re
 from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, url_for
@@ -14,7 +15,7 @@ from idp.extensions import limiter
 from idp.models import Consent, DeviceCode, LoginSession, User
 from idp.security import csrf
 from idp.security.tokens import normalize_user_code
-from idp.services import accounts, audit, mail, mfa, own_apps, platform, sessions
+from idp.services import accounts, audit, mail, mfa, own_apps, platform, profile, sessions
 from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -294,6 +295,10 @@ def account_summary() -> Any:
             "given_name": user.given_name,
             "family_name": user.family_name,
             "locale": user.locale,
+            "phone": user.phone,
+            "country": user.country,
+            "picture": user.picture,
+            "pending_email": profile.pending_email(user),
             "created_at": user.created_at.isoformat(),
         },
         mfa={"enabled": mfa.is_enabled(user), "backup_codes_left": mfa.remaining_backup_codes(user)},
@@ -315,6 +320,95 @@ def account_summary() -> Any:
     )
     db().commit()
     return summary
+
+
+def _me() -> User:
+    login = sessions.current()
+    if login is None:
+        raise AccountError("not_signed_in")
+    return login.user
+
+
+_PHONE = re.compile(r"^(\+[1-9][0-9]{6,14})?$")
+_COUNTRY = re.compile(r"^([A-Za-z]{2})?$")
+
+
+@bp.patch("/account/profile")
+def update_profile() -> Response:
+    """Name, phone, country and language; only the fields sent change."""
+    data = _body()
+    user = _me()
+    fields: dict[str, str] = {}
+    for key, limit in (("given_name", 100), ("family_name", 100)):
+        if isinstance(data.get(key), str):
+            if len(data[key]) > limit:
+                raise AccountError("too_long")
+            fields[key] = data[key]
+    if isinstance(data.get("phone"), str):
+        phone = data["phone"].replace(" ", "")
+        if not _PHONE.match(phone):
+            raise AccountError("invalid_phone")
+        fields["phone"] = phone
+    if isinstance(data.get("country"), str):
+        if not _COUNTRY.match(data["country"].strip()):
+            raise AccountError("invalid_country")
+        fields["country"] = data["country"].strip()
+    if data.get("locale") in ("fr", "en"):
+        fields["locale"] = data["locale"]
+    profile.update(user, **fields)
+    audit.record("profile_updated", user=user, fields=sorted(fields))
+    db().commit()
+    return jsonify(updated=sorted(fields))
+
+
+@bp.post("/account/picture")
+def set_picture() -> Response:
+    """The photo, as the request body (made small in the browser), its type as Content-Type."""
+    user = _me()
+    profile.set_picture(user, (request.mimetype or "").lower(), request.get_data(cache=False))
+    audit.record("picture_changed", user=user)
+    db().commit()
+    return jsonify(picture=user.picture)
+
+
+@bp.delete("/account/picture")
+def remove_picture() -> Response:
+    user = _me()
+    profile.remove_picture(user)
+    audit.record("picture_removed", user=user)
+    db().commit()
+    return jsonify(picture=None)
+
+
+@bp.post("/account/email")
+@limiter.limit("5 per minute")
+def request_email_change() -> Response:
+    data = _body()
+    user = _me()
+    confirm = f"{get_settings().issuer}{url_for('pages.account', section='email/confirm')}"
+    address = profile.request_email_change(user, _text(data, "email"), _text(data, "password", 256), confirm)
+    audit.record("email_change_requested", user=user, new_email=address)
+    db().commit()
+    return jsonify(pending_email=address)
+
+
+@bp.delete("/account/email")
+def cancel_email_change() -> Response:
+    user = _me()
+    profile.cancel_email_change(user)
+    db().commit()
+    return jsonify(pending_email=None)
+
+
+@bp.post("/account/email/confirm")
+@limiter.limit("10 per minute")
+def confirm_email_change() -> Response:
+    user = _me()
+    old = user.email
+    address = profile.confirm_email_change(user, _text(_body(), "token", 128))
+    audit.record("email_changed", user=user, old_email=old, new_email=address)
+    db().commit()
+    return jsonify(email=address)
 
 
 @bp.delete("/accounts/<session_id>")

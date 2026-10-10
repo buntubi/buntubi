@@ -22,8 +22,10 @@ class EmailToken(IdMixin, Base):
     __tablename__ = "email_tokens"
 
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
-    # "verify_email" (a 6-digit code typed by the user) or "reset_password" (a link).
+    # "verify_email" (a 6-digit code typed by the user), "reset_password" or "change_email" (links).
     purpose: Mapped[str] = mapped_column(String(32))
+    # What the proof is for beyond the account: the new address of a "change_email".
+    payload: Mapped[str | None] = mapped_column(String(320))
     token_hash: Mapped[str] = mapped_column(String(64), index=True)
     # A 6-digit code can be guessed: after a few wrong tries it stops working.
     attempts: Mapped[int] = mapped_column(Integer, default=0)
@@ -84,6 +86,17 @@ class BackupCode(IdMixin, Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     code_hash: Mapped[str] = mapped_column(String(64))
     used_at: Mapped[datetime | None]
+
+
+class UserPicture(Base):
+    """A person's photo, made small in the browser before it is sent; served at /avatars/<id>."""
+
+    __tablename__ = "user_pictures"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    content_type: Mapped[str] = mapped_column(String(32))
+    data: Mapped[bytes] = mapped_column(LargeBinary)
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow)
 
 
 class AuditEvent(IdMixin, Base):

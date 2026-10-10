@@ -35,6 +35,11 @@ class EmailText:
     invite_subject: str
     invite_lines: list[str]
     invite_action: str
+    change_subject: str
+    change_lines: list[str]
+    change_action: str
+    change_notice_subject: str
+    change_notice_lines: list[str]
 
 
 # Draft wording, to be rewritten before launch.
@@ -55,6 +60,18 @@ TEXT = {
             "Si vous ne vous attendiez pas à ce message, ignorez-le.",
         ],
         invite_action="Choisir mon mot de passe",
+        change_subject="Confirmez votre nouvelle adresse",
+        change_lines=[
+            "Ouvrez ce lien pour vous connecter désormais avec cette adresse. Il reste valable une heure.",
+            "Si vous n'avez rien demandé, ignorez ce message.",
+        ],
+        change_action="Confirmer cette adresse",
+        change_notice_subject="Changement d'adresse demandé",
+        change_notice_lines=[
+            "Quelqu'un a demandé à remplacer l'adresse de votre compte par {email}.",
+            "Elle ne changera que si le lien envoyé à cette adresse est ouvert. Si ce n'est pas vous, "
+            "changez votre mot de passe.",
+        ],
     ),
     "en": EmailText(
         verify_subject="Your verification code",
@@ -72,6 +89,18 @@ TEXT = {
             "If you weren't expecting this, ignore this message.",
         ],
         invite_action="Choose my password",
+        change_subject="Confirm your new address",
+        change_lines=[
+            "Open this link to sign in with this address from now on. It stays valid for one hour.",
+            "If you didn't ask for this, ignore this message.",
+        ],
+        change_action="Confirm this address",
+        change_notice_subject="Address change requested",
+        change_notice_lines=[
+            "Someone asked to replace your account's address with {email}.",
+            "It changes only if the link sent to that address is opened. "
+            "If it wasn't you, change your password.",
+        ],
     ),
 }
 
@@ -254,7 +283,9 @@ def sign_out_everywhere(user: User) -> None:
         )
 
 
-def _replace_token(user: User, purpose: str, secret: str, ttl: int | None = None) -> None:
+def _replace_token(
+    user: User, purpose: str, secret: str, ttl: int | None = None, payload: str | None = None
+) -> None:
     now = utcnow()
     db().execute(
         update(EmailToken)
@@ -267,6 +298,7 @@ def _replace_token(user: User, purpose: str, secret: str, ttl: int | None = None
             purpose=purpose,
             token_hash=hash_token(secret),
             expires_at=now + timedelta(seconds=ttl or get_settings().email_token_ttl),
+            payload=payload,
         )
     )
 

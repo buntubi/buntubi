@@ -18,7 +18,8 @@
     "./schemas/catalogue": "./src/schemas/catalogue.ts",
     "./schemas/team": "./src/schemas/team.ts",
     "./schemas/apps": "./src/schemas/apps.ts",
-    "./account": "./src/account.ts"
+    "./account": "./src/account.ts",
+    "./schemas/account": "./src/schemas/account.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

@@ -23,6 +23,12 @@ export interface AccountSummary {
     given_name: string;
     family_name: string;
     locale: string;
+    phone: string | null;
+    /** Two-letter ISO 3166 code. */
+    country: string | null;
+    picture: string | null;
+    /** A new address waiting for its link to be opened. */
+    pending_email: string | null;
     created_at: string;
   };
   mfa: { enabled: boolean; backup_codes_left: number };
@@ -41,6 +47,24 @@ export interface AccountService {
   signOut(id: string): Promise<string>;
   /** Signs every account out of this browser; answers where to go next. */
   signOutAll(): Promise<string>;
+  /** Changes what is given; an empty phone or country clears it. */
+  updateProfile(patch: ProfilePatch): Promise<void>;
+  /** The photo, already made small. */
+  setPicture(picture: Blob): Promise<void>;
+  removePicture(): Promise<void>;
+  /** Sends a link to the new address; the address changes once it is opened. */
+  requestEmailChange(input: { email: string; password: string }): Promise<void>;
+  cancelEmailChange(): Promise<void>;
+  /** The link from the new address was opened: answers the account's address now. */
+  confirmEmailChange(token: string): Promise<string>;
+}
+
+export interface ProfilePatch {
+  given_name?: string;
+  family_name?: string;
+  phone?: string;
+  country?: string;
+  locale?: 'fr' | 'en';
 }
 
 export const Account = injectionToken<AccountService>('Account');

@@ -62,7 +62,8 @@ def create_app(settings: Settings | None = None) -> Flask:
         session_check.sync_cookie(response)
         headers.setdefault("X-Content-Type-Options", "nosniff")
         headers.setdefault("Referrer-Policy", "no-referrer")
-        if not request.path.startswith(("/static/", "/.well-known/", "/oauth/check-session.js")):
+        # Avatars are public and their address changes with them: cached like static files.
+        if not request.path.startswith(("/static/", "/.well-known/", "/oauth/check-session.js", "/avatars/")):
             headers["Cache-Control"] = "no-store"
         origin = request.headers.get("Origin")
         if origin and origin in settings.cors_origins and request.path in _CORS_PATHS:

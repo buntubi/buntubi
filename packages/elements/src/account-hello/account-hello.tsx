@@ -10,6 +10,8 @@ const props = {
   name: prop.string(''),
   firstName: prop.string(''),
   email: prop.string(''),
+  /** The photo's address; empty: the initials. */
+  picture: prop.string(''),
   /** When the account was made, ISO; shown as a date in `locale`. */
   createdAt: prop.string(''),
   locale: prop.string('en'),
@@ -27,6 +29,7 @@ export class IdpAccountHello extends typedElement(props) {
       email: () => this.email,
       since: () => (this.createdAt ? new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(this.createdAt)) : ''),
       initials: () => initials(this.name || this.email),
+      picture: () => this.picture,
       editHref: () => this.editHref,
     };
     return useView(AccountHelloView)(logic);

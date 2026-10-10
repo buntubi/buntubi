@@ -7,18 +7,21 @@ import '@idp/skin/fonts.css';
 import '@idp/skin/styles.css';
 import './account.css';
 import { render, Show, ThemeProvider } from '@fluixi/core';
-import { Outlet, Router, useLocation, useRouteData } from '@fluixi/core/router';
+import { Link, Outlet, revalidate, Router, useLocation, useRouteData } from '@fluixi/core/router';
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
 import { provideRoot } from '@fluixi/start/di';
 import { Grid, Stack } from '@fluixi-ui/layout';
-import { Account, type AccountSummary } from '@idp/sdk/account';
+import { Account, type AccountService, type AccountSummary } from '@idp/sdk/account';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
 import type { AccountCheck } from '@idp/elements/account-check/logic';
 import '@idp/elements/account-hello';
 import '@idp/elements/account-switcher';
 import '@idp/elements/app-launcher';
+import '@idp/elements/contact-section';
+import '@idp/elements/preferences-section';
+import '@idp/elements/profile-section';
 import '@idp/elements/page-header';
 import { Shell, type Crumb } from '@idp/shell/shell';
 import { createDocumentScheme } from '@idp/theme/document';
@@ -31,12 +34,15 @@ import { accountWords, type AccountWords } from './i18n.js';
 
 const ICONS = {
   home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  person: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
   lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
 };
 
 /** The account area's addresses, built in one place. */
 const paths = {
   home: () => '/account',
+  info: () => '/account/info',
+  emailConfirm: () => '/account/email/confirm',
   security: () => '/account/security',
   signIn: () => '/signin',
 } as const;
@@ -71,17 +77,28 @@ function checksOf(summary: AccountSummary, w: AccountWords): AccountCheck[] {
 
 export function mountAccount(root: HTMLElement, context: Context): void {
   const { api, words: w, config } = context;
-  provideRoot([
-    {
-      provide: Account,
-      useValue: {
-        switchTo: async (id: string) => (await api<Redirect>('POST', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
-        signOut: async (id: string) => (await api<Redirect>('DELETE', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
-        signOutAll: async () => (await api<Redirect>('DELETE', '/api/accounts')).redirect,
-      },
-    },
-  ]);
+  // Every change shows at once: the pages on screen load the summary again.
+  const changed = async (call: Promise<unknown>) => {
+    await call;
+    revalidate(() => true);
+  };
+  const service: AccountService = {
+    switchTo: async (id) => (await api<Redirect>('POST', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
+    signOut: async (id) => (await api<Redirect>('DELETE', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
+    signOutAll: async () => (await api<Redirect>('DELETE', '/api/accounts')).redirect,
+    updateProfile: (patch) => changed(api('PATCH', '/api/account/profile', patch)),
+    setPicture: (picture) => changed(api('POST', '/api/account/picture', picture)),
+    removePicture: () => changed(api('DELETE', '/api/account/picture')),
+    requestEmailChange: (input) => changed(api('POST', '/api/account/email', input)),
+    cancelEmailChange: () => changed(api('DELETE', '/api/account/email')),
+    confirmEmailChange: async (token) => (await api<{ email: string }>('POST', '/api/account/email/confirm', { token })).email,
+  };
+  provideRoot([{ provide: Account, useValue: service }]);
   const summary = () => api<AccountSummary>('GET', '/api/account');
+  const describe = (error: unknown) => {
+    const code = error instanceof Error ? error.message : 'generic';
+    return context.text.messages[code] ?? context.text.messages.generic ?? '';
+  };
 
   function Layout(): ComponentChild {
     const location = useLocation();
@@ -89,14 +106,18 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     const collapsed = signal(false);
     const item = (label: string, href: string, icon: string) => ({ label, href, icon, current: location.pathname === href });
     const crumbs = (): Crumb[] => {
-      const here = location.pathname === paths.security() ? w.nav.security : w.nav.home;
+      const here = location.pathname === paths.security() ? w.nav.security : location.pathname === paths.home() ? w.nav.home : w.nav.info;
       return [{ label: w.product, href: paths.home() }, { label: here }];
     };
     return (
       <Shell
         brand={{ name: config.brand.name ?? '', href: paths.home() }}
         context={null}
-        groups={[{ label: '', items: [item(w.nav.home, paths.home(), ICONS.home), item(w.nav.security, paths.security(), ICONS.lock)] }]}
+        groups={[{ label: '', items: [
+              item(w.nav.home, paths.home(), ICONS.home),
+              item(w.nav.info, paths.info(), ICONS.person),
+              item(w.nav.security, paths.security(), ICONS.lock),
+            ], }]}
         sidebarLabels={{ product: w.product, ...w.sidebar }}
         collapsed={collapsed()}
         onToggle={(next) => collapsed.set(next)}
@@ -129,11 +150,20 @@ export function mountAccount(root: HTMLElement, context: Context): void {
             firstName={data()?.user.given_name ?? ''}
             email={data()?.user.email ?? ''}
             createdAt={data()?.user.created_at ?? ''}
+            picture={data()?.user.picture ?? ''}
             locale={config.locale}
+            editHref={paths.info()}
             labels={w.hello}
           />
           <idp-account-check checks={data() ? checksOf(data()!, w) : []} labels={w.check} />
           <Grid columns={{ base: 1, md: 2 }} gap={4}>
+            <idp-account-area
+              title={w.areas.info.title}
+              note={w.areas.info.note}
+              link={w.areas.info.link}
+              href={paths.info()}
+              icon={ICONS.person}
+            />
             <idp-account-area
               title={w.areas.security.title}
               note={w.areas.security.note}
@@ -145,6 +175,67 @@ export function mountAccount(root: HTMLElement, context: Context): void {
           <idp-app-launcher apps={data()?.apps ?? []} title={w.apps} />
         </Stack>
       </Show>
+    );
+  }
+
+  function Info(): ComponentChild {
+    const data = useRouteData<AccountSummary>();
+    const user = () => data()?.user;
+    return (
+      <Stack gap={5}>
+        <idp-page-header title={w.info.title} intro={w.info.intro} />
+        <Show when={user()} fallback={<p>{w.loading}</p>}>
+          <idp-profile-section
+            givenName={user()?.given_name ?? ''}
+            familyName={user()?.family_name ?? ''}
+            email={user()?.email ?? ''}
+            picture={user()?.picture ?? ''}
+            labels={w.info.profile}
+            messages={context.text.messages}
+            describe={describe}
+          />
+          <idp-contact-section
+            email={user()?.email ?? ''}
+            verified={user()?.email_verified === true}
+            pendingEmail={user()?.pending_email ?? ''}
+            phone={user()?.phone ?? ''}
+            labels={w.info.contact}
+            messages={context.text.messages}
+            describe={describe}
+          />
+          <idp-preferences-section
+            locale={user()?.locale ?? config.locale}
+            country={user()?.country ?? ''}
+            labels={w.info.preferences}
+            describe={describe}
+            onLanguage={(event) => window.location.assign(`?lang=${event.detail.locale}`)}
+          />
+        </Show>
+      </Stack>
+    );
+  }
+
+  /** The link from the new address: confirmed while the page loads, once. */
+  const confirmEmail = ({ location }: { location: () => { query: Record<string, string> } }) =>
+    service.confirmEmailChange(location().query.token ?? '').then(
+      (email) => ({ email, error: null }),
+      (error: unknown) => ({ email: null, error: describe(error) }),
+    );
+
+  function EmailConfirm(): ComponentChild {
+    const result = useRouteData<{ email: string | null; error: string | null }>();
+    return (
+      <Stack gap={5}>
+        <idp-page-header title={w.emailConfirm.title} />
+        <Show when={result()} fallback={<p>{w.emailConfirm.working}</p>}>
+          <section class="account-card" role="status">
+            <Show when={result()?.email} fallback={<p class="account-alert">{result()?.error}</p>}>
+              <p>{w.emailConfirm.done.replace('{email}', result()?.email ?? '')}</p>
+            </Show>
+            <Link href={paths.info()}>{w.emailConfirm.back}</Link>
+          </section>
+        </Show>
+      </Stack>
     );
   }
 
@@ -180,6 +271,8 @@ export function mountAccount(root: HTMLElement, context: Context): void {
       data: summary,
       children: [
         { path: paths.home(), component: Home, data: summary },
+        { path: paths.info(), component: Info, data: summary },
+        { path: paths.emailConfirm(), component: EmailConfirm, data: confirmEmail },
         { path: paths.security(), component: Security, data: summary },
       ],
     },

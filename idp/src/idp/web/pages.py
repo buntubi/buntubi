@@ -9,12 +9,13 @@ from urllib.parse import parse_qs, urlparse
 
 from authlib.oauth2 import OAuth2Error
 from authlib.oauth2.rfc6749 import scope_to_list
-from flask import Blueprint, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, redirect, render_template, request, session, url_for
 from werkzeug.wrappers import Response
 
 from idp import plugins
 from idp.config import get_settings
 from idp.db import db
+from idp.models import UserPicture
 from idp.oauth.server import authorization, query_client
 from idp.security import csrf
 from idp.services import platform, sessions
@@ -160,6 +161,19 @@ def account(section: str = "") -> Any:
         sessions.remember_return_to(request.full_path.rstrip("?"))
         return redirect(url_for("pages.signin"))
     return shell("idp-account-app", account=True)
+
+
+@bp.get("/avatars/<uuid:user_id>")
+def avatar(user_id: Any) -> Any:
+    """A person's photo, public as the `picture` claim is; its address changes with it."""
+    row = db().get(UserPicture, user_id)
+    if row is None:
+        abort(404)
+    response = Response(row.data, mimetype=row.content_type)
+    response.cache_control.public = True
+    response.cache_control.max_age = 31_536_000
+    response.cache_control.immutable = True
+    return response
 
 
 @bp.get("/device")
