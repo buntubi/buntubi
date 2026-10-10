@@ -94,6 +94,11 @@ def regenerate_backup_codes(user: User, code: str) -> list[str]:
 
 def disable(user: User, code: str) -> None:
     verify(user, code)
+    remove(user)
+
+
+def remove(user: User) -> None:
+    """Two-step off without a code: an admin's answer to a lost phone. The person sets it up again."""
     db().execute(delete(BackupCode).where(BackupCode.user_id == user.id))
     db().execute(delete(TotpCredential).where(TotpCredential.user_id == user.id))
 

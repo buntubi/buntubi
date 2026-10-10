@@ -13,18 +13,19 @@ from functools import wraps
 from typing import Any, Literal, NoReturn, TypeVar
 
 from authlib.integrations.flask_oauth2 import current_token
-from flask import Blueprint, Response, abort, jsonify, request
+from flask import Blueprint, Response, abort, jsonify, request, url_for
 from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy import func, select
 
 from idp import plugins
+from idp.config import get_settings
 from idp.db import db, utcnow
-from idp.models import ApiProduct, AppReview, AuditEvent, Client, Organization, Scope, User
+from idp.models import ApiProduct, AppReview, AuditEvent, Client, LoginSession, Organization, Scope, User
 from idp.models.clients import GRANT_TYPES
 from idp.oauth.server import require_token
-from idp.services import audit, mfa
+from idp.services import accounts, audit, mail, mfa
 from idp.services import platform as p
-from idp.services.accounts import sign_out_everywhere
+from idp.services.accounts import AccountError, sign_out_everywhere
 from idp.services.credentials import issue_client_secret, rotate_client_secret
 from idp.services.platform import PlatformError
 from idp.web.validation import parse
@@ -38,6 +39,13 @@ PAGE_SIZE = 50
 def refuse(code: str, status: int, **details: Any) -> NoReturn:
     """Stops the request with a JSON refusal the console can word."""
     abort(Response(json.dumps({"error": code, **details}), status=status, mimetype="application/json"))
+
+
+@bp.errorhandler(mail.MailError)
+def _mail_failed(error: mail.MailError) -> tuple[Response, int]:
+    # An invitation that never left is not kept: the admin tries again once email works.
+    db().rollback()
+    return jsonify(error="email_not_sent"), 503
 
 
 @bp.errorhandler(PlatformError)
@@ -115,20 +123,42 @@ def _client_json(client: Client) -> dict[str, Any]:
     }
 
 
-def _user_json(user: User) -> dict[str, Any]:
+def _last_sign_ins(ids: list[uuid.UUID]) -> dict[uuid.UUID, datetime]:
+    """When each of these accounts last signed in, from their login sessions."""
+    if not ids:
+        return {}
+    rows = db().execute(
+        select(LoginSession.user_id, func.max(LoginSession.created_at))
+        .where(LoginSession.user_id.in_(ids))
+        .group_by(LoginSession.user_id)
+    )
+    return {user_id: at for user_id, at in rows}
+
+
+def _user_json(user: User, last_sign_in: datetime | None = None) -> dict[str, Any]:
     return {
         "id": str(user.id),
         "email": user.email,
         "email_verified": user.email_verified,
         "given_name": user.given_name,
         "family_name": user.family_name,
+        "locale": user.locale,
+        "country": user.country,
+        "phone": user.phone,
         "roles": user.roles,
         "superadmin": user.is_superadmin,
         "developer": user.developer_since is not None,
+        "developer_since": user.developer_since.isoformat() if user.developer_since else None,
+        "password_set": user.password_hash is not None,
         "mfa": mfa.is_enabled(user),
         "disabled": user.disabled_at is not None,
         "created_at": user.created_at.isoformat(),
+        "last_sign_in_at": last_sign_in.isoformat() if last_sign_in else None,
     }
+
+
+def _one_user_json(user: User) -> dict[str, Any]:
+    return _user_json(user, _last_sign_ins([user.id]).get(user.id))
 
 
 def _client_or_404(client_id: str) -> Client:
@@ -262,13 +292,127 @@ def list_users(admin: User) -> Response:
         except ValueError:
             abort(400)
     users = db().scalars(query).all()
-    return jsonify(items=[_user_json(u) for u in users])
+    last = _last_sign_ins([u.id for u in users])
+    return jsonify(items=[_user_json(u, last.get(u.id)) for u in users])
+
+
+class UserIn(BaseModel):
+    email: str = Field(min_length=3, max_length=320)
+    given_name: str = Field(default="", max_length=100)
+    family_name: str = Field(default="", max_length=100)
+    locale: Literal["fr", "en"] = "fr"
+    # Set: the account is ready, its address counts as verified and no email is sent. Absent:
+    # the person is invited by email to choose a password.
+    password: str | None = Field(default=None, min_length=1, max_length=256)
+
+
+class UserPatch(BaseModel):
+    given_name: str | None = Field(default=None, max_length=100)
+    family_name: str | None = Field(default=None, max_length=100)
+    locale: Literal["fr", "en"] | None = None
+    # Two-letter ISO 3166, and E.164; an empty string clears them.
+    country: str | None = Field(default=None, pattern=r"^([A-Z]{2})?$")
+    phone: str | None = Field(default=None, pattern=r"^(\+[1-9][0-9]{6,14})?$")
+
+
+def _reset_url() -> str:
+    return f"{get_settings().issuer}{url_for('pages.reset_password')}"
+
+
+@bp.post("/users")
+@admin_only
+def create_user(admin: User) -> tuple[Response, int]:
+    data = parse(UserIn)
+    try:
+        user = accounts.create_by_admin(
+            data.email, data.given_name, data.family_name, data.locale, _reset_url(), data.password
+        )
+    except AccountError as error:
+        db().rollback()
+        return jsonify(error=error.code), 409 if error.code == "email_taken" else 422
+    audit.record("admin.user_created", user=admin, target=str(user.id), invited=data.password is None)
+    db().commit()
+    return jsonify(user=_one_user_json(user)), 201
 
 
 @bp.get("/users/<user_id>")
 @admin_only
 def get_user(user_id: str, admin: User) -> Response:
-    return jsonify(user=_user_json(_user_or_404(user_id)))
+    user = _user_or_404(user_id)
+    memberships = [
+        {
+            "id": str(m.organization.id),
+            "name": m.organization.name,
+            "role": m.role,
+            "platform": m.organization.is_platform,
+        }
+        for m in p.memberships_of(user)
+    ]
+    now = utcnow()
+    sessions = db().scalar(
+        select(func.count())
+        .select_from(LoginSession)
+        .where(
+            LoginSession.user_id == user.id, LoginSession.revoked_at.is_(None), LoginSession.expires_at > now
+        )
+    )
+    return jsonify(user=_one_user_json(user), organizations=memberships, active_sessions=int(sessions or 0))
+
+
+@bp.patch("/users/<user_id>")
+@admin_only
+def update_user(user_id: str, admin: User) -> Response:
+    user = _user_or_404(user_id)
+    patch = parse(UserPatch)
+    for name in ("given_name", "family_name", "locale"):
+        value = getattr(patch, name)
+        if value is not None:
+            setattr(user, name, value.strip() if isinstance(value, str) else value)
+    for name in ("country", "phone"):
+        if name in patch.model_fields_set:
+            setattr(user, name, getattr(patch, name) or None)
+    audit.record("admin.user_updated", user=admin, target=str(user.id), fields=sorted(patch.model_fields_set))
+    db().commit()
+    return jsonify(user=_one_user_json(user))
+
+
+@bp.post("/users/<user_id>/password-reset")
+@admin_only
+def send_password_reset(user_id: str, admin: User) -> Any:
+    user = _user_or_404(user_id)
+    try:
+        accounts.send_password_reset(user, _reset_url())
+    except AccountError as error:
+        return jsonify(error=error.code), 422
+    audit.record("admin.password_reset_sent", user=admin, target=str(user.id))
+    db().commit()
+    return jsonify(sent=True), 202
+
+
+@bp.post("/users/<user_id>/sign-out")
+@admin_only
+def sign_out_user(user_id: str, admin: User) -> Response:
+    user = _user_or_404(user_id)
+    sign_out_everywhere(user)
+    audit.record("admin.user_signed_out", user=admin, target=str(user.id))
+    db().commit()
+    return jsonify(user=_one_user_json(user))
+
+
+@bp.delete("/users/<user_id>/mfa")
+@admin_only
+def reset_two_step(user_id: str, admin: User) -> Any:
+    user = _user_or_404(user_id)
+    # Your own is turned off from your account page, with a code; a superadmin's never from here.
+    if user.id == admin.id:
+        return jsonify(error="use_your_account_page"), 422
+    if user.is_superadmin:
+        return jsonify(error="superadmin_protected"), 422
+    mfa.remove(user)
+    sign_out_everywhere(user)
+    audit.record("admin.two_step_reset", user=admin, target=str(user.id))
+    db().commit()
+    return jsonify(user=_one_user_json(user))
 
 
 @bp.post("/users/<user_id>/disable")
@@ -283,7 +427,7 @@ def disable_user(user_id: str, admin: User) -> Any:
     sign_out_everywhere(user)
     audit.record("admin.user_disabled", user=admin, target=str(user.id))
     db().commit()
-    return jsonify(user=_user_json(user))
+    return jsonify(user=_one_user_json(user))
 
 
 @bp.post("/users/<user_id>/admin")
@@ -297,7 +441,7 @@ def grant_admin(user_id: str, admin: User) -> Any:
     p.grant_admin(user)
     audit.record("admin.role_granted", user=admin, target=str(user.id))
     db().commit()
-    return jsonify(user=_user_json(user))
+    return jsonify(user=_one_user_json(user))
 
 
 @bp.delete("/users/<user_id>/admin")
@@ -312,7 +456,7 @@ def revoke_admin(user_id: str, admin: User) -> Any:
     p.revoke_admin(user)
     audit.record("admin.role_removed", user=admin, target=str(user.id))
     db().commit()
-    return jsonify(user=_user_json(user))
+    return jsonify(user=_one_user_json(user))
 
 
 @bp.post("/users/<user_id>/enable")
@@ -322,7 +466,7 @@ def enable_user(user_id: str, admin: User) -> Response:
     user.disabled_at = None
     audit.record("admin.user_enabled", user=admin, target=str(user.id))
     db().commit()
-    return jsonify(user=_user_json(user))
+    return jsonify(user=_one_user_json(user))
 
 
 @bp.get("/audit")

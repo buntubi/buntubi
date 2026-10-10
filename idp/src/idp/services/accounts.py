@@ -32,6 +32,9 @@ class EmailText:
     reset_subject: str
     reset_lines: list[str]
     reset_action: str
+    invite_subject: str
+    invite_lines: list[str]
+    invite_action: str
 
 
 # Draft wording, to be rewritten before launch.
@@ -45,6 +48,13 @@ TEXT = {
             "Si vous n'avez rien demandé, ignorez ce message.",
         ],
         reset_action="Choisir un nouveau mot de passe",
+        invite_subject="Votre compte vous attend",
+        invite_lines=[
+            "Un compte a été créé pour vous.",
+            "Ouvrez ce lien pour choisir votre mot de passe. Il reste valable sept jours.",
+            "Si vous ne vous attendiez pas à ce message, ignorez-le.",
+        ],
+        invite_action="Choisir mon mot de passe",
     ),
     "en": EmailText(
         verify_subject="Your verification code",
@@ -55,6 +65,13 @@ TEXT = {
             "If you didn't ask for this, ignore this message.",
         ],
         reset_action="Choose a new password",
+        invite_subject="Your account is ready",
+        invite_lines=[
+            "An account was created for you.",
+            "Open this link to choose your password. It stays valid for seven days.",
+            "If you weren't expecting this, ignore this message.",
+        ],
+        invite_action="Choose my password",
     ),
 }
 
@@ -104,6 +121,67 @@ def register(data: NewAccount) -> User:
     return user
 
 
+# An invitation waits longer than a reset: the person did not ask for it and may read it late.
+INVITATION_TTL = 7 * 24 * 3600
+
+
+def create_by_admin(
+    email: str,
+    given_name: str,
+    family_name: str,
+    locale: str,
+    reset_url: str,
+    password: str | None = None,
+) -> User:
+    """
+    An account made by an admin. Without a password, the person gets a link to choose one, which
+    also proves the address. With one, the account is ready: the address counts as verified, no
+    email is sent, and the person signs in with it.
+    """
+    if password is not None and not passwords.is_acceptable(password):
+        raise AccountError("weak_password")
+    try:
+        address = validate_email(email, check_deliverability=False).normalized.lower()
+    except EmailNotValidError:
+        raise AccountError("invalid_email") from None
+    if db().scalar(select(User.id).where(User.email == address)) is not None:
+        raise AccountError("email_taken")
+    user = User(
+        email=address,
+        password_hash=passwords.hash_password(password) if password is not None else None,
+        email_verified_at=utcnow() if password is not None else None,
+        given_name=given_name.strip()[:100],
+        family_name=family_name.strip()[:100],
+        locale=locale if locale in TEXT else "fr",
+    )
+    db().add(user)
+    db().flush()
+    plugins.emit("account.created", {"user": str(user.id), "email": user.email})
+    if password is not None:
+        return user
+    token = new_token()
+    _replace_token(user, RESET_PASSWORD, token, ttl=INVITATION_TTL)
+    text = TEXT[user.locale]
+    body_text, body_html = mail.render(
+        text.invite_subject, text.invite_lines, link=(text.invite_action, f"{reset_url}?token={token}")
+    )
+    mail.send(mail.Message(user.email, text.invite_subject, body_text, body_html))
+    return user
+
+
+def send_password_reset(user: User, reset_url: str) -> None:
+    """A reset link for this account, as the console sends it on the person's behalf."""
+    if user.disabled_at is not None:
+        raise AccountError("account_disabled")
+    token = new_token()
+    _replace_token(user, RESET_PASSWORD, token)
+    text = TEXT[user.locale]
+    body_text, body_html = mail.render(
+        text.reset_subject, text.reset_lines, link=(text.reset_action, f"{reset_url}?token={token}")
+    )
+    mail.send(mail.Message(user.email, text.reset_subject, body_text, body_html))
+
+
 def authenticate(email: str, password: str) -> User | None:
     """The user, or None: unknown address, wrong password and disabled account look alike."""
     user = db().scalar(select(User).where(User.email == normalize_email(email)))
@@ -139,13 +217,7 @@ def request_password_reset(email: str, reset_url: str) -> None:
     user = db().scalar(select(User).where(User.email == normalize_email(email)))
     if user is None or user.disabled_at is not None:
         return
-    token = new_token()
-    _replace_token(user, RESET_PASSWORD, token)
-    text = TEXT[user.locale]
-    body_text, body_html = mail.render(
-        text.reset_subject, text.reset_lines, link=(text.reset_action, f"{reset_url}?token={token}")
-    )
-    mail.send(mail.Message(user.email, text.reset_subject, body_text, body_html))
+    send_password_reset(user, reset_url)
 
 
 def reset_password(token: str, new_password: str) -> User:
@@ -182,7 +254,7 @@ def sign_out_everywhere(user: User) -> None:
         )
 
 
-def _replace_token(user: User, purpose: str, secret: str) -> None:
+def _replace_token(user: User, purpose: str, secret: str, ttl: int | None = None) -> None:
     now = utcnow()
     db().execute(
         update(EmailToken)
@@ -194,7 +266,7 @@ def _replace_token(user: User, purpose: str, secret: str) -> None:
             user_id=user.id,
             purpose=purpose,
             token_hash=hash_token(secret),
-            expires_at=now + timedelta(seconds=get_settings().email_token_ttl),
+            expires_at=now + timedelta(seconds=ttl or get_settings().email_token_ttl),
         )
     )
 

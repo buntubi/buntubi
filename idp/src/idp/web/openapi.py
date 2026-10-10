@@ -42,6 +42,8 @@ REQUEST_MODELS: list[type[BaseModel]] = [
     admin.ScopePatch,
     admin.ProductIn,
     admin.ProductPatch,
+    admin.UserIn,
+    admin.UserPatch,
 ]
 
 # ── Schemas ───────────────────────────────────────────────────────────────────────────────────
@@ -338,12 +340,28 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "email_verified": BOOL,
             "given_name": STRING,
             "family_name": STRING,
+            "locale": STRING,
+            "country": MAYBE_STRING,
+            "phone": MAYBE_STRING,
             "roles": STRINGS,
             "superadmin": BOOL,
             "developer": BOOL,
+            "developer_since": MAYBE_TIME,
+            "password_set": BOOL,
             "mfa": BOOL,
             "disabled": BOOL,
             "created_at": TIME,
+            "last_sign_in_at": MAYBE_TIME,
+        }
+    ),
+    "AdminUserPage": obj(
+        {
+            "user": ref("AdminUser"),
+            "organizations": {
+                "type": "array",
+                "items": obj({"id": STRING, "name": STRING, "role": ROLE, "platform": BOOL}),
+            },
+            "active_sessions": INT,
         }
     ),
     "AdminOrganization": obj(
@@ -961,9 +979,53 @@ def paths() -> dict[str, dict[str, Any]]:
                 params=["client_id"],
             )
         },
-        "/admin/api/users": {"get": op("Users", a, ADMIN, listing("AdminUser"), query=["q", "before"])},
+        "/admin/api/users": {
+            "get": op("Users", a, ADMIN, listing("AdminUser"), query=["q", "before"]),
+            "post": op(
+                "Create an account: invited by email, or ready with a password the admin sets",
+                a,
+                ADMIN,
+                {"201": answer(obj({"user": ref("AdminUser")}), "Created and invited")},
+                request=body(ref("UserIn")),
+            ),
+        },
         "/admin/api/users/{user_id}": {
-            "get": op("A user", a, ADMIN, one("user", "AdminUser"), params=["user_id"])
+            "get": op(
+                "A user, their organizations and open sessions",
+                a,
+                ADMIN,
+                ok("AdminUserPage"),
+                params=["user_id"],
+            ),
+            "patch": op(
+                "Change a profile",
+                a,
+                ADMIN,
+                one("user", "AdminUser"),
+                request=body(ref("UserPatch")),
+                params=["user_id"],
+            ),
+        },
+        "/admin/api/users/{user_id}/password-reset": {
+            "post": op(
+                "Email a password reset link",
+                a,
+                ADMIN,
+                {"202": answer(obj({"sent": BOOL}), "Sent")},
+                params=["user_id"],
+            )
+        },
+        "/admin/api/users/{user_id}/sign-out": {
+            "post": op("End every session of a user", a, ADMIN, one("user", "AdminUser"), params=["user_id"])
+        },
+        "/admin/api/users/{user_id}/mfa": {
+            "delete": op(
+                "Turn off a user's two-step sign-in (not yours, not a superadmin's)",
+                a,
+                ADMIN,
+                one("user", "AdminUser"),
+                params=["user_id"],
+            )
         },
         "/admin/api/users/{user_id}/disable": {
             "post": op(
