@@ -25,7 +25,7 @@ export const organizationListView = (l: OrganizationListLogic) => (
       <Show when={l.organizations().length} fallback={<p class="empty">{() => l.labels().empty}</p>}>
         <div class="rows">
           <For each={l.organizations()} by={(organization) => organization.id}>
-            {(organization) => <idp-organization-row organization={organization()} appsHref={l.appsHref()} labels={l.rowLabels()} describe={l.describe()} />}
+            {(organization) => <idp-organization-row organization={organization()} appsHref={l.appsHref()} messages={l.messages()} labels={l.rowLabels()} describe={l.describe()} />}
           </For>
         </div>
       </Show>

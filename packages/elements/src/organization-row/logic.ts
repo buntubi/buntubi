@@ -1,4 +1,6 @@
 /** One organization for the platform owner: what it is, and suspending or restoring it. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { SuspendInput } from '@idp/sdk/schemas/organizations';
 import type { AdminOrganization } from '@idp/sdk/types';
 
 export interface OrganizationRowLabels {
@@ -32,6 +34,11 @@ export const organizationRowLabels: OrganizationRowLabels = {
   error: 'Something went wrong. Try again.',
 };
 
+/** The form engine's root, typed per field. */
+export interface SuspendForm extends ReactiveForm<SuspendInput> {
+  get<K extends keyof SuspendInput>(key: K): ReactiveControl<SuspendInput[K]>;
+}
+
 export interface OrganizationRowLogic {
   labels: () => OrganizationRowLabels;
   organization: () => AdminOrganization | null;
@@ -41,10 +48,8 @@ export interface OrganizationRowLogic {
   /** The reason editor is open. */
   suspending: () => boolean;
   openSuspend: (open: boolean) => void;
-  reason: () => string;
-  editReason: (value: string) => void;
-  canSuspend: () => boolean;
-  suspend: () => Promise<void>;
+  form: SuspendForm;
+  suspend: (values: SuspendInput) => Promise<void>;
   restore: () => Promise<void>;
   busy: () => boolean;
   error: () => string | null;

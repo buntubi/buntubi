@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useRouteData, type RouteDataArgs } from '@flu
 import '@idp/elements/organization-list';
 import '@idp/elements/search-box';
 import { errorText, t } from '../lib/i18n.js';
-import { organizationListLabels, organizationRowLabels } from '../lib/labels.js';
+import { organizationListLabels, organizationRowLabels, formMessages } from '../lib/labels.js';
 import { searchOf } from '../lib/params.js';
 import type { OrganizationRow } from '../lib/types.js';
 import { paths } from '../lib/paths.js';
@@ -28,7 +28,7 @@ export default function OrganizationsPage() {
           onSearch={(event) => navigate(paths.organizations(event.detail.q), { replace: true })}
         />
       </StickyHead>
-      <idp-organization-list organizations={data() ?? []} appsHref={paths.organizationAppsPattern()} labels={organizationListLabels()} rowLabels={organizationRowLabels()} describe={errorText} />
+      <idp-organization-list messages={formMessages()} organizations={data() ?? []} appsHref={paths.organizationAppsPattern()} labels={organizationListLabels()} rowLabels={organizationRowLabels()} describe={errorText} />
     </Stack>
   );
 }

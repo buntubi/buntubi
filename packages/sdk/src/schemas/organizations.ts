@@ -14,3 +14,10 @@ export const organizationSchema = z.object({
 });
 
 export type OrganizationInput = z.infer<typeof organizationSchema>;
+
+/** Why the console suspends an organization (idp web/admin.py SuspendIn); its owners read it. */
+export const suspendSchema = z.object({
+  reason: z.string().trim().min(1, 'form.required').max(500, 'form.tooLong'),
+});
+
+export type SuspendInput = z.infer<typeof suspendSchema>;

@@ -1,12 +1,16 @@
 /** One organization as a table row, with its suspension, changed through the injected `Admin` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
+import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Admin } from '@idp/sdk/admin';
+import { suspendSchema, type SuspendInput } from '@idp/sdk/schemas/organizations';
+import { messageReader, type Messages } from '../messages.js';
+import { fieldValidator, type FormSchema } from '../validators.js';
 import type { AdminOrganization } from '@idp/sdk/types';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';
-import { organizationRowLabels, type OrganizationRowLabels, type OrganizationRowLogic } from './logic.js';
+import { organizationRowLabels, type OrganizationRowLabels, type OrganizationRowLogic, type SuspendForm } from './logic.js';
 import { OrganizationRowView } from './view.js';
 
 const props = {
@@ -15,6 +19,10 @@ const props = {
   appsHref: prop.string('/apps?q={name}'),
   labels: prop.object<Partial<OrganizationRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
+  /** Checks the reason before suspending; messages are keys read through `messages`. */
+  schema: prop.any<FormSchema<SuspendInput>>(suspendSchema),
+  /** Text for validation keys; see messages.ts. */
+  messages: prop.object<Messages>({}),
 };
 
 export class IdpOrganizationRow extends typedElement(props) {
@@ -22,7 +30,10 @@ export class IdpOrganizationRow extends typedElement(props) {
     const admin = inject(Admin);
     const labels = () => ({ ...organizationRowLabels, ...this.labels });
     const suspending = signal(false);
-    const reason = signal('');
+    const text = messageReader(() => this.messages);
+    const form: SuspendForm = createForm({
+      reason: createField('', { validators: [fieldValidator<SuspendInput, 'reason'>(() => this.schema, 'reason', text)] }),
+    });
     const busy = signal(false);
     const error = signal<string | null>(null);
     const run = async (work: () => Promise<void>) => {
@@ -45,15 +56,13 @@ export class IdpOrganizationRow extends typedElement(props) {
       suspending,
       openSuspend: (open) => {
         suspending.set(open);
-        if (!open) reason.set('');
+        if (!open) form.get('reason').setValue('');
       },
-      reason,
-      editReason: (value) => reason.set(value),
-      canSuspend: () => !busy() && !!reason().trim(),
-      suspend: () =>
+      form,
+      suspend: (values) =>
         run(async () => {
-          await admin.suspendOrganization({ id: id(), reason: reason().trim() });
-          reason.set('');
+          await admin.suspendOrganization({ id: id(), reason: values.reason.trim() });
+          form.get('reason').setValue('');
           suspending.set(false);
         }),
       restore: () => run(() => admin.restoreOrganization(id())),

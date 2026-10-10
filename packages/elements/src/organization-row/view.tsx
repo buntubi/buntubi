@@ -2,6 +2,7 @@
 import { For, Show } from '@fluixi/core';
 import { Link } from '@fluixi/core/router';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { OrganizationRowLogic } from './logic.js';
@@ -27,7 +28,7 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
       .dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
       .why { color: var(--idp-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
       .action { display: flex; justify-content: flex-end; }
-      .editor { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 12px; border-radius: 10px; background: var(--idp-surface-2); }
+      .editor { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: start; padding: 12px; border-radius: 10px; background: var(--idp-surface-2); }
       .alert { grid-column: 1 / -1; margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 960px) { .organization { grid-template-columns: minmax(0, 1fr) auto; } .organization > [role='cell']:not(.who):not(.action) { grid-column: 1; } .action { grid-row: 1; grid-column: 2; } .editor { grid-template-columns: 1fr; } }
     `}</style>
@@ -75,26 +76,28 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
       </Show>
     </span>
     <Show when={r.suspending() && !r.organization()?.suspended}>
-      <form
-        class="editor"
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          if (r.canSuspend()) void r.suspend();
-        }}
-      >
-        <Input
-          value={() => r.reason()}
-          aria-label={() => r.labels().reason}
-          placeholder={() => r.labels().reason}
-          onInput={(event: Event) => r.editReason((event.target as HTMLInputElement).value)}
-        />
-        <Button type="submit" variant="solid" tone="danger" size="sm" disabled={!r.canSuspend()}>
-          {() => r.labels().confirm}
-        </Button>
-        <Button variant="ghost" tone="neutral" size="sm" onPress={() => r.openSuspend(false)}>
-          {() => r.labels().cancel}
-        </Button>
-      </form>
+      <Form form={r.form} onSubmit={(values) => r.suspend(values)} novalidate>
+        <div class="editor">
+          <FormField control={r.form.get('reason')}>
+            {(b) => (
+              <Input
+                name="reason"
+                aria-label={r.labels().reason}
+                placeholder={r.labels().reason}
+                value={b.value()}
+                onInput={b.onInput}
+                onBlur={b.onBlur}
+              />
+            )}
+          </FormField>
+          <Button type="submit" variant="solid" tone="danger" size="sm" disabled={r.busy()}>
+            {() => r.labels().confirm}
+          </Button>
+          <Button variant="ghost" tone="neutral" size="sm" onPress={() => r.openSuspend(false)}>
+            {() => r.labels().cancel}
+          </Button>
+        </div>
+      </Form>
     </Show>
     <Show when={r.error()}>
       <p class="alert" role="alert">

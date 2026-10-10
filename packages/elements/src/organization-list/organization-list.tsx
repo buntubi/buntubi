@@ -15,6 +15,8 @@ const props = {
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
   /** Handed to every row: an organization's apps, `{name}` replaced. */
   appsHref: prop.string('/apps?q={name}'),
+  /** Text for validation keys, handed to every row; see messages.ts. */
+  messages: prop.object<Record<string, string>>({}),
 };
 
 export class IdpOrganizationList extends typedElement(props) {
@@ -25,6 +27,7 @@ export class IdpOrganizationList extends typedElement(props) {
       rowLabels: () => this.rowLabels,
       describe: () => this.describe,
       appsHref: () => this.appsHref,
+      messages: () => this.messages,
     };
     return useView(OrganizationListView)(logic);
   }
