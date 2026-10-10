@@ -8,6 +8,7 @@ import type { ScopeFormLabels } from '@idp/elements/scope-form/logic';
 import type { ScopeListLabels } from '@idp/elements/scope-list/logic';
 import type { ScopeRowLabels } from '@idp/elements/scope-row/logic';
 import type { Stat } from '@idp/elements/stat-group/logic';
+import type { ClientDetailLabels } from '@idp/elements/client-detail/logic';
 import type { ClientListLabels } from '@idp/elements/client-list/logic';
 import type { ClientRowLabels } from '@idp/elements/client-row/logic';
 import type { UserListLabels } from '@idp/elements/user-list/logic';
@@ -130,6 +131,8 @@ export const organizationListLabels = (): OrganizationListLabels => ({
 });
 
 export const organizationRowLabels = (): OrganizationRowLabels => ({
+  platform: t('orgs.platform'),
+  platformHelp: t('orgs.platformHelp'),
   approved: t('organizations.approved'),
   none: t('organizations.noScope'),
   active: t('organizations.active'),
@@ -153,6 +156,10 @@ export const userListLabels = (): UserListLabels => ({
 
 export const userRowLabels = (): UserRowLabels => ({
   admin: t('users.admin'),
+  superadmin: t('users.superadmin'),
+  actions: t('users.actions'),
+  makeAdmin: t('users.makeAdmin'),
+  removeAdmin: t('users.removeAdmin'),
   developer: t('users.developer'),
   mfa: t('users.twoStep'),
   unverified: t('users.unverified'),
@@ -181,6 +188,42 @@ export const clientRowLabels = (): ClientRowLabels => ({
   disabled: t('apps.disabled'),
   firstParty: t('apps.firstParty'),
   notPlatform: t('apps.notPlatform'),
+  error: t('error.generic'),
+});
+
+export const clientDetailLabels = (): ClientDetailLabels => ({
+  overview: t('apps.overview'),
+  organization: t('apps.organization'),
+  platform: t('apps.platform'),
+  environment: t('apps.environment'),
+  live: t('apps.live'),
+  sandbox: t('apps.sandbox'),
+  review: t('apps.review'),
+  reviews: {
+    none: t('apps.review.none'),
+    pending: t('apps.review.pending'),
+    approved: t('apps.review.approved'),
+    rejected: t('apps.review.rejected'),
+  },
+  type: t('apps.type'),
+  confidential: t('apps.confidential'),
+  public: t('apps.public'),
+  clientId: t('apps.clientId'),
+  created: t('apps.created'),
+  signIn: t('apps.signIn'),
+  redirects: t('apps.redirects'),
+  noRedirects: t('apps.noRedirects'),
+  permissions: t('apps.permissions'),
+  firstParty: t('apps.firstParty'),
+  firstPartyHelp: t('apps.firstPartyHelp'),
+  notPlatform: t('apps.notPlatformDetail'),
+  access: t('apps.access'),
+  disabledHelp: t('apps.disabledHelp'),
+  enabledHelp: t('apps.enabledHelp'),
+  disable: t('apps.disable'),
+  enable: t('apps.enable'),
+  openInPortal: t('apps.openInPortal'),
+  portalHelp: t('apps.portalHelp'),
   error: t('error.generic'),
 });
 

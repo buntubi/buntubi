@@ -10,6 +10,8 @@ import { ClientRowView } from './view.js';
 
 const props = {
   client: prop.object<AdminClient | null>(null),
+  /** Where the app's page is: `{client_id}` is replaced. */
+  href: prop.string('/apps/{client_id}'),
   labels: prop.object<Partial<ClientRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
@@ -23,6 +25,7 @@ export class IdpClientRow extends typedElement(props) {
     const logic: ClientRowLogic = {
       labels,
       client: () => this.client,
+      href: () => this.href.replace('{client_id}', encodeURIComponent(this.client?.client_id ?? '')),
       setFirstParty: async (on) => {
         const c = this.client;
         if (!c) return;

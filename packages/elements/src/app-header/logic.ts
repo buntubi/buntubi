@@ -2,6 +2,8 @@
 import type { AppKind, Environment, Stage } from '@idp/sdk/types';
 
 export interface AppHeaderLabels {
+  firstParty: string;
+  firstPartyHelp: string;
   appId: string;
   kinds: Record<AppKind, string>;
   environments: Record<Environment, string>;
@@ -14,6 +16,8 @@ export interface AppHeaderLabels {
 }
 
 export const appHeaderLabels: AppHeaderLabels = {
+  firstParty: 'Skips consent',
+  firstPartyHelp: 'Set in the owner console: people sign in without a consent screen.',
   appId: 'App ID',
   kinds: {
     consumer: 'Consumer app',
@@ -42,6 +46,7 @@ export interface AppHeaderLogic {
   environment: () => string;
   stage: () => Stage;
   stageLabel: () => string;
+  firstParty: () => boolean;
   /** The next step's words, and where it leads: a page, or going live at once. */
   action: () => { label: string; href: string } | null;
   publish: () => Promise<void>;

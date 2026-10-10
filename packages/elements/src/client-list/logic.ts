@@ -26,4 +26,5 @@ export interface ClientListLogic {
   clients: () => AdminClient[];
   rowLabels: () => Partial<ClientRowLabels>;
   describe: () => ((error: unknown) => string) | undefined;
+  href: () => string;
 }

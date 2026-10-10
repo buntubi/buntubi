@@ -3,6 +3,11 @@ import type { AdminUser } from '@idp/sdk/types';
 
 export interface UserRowLabels {
   admin: string;
+  superadmin: string;
+  /** The row's menu, for assistive technology. */
+  actions: string;
+  makeAdmin: string;
+  removeAdmin: string;
   developer: string;
   mfa: string;
   unverified: string;
@@ -17,6 +22,10 @@ export interface UserRowLabels {
 
 export const userRowLabels: UserRowLabels = {
   admin: 'Admin',
+  superadmin: 'Superadmin',
+  actions: 'Actions',
+  makeAdmin: 'Make admin',
+  removeAdmin: 'Remove admin',
   developer: 'Developer',
   mfa: 'Two-step',
   unverified: 'Email not verified',
@@ -35,6 +44,9 @@ export interface UserRowLogic {
   name: () => string;
   initials: () => string;
   toggle: () => Promise<void>;
+  /** Whoever is signed in may give and take the admin role: a superadmin. */
+  managesAdmins: () => boolean;
+  toggleAdmin: () => Promise<void>;
   busy: () => boolean;
   error: () => string | null;
 }

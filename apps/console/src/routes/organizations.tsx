@@ -28,7 +28,7 @@ export default function OrganizationsPage() {
           onSearch={(event) => navigate(paths.organizations(event.detail.q), { replace: true })}
         />
       </StickyHead>
-      <idp-organization-list organizations={data() ?? []} labels={organizationListLabels()} rowLabels={organizationRowLabels()} describe={errorText} />
+      <idp-organization-list organizations={data() ?? []} appsHref={paths.organizationAppsPattern()} labels={organizationListLabels()} rowLabels={organizationRowLabels()} describe={errorText} />
     </Stack>
   );
 }

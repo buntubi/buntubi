@@ -1,5 +1,6 @@
 /** The default look: a table row; the app, its organization, where it runs, first-party. */
 import { Show } from '@fluixi/core';
+import { Link } from '@fluixi/core/router';
 import { Switch } from '@fluixi-ui/switch';
 import { viewToken } from '../view.js';
 import type { ClientRowLogic } from './logic.js';
@@ -10,7 +11,8 @@ export const clientRowView = (r: ClientRowLogic) => (
       .client { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 110px 110px; gap: 12px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
       .client[data-disabled] .app { opacity: 0.55; }
       .app { display: grid; min-width: 0; }
-      .name { font-weight: 500; }
+      .name { font-weight: 500; color: inherit; text-decoration: none; justify-self: start; }
+      .name:hover { color: var(--idp-accent-ink); text-decoration: underline; }
       .id { color: var(--idp-muted); font-family: var(--idp-font-mono, ui-monospace, monospace); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .organization { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .tag { padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--idp-accent-ink); background: color-mix(in srgb, var(--idp-accent) 12%, transparent); }
@@ -23,7 +25,7 @@ export const clientRowView = (r: ClientRowLogic) => (
       @media (max-width: 860px) { .client { grid-template-columns: minmax(0, 1fr) auto; } .organization, .environment { grid-column: 1; } .first { grid-row: 1; grid-column: 2; } }
     `}</style>
     <span role="cell" class="app">
-      <span class="name">{() => r.client()?.name ?? ''}</span>
+      <Link class="name" href={r.href()}>{() => r.client()?.name ?? ''}</Link>
       <span class="id">{() => r.client()?.client_id ?? ''}</span>
     </span>
     <span role="cell" class="organization">

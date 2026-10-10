@@ -23,7 +23,7 @@ export const userListView = (l: UserListLogic) => (
       <Show when={l.users().length} fallback={<p class="empty">{() => l.labels().empty}</p>}>
         <div class="rows">
           <For each={l.users()} by={(user) => user.id}>
-            {(user) => <idp-user-row user={user()} labels={l.rowLabels()} describe={l.describe()} />}
+            {(user) => <idp-user-row user={user()} labels={l.rowLabels()} describe={l.describe()} managesAdmins={l.managesAdmins()} />}
           </For>
         </div>
       </Show>

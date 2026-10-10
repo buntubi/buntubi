@@ -244,6 +244,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "name": STRING,
             "client_type": {"type": "string", "enum": ["public", "confidential"]},
             "environment": ENVIRONMENT,
+            "first_party": BOOL,
             "review_status": {"type": "string", "enum": ["none", "pending", "approved", "rejected"]},
             "review_note": STRING,
             "redirect_uris": STRINGS,
@@ -300,6 +301,15 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             )
         }
     ),
+    "AdminMe": obj(
+        {
+            "id": STRING,
+            "email": STRING,
+            "name": STRING,
+            "superadmin": BOOL,
+            "platform_organization_id": MAYBE_STRING,
+        }
+    ),
     "AdminClient": obj(
         {
             "client_id": STRING,
@@ -345,6 +355,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "support_email": MAYBE_STRING,
             "approved_scopes": STRINGS,
             "apps": INT,
+            "platform": BOOL,
             "suspended": BOOL,
             "suspended_reason": MAYBE_STRING,
             "created_at": TIME,
@@ -922,7 +933,16 @@ def paths() -> dict[str, dict[str, Any]]:
                 request=body(ref("ClientIn")),
             ),
         },
+        "/admin/api/me": {
+            "get": op(
+                "Who is signed in to the console",
+                a,
+                ADMIN,
+                ok("AdminMe"),
+            )
+        },
         "/admin/api/clients/{client_id}": {
+            "get": op("A client", a, ADMIN, one("client", "AdminClient"), params=["client_id"]),
             "patch": op(
                 "Change a client",
                 a,
@@ -930,7 +950,7 @@ def paths() -> dict[str, dict[str, Any]]:
                 one("client", "AdminClient"),
                 request=body(ref("ClientPatch")),
                 params=["client_id"],
-            )
+            ),
         },
         "/admin/api/clients/{client_id}/secret": {
             "post": op(

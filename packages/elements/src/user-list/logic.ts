@@ -26,4 +26,5 @@ export interface UserListLogic {
   users: () => AdminUser[];
   rowLabels: () => Partial<UserRowLabels>;
   describe: () => ((error: unknown) => string) | undefined;
+  managesAdmins: () => boolean;
 }

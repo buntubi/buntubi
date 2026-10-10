@@ -8,6 +8,8 @@ const props = {
   name: prop.string(''),
   /** A second line: the support address, usually. */
   detail: prop.string(''),
+  /** A short mark beside the name, such as "Platform"; empty: none. */
+  tag: prop.string(''),
   href: prop.string(''),
 };
 
@@ -16,6 +18,7 @@ export class IdpOrganizationTile extends typedElement(props) {
     const logic: OrganizationTileLogic = {
       name: () => this.name,
       detail: () => this.detail,
+      tag: () => this.tag,
       href: () => this.href,
       choose: () => this.emit('choose', {}),
     };

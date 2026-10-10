@@ -148,6 +148,26 @@ def _user_or_404(user_id: str) -> User:
     return user
 
 
+@bp.get("/me")
+@admin_only
+def me_view(admin: User) -> Response:
+    """Who is signed in to the console: what a superadmin may do, and where the platform's apps live."""
+    platform = db().scalar(select(Organization.id).where(Organization.is_platform))
+    return jsonify(
+        id=str(admin.id),
+        email=admin.email,
+        name=admin.name,
+        superadmin=admin.is_superadmin,
+        platform_organization_id=str(platform) if platform else None,
+    )
+
+
+@bp.get("/clients/<client_id>")
+@admin_only
+def get_client(client_id: str, admin: User) -> Response:
+    return jsonify(client=_client_json(_client_or_404(client_id)))
+
+
 @bp.get("/clients")
 @admin_only
 def list_clients(admin: User) -> Response:
@@ -452,6 +472,7 @@ def _organization_json(organization: Organization) -> dict[str, Any]:
         "support_email": organization.support_email,
         "approved_scopes": organization.approved_scopes,
         "apps": _count(Client, Client.organization_id == organization.id),
+        "platform": organization.is_platform,
         "suspended": organization.is_suspended,
         "suspended_reason": organization.suspended_reason,
         "created_at": organization.created_at.isoformat(),
@@ -475,7 +496,11 @@ class SuspendIn(BaseModel):
 @bp.get("/organizations")
 @admin_only
 def list_organizations(admin: User) -> Response:
-    query = select(Organization).order_by(Organization.created_at.desc()).limit(PAGE_SIZE)
+    query = (
+        select(Organization)
+        .order_by(Organization.is_platform.desc(), Organization.created_at.desc())
+        .limit(PAGE_SIZE)
+    )
     if search := request.args.get("q", "").strip():
         query = query.where(func.lower(Organization.name).contains(search.lower(), autoescape=True))
     return jsonify(items=[_organization_json(x) for x in db().scalars(query)])

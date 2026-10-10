@@ -186,6 +186,7 @@ def app_json(client: Client) -> dict[str, Any]:
         "name": client.name,
         "client_type": client.client_type,
         "environment": client.environment,
+        "first_party": client.first_party,
         "review_status": client.review_status,
         "review_note": client.review_note,
         "redirect_uris": client.redirect_uris,

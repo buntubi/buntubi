@@ -12,6 +12,8 @@ const props = {
   labels: prop.object<Partial<ClientListLabels>>({}),
   /** Handed to every row. */
   rowLabels: prop.object<Partial<ClientRowLabels>>({}),
+  /** Each app's page: `{client_id}` is replaced. */
+  href: prop.string('/apps/{client_id}'),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
@@ -22,6 +24,7 @@ export class IdpClientList extends typedElement(props) {
       labels: () => ({ ...clientListLabels, ...this.labels }),
       rowLabels: () => this.rowLabels,
       describe: () => this.describe,
+      href: () => this.href,
     };
     return useView(ClientListView)(logic);
   }

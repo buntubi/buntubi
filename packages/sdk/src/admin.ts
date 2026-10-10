@@ -29,6 +29,10 @@ export interface AdminService {
   setUserDisabled(input: { id: string; disabled: boolean }): Promise<void>;
   /** First-party apps skip the consent screen; the provider allows it on platform apps only. */
   setFirstParty(input: { client_id: string; first_party: boolean }): Promise<void>;
+  /** A disabled app gets no new tokens. */
+  setClientDisabled(input: { client_id: string; disabled: boolean }): Promise<void>;
+  /** Gives or takes the admin role; superadmins only. */
+  setAdmin(input: { id: string; admin: boolean }): Promise<void>;
   createScope(input: ScopeEntry): Promise<void>;
 }
 

@@ -13,6 +13,8 @@ const props = {
   /** Handed to every row. */
   rowLabels: prop.object<Partial<OrganizationRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
+  /** Handed to every row: an organization's apps, `{name}` replaced. */
+  appsHref: prop.string('/apps?q={name}'),
 };
 
 export class IdpOrganizationList extends typedElement(props) {
@@ -22,6 +24,7 @@ export class IdpOrganizationList extends typedElement(props) {
       organizations: () => this.organizations,
       rowLabels: () => this.rowLabels,
       describe: () => this.describe,
+      appsHref: () => this.appsHref,
     };
     return useView(OrganizationListView)(logic);
   }

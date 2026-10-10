@@ -1,5 +1,6 @@
 /** The default look: a table row; the organization, owner, counts, scopes, status, then the action. */
 import { For, Show } from '@fluixi/core';
+import { Link } from '@fluixi/core/router';
 import { Button } from '@fluixi-ui/button';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
@@ -12,6 +13,9 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
       .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
       .mark { flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--idp-accent-ink); background: var(--idp-accent-soft); }
       .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+      .tag { flex: none; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--idp-accent-ink); background: color-mix(in srgb, var(--idp-accent) 12%, transparent); }
+      .count { color: inherit; text-decoration: underline; text-decoration-color: var(--idp-border-2); text-underline-offset: 3px; }
+      .count:hover { color: var(--idp-accent-ink); }
       .muted { color: var(--idp-muted); overflow: hidden; text-overflow: ellipsis; }
       .number { font-variant-numeric: tabular-nums; }
       .scopes { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
@@ -29,10 +33,15 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
     <span role="cell" class="who">
       <span class="mark" aria-hidden="true">{() => r.initials()}</span>
       <span class="name">{() => r.organization()?.name ?? ''}</span>
+      <Show when={r.organization()?.platform}>
+        <span class="tag" title={() => r.labels().platformHelp}>{() => r.labels().platform}</span>
+      </Show>
     </span>
     <span role="cell" class="muted">{() => r.organization()?.owner?.email ?? ''}</span>
     <span role="cell" class="number">{() => r.organization()?.members ?? 0}</span>
-    <span role="cell" class="number">{() => r.organization()?.apps ?? 0}</span>
+    <span role="cell" class="number">
+      <Link class="count" href={r.appsHref()}>{() => r.organization()?.apps ?? 0}</Link>
+    </span>
     <span role="cell" class="scopes" aria-label={() => r.labels().approved}>
       <Show when={r.organization()?.approved_scopes.length} fallback={<span class="muted">{() => r.labels().none}</span>}>
         <For each={r.organization()?.approved_scopes ?? []}>{(scope) => <code>{scope}</code>}</For>
@@ -47,6 +56,7 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
       </Show>
     </span>
     <span role="cell" class="action">
+      <Show when={!r.organization()?.platform}>
       <Show
         when={r.organization()?.suspended}
         fallback={
@@ -60,6 +70,7 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
         <Button variant="ghost" tone="neutral" size="sm" disabled={r.busy()} onPress={() => void r.restore()}>
           {() => r.labels().restore}
         </Button>
+      </Show>
       </Show>
     </span>
     <Show when={r.suspending() && !r.organization()?.suspended}>

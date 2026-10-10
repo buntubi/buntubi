@@ -23,7 +23,7 @@ export const clientListView = (l: ClientListLogic) => (
       <Show when={l.clients().length} fallback={<p class="empty">{() => l.labels().empty}</p>}>
         <div class="rows">
           <For each={l.clients()} by={(client) => client.client_id}>
-            {(client) => <idp-client-row client={client()} labels={l.rowLabels()} describe={l.describe()} />}
+            {(client) => <idp-client-row client={client()} href={l.href()} labels={l.rowLabels()} describe={l.describe()} />}
           </For>
         </div>
       </Show>

@@ -13,6 +13,8 @@ const props = {
   /** Handed to every row. */
   rowLabels: prop.object<Partial<UserRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
+  /** Handed to every row: the admin role actions show for a superadmin. */
+  managesAdmins: prop.boolean(false),
 };
 
 export class IdpUserList extends typedElement(props) {
@@ -22,6 +24,7 @@ export class IdpUserList extends typedElement(props) {
       labels: () => ({ ...userListLabels, ...this.labels }),
       rowLabels: () => this.rowLabels,
       describe: () => this.describe,
+      managesAdmins: () => this.managesAdmins,
     };
     return useView(UserListView)(logic);
   }

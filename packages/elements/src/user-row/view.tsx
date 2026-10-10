@@ -1,6 +1,13 @@
 /** The default look: a table row; who, status, roles, two-step, then the action. */
 import { Show } from '@fluixi/core';
-import { Button } from '@fluixi-ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@fluixi-ui/dropdown-menu';
 import { viewToken } from '../view.js';
 import type { UserRowLogic } from './logic.js';
 
@@ -24,6 +31,8 @@ export const userRowView = (r: UserRowLogic) => (
       .two { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--idp-muted); }
       .two[data-on] { color: var(--idp-ok); }
       .action { display: flex; justify-content: flex-end; }
+      .more { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: var(--idp-muted); fill: currentColor; }
+      .more:hover { background: var(--idp-surface-2); color: var(--idp-text); }
       .alert { grid-column: 1 / -1; margin: 0; color: var(--idp-bad); font-size: 13px; }
       @media (max-width: 860px) { .user { grid-template-columns: minmax(0, 1fr) auto; } .state, .tags, .two { grid-column: 1; } .action { grid-row: 1; grid-column: 2; } }
     `}</style>
@@ -40,8 +49,10 @@ export const userRowView = (r: UserRowLogic) => (
       </span>
     </span>
     <span role="cell" class="tags">
-      <Show when={r.user()?.roles.includes('admin')}>
+      <Show when={r.user()?.superadmin} fallback={<Show when={r.user()?.roles.includes('admin')}>
         <span class="tag" data-tone="accent">{() => r.labels().admin}</span>
+      </Show>}>
+        <span class="tag" data-tone="accent">{() => r.labels().superadmin}</span>
       </Show>
       <Show when={r.user()?.developer}>
         <span class="tag">{() => r.labels().developer}</span>
@@ -53,9 +64,27 @@ export const userRowView = (r: UserRowLogic) => (
       </span>
     </span>
     <span role="cell" class="action">
-      <Button variant="ghost" size="sm" tone={r.user()?.disabled ? 'neutral' : 'danger'} disabled={r.busy()} onPress={() => void r.toggle()}>
-        {() => (r.user()?.disabled ? r.labels().enable : r.labels().disable)}
-      </Button>
+      {/* A superadmin is managed from the command line only: no actions here. */}
+      <Show when={!r.user()?.superadmin}>
+        <DropdownMenu placement="bottom-end">
+          <DropdownMenuTrigger class="more" aria-label={() => `${r.labels().actions}: ${r.name()}`} disabled={r.busy()}>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg>
+          </DropdownMenuTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuContent>
+              <Show when={r.managesAdmins()}>
+                <DropdownMenuItem onSelect={() => void r.toggleAdmin()}>
+                  {() => (r.user()?.roles.includes('admin') ? r.labels().removeAdmin : r.labels().makeAdmin)}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </Show>
+              <DropdownMenuItem onSelect={() => void r.toggle()}>
+                {() => (r.user()?.disabled ? r.labels().enable : r.labels().disable)}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenuPortal>
+        </DropdownMenu>
+      </Show>
     </span>
     <Show when={r.error()}>
       <p class="alert" role="alert">

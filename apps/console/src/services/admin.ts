@@ -10,7 +10,9 @@ import {
   createScope,
   restoreOrganization,
   reviewApp,
+  setAdmin,
   setAvailability,
+  setClientDisabled,
   setFirstParty,
   setScopeProduct,
   setUserDisabled,
@@ -34,7 +36,9 @@ const service: AdminService = {
   restoreOrganization: action(restoreOrganization, 'organization.restore', { invalidates: ['organizations', 'overview'] }),
   setUserDisabled: action(setUserDisabled, 'user.toggle', { invalidates: ['users', 'overview'] }),
   createScope: action(createScope, 'scope.create', { invalidates: ['scopes'] }),
-  setFirstParty: action(setFirstParty, 'client.firstParty', { invalidates: ['clients', 'overview'] }),
+  setFirstParty: action(setFirstParty, 'client.firstParty', { invalidates: ['clients', 'client', 'overview'] }),
+  setClientDisabled: action(setClientDisabled, 'client.disabled', { invalidates: ['clients', 'client'] }),
+  setAdmin: action(setAdmin, 'user.admin', { invalidates: ['users'] }),
 };
 
 export const AdminModule = defineModule({ name: 'admin', providers: [{ provide: Admin, useValue: service }] });

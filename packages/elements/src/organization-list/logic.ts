@@ -30,4 +30,5 @@ export interface OrganizationListLogic {
   organizations: () => AdminOrganization[];
   rowLabels: () => Partial<OrganizationRowLabels>;
   describe: () => ((error: unknown) => string) | undefined;
+  appsHref: () => string;
 }

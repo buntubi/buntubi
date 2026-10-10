@@ -99,6 +99,8 @@ export const launchChecklistLabels = (): LaunchChecklistLabels => ({
 });
 
 export const appHeaderLabels = (): AppHeaderLabels => ({
+  firstParty: t('appws.firstParty'),
+  firstPartyHelp: t('appws.firstPartyHelp'),
   appId: t('appws.appId'),
   kinds: {
     consumer: t('ca.kind.consumer'),

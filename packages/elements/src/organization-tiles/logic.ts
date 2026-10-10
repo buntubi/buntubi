@@ -4,6 +4,7 @@ import type { Organization } from '@idp/sdk/types';
 export interface OrganizationTilesLogic {
   title: () => string;
   empty: () => string;
+  platform: () => string;
   organizations: () => Organization[];
   hrefOf: (organization: Organization) => string;
   choose: (id: string) => void;

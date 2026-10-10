@@ -2,6 +2,9 @@
 import type { AdminOrganization } from '@idp/sdk/types';
 
 export interface OrganizationRowLabels {
+  platform: string;
+  /** Why the platform's organization has no suspend action. */
+  platformHelp: string;
   approved: string;
   none: string;
   active: string;
@@ -15,6 +18,8 @@ export interface OrganizationRowLabels {
 }
 
 export const organizationRowLabels: OrganizationRowLabels = {
+  platform: 'Platform',
+  platformHelp: 'The platform’s own apps; its members are the admins.',
   approved: 'Approved scopes',
   none: 'None',
   active: 'Active',
@@ -30,6 +35,8 @@ export const organizationRowLabels: OrganizationRowLabels = {
 export interface OrganizationRowLogic {
   labels: () => OrganizationRowLabels;
   organization: () => AdminOrganization | null;
+  /** The organization's apps in the console. */
+  appsHref: () => string;
   initials: () => string;
   /** The reason editor is open. */
   suspending: () => boolean;

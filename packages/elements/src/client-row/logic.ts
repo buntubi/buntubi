@@ -25,6 +25,7 @@ export const clientRowLabels: ClientRowLabels = {
 export interface ClientRowLogic {
   labels: () => ClientRowLabels;
   client: () => AdminClient | null;
+  href: () => string;
   setFirstParty: (on: boolean) => Promise<void>;
   busy: () => boolean;
   error: () => string | null;

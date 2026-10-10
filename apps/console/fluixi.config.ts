@@ -7,7 +7,7 @@ import { searchForWorkspaceRoot } from 'vite';
 // and calls its admin API as the signed-in owner, who must have signed in with a second factor.
 export default defineConfig({
   port: 3420,
-  env: { public: ['IDP_URL', 'APP_URL'] },
+  env: { public: ['IDP_URL', 'APP_URL', 'PORTAL_URL'] },
   // fluixi-ui components import their own stylesheets, which Node cannot load: bundle them.
   ssrNoExternal: [/^@fluixi-ui\//],
   plugins: [

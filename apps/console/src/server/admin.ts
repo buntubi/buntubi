@@ -4,7 +4,7 @@
  * values; anything else throws its code.
  */
 import type { Brand } from '@idp/sdk/types';
-import type { ClientRow, Gate, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
+import type { ClientRow, Gate, Me, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -123,6 +123,33 @@ export const loadClients = async (q: string): Promise<ClientRow[]> => {
     : all;
   // The platform's own first, then by name.
   return matching.sort((a, b) => Number(b.platform) - Number(a.platform) || a.name.localeCompare(b.name));
+};
+
+/** Who is signed in, and where the platform's own apps live. */
+export const loadMe = async (): Promise<Me> => {
+  'use server';
+  return call<Me>('GET', '/me');
+};
+
+/** One app, or null when there is none by that id. */
+export const loadClient = async (clientId: string): Promise<ClientRow | null> => {
+  'use server';
+  try {
+    return (await call<{ client: ClientRow }>('GET', `/clients/${encodeURIComponent(clientId)}`)).client;
+  } catch (error) {
+    if (error instanceof AdminRefusal && error.status === 404) return null;
+    throw error;
+  }
+};
+
+export const setClientDisabled = async (input: { client_id: string; disabled: boolean }): Promise<void> => {
+  'use server';
+  await call('PATCH', `/clients/${encodeURIComponent(input.client_id)}`, { disabled: input.disabled });
+};
+
+export const setAdmin = async (input: { id: string; admin: boolean }): Promise<void> => {
+  'use server';
+  await call(input.admin ? 'POST' : 'DELETE', `/users/${encodeURIComponent(input.id)}/admin`);
 };
 
 export const setFirstParty = async (input: { client_id: string; first_party: boolean }): Promise<void> => {

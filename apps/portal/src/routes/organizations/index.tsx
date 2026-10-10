@@ -31,6 +31,7 @@ export default function OrganizationsPage() {
             organizations={data()?.organizations ?? []}
             title=""
             empty={t('org.pick.empty')}
+            platform={t('org.platform')}
             href={paths.organizationPattern()}
             onChoose={(event) => chooseOrganization(event.detail.id)}
           />

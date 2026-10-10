@@ -10,6 +10,8 @@ const props = {
   organizations: prop.object<Organization[]>([]),
   title: prop.string('Organizations'),
   empty: prop.string('No organization yet.'),
+  /** The mark on the platform's own organization. */
+  platform: prop.string('Platform'),
   /** Where one organization opens; `{id}` is replaced. */
   href: prop.string('/o/{id}'),
 };
@@ -19,6 +21,7 @@ export class IdpOrganizationTiles extends typedElement(props) {
     const logic: OrganizationTilesLogic = {
       title: () => this.title,
       empty: () => this.empty,
+      platform: () => this.platform,
       organizations: () => this.organizations,
       hrefOf: (organization) => this.href.replace('{id}', encodeURIComponent(organization.id)),
       choose: (id) => this.emit('choose', { id }),

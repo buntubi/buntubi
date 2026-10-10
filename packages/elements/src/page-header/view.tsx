@@ -7,6 +7,8 @@ import type { PageHeaderLogic } from './logic.js';
 
 export const pageHeaderView = (p: PageHeaderLogic) => {
   const navigate = useNavigate();
+  // An action may lead to another app (the console to the portal): the router only moves within this one.
+  const go = (href: string) => (/^https?:\/\//.test(href) ? window.location.assign(href) : navigate(href));
   return (
     <div part="page-header" class="head">
       <style scoped>{`
@@ -30,7 +32,7 @@ export const pageHeaderView = (p: PageHeaderLogic) => {
         <div class="actions">
           <For each={p.actions()} by={(action) => action.href}>
             {(action) => (
-              <Button variant={action().variant ?? 'outline'} tone={action().variant === 'solid' ? undefined : 'neutral'} onPress={() => navigate(action().href)}>
+              <Button variant={action().variant ?? 'outline'} tone={action().variant === 'solid' ? undefined : 'neutral'} onPress={() => go(action().href)}>
                 <Show when={action().icon}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                     <path d={action().icon} />

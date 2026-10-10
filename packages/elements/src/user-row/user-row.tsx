@@ -11,6 +11,8 @@ import { UserRowView } from './view.js';
 
 const props = {
   user: prop.object<AdminUser | null>(null),
+  /** Shows the admin role actions: the console's user is a superadmin. */
+  managesAdmins: prop.boolean(false),
   labels: prop.object<Partial<UserRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
@@ -21,6 +23,19 @@ export class IdpUserRow extends typedElement(props) {
     const labels = () => ({ ...userRowLabels, ...this.labels });
     const busy = signal(false);
     const error = signal<string | null>(null);
+    const run = async (change: (user: AdminUser) => Promise<void>) => {
+      const u = this.user;
+      if (!u) return;
+      busy.set(true);
+      error.set(null);
+      try {
+        await change(u);
+      } catch (failure) {
+        error.set(this.describe?.(failure) ?? labels().error);
+      } finally {
+        busy.set(false);
+      }
+    };
     const logic: UserRowLogic = {
       labels,
       user: () => this.user,
@@ -32,19 +47,9 @@ export class IdpUserRow extends typedElement(props) {
         const u = this.user;
         return initials(u ? `${u.given_name} ${u.family_name}`.trim() || u.email : '');
       },
-      toggle: async () => {
-        const u = this.user;
-        if (!u) return;
-        busy.set(true);
-        error.set(null);
-        try {
-          await admin.setUserDisabled({ id: u.id, disabled: !u.disabled });
-        } catch (failure) {
-          error.set(this.describe?.(failure) ?? labels().error);
-        } finally {
-          busy.set(false);
-        }
-      },
+      toggle: () => run((u) => admin.setUserDisabled({ id: u.id, disabled: !u.disabled })),
+      managesAdmins: () => this.managesAdmins,
+      toggleAdmin: () => run((u) => admin.setAdmin({ id: u.id, admin: !u.roles.includes('admin') })),
       busy,
       error,
     };

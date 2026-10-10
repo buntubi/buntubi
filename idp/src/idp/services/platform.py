@@ -14,6 +14,7 @@ from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from sqlalchemy import delete, func, select, update
 
 from idp import plugins
+from idp.config import get_settings
 from idp.db import db, utcnow
 from idp.models import (
     AccessTokenRecord,
@@ -308,7 +309,9 @@ def platform_organization() -> Organization:
     """
     organization = db().scalar(select(Organization).where(Organization.is_platform.is_(True)))
     if organization is None:
-        organization = Organization(name="Platform", description="The platform's own apps.", is_platform=True)
+        # Named after the deployment's brand, as people see it in the portal.
+        name = get_settings().brand_name or "Platform"
+        organization = Organization(name=name, description="The platform's own apps.", is_platform=True)
         db().add(organization)
         db().flush()
     for admin in db().scalars(select(User).where(User.roles.contains(["admin"]))):

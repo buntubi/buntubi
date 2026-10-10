@@ -11,6 +11,8 @@ import { OrganizationRowView } from './view.js';
 
 const props = {
   organization: prop.object<AdminOrganization | null>(null),
+  /** Its apps: `{name}` is replaced. */
+  appsHref: prop.string('/apps?q={name}'),
   labels: prop.object<Partial<OrganizationRowLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
@@ -38,6 +40,7 @@ export class IdpOrganizationRow extends typedElement(props) {
     const logic: OrganizationRowLogic = {
       labels,
       organization: () => this.organization,
+      appsHref: () => this.appsHref.replace('{name}', encodeURIComponent(this.organization?.name ?? '')),
       initials: () => initials(this.organization?.name),
       suspending,
       openSuspend: (open) => {

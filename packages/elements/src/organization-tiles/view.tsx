@@ -21,6 +21,7 @@ export const organizationTilesView = (o: OrganizationTilesLogic) => (
             <idp-organization-tile
               name={organization().name}
               detail={organization().support_email ?? ''}
+              tag={organization().platform ? o.platform() : ''}
               href={o.hrefOf(organization())}
               onChoose={() => o.choose(organization().id)}
             />

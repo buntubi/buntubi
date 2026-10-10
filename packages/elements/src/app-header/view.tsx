@@ -37,6 +37,11 @@ export const appHeaderView = (a: AppHeaderLogic) => {
           <span class="pill" style={() => `--tone: ${TONE[a.stage()]}`}>
             {() => a.stageLabel()}
           </span>
+          <Show when={a.firstParty()}>
+            <span class="pill" style="--tone: var(--idp-accent)" title={() => a.labels().firstPartyHelp}>
+              {() => a.labels().firstParty}
+            </span>
+          </Show>
         </div>
         <p class="meta">
           <span>

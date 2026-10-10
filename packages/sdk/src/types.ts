@@ -20,6 +20,8 @@ export interface Organization {
   description: string;
   support_email: string | null;
   suspended: boolean;
+  /** The platform's own organization: its members are the admins. */
+  platform: boolean;
   role: Role;
   created_at: string;
 }
@@ -51,6 +53,8 @@ export interface App {
   name: string;
   client_type: 'public' | 'confidential';
   environment: Environment;
+  /** Skips the consent screen; set in the owner console, on the platform's own apps. */
+  first_party: boolean;
   review_status: ReviewStatus;
   review_note: string;
   redirect_uris: string[];
@@ -115,6 +119,8 @@ export interface AdminOrganization {
   support_email: string | null;
   approved_scopes: string[];
   apps: number;
+  /** The platform's own organization: its members are the admins. */
+  platform: boolean;
   suspended: boolean;
   suspended_reason: string | null;
   created_at: string;
@@ -125,6 +131,7 @@ export interface AdminClient {
   client_id: string;
   name: string;
   client_type: 'public' | 'confidential';
+  redirect_uris: string[];
   scope: string;
   /** Signs people in without a consent screen; only a platform app may. */
   first_party: boolean;
@@ -139,6 +146,16 @@ export interface AdminClient {
   created_at: string;
 }
 
+/** Who is signed in to the console. */
+export interface AdminMe {
+  id: string;
+  email: string;
+  name: string;
+  superadmin: boolean;
+  /** Where the platform's own apps live; null before `flask platform setup`. */
+  platform_organization_id: string | null;
+}
+
 /** An account as the platform owner sees it. */
 export interface AdminUser {
   id: string;
@@ -147,6 +164,8 @@ export interface AdminUser {
   given_name: string;
   family_name: string;
   roles: string[];
+  /** Made from the command line; manages the admins, and the console cannot demote or disable it. */
+  superadmin: boolean;
   developer: boolean;
   mfa: boolean;
   disabled: boolean;

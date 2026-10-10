@@ -43,6 +43,7 @@ export class IdpAppHeader extends typedElement(props) {
       environment: () => (this.app ? labels().environments[this.app.environment] : ''),
       stage,
       stageLabel: () => labels().stages[stage()],
+      firstParty: () => this.app?.first_party ?? false,
       action: () => {
         if (!this.canPublish || (stage() !== 'draft' && stage() !== 'changes_requested')) return null;
         const resubmit = stage() === 'changes_requested';
