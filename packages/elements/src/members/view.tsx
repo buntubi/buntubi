@@ -1,6 +1,7 @@
 /** The default look: a card, title and Invite member, the invite form when open, the rows, the role cards. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
 import type { Role } from '@idp/sdk/types';
@@ -14,14 +15,14 @@ export const membersView = (m: MembersLogic) => (
       .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
       .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
-      form { display: grid; grid-template-columns: minmax(0, 1fr) 170px auto auto; gap: 8px; align-items: center; padding: 14px 20px; border-top: 1px solid var(--idp-border); background: var(--idp-surface-2); }
+      .invite { display: grid; grid-template-columns: minmax(0, 1fr) 210px auto auto; gap: 8px; align-items: start; padding: 14px 20px; border-top: 1px solid var(--idp-border); background: var(--idp-surface-2); }
       .hint { grid-column: 1 / -1; color: var(--idp-muted); font-size: 12.5px; }
       .columns { display: grid; grid-template-columns: minmax(0, 1.4fr) 150px minmax(0, 1fr) 90px auto; gap: 12px; padding: 10px 20px; border-top: 1px solid var(--idp-border); color: var(--idp-muted); font-size: 12.5px; font-weight: 500; }
       .rows > :deep(idp-member-row) { display: block; }
       .roles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 14px 20px 18px; border-top: 1px solid var(--idp-border); }
       .roles > :deep(idp-role-card) { display: block; }
       .alert { margin: 0; padding: 0 20px 14px; color: var(--idp-bad); font-size: 13px; }
-      @media (max-width: 860px) { .columns { display: none; } .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } form { grid-template-columns: 1fr; } }
+      @media (max-width: 860px) { .columns { display: none; } .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .invite { grid-template-columns: 1fr; } }
     `}</style>
     <div class="head">
       <h2 id="idp-members-title">{() => m.labels().members}</h2>
@@ -32,41 +33,44 @@ export const membersView = (m: MembersLogic) => (
       </Show>
     </div>
     <Show when={m.inviting()}>
-      <form
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          if (m.inviteEmail().trim()) void m.invite();
-        }}
-      >
-        <Input
-          type="email"
-          value={() => m.inviteEmail()}
-          placeholder={() => m.labels().inviteEmail}
-          aria-label={() => m.labels().inviteEmail}
-          onInput={(event: Event) => m.editInvite('email', (event.target as HTMLInputElement).value)}
-        />
-        <Select
-          value={String(m.inviteRole())}
-          labels={(value: string) => m.labels().roles[value as Role].name}
-          onChange={(value: string) => m.editInvite('role', value)}
-        >
-          <SelectTrigger aria-label={() => m.labels().role}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectPortal>
-            <SelectContent>
-              <For each={ROLES}>{(role) => <SelectItem value={role}>{() => m.labels().roles[role].name}</SelectItem>}</For>
-            </SelectContent>
-          </SelectPortal>
-        </Select>
-        <Button type="submit" variant="solid" size="sm" disabled={!m.inviteEmail().trim() || m.busy() === 'invite'}>
-          {() => m.labels().invite}
-        </Button>
-        <Button variant="ghost" tone="neutral" size="sm" onPress={() => m.openInvite(false)}>
-          {() => m.labels().cancel}
-        </Button>
-        <span class="hint">{() => m.labels().inviteHint}</span>
-      </form>
+      <Form form={m.inviteForm} onSubmit={(values) => m.invite(values)} novalidate>
+        <div class="invite">
+          <FormField control={m.inviteForm.get('email')}>
+            {(b) => (
+              <Input
+                type="email"
+                name="email"
+                placeholder={m.labels().inviteEmail}
+                aria-label={m.labels().inviteEmail}
+                value={b.value()}
+                onInput={b.onInput}
+                onBlur={b.onBlur}
+              />
+            )}
+          </FormField>
+          <FormField control={m.inviteForm.get('role')}>
+            {(b) => (
+              <Select value={b.value()} labels={(value: string) => m.labels().roles[value as Role].name} onChange={(value: string) => b.onChange(value)}>
+                <SelectTrigger aria-label={() => m.labels().role}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectContent>
+                    <For each={ROLES}>{(role) => <SelectItem value={role}>{() => m.labels().roles[role].name}</SelectItem>}</For>
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+            )}
+          </FormField>
+          <Button type="submit" variant="solid" size="sm" disabled={m.busy() === 'invite'}>
+            {() => m.labels().invite}
+          </Button>
+          <Button variant="ghost" tone="neutral" size="sm" onPress={() => m.openInvite(false)}>
+            {() => m.labels().cancel}
+          </Button>
+          <span class="hint">{() => m.labels().inviteHint}</span>
+        </div>
+      </Form>
     </Show>
     <div role="table" aria-labelledby="idp-members-title">
       <div class="columns" role="row">

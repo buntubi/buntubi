@@ -8,6 +8,7 @@ import type { Member } from '@idp/sdk/types';
 import '../members/members.js';
 import '../segmented/segmented.js';
 import '../test-users/test-users.js';
+import type { Messages } from '../messages.js';
 import { useView } from '../view.js';
 import { LIMITABLE, teamLabels, type TeamLabels, type TeamLogic } from './logic.js';
 import { TeamView } from './view.js';
@@ -25,6 +26,8 @@ const props = {
   canManageTesters: prop.boolean(false),
   locale: prop.string('en'),
   labels: prop.object<Partial<TeamLabels>>({}),
+  /** Text for validation keys, handed to the members and test users; see messages.ts. */
+  messages: prop.object<Messages>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
@@ -59,6 +62,7 @@ export class IdpTeam extends typedElement(props) {
       canManageTesters: () => this.canManageTesters,
       locale: () => this.locale,
       describe: () => this.describe,
+      messages: () => this.messages,
     };
     return useView(TeamView)(logic);
   }

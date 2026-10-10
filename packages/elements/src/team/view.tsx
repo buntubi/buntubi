@@ -39,6 +39,7 @@ export const teamView = (t: TeamLogic) => (
           canManage={t.canManageTesters()}
           locale={t.locale()}
           labels={t.labels()}
+          messages={t.messages()}
           describe={t.describe()}
         />
       }
@@ -49,6 +50,7 @@ export const teamView = (t: TeamLogic) => (
         apps={t.apps()}
         canManage={t.canManage()}
         labels={t.labels()}
+        messages={t.messages()}
         describe={t.describe()}
       />
     </Show>

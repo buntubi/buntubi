@@ -1,6 +1,16 @@
 /** An organization's members and inviting one; apart from the look. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { MemberInviteInput } from '@idp/sdk/schemas/team';
 import type { Role } from '@idp/sdk/types';
 import type { MemberRow, TeamLabels } from '../team/logic.js';
+
+/** The invitation's values: the engine widens a field to `string`, so the role is narrowed at submit. */
+export type InviteValues = Omit<MemberInviteInput, 'role'> & { role: string };
+
+/** The form engine's root, typed per field. */
+export interface InviteForm extends ReactiveForm<InviteValues> {
+  get<K extends keyof InviteValues>(key: K): ReactiveControl<InviteValues[K]>;
+}
 
 export interface MembersLogic {
   labels: () => TeamLabels;
@@ -9,10 +19,8 @@ export interface MembersLogic {
   canManage: () => boolean;
   inviting: () => boolean;
   openInvite: (open: boolean) => void;
-  inviteEmail: () => string;
-  inviteRole: () => Role;
-  editInvite: (field: 'email' | 'role', value: string) => void;
-  invite: () => Promise<void>;
+  inviteForm: InviteForm;
+  invite: (values: InviteValues) => Promise<void>;
   changeRole: (member: string, role: Role) => Promise<void>;
   changeAccess: (member: string, apps: string[]) => Promise<void>;
   remove: (member: string) => Promise<void>;

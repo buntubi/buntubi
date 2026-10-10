@@ -1,6 +1,7 @@
 /** The default look: a card, the intro, one ruled row per tester, the field to add one. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { TestUsersLogic } from './logic.js';
@@ -16,7 +17,7 @@ export const testUsersView = (t: TestUsersLogic) => (
       li:first-child { border-top: 0; }
       .who { display: grid; }
       .added { color: var(--idp-muted); font-size: 12.5px; }
-      form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+      .add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
       .alert { color: var(--idp-bad); }
     `}</style>
     <h2 id="idp-test-users-title">{() => t.labels().testers}</h2>
@@ -41,23 +42,26 @@ export const testUsersView = (t: TestUsersLogic) => (
       </ul>
     </Show>
     <Show when={t.canManage()}>
-      <form
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          if (t.email().trim()) void t.add();
-        }}
-      >
-        <Input
-          type="email"
-          value={() => t.email()}
-          placeholder={() => t.labels().testerEmail}
-          aria-label={() => t.labels().testerEmail}
-          onInput={(event: Event) => t.edit((event.target as HTMLInputElement).value)}
-        />
-        <Button type="submit" variant="outline" tone="neutral" disabled={!t.email().trim() || t.busy() === 'add'}>
-          {() => t.labels().addTester}
-        </Button>
-      </form>
+      <Form form={t.form} onSubmit={(values) => t.add(values)} novalidate>
+        <div class="add">
+          <FormField control={t.form.get('email')}>
+            {(b) => (
+              <Input
+                type="email"
+                name="email"
+                placeholder={t.labels().testerEmail}
+                aria-label={t.labels().testerEmail}
+                value={b.value()}
+                onInput={b.onInput}
+                onBlur={b.onBlur}
+              />
+            )}
+          </FormField>
+          <Button type="submit" variant="outline" tone="neutral" disabled={t.busy() === 'add'}>
+            {() => t.labels().addTester}
+          </Button>
+        </div>
+      </Form>
     </Show>
     <Show when={t.error()}>
       <p class="alert" role="alert">

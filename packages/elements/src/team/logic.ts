@@ -100,4 +100,5 @@ export interface TeamLogic {
   canManageTesters: () => boolean;
   locale: () => string;
   describe: () => ((error: unknown) => string) | undefined;
+  messages: () => Record<string, string>;
 }

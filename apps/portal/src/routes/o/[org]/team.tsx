@@ -3,7 +3,7 @@ import { useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { can } from '@idp/sdk/roles';
 import '@idp/elements/team';
 import { errorText, locale, t } from '../../../lib/i18n.js';
-import { teamLabels } from '../../../lib/labels.js';
+import { teamLabels, formMessages } from '../../../lib/labels.js';
 import { paramOf } from '../../../lib/params.js';
 import type { Workspace } from '../../../lib/types.js';
 import { workspace } from '../../../data/developer.js';
@@ -24,6 +24,7 @@ export default function TeamPage() {
       me={data()?.me.email ?? ''}
       canManage={can(role(), 'members')}
       canManageTesters={can(role(), 'test_users')}
+      messages={formMessages()}
       locale={locale()}
       labels={teamLabels()}
       describe={errorText}
