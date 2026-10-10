@@ -5,6 +5,7 @@ import { t } from './i18n.js';
 export const authNoticeLabels = (): AuthNoticeLabels => ({
   reasons: {
     access_denied: t('authError.access_denied'),
+    state_mismatch: t('authError.state_mismatch'),
     server_error: t('authError.server_error'),
     temporarily_unavailable: t('authError.temporarily_unavailable'),
   },
