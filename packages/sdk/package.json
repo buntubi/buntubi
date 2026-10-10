@@ -13,7 +13,8 @@
       "types": "./dist/vite.d.ts",
       "default": "./dist/vite.js"
     },
-    "./schemas/users": "./src/schemas/users.ts"
+    "./schemas/users": "./src/schemas/users.ts",
+    "./schemas/organizations": "./src/schemas/organizations.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

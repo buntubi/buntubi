@@ -1,4 +1,6 @@
 /** Creating an organization; apart from the look. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { OrganizationInput } from '@idp/sdk/schemas/organizations';
 
 export interface OrganizationFormLabels {
   title: string;
@@ -16,14 +18,18 @@ export const organizationFormLabels: OrganizationFormLabels = {
   error: 'Something went wrong. Try again.',
 };
 
+export type OrganizationFormValues = Pick<OrganizationInput, 'name' | 'support_email'>;
+
+/** The form engine's root, typed per field. */
+export interface OrganizationForm extends ReactiveForm<OrganizationFormValues> {
+  get<K extends keyof OrganizationFormValues>(key: K): ReactiveControl<OrganizationFormValues[K]>;
+}
+
 export interface OrganizationFormLogic {
   labels: () => OrganizationFormLabels;
-  name: () => string;
-  supportEmail: () => string;
-  editName: (value: string) => void;
-  editSupportEmail: (value: string) => void;
-  canCreate: () => boolean;
-  create: () => Promise<void>;
+  form: OrganizationForm;
+  create: (values: OrganizationFormValues) => Promise<void>;
+  busy: () => boolean;
   error: () => string | null;
 }
 

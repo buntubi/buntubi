@@ -6,7 +6,7 @@ import '@idp/elements/page-header';
 import { usePreferences } from '@idp/shell/preferences';
 import { PublicPage } from '../../components/public-page.js';
 import { errorText, locale, setLocale, t } from '../../lib/i18n.js';
-import { organizationFormLabels } from '../../lib/labels.js';
+import { organizationFormLabels, formMessages } from '../../lib/labels.js';
 import { paths } from '../../lib/paths.js';
 
 export default function NewOrganizationPage() {
@@ -22,6 +22,7 @@ export default function NewOrganizationPage() {
         />
         <idp-organization-form
           labels={{ ...organizationFormLabels(), title: '' }}
+          messages={formMessages()}
           describe={errorText}
           onCreated={(event) => {
             chooseOrganization(event.detail.id);

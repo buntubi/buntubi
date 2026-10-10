@@ -11,6 +11,7 @@ import type { Stat } from '@idp/elements/stat-group/logic';
 import type { AppScopesLabels } from '@idp/elements/app-scopes/logic';
 import type { DeveloperTermsLabels } from '@idp/elements/developer-terms/logic';
 import type { OrganizationFormLabels } from '@idp/elements/organization-form/logic';
+import type { Messages } from '@idp/elements/messages';
 import type { WelcomeLabels } from '@idp/elements/welcome/logic';
 import type { NotFoundLabels } from '@idp/elements/not-found/logic';
 import type { PageErrorLabels } from '@idp/elements/page-error/logic';
@@ -487,3 +488,12 @@ export const needsAttentionLabels = (): NeedsAttentionLabels => ({
 export const ideaToLiveLabels = (): IdeaToLiveLabels => ({ title: t('home.path'), steps: t('home.path.steps').split('|') });
 
 export const publicFrameLabels = (): PublicFrameLabels => ({ ...shellLabels(), product: t('shell.developers') });
+
+/** Validation keys the schemas in @idp/sdk/schemas use. */
+export const formMessages = (): Messages => ({
+  'form.required': t('form.required'),
+  'form.email': t('form.email'),
+  'form.tooLong': t('form.tooLong'),
+  'form.url': t('form.url'),
+  'form.https': t('form.https'),
+});
