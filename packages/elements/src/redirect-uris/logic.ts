@@ -1,4 +1,11 @@
 /** The addresses an app may send people back to, as a list to edit; apart from the look. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { RedirectUriInput } from '@idp/sdk/schemas/apps';
+
+/** The form engine's root, typed per field. */
+export interface RedirectUriForm extends ReactiveForm<RedirectUriInput> {
+  get<K extends keyof RedirectUriInput>(key: K): ReactiveControl<RedirectUriInput[K]>;
+}
 
 export interface RedirectUrisLabels {
   title: string;
@@ -9,7 +16,6 @@ export interface RedirectUrisLabels {
   save: string;
   saved: string;
   empty: string;
-  invalidUri: string;
   error: string;
 }
 
@@ -22,16 +28,14 @@ export const redirectUrisLabels: RedirectUrisLabels = {
   save: 'Save',
   saved: 'Saved',
   empty: 'None yet: people cannot sign in until one is added.',
-  invalidUri: 'Enter a full address starting with https:// (or http://localhost).',
   error: 'Something went wrong. Try again.',
 };
 
 export interface RedirectUrisLogic {
   labels: () => RedirectUrisLabels;
   uris: () => string[];
-  draft: () => string;
-  edit: (value: string) => void;
-  add: () => void;
+  form: RedirectUriForm;
+  add: (values: RedirectUriInput) => void;
   remove: (uri: string) => void;
   changed: () => boolean;
   canManage: () => boolean;
@@ -41,13 +45,3 @@ export interface RedirectUrisLogic {
   error: () => string | null;
 }
 
-/** An address the provider accepts as a redirect: https, http on this machine, or an app scheme. */
-export function isRedirectUri(value: string): boolean {
-  try {
-    const url = new URL(value);
-    const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-    return !url.hash && (url.protocol === 'https:' || (url.protocol === 'http:' && local) || /^[a-z][a-z0-9+.-]*\.[a-z]/.test(url.protocol));
-  } catch {
-    return false;
-  }
-}

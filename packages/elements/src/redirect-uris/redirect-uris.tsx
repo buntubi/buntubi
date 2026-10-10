@@ -1,18 +1,26 @@
 /** Editing an app's redirect addresses: add, remove, then save, through the injected `Developer` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
+import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Developer } from '@idp/sdk/developer';
+import { redirectUriSchema, type RedirectUriInput } from '@idp/sdk/schemas/apps';
 import type { App } from '@idp/sdk/types';
 import { freshest } from '../fresh.js';
+import { messageReader, type Messages } from '../messages.js';
+import { fieldValidator, type FormSchema } from '../validators.js';
 import { useView } from '../view.js';
-import { isRedirectUri, redirectUrisLabels, type RedirectUrisLabels, type RedirectUrisLogic } from './logic.js';
+import { redirectUrisLabels, type RedirectUriForm, type RedirectUrisLabels, type RedirectUrisLogic } from './logic.js';
 import { RedirectUrisView } from './view.js';
 
 const props = {
   app: prop.object<App | null>(null),
   canManage: prop.boolean(false),
   labels: prop.object<Partial<RedirectUrisLabels>>({}),
+  /** Checks an address before it joins the list; messages are keys read through `messages`. */
+  schema: prop.any<FormSchema<RedirectUriInput>>(redirectUriSchema),
+  /** Text for validation keys; see messages.ts. */
+  messages: prop.object<Messages>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
 
@@ -23,7 +31,10 @@ export class IdpRedirectUris extends typedElement(props) {
     const app = freshest(() => this.app);
     // Null while the list is the app's own; a list once the reader starts changing it.
     const edits = signal<string[] | null>(null);
-    const draft = signal('');
+    const text = messageReader(() => this.messages);
+    const form: RedirectUriForm = createForm({
+      uri: createField('', { validators: [fieldValidator<RedirectUriInput, 'uri'>(() => this.schema, 'uri', text)] }),
+    });
     const busy = signal(false);
     const saved = signal(false);
     const error = signal<string | null>(null);
@@ -31,19 +42,11 @@ export class IdpRedirectUris extends typedElement(props) {
     const logic: RedirectUrisLogic = {
       labels,
       uris,
-      draft,
-      edit: (value) => {
-        draft.set(value);
-        error.set(null);
-      },
-      add: () => {
-        const uri = draft().trim();
-        if (!isRedirectUri(uri)) {
-          error.set(labels().invalidUri);
-          return;
-        }
+      form,
+      add: (values) => {
+        const uri = values.uri.trim();
         if (!uris().includes(uri)) edits.set([...uris(), uri]);
-        draft.set('');
+        form.get('uri').setValue('');
         saved.set(false);
       },
       remove: (uri) => {

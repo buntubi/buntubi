@@ -174,7 +174,6 @@ export const redirectUrisLabels = (): RedirectUrisLabels => ({
   save: t('common.save'),
   saved: t('cr.saved'),
   empty: t('cr.noRedirects'),
-  invalidUri: t('cr.invalidUri'),
   error: t('error.generic'),
 });
 
@@ -496,4 +495,5 @@ export const formMessages = (): Messages => ({
   'form.tooLong': t('form.tooLong'),
   'form.url': t('form.url'),
   'form.https': t('form.https'),
+  'form.redirectUri': t('form.redirectUri'),
 });

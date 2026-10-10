@@ -6,7 +6,7 @@ import '@idp/elements/page-header';
 import '@idp/elements/redirect-uris';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { errorText, t } from '../../../../../lib/i18n.js';
-import { redirectUrisLabels } from '../../../../../lib/labels.js';
+import { redirectUrisLabels, formMessages } from '../../../../../lib/labels.js';
 
 export const routeData = appRouteData;
 
@@ -19,6 +19,7 @@ export default function RedirectsPage() {
         app={data()?.app.app ?? null}
         canManage={can(data()?.app.role, 'edit_apps')}
         labels={redirectUrisLabels()}
+        messages={formMessages()}
         describe={errorText}
       />
     </Stack>

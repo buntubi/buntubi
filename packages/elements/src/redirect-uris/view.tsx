@@ -1,6 +1,7 @@
 /** The default look: a card, one row per address with Remove, the field to add, Save at the end. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { RedirectUrisLogic } from './logic.js';
@@ -15,7 +16,7 @@ export const redirectUrisView = (r: RedirectUrisLogic) => (
       li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--idp-border); }
       li:first-child { border-top: 0; }
       code { font-size: 12.5px; overflow-wrap: anywhere; }
-      form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+      .add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
       .foot { display: flex; align-items: center; gap: 12px; }
       .status { color: var(--idp-ok); }
       .alert { color: var(--idp-bad); }
@@ -39,23 +40,26 @@ export const redirectUrisView = (r: RedirectUrisLogic) => (
       </ul>
     </Show>
     <Show when={r.canManage()}>
-      <form
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          r.add();
-        }}
-      >
-        <Input
-          type="url"
-          value={() => r.draft()}
-          placeholder={() => r.labels().placeholder}
-          aria-label={() => r.labels().title}
-          onInput={(event: Event) => r.edit((event.target as HTMLInputElement).value)}
-        />
-        <Button type="submit" variant="outline" tone="neutral">
-          {() => r.labels().add}
-        </Button>
-      </form>
+      <Form form={r.form} onSubmit={(values) => r.add(values)} novalidate>
+        <div class="add">
+          <FormField control={r.form.get('uri')}>
+            {(b) => (
+              <Input
+                type="url"
+                name="uri"
+                placeholder={r.labels().placeholder}
+                aria-label={r.labels().title}
+                value={b.value()}
+                onInput={b.onInput}
+                onBlur={b.onBlur}
+              />
+            )}
+          </FormField>
+          <Button type="submit" variant="outline" tone="neutral">
+            {() => r.labels().add}
+          </Button>
+        </div>
+      </Form>
       <div class="foot">
         <Button variant="solid" disabled={!r.changed() || r.busy()} onPress={() => void r.save()}>
           {() => r.labels().save}
