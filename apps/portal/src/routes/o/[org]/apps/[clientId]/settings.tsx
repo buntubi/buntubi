@@ -5,7 +5,7 @@ import { can } from '@idp/sdk/roles';
 import '@idp/elements/app-settings';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { errorText, t } from '../../../../../lib/i18n.js';
-import { appSettingsLabels } from '../../../../../lib/labels.js';
+import { appSettingsLabels, formMessages } from '../../../../../lib/labels.js';
 import '@idp/elements/page-header';
 
 export const routeData = appRouteData;
@@ -19,6 +19,7 @@ export default function SettingsPage() {
       app={data()?.app.app ?? null}
       canEdit={can(data()?.app.role, 'edit_apps')}
       labels={appSettingsLabels()}
+      messages={formMessages()}
       describe={errorText}
       />
     </Stack>

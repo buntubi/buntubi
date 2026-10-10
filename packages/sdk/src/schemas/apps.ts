@@ -38,3 +38,28 @@ export const apiKeySchema = z.object({
 });
 
 export type ApiKeyInput = z.infer<typeof apiKeySchema>;
+
+/** Empty, or a full http(s) address. */
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(2048, 'form.tooLong')
+  .refine((value) => {
+    if (value === '') return true;
+    try {
+      return ['http:', 'https:'].includes(new URL(value).protocol);
+    } catch {
+      return false;
+    }
+  }, 'form.url');
+
+export const appSettingsSchema = z.object({
+  name: z.string().trim().min(1, 'form.required').max(80, 'form.tooLong'),
+  description: z.string().max(500, 'form.tooLong'),
+  homepage_url: optionalUrl,
+  privacy_url: optionalUrl,
+  terms_url: optionalUrl,
+  logo: optionalUrl,
+});
+
+export type AppSettingsInput = z.infer<typeof appSettingsSchema>;

@@ -1,22 +1,16 @@
 /** The basic information's default look: one card, the fields two by two. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { AppSettingsLogic, SettingsField } from './logic.js';
 
-const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
 const TYPES: Partial<Record<SettingsField, string>> = { homepage_url: 'url', privacy_url: 'url', terms_url: 'url', logo: 'url' };
 
 export const appSettingsView = (s: AppSettingsLogic) => (
-  <form
-    part="settings"
-    class="card"
-    onSubmit={(event: SubmitEvent) => {
-      event.preventDefault();
-      void s.save();
-    }}
-  >
+  <Form form={s.form} onSubmit={(values) => s.save(values)} novalidate>
+  <div part="settings" class="card">
     <style scoped>{`
       .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 16px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
@@ -46,19 +40,25 @@ export const appSettingsView = (s: AppSettingsLogic) => (
     <div class="grid">
       <For each={s.fields()}>
         {(field) => (
-          <label class="field" data-wide={field === 'description' ? '' : undefined}>
-            <span class="caption">{() => s.labels().fields[field]}</span>
-            <Input
-              type={TYPES[field] ?? 'text'}
-              value={() => s.value(field)}
-              disabled={!s.canEdit()}
+          <div class="field" data-wide={field === 'description' ? '' : undefined}>
+            <FormField
+              control={s.form.get(field)}
+              label={() => s.labels().fields[field]}
+              description={() => s.labels().hints[field] ?? ''}
               required={field === 'name'}
-              onInput={(event: Event) => s.edit(field, valueOf(event))}
-            />
-            <Show when={s.labels().hints[field]}>
-              <span class="note">{() => s.labels().hints[field] ?? ''}</span>
-            </Show>
-          </label>
+            >
+              {(b) => (
+                <Input
+                  type={TYPES[field] ?? 'text'}
+                  name={field}
+                  value={b.value()}
+                  disabled={!s.canEdit()}
+                  onInput={b.onInput}
+                  onBlur={b.onBlur}
+                />
+              )}
+            </FormField>
+          </div>
         )}
       </For>
     </div>
@@ -77,7 +77,8 @@ export const appSettingsView = (s: AppSettingsLogic) => (
         {() => s.error()}
       </p>
     </Show>
-  </form>
+  </div>
+  </Form>
 );
 
 export const AppSettingsView = viewToken<AppSettingsLogic>('AppSettingsView', appSettingsView);

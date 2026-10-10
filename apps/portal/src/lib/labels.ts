@@ -220,7 +220,6 @@ export const appSettingsLabels = (): AppSettingsLabels => ({
   hints: { description: t('st.descriptionHint'), logo: t('st.logoHint') },
   save: t('common.save'),
   saved: t('st.saved'),
-  nameRequired: t('st.nameRequired'),
   error: t('error.generic'),
 });
 

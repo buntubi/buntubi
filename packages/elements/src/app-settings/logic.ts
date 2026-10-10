@@ -1,4 +1,6 @@
 /** An app's basic information, apart from how the form looks. */
+import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { AppSettingsInput } from '@idp/sdk/schemas/apps';
 
 export type SettingsField = 'name' | 'description' | 'homepage_url' | 'privacy_url' | 'terms_url' | 'logo';
 
@@ -11,7 +13,6 @@ export interface AppSettingsLabels {
   hints: Partial<Record<SettingsField, string>>;
   save: string;
   saved: string;
-  nameRequired: string;
   error: string;
 }
 
@@ -32,18 +33,21 @@ export const appSettingsLabels: AppSettingsLabels = {
   },
   save: 'Save',
   saved: 'Saved',
-  nameRequired: 'The app needs a name.',
   error: 'Something went wrong. Try again.',
 };
+
+/** The form engine's root, typed per field. */
+export interface AppSettingsForm extends ReactiveForm<AppSettingsInput> {
+  get<K extends keyof AppSettingsInput>(key: K): ReactiveControl<AppSettingsInput[K]>;
+}
 
 export interface AppSettingsLogic {
   labels: () => AppSettingsLabels;
   fields: () => SettingsField[];
-  value: (field: SettingsField) => string;
-  edit: (field: SettingsField, value: string) => void;
+  form: AppSettingsForm;
   changed: () => boolean;
   canEdit: () => boolean;
-  save: () => Promise<void>;
+  save: (values: AppSettingsInput) => Promise<void>;
   busy: () => boolean;
   saved: () => boolean;
   error: () => string | null;
