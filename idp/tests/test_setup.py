@@ -94,3 +94,11 @@ def test_a_bad_file_says_what_is_wrong(tmp_path: Path) -> None:
     )
     with pytest.raises(setup.SetupError, match="a public app has no secret"):
         setup.read(path)
+
+
+def test_admin_check_says_whether_there_is_a_superadmin(app: Flask) -> None:
+    runner = app.test_cli_runner()
+    assert runner.invoke(args=["admin", "check"]).exit_code == 1
+    superadmin(app)
+    found = runner.invoke(args=["admin", "check"])
+    assert found.exit_code == 0 and "root@example.test" in found.output

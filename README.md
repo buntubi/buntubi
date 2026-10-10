@@ -78,59 +78,43 @@ products and scopes as code; entries added in the console are edited there.
 
 ## First install on your machine
 
-**1. The provider.**
-
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -e "./idp[dev]"
-cp idp/.env.example idp/.env
+./scripts/install.sh
 ```
 
-In `idp/.env`, set `IDP_SECRET_KEY` (the file says how to make one) and `IDP_DATABASE_URL`, then
-create the database it names. Make the first signing key:
+The script runs every step below, skips the ones already done, and can be run again at any
+time. With `--no-web` it sets up the provider only.
+
+1. Creates `.venv` and installs the provider with its development tools.
+2. Creates `idp/.env` from the example and generates `IDP_SECRET_KEY`.
+3. Creates the database named by `IDP_DATABASE_URL` and runs the migrations.
+4. Makes the first token signing key.
+5. Installs the web packages, builds the sign-in pages, and creates the portal's and console's
+   `.env` files with a session secret.
+6. Creates `idp/platform.toml` from the example. It lists the platform's apps: client id, name,
+   redirect URIs, scopes, whether it is first-party, and the env file and key where its secret
+   goes. Add the deployment's own products there and run the script again. The file is not
+   committed.
+7. Asks for the superadmin's email, name and password, when there is none yet.
+8. Runs `flask platform setup`: the platform organization, the apps the file lists and the
+   plugins' catalogue. A new confidential app's secret is written into the env file its entry
+   names and is never printed. An app that exists keeps its changes; `--rotate-secrets` gives
+   every listed app a new secret.
+
+`./scripts/reset-local.sh` empties the database first, then runs the install script. It refuses
+to run when the issuer in `idp/.env` is not a localhost address.
+
+The same steps by hand, from `idp/`:
 
 ```bash
-cd idp
 alias idp='../.venv/bin/flask --app idp.app:create_app'
-idp keys generate
-```
-
-**2. The web apps.** Each package has its own lockfile:
-
-```bash
-for dir in packages/sdk packages/elements packages/shell packages/theme packages/skin frontend apps/portal apps/console; do
-  pnpm --dir "$dir" install
-done
-pnpm --dir frontend build
-```
-
-**3. The platform file.** Copy `idp/platform.example.toml` to `idp/platform.toml` and list the
-platform's apps: client id, name, redirect URIs, scopes, whether it is first-party, and the env
-file and key where its secret goes. `platform.toml` is not committed.
-
-**4. The superadmin and the platform.**
-
-```bash
-./scripts/reset-local.sh
-```
-
-The script empties the database, asks for the superadmin's email, name and password, then runs
-`flask platform setup`. It refuses to run when the issuer in `idp/.env` is not a localhost
-address. The same steps by hand:
-
-```bash
-cd idp
 ../.venv/bin/alembic upgrade head      # with IDP_DATABASE_URL set
+idp keys generate
 idp admin create
 idp platform setup
 ```
 
-`platform setup` creates the platform organization, the apps it lacks and the plugins'
-catalogue. A new confidential app's secret is written into the env file its entry names and is
-never printed. Running it again only adds what is missing: an app changed in the console or the
-portal keeps its changes. `--rotate-secrets` gives every listed app a new secret.
-
-**5. Start the servers**, one terminal each:
+**Start the servers**, one terminal each:
 
 ```bash
 cd idp && ../.venv/bin/flask --app idp.app:create_app run --port 5010
@@ -138,12 +122,13 @@ cd apps/portal && pnpm dev
 cd apps/console && pnpm dev
 ```
 
-**6. Two-step sign-in.** Sign in as the superadmin at http://localhost:5010/account and turn on
+**Two-step sign-in.** Sign in as the superadmin at http://localhost:5010/account and turn on
 two-step sign-in. The console at http://localhost:3420 opens after that.
 
 ## Deploying
 
-Run the same steps on the server, in this order, before the platform takes traffic:
+`./scripts/install.sh --no-web` runs these on a server, with the deployment's
+`idp/platform.toml` in place. By hand, in this order, before the platform takes traffic:
 
 1. `alembic upgrade head`
 2. `flask keys generate`, once

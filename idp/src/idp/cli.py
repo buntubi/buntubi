@@ -1,5 +1,5 @@
 """
-Operator commands: `flask admin create`, `flask platform setup`, `flask keys generate`,
+Operator commands: `flask admin create | check`, `flask platform setup`, `flask keys generate`,
 `flask clients create`, `flask users admins | promote | demote | delete`,
 `flask plugins list | sync`. A client secret is printed once, at creation, and never stored in
 the clear.
@@ -248,6 +248,15 @@ def register(app: Flask) -> None:
     @app.cli.group("admin")
     def admin_group() -> None:
         """The owner's account."""
+
+    @admin_group.command("check")
+    def admin_check() -> None:
+        """Exit with 1 when there is no superadmin yet: for install scripts."""
+        found = [u.email for u in db().scalars(select(User)) if u.is_superadmin]
+        if not found:
+            click.echo("No superadmin yet.")
+            raise SystemExit(1)
+        click.echo(f"Superadmin: {', '.join(found)}")
 
     @admin_group.command("create")
     @click.option("--email", prompt=True)
