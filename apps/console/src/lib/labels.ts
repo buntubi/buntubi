@@ -11,7 +11,10 @@ import type { Stat } from '@idp/elements/stat-group/logic';
 import type { ClientDetailLabels } from '@idp/elements/client-detail/logic';
 import type { ClientListLabels } from '@idp/elements/client-list/logic';
 import type { ClientRowLabels } from '@idp/elements/client-row/logic';
+import type { UserCreateLabels } from '@idp/elements/user-create/logic';
 import type { UserListLabels } from '@idp/elements/user-list/logic';
+import type { UserProfileLabels } from '@idp/elements/user-profile/logic';
+import type { Messages } from '@idp/elements/messages';
 import type { UserRowLabels } from '@idp/elements/user-row/logic';
 import type { AdminOverview } from '@idp/sdk/types';
 import type { PageErrorLabels } from '@idp/elements/page-error/logic';
@@ -151,12 +154,16 @@ export const userListLabels = (): UserListLabels => ({
   status: t('common.status'),
   roles: t('users.roles'),
   twoStep: t('users.twoStep'),
+  signedUp: t('users.signedUp'),
+  lastSignIn: t('users.lastSignIn'),
   empty: t('common.none'),
 });
 
 export const userRowLabels = (): UserRowLabels => ({
   admin: t('users.admin'),
   superadmin: t('users.superadmin'),
+  never: t('users.never'),
+  invited: t('users.invited'),
   actions: t('users.actions'),
   makeAdmin: t('users.makeAdmin'),
   removeAdmin: t('users.removeAdmin'),
@@ -224,6 +231,99 @@ export const clientDetailLabels = (): ClientDetailLabels => ({
   enable: t('apps.enable'),
   openInPortal: t('apps.openInPortal'),
   portalHelp: t('apps.portalHelp'),
+  error: t('error.generic'),
+});
+
+/** Validation keys the schemas in @idp/sdk/schemas use. */
+export const formMessages = (): Messages => ({
+  'form.required': t('form.required'),
+  'form.email': t('form.email'),
+  'form.tooLong': t('form.tooLong'),
+  'form.passwordShort': t('form.passwordShort'),
+  'form.country': t('form.country'),
+  'form.phone': t('form.phone'),
+});
+
+const languages = () => ({ fr: t('users.lang.fr'), en: t('users.lang.en') });
+
+export const userCreateLabels = (): UserCreateLabels => ({
+  title: t('users.create.title'),
+  email: t('users.email'),
+  givenName: t('users.givenName'),
+  familyName: t('users.familyName'),
+  language: t('users.language'),
+  languages: languages(),
+  mode: t('users.create.mode'),
+  modes: { invite: t('users.create.invite'), password: t('users.create.ready') },
+  inviteHelp: t('users.create.inviteHelp'),
+  passwordHelp: t('users.create.readyHelp'),
+  password: t('users.create.password'),
+  create: t('users.create.submit'),
+  pending: t('users.create.pending'),
+  error: t('error.generic'),
+});
+
+export const userProfileLabels = (): UserProfileLabels => ({
+  profile: t('users.profile'),
+  givenName: t('users.givenName'),
+  familyName: t('users.familyName'),
+  language: t('users.language'),
+  languages: languages(),
+  country: t('users.country'),
+  countryHint: t('users.countryHint'),
+  phone: t('users.phone'),
+  phoneHint: t('users.phoneHint'),
+  save: t('users.save'),
+  saved: t('users.saved'),
+  account: t('users.account'),
+  email: t('users.email'),
+  verified: t('users.verified'),
+  unverified: t('users.unverified'),
+  signedUp: t('users.signedUp'),
+  lastSignIn: t('users.lastSignIn'),
+  never: t('users.never'),
+  password: t('users.password'),
+  passwordSet: t('users.passwordSet'),
+  passwordInvited: t('users.passwordInvited'),
+  twoStep: t('users.twoStep'),
+  on: t('common.on'),
+  off: t('common.off'),
+  sessions: t('users.sessions'),
+  portal: t('users.portal'),
+  portalSince: t('users.portalSince'),
+  noPortal: t('users.noPortal'),
+  organizations: t('users.organizations'),
+  noOrganization: t('users.noOrganization'),
+  platform: t('apps.platform'),
+  roles: {
+    owner: t('users.role.owner'),
+    manager: t('users.role.manager'),
+    developer: t('users.role.developer'),
+    reviewer: t('users.role.reviewer'),
+    viewer: t('users.role.viewer'),
+  },
+  security: t('users.access'),
+  sendReset: t('users.sendReset'),
+  sendResetHelp: t('users.sendResetHelp'),
+  resetSent: t('users.resetSent'),
+  signOut: t('users.signOut'),
+  signOutHelp: t('users.signOutHelp'),
+  signedOut: t('users.signedOut'),
+  resetTwoStep: t('users.resetTwoStep'),
+  resetTwoStepHelp: t('users.resetTwoStepHelp'),
+  twoStepReset: t('users.twoStepReset'),
+  disable: t('users.disableAccount'),
+  enable: t('users.enableAccount'),
+  disableHelp: t('users.disableHelp'),
+  disabled: t('users.nowDisabled'),
+  enabled: t('users.nowEnabled'),
+  makeAdmin: t('users.makeAdmin'),
+  removeAdmin: t('users.removeAdmin'),
+  adminHelp: t('users.adminHelp'),
+  adminGiven: t('users.adminGiven'),
+  adminRemoved: t('users.adminRemoved'),
+  superadminHelp: t('users.superadminHelp'),
+  yourselfHelp: t('users.yourselfHelp'),
   error: t('error.generic'),
 });
 

@@ -163,13 +163,47 @@ export interface AdminUser {
   email_verified: boolean;
   given_name: string;
   family_name: string;
+  locale: 'fr' | 'en';
+  /** Two-letter ISO 3166 code. */
+  country: string | null;
+  /** E.164. */
+  phone: string | null;
   roles: string[];
   /** Made from the command line; manages the admins, and the console cannot demote or disable it. */
   superadmin: boolean;
   developer: boolean;
+  developer_since: string | null;
+  /** False for someone invited who has not chosen a password yet. */
+  password_set: boolean;
   mfa: boolean;
   disabled: boolean;
   created_at: string;
+  last_sign_in_at: string | null;
+}
+
+/** One account's page in the console. */
+export interface AdminUserPage {
+  user: AdminUser;
+  organizations: { id: string; name: string; role: Role; platform: boolean }[];
+  active_sessions: number;
+}
+
+/** A new account: invited by email when there is no password, ready to use when there is one. */
+export interface NewUser {
+  email: string;
+  given_name: string;
+  family_name: string;
+  locale: 'fr' | 'en';
+  password?: string;
+}
+
+/** What the console may change on a profile; an empty country or phone clears it. */
+export interface UserEdit {
+  given_name?: string;
+  family_name?: string;
+  locale?: 'fr' | 'en';
+  country?: string;
+  phone?: string;
 }
 
 export type Sensitivity = 'public' | 'sensitive' | 'restricted';

@@ -3,6 +3,10 @@ import type { AdminUser } from '@idp/sdk/types';
 
 export interface UserRowLabels {
   admin: string;
+  /** For a last sign-in that never happened. */
+  never: string;
+  /** For someone invited who has not chosen a password yet. */
+  invited: string;
   superadmin: string;
   /** The row's menu, for assistive technology. */
   actions: string;
@@ -22,6 +26,8 @@ export interface UserRowLabels {
 
 export const userRowLabels: UserRowLabels = {
   admin: 'Admin',
+  never: 'Never',
+  invited: 'Invited',
   superadmin: 'Superadmin',
   actions: 'Actions',
   makeAdmin: 'Make admin',
@@ -41,6 +47,10 @@ export const userRowLabels: UserRowLabels = {
 export interface UserRowLogic {
   labels: () => UserRowLabels;
   user: () => AdminUser | null;
+  /** The account's page. */
+  href: () => string;
+  signedUp: () => string;
+  lastSignIn: () => string;
   name: () => string;
   initials: () => string;
   toggle: () => Promise<void>;

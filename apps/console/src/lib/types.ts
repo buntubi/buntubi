@@ -6,7 +6,7 @@ export type { ReviewRequest as Review } from '@idp/sdk/types';
 
 export type { AdminOrganization as OrganizationRow } from '@idp/sdk/types';
 
-export type { AdminUser as UserRow } from '@idp/sdk/types';
+export type { AdminUser as UserRow, AdminUserPage as UserPage, NewUser, UserEdit } from '@idp/sdk/types';
 
 export type { AdminClient as ClientRow, AdminMe as Me } from '@idp/sdk/types';
 

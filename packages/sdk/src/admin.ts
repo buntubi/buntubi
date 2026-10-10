@@ -3,7 +3,7 @@
  * module, mapped to its server functions.
  */
 import { injectionToken } from '@fluixi/start/di';
-import type { ScopeEntry } from './types.js';
+import type { NewUser, ScopeEntry, UserEdit } from './types.js';
 
 export type Availability = 'ga' | 'beta' | 'sandbox';
 
@@ -33,6 +33,15 @@ export interface AdminService {
   setClientDisabled(input: { client_id: string; disabled: boolean }): Promise<void>;
   /** Gives or takes the admin role; superadmins only. */
   setAdmin(input: { id: string; admin: boolean }): Promise<void>;
+  /** Creates an account and answers its id. */
+  createUser(input: NewUser): Promise<string>;
+  updateUser(input: { id: string } & UserEdit): Promise<void>;
+  /** Emails a link to choose a new password. */
+  sendPasswordReset(id: string): Promise<void>;
+  /** Ends every session of the account. */
+  signOutUser(id: string): Promise<void>;
+  /** Turns two-step sign-in off, for a lost phone; the person sets it up again. */
+  resetTwoStep(id: string): Promise<void>;
   createScope(input: ScopeEntry): Promise<void>;
 }
 

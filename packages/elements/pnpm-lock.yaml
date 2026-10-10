@@ -20,6 +20,12 @@ importers:
       '@fluixi-ui/dropdown-menu':
         specifier: link:../../../../fluixi-ui/packages/dropdown-menu
         version: link:../../../../fluixi-ui/packages/dropdown-menu
+      '@fluixi-ui/field':
+        specifier: link:../../../../fluixi-ui/packages/field
+        version: link:../../../../fluixi-ui/packages/field
+      '@fluixi-ui/form':
+        specifier: link:../../../../fluixi-ui/packages/form
+        version: link:../../../../fluixi-ui/packages/form
       '@fluixi-ui/input':
         specifier: link:../../../../fluixi-ui/packages/input
         version: link:../../../../fluixi-ui/packages/input
@@ -44,6 +50,9 @@ importers:
       '@fluixi/dom':
         specifier: link:../../../../fluixi-core/packages/dom
         version: link:../../../../fluixi-core/packages/dom
+      '@fluixi/forms':
+        specifier: alpha
+        version: 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
       '@fluixi/jsx':
         specifier: link:../../../../fluixi-core/packages/jsx
         version: link:../../../../fluixi-core/packages/jsx
@@ -65,6 +74,28 @@ importers:
         version: 7.0.2
 
 packages:
+
+  '@fluixi/forms-core@0.2.1-alpha.2':
+    resolution: {integrity: sha512-Uxsi981p6j5QsgoQ5ubrhfl/QOGq0tWyjxyR30N3zyhJeGeItAkT3CdNgD16SmBAmHHSYAF2/+tLZPB2jRy0+g==}
+    peerDependencies:
+      '@fluixi/reactive': '*'
+
+  '@fluixi/forms-devtools@0.2.1-alpha.2':
+    resolution: {integrity: sha512-HE59thT3jFhQoa2mevsezn1rLtiYIR8MgA2BhJTWIKF7/3O1wB8tm8QGnd70/BkWN3sFs+h2WMDxDuYEnu1R2Q==}
+    peerDependencies:
+      '@fluixi/reactive': '*'
+
+  '@fluixi/forms-framework@0.2.1-alpha.2':
+    resolution: {integrity: sha512-naSBk9nb5OrflxMw3OIsJs2mXoSUbW+KhMZBg1NIcLdxE/rTQ9itKsWJDR4OtGLPCsWxLip8+xdPPlnAhi9FYw==}
+
+  '@fluixi/forms-valibot@0.2.1-alpha.2':
+    resolution: {integrity: sha512-S8E5k3hFRhl/CFwGilSd2VNnnwefBvCBsKMAZugQFhIykc0tq+4YTyTGQeZGeV5VEjp367PYlyiCa/HMxBmf+A==}
+
+  '@fluixi/forms-zod@0.2.1-alpha.2':
+    resolution: {integrity: sha512-+ze7eK6+H0yELd/H1Y+5gRYmhVeBJrcFZx7b+hZ+pV2t0qU3HIhWhBzDP8cgPNee35sL5mx+oDcXGRt59dStMg==}
+
+  '@fluixi/forms@0.2.1-alpha.2':
+    resolution: {integrity: sha512-KN1wTndkmCUqEZPqQmHJECI3jF0cWaSJkDwcpv45CsvoDdXtVk334uLhJEyt71G8C6r9vmqnncrFBnN8pRRZWQ==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -192,6 +223,43 @@ packages:
     hasBin: true
 
 snapshots:
+
+  '@fluixi/forms-core@0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)':
+    dependencies:
+      '@fluixi/reactive': link:../../../../fluixi-core/packages/reactive
+
+  '@fluixi/forms-devtools@0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)':
+    dependencies:
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+      '@fluixi/reactive': link:../../../../fluixi-core/packages/reactive
+
+  '@fluixi/forms-framework@0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)':
+    dependencies:
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+    transitivePeerDependencies:
+      - '@fluixi/reactive'
+
+  '@fluixi/forms-valibot@0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)':
+    dependencies:
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+    transitivePeerDependencies:
+      - '@fluixi/reactive'
+
+  '@fluixi/forms-zod@0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)':
+    dependencies:
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+    transitivePeerDependencies:
+      - '@fluixi/reactive'
+
+  '@fluixi/forms@0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)':
+    dependencies:
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-devtools': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-framework': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-valibot': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+      '@fluixi/forms-zod': 0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)
+    transitivePeerDependencies:
+      - '@fluixi/reactive'
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true

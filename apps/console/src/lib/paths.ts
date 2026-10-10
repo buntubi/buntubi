@@ -11,6 +11,10 @@ export const paths = {
   reviewPattern: () => '/reviews/{client_id}',
   organizations: (q?: string) => `/organizations${query(q)}`,
   users: (q?: string) => `/users${query(q)}`,
+  user: (id: string) => `/users/${segment(id)}`,
+  /** For an element that fills in the account: `{id}` is replaced. */
+  userPattern: () => '/users/{id}',
+  newUser: () => '/users/new',
   apps: (q?: string) => `/apps${query(q)}`,
   app: (clientId: string) => `/apps/${segment(clientId)}`,
   /** For an element that fills in the app itself: `{client_id}` is replaced. */

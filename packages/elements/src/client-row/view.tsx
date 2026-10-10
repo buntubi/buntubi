@@ -11,8 +11,9 @@ export const clientRowView = (r: ClientRowLogic) => (
       .client { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 110px 110px; gap: 12px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
       .client[data-disabled] .app { opacity: 0.55; }
       .app { display: grid; min-width: 0; }
-      .name { font-weight: 500; color: inherit; text-decoration: none; justify-self: start; }
-      .name:hover { color: var(--idp-accent-ink); text-decoration: underline; }
+      /* Link is a component: its <a> carries no scope, so :deep. */
+      .app > :deep(a) { font-weight: 500; color: inherit; text-decoration: none; justify-self: start; }
+      .app > :deep(a:hover) { color: var(--idp-accent-ink); text-decoration: underline; }
       .id { color: var(--idp-muted); font-family: var(--idp-font-mono, ui-monospace, monospace); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .organization { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .tag { padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--idp-accent-ink); background: color-mix(in srgb, var(--idp-accent) 12%, transparent); }

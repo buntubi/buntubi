@@ -1,16 +1,17 @@
-/** Everyone with an account: what they are, and whether they may sign in. */
+/** Everyone with an account: what they are, when they came and last signed in, and the way to each. */
 import { Stack } from '@fluixi-ui/layout';
 import { StickyHead } from '@idp/shell/sticky-head';
 import { useLocation, useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
+import { icons } from '@idp/shell/icons';
+import '@idp/elements/page-header';
 import '@idp/elements/search-box';
 import '@idp/elements/user-list';
-import { errorText, t } from '../lib/i18n.js';
-import { userListLabels, userRowLabels } from '../lib/labels.js';
-import { searchOf } from '../lib/params.js';
-import type { Me, UserRow } from '../lib/types.js';
-import { paths } from '../lib/paths.js';
-import '@idp/elements/page-header';
-import { me, users } from '../data/admin.js';
+import { me, users } from '../../data/admin.js';
+import { errorText, locale, t } from '../../lib/i18n.js';
+import { userListLabels, userRowLabels } from '../../lib/labels.js';
+import { searchOf } from '../../lib/params.js';
+import { paths } from '../../lib/paths.js';
+import type { Me, UserRow } from '../../lib/types.js';
 
 interface UsersData {
   users: UserRow[];
@@ -29,7 +30,10 @@ export default function UsersPage() {
   return (
     <Stack gap={5}>
       <StickyHead>
-        <idp-page-header title={t('users.title')} />
+        <idp-page-header
+          title={t('users.title')}
+          actions={[{ label: t('users.new'), href: paths.newUser(), variant: 'solid', icon: icons.user }]}
+        />
         <idp-search-box
           query={location.query.q ?? ''}
           label={t('common.search')}
@@ -39,6 +43,8 @@ export default function UsersPage() {
       <idp-user-list
         users={data()?.users ?? []}
         managesAdmins={data()?.me.superadmin ?? false}
+        href={paths.userPattern()}
+        locale={locale()}
         labels={userListLabels()}
         rowLabels={userRowLabels()}
         describe={errorText}

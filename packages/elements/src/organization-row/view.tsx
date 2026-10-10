@@ -14,8 +14,9 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
       .mark { flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--idp-accent-ink); background: var(--idp-accent-soft); }
       .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
       .tag { flex: none; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--idp-accent-ink); background: color-mix(in srgb, var(--idp-accent) 12%, transparent); }
-      .count { color: inherit; text-decoration: underline; text-decoration-color: var(--idp-border-2); text-underline-offset: 3px; }
-      .count:hover { color: var(--idp-accent-ink); }
+      /* Link is a component: its <a> carries no scope, so :deep. */
+      .number > :deep(a) { color: inherit; text-decoration: underline; text-decoration-color: var(--idp-border-2); text-underline-offset: 3px; }
+      .number > :deep(a:hover) { color: var(--idp-accent-ink); }
       .muted { color: var(--idp-muted); overflow: hidden; text-overflow: ellipsis; }
       .number { font-variant-numeric: tabular-nums; }
       .scopes { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }

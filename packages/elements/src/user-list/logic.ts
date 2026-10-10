@@ -9,6 +9,8 @@ export interface UserListLabels {
   status: string;
   roles: string;
   twoStep: string;
+  signedUp: string;
+  lastSignIn: string;
   empty: string;
 }
 
@@ -18,6 +20,8 @@ export const userListLabels: UserListLabels = {
   status: 'Status',
   roles: 'Roles',
   twoStep: 'Two-step',
+  signedUp: 'Signed up',
+  lastSignIn: 'Last sign-in',
   empty: 'No user.',
 };
 
@@ -27,4 +31,6 @@ export interface UserListLogic {
   rowLabels: () => Partial<UserRowLabels>;
   describe: () => ((error: unknown) => string) | undefined;
   managesAdmins: () => boolean;
+  href: () => string;
+  locale: () => string;
 }

@@ -4,6 +4,7 @@ import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Admin } from '@idp/sdk/admin';
 import type { AdminUser } from '@idp/sdk/types';
+import { shortDate } from '../dates.js';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';
 import { userRowLabels, type UserRowLabels, type UserRowLogic } from './logic.js';
@@ -11,6 +12,9 @@ import { UserRowView } from './view.js';
 
 const props = {
   user: prop.object<AdminUser | null>(null),
+  /** The account's page: `{id}` is replaced. */
+  href: prop.string('/users/{id}'),
+  locale: prop.string('en'),
   /** Shows the admin role actions: the console's user is a superadmin. */
   managesAdmins: prop.boolean(false),
   labels: prop.object<Partial<UserRowLabels>>({}),
@@ -39,6 +43,9 @@ export class IdpUserRow extends typedElement(props) {
     const logic: UserRowLogic = {
       labels,
       user: () => this.user,
+      href: () => this.href.replace('{id}', encodeURIComponent(this.user?.id ?? '')),
+      signedUp: () => shortDate(this.user?.created_at, this.locale),
+      lastSignIn: () => shortDate(this.user?.last_sign_in_at, this.locale) || labels().never,
       name: () => {
         const u = this.user;
         return u ? `${u.given_name} ${u.family_name}`.trim() || u.email : '';

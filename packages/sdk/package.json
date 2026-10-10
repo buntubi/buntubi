@@ -12,14 +12,16 @@
     "./vite": {
       "types": "./dist/vite.d.ts",
       "default": "./dist/vite.js"
-    }
+    },
+    "./schemas/users": "./src/schemas/users.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fluixi/start": "link:../../../../fluixi-core/packages/start"
+    "@fluixi/start": "link:../../../../fluixi-core/packages/start",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",

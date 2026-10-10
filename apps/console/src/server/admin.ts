@@ -4,7 +4,7 @@
  * values; anything else throws its code.
  */
 import type { Brand } from '@idp/sdk/types';
-import type { ClientRow, Gate, Me, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
+import type { ClientRow, Gate, Me, NewUser, UserEdit, UserPage, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -106,6 +106,43 @@ export const restoreOrganization = async (id: string): Promise<void> => {
 export const loadUsers = async (q: string): Promise<UserRow[]> => {
   'use server';
   return (await call<{ items: UserRow[] }>('GET', `/users?q=${encodeURIComponent(q)}`)).items;
+};
+
+/** One account's page, or null when there is none by that id. */
+export const loadUser = async (id: string): Promise<UserPage | null> => {
+  'use server';
+  try {
+    return await call<UserPage>('GET', `/users/${encodeURIComponent(id)}`);
+  } catch (error) {
+    if (error instanceof AdminRefusal && error.status === 404) return null;
+    throw error;
+  }
+};
+
+export const createUser = async (input: NewUser): Promise<string> => {
+  'use server';
+  return (await call<{ user: { id: string } }>('POST', '/users', input)).user.id;
+};
+
+export const updateUser = async (input: { id: string } & UserEdit): Promise<void> => {
+  'use server';
+  const { id, ...edit } = input;
+  await call('PATCH', `/users/${encodeURIComponent(id)}`, edit);
+};
+
+export const sendPasswordReset = async (id: string): Promise<void> => {
+  'use server';
+  await call('POST', `/users/${encodeURIComponent(id)}/password-reset`);
+};
+
+export const signOutUser = async (id: string): Promise<void> => {
+  'use server';
+  await call('POST', `/users/${encodeURIComponent(id)}/sign-out`);
+};
+
+export const resetTwoStep = async (id: string): Promise<void> => {
+  'use server';
+  await call('DELETE', `/users/${encodeURIComponent(id)}/mfa`);
 };
 
 export const setUserDisabled = async (input: { id: string; disabled: boolean }): Promise<void> => {

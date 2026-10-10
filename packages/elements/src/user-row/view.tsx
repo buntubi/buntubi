@@ -1,5 +1,6 @@
 /** The default look: a table row; who, status, roles, two-step, then the action. */
 import { Show } from '@fluixi/core';
+import { Link } from '@fluixi/core/router';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +15,15 @@ import type { UserRowLogic } from './logic.js';
 export const userRowView = (r: UserRowLogic) => (
   <div part="user" class="user" role="row" data-disabled={() => (r.user()?.disabled ? '' : undefined)}>
     <style scoped>{`
-      .user { display: grid; grid-template-columns: minmax(0, 1.6fr) 150px minmax(0, 1fr) 90px 110px; gap: 12px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
+      .user { display: grid; grid-template-columns: minmax(0, 1.6fr) 130px minmax(0, 1fr) 110px 120px 90px 48px; gap: 12px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
       .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
       .user[data-disabled] .who { opacity: 0.55; }
       .initials { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--idp-muted); background: var(--idp-surface-2); }
       .names { display: grid; min-width: 0; }
-      .name { font-weight: 500; }
+      /* Link and the menu trigger are components: their elements carry no scope, so :deep. */
+      .names > :deep(a) { font-weight: 500; color: inherit; text-decoration: none; justify-self: start; }
+      .names > :deep(a:hover) { color: var(--idp-accent-ink); text-decoration: underline; }
+      .date { color: var(--idp-muted); font-size: 13px; font-variant-numeric: tabular-nums; }
       .email { color: var(--idp-muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; }
       .state { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--idp-ok); }
       .state[data-tone='bad'] { color: var(--idp-bad); }
@@ -31,15 +35,15 @@ export const userRowView = (r: UserRowLogic) => (
       .two { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--idp-muted); }
       .two[data-on] { color: var(--idp-ok); }
       .action { display: flex; justify-content: flex-end; }
-      .more { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: var(--idp-muted); fill: currentColor; }
-      .more:hover { background: var(--idp-surface-2); color: var(--idp-text); }
+      .action :deep(button) { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--idp-muted); fill: currentColor; cursor: pointer; }
+      .action :deep(button:hover), .action :deep(button[data-state='open']) { background: var(--idp-surface-2); color: var(--idp-text); }
       .alert { grid-column: 1 / -1; margin: 0; color: var(--idp-bad); font-size: 13px; }
-      @media (max-width: 860px) { .user { grid-template-columns: minmax(0, 1fr) auto; } .state, .tags, .two { grid-column: 1; } .action { grid-row: 1; grid-column: 2; } }
+      @media (max-width: 860px) { .user { grid-template-columns: minmax(0, 1fr) auto; } .state, .tags, .two, .date { grid-column: 1; } .action { grid-row: 1; grid-column: 2; } }
     `}</style>
     <span role="cell" class="who">
       <span class="initials" aria-hidden="true">{() => r.initials()}</span>
       <span class="names">
-        <span class="name">{() => r.name()}</span>
+        <Link class="name" href={r.href()}>{() => r.name()}</Link>
         <span class="email">{() => r.user()?.email ?? ''}</span>
       </span>
     </span>
@@ -57,6 +61,10 @@ export const userRowView = (r: UserRowLogic) => (
       <Show when={r.user()?.developer}>
         <span class="tag">{() => r.labels().developer}</span>
       </Show>
+    </span>
+    <span role="cell" class="date">{() => r.signedUp()}</span>
+    <span role="cell" class="date">
+      {() => (r.user()?.password_set === false ? r.labels().invited : r.lastSignIn())}
     </span>
     <span role="cell">
       <span class="two" data-on={() => (r.user()?.mfa ? '' : undefined)}>

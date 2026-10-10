@@ -15,6 +15,9 @@ const props = {
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
   /** Handed to every row: the admin role actions show for a superadmin. */
   managesAdmins: prop.boolean(false),
+  /** Each account's page: `{id}` is replaced. */
+  href: prop.string('/users/{id}'),
+  locale: prop.string('en'),
 };
 
 export class IdpUserList extends typedElement(props) {
@@ -25,6 +28,8 @@ export class IdpUserList extends typedElement(props) {
       rowLabels: () => this.rowLabels,
       describe: () => this.describe,
       managesAdmins: () => this.managesAdmins,
+      href: () => this.href,
+      locale: () => this.locale,
     };
     return useView(UserListView)(logic);
   }

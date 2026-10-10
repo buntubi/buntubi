@@ -7,6 +7,11 @@ import { action } from '@fluixi/start/router';
 import { Admin, type AdminService } from '@idp/sdk/admin';
 import {
   createProduct,
+  createUser,
+  resetTwoStep,
+  sendPasswordReset,
+  signOutUser,
+  updateUser,
   createScope,
   restoreOrganization,
   reviewApp,
@@ -34,11 +39,16 @@ const service: AdminService = {
   ),
   suspendOrganization: action(suspendOrganization, 'organization.suspend', { invalidates: ['organizations', 'overview'] }),
   restoreOrganization: action(restoreOrganization, 'organization.restore', { invalidates: ['organizations', 'overview'] }),
-  setUserDisabled: action(setUserDisabled, 'user.toggle', { invalidates: ['users', 'overview'] }),
+  setUserDisabled: action(setUserDisabled, 'user.toggle', { invalidates: ['users', 'user', 'overview'] }),
   createScope: action(createScope, 'scope.create', { invalidates: ['scopes'] }),
   setFirstParty: action(setFirstParty, 'client.firstParty', { invalidates: ['clients', 'client', 'overview'] }),
   setClientDisabled: action(setClientDisabled, 'client.disabled', { invalidates: ['clients', 'client'] }),
-  setAdmin: action(setAdmin, 'user.admin', { invalidates: ['users'] }),
+  setAdmin: action(setAdmin, 'user.admin', { invalidates: ['users', 'user'] }),
+  createUser: action(createUser, 'user.create', { invalidates: ['users', 'overview'] }),
+  updateUser: action(updateUser, 'user.update', { invalidates: ['users', 'user'] }),
+  sendPasswordReset: action(sendPasswordReset, 'user.passwordReset'),
+  signOutUser: action(signOutUser, 'user.signOut', { invalidates: ['user'] }),
+  resetTwoStep: action(resetTwoStep, 'user.twoStep', { invalidates: ['users', 'user'] }),
 };
 
 export const AdminModule = defineModule({ name: 'admin', providers: [{ provide: Admin, useValue: service }] });
