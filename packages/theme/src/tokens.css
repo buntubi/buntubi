@@ -68,6 +68,9 @@
   --flx-ui-color-border-strong: var(--idp-border-2);
   --flx-ui-color-focus-ring: color-mix(in srgb, var(--idp-accent) 45%, transparent);
   --flx-ui-color-danger: var(--idp-bad);
+  /* The surface: white on the light theme's red, dark on the dark theme's lighter red. */
+  --flx-ui-color-danger-fg: var(--idp-surface);
+  --flx-ui-color-danger-subtle: color-mix(in srgb, var(--idp-bad) 10%, transparent);
   --flx-ui-color-success: var(--idp-ok);
   --flx-ui-color-warning: var(--idp-warn);
 }

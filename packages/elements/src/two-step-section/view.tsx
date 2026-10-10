@@ -59,7 +59,7 @@ export const twoStepSectionView = (t: TwoStepSectionLogic) => (
             </Button>
           }
         >
-          <Button variant="soft" tone="danger" size="sm" onPress={() => t.go('disable')}>
+          <Button variant="outline" tone="danger" size="sm" onPress={() => t.go('disable')}>
             {() => t.labels().turnOff}
           </Button>
         </Show>

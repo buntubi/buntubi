@@ -51,6 +51,21 @@
     background: var(--idp-surface);
     border-color: var(--idp-border-2);
   }
+  /* Restated: the rule above outranks fluixi-ui's own hover. */
+  [data-ui='idp'] :where([data-variant='outline']:not([data-badge]):hover:not([data-disabled])) {
+    background: var(--idp-surface-2);
+    border-color: color-mix(in srgb, var(--idp-muted) 55%, var(--idp-border-2));
+  }
+  /* A destructive action that is not the page's main one: the outline, in red. */
+  [data-ui='idp'] :where([data-variant='outline'][data-tone='danger']:not([data-badge])) {
+    color: var(--idp-bad);
+    border-color: color-mix(in srgb, var(--idp-bad) 45%, var(--idp-border));
+  }
+  [data-ui='idp'] :where([data-variant='outline'][data-tone='danger']:not([data-badge]):hover:not([data-disabled])) {
+    background: var(--idp-bad);
+    border-color: var(--idp-bad);
+    color: var(--flx-ui-color-danger-fg);
+  }
   [data-ui='idp'] :where([data-variant]:not([data-badge]):focus-visible) {
     outline: none;
     box-shadow: var(--idp-skin-ring);
