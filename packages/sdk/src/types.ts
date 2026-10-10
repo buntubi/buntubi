@@ -120,6 +120,25 @@ export interface AdminOrganization {
   created_at: string;
 }
 
+/** An app as the platform owner sees it, whoever's it is. */
+export interface AdminClient {
+  client_id: string;
+  name: string;
+  client_type: 'public' | 'confidential';
+  scope: string;
+  /** Signs people in without a consent screen; only a platform app may. */
+  first_party: boolean;
+  homepage_url: string | null;
+  disabled: boolean;
+  organization_id: string | null;
+  organization: string | null;
+  /** One of the platform's own apps: in the platform organization. */
+  platform: boolean;
+  environment: 'sandbox' | 'live';
+  review_status: string;
+  created_at: string;
+}
+
 /** An account as the platform owner sees it. */
 export interface AdminUser {
   id: string;

@@ -29,6 +29,9 @@ importers:
       '@fluixi-ui/select':
         specifier: link:../../../../fluixi-ui/packages/select
         version: link:../../../../fluixi-ui/packages/select
+      '@fluixi-ui/switch':
+        specifier: link:../../../../fluixi-ui/packages/switch
+        version: link:../../../../fluixi-ui/packages/switch
       '@fluixi-ui/toggle':
         specifier: link:../../../../fluixi-ui/packages/toggle
         version: link:../../../../fluixi-ui/packages/toggle

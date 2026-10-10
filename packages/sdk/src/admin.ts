@@ -27,6 +27,8 @@ export interface AdminService {
   restoreOrganization(id: string): Promise<void>;
   /** A disabled account cannot sign in, and its sessions end. */
   setUserDisabled(input: { id: string; disabled: boolean }): Promise<void>;
+  /** First-party apps skip the consent screen; the provider allows it on platform apps only. */
+  setFirstParty(input: { client_id: string; first_party: boolean }): Promise<void>;
   createScope(input: ScopeEntry): Promise<void>;
 }
 

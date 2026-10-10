@@ -8,6 +8,8 @@ import type { ScopeFormLabels } from '@idp/elements/scope-form/logic';
 import type { ScopeListLabels } from '@idp/elements/scope-list/logic';
 import type { ScopeRowLabels } from '@idp/elements/scope-row/logic';
 import type { Stat } from '@idp/elements/stat-group/logic';
+import type { ClientListLabels } from '@idp/elements/client-list/logic';
+import type { ClientRowLabels } from '@idp/elements/client-row/logic';
 import type { UserListLabels } from '@idp/elements/user-list/logic';
 import type { UserRowLabels } from '@idp/elements/user-row/logic';
 import type { AdminOverview } from '@idp/sdk/types';
@@ -160,6 +162,25 @@ export const userRowLabels = (): UserRowLabels => ({
   off: t('common.off'),
   enable: t('users.enable'),
   disable: t('users.disable'),
+  error: t('error.generic'),
+});
+
+export const clientListLabels = (): ClientListLabels => ({
+  title: t('apps.title'),
+  app: t('apps.app'),
+  organization: t('apps.organization'),
+  environment: t('apps.environment'),
+  firstParty: t('apps.firstParty'),
+  empty: t('common.none'),
+});
+
+export const clientRowLabels = (): ClientRowLabels => ({
+  platform: t('apps.platform'),
+  live: t('apps.live'),
+  sandbox: t('apps.sandbox'),
+  disabled: t('apps.disabled'),
+  firstParty: t('apps.firstParty'),
+  notPlatform: t('apps.notPlatform'),
   error: t('error.generic'),
 });
 

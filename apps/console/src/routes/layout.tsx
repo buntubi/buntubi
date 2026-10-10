@@ -43,6 +43,7 @@ const SECTIONS = [
   { href: paths.overview(), key: 'nav.overview', icon: icons.home, group: 'decide' },
   { href: paths.reviews(), key: 'nav.reviews', icon: icons.shield, group: 'decide' },
   { href: paths.organizations(), key: 'nav.organizations', icon: icons.building, group: 'manage' },
+  { href: paths.apps(), key: 'nav.apps', icon: icons.apps, group: 'manage' },
   { href: paths.users(), key: 'nav.users', icon: icons.user, group: 'manage' },
   { href: paths.scopes(), key: 'nav.scopes', icon: icons.tag, group: 'manage' },
   { href: paths.products(), key: 'nav.products', icon: icons.box, group: 'manage' },

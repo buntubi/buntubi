@@ -11,6 +11,7 @@ import {
   restoreOrganization,
   reviewApp,
   setAvailability,
+  setFirstParty,
   setScopeProduct,
   setUserDisabled,
   suspendOrganization,
@@ -33,6 +34,7 @@ const service: AdminService = {
   restoreOrganization: action(restoreOrganization, 'organization.restore', { invalidates: ['organizations', 'overview'] }),
   setUserDisabled: action(setUserDisabled, 'user.toggle', { invalidates: ['users', 'overview'] }),
   createScope: action(createScope, 'scope.create', { invalidates: ['scopes'] }),
+  setFirstParty: action(setFirstParty, 'client.firstParty', { invalidates: ['clients', 'overview'] }),
 };
 
 export const AdminModule = defineModule({ name: 'admin', providers: [{ provide: Admin, useValue: service }] });

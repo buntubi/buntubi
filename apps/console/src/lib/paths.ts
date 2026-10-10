@@ -11,6 +11,7 @@ export const paths = {
   reviewPattern: () => '/reviews/{client_id}',
   organizations: (q?: string) => `/organizations${query(q)}`,
   users: (q?: string) => `/users${query(q)}`,
+  apps: (q?: string) => `/apps${query(q)}`,
   scopes: () => '/scopes',
   products: () => '/products',
   /** A page a plugin adds. */

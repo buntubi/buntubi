@@ -4,7 +4,7 @@
  * values; anything else throws its code.
  */
 import type { Brand } from '@idp/sdk/types';
-import type { Gate, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
+import type { ClientRow, Gate, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -111,6 +111,23 @@ export const loadUsers = async (q: string): Promise<UserRow[]> => {
 export const setUserDisabled = async (input: { id: string; disabled: boolean }): Promise<void> => {
   'use server';
   await call('POST', `/users/${encodeURIComponent(input.id)}/${input.disabled ? 'disable' : 'enable'}`);
+};
+
+/** Every app, the platform's own and the developers', with whose each is. */
+export const loadClients = async (q: string): Promise<ClientRow[]> => {
+  'use server';
+  const all = (await call<{ items: ClientRow[] }>('GET', '/clients')).items;
+  const term = q.trim().toLowerCase();
+  const matching = term
+    ? all.filter((c) => [c.name, c.client_id, c.organization ?? ''].some((v) => v.toLowerCase().includes(term)))
+    : all;
+  // The platform's own first, then by name.
+  return matching.sort((a, b) => Number(b.platform) - Number(a.platform) || a.name.localeCompare(b.name));
+};
+
+export const setFirstParty = async (input: { client_id: string; first_party: boolean }): Promise<void> => {
+  'use server';
+  await call('PATCH', `/clients/${encodeURIComponent(input.client_id)}`, { first_party: input.first_party });
 };
 
 export const loadScopes = async (): Promise<ScopeRow[]> => {

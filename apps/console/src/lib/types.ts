@@ -8,6 +8,8 @@ export type { AdminOrganization as OrganizationRow } from '@idp/sdk/types';
 
 export type { AdminUser as UserRow } from '@idp/sdk/types';
 
+export type { AdminClient as ClientRow } from '@idp/sdk/types';
+
 export type { ScopeEntry as ScopeRow } from '@idp/sdk/types';
 
 export interface ProductRow {

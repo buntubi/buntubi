@@ -6,6 +6,7 @@
 import { cache } from '@fluixi/start/router';
 import {
   loadBrand,
+  loadClients,
   loadOrganizations,
   loadOverview,
   loadPlugins,
@@ -22,6 +23,7 @@ export const reviews = cache(() => loadReviews(), 'reviews');
 export const review = cache((clientId: string) => loadReview(clientId), 'review');
 export const organizations = cache((q: string) => loadOrganizations(q), 'organizations');
 export const users = cache((q: string) => loadUsers(q), 'users');
+export const clients = cache((q: string) => loadClients(q), 'clients');
 export const scopes = cache(() => loadScopes(), 'scopes');
 export const products = cache(() => loadProducts(), 'products');
 export const enabledPlugins = cache(() => loadPlugins(), 'plugins');
