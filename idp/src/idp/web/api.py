@@ -498,7 +498,8 @@ def remove_passkey(passkey_id: str) -> Response:
 @bp.post("/passkey/options")
 @limiter.limit("20 per minute")
 def passkey_sign_in_options() -> Response:
-    return jsonify(passkeys.sign_in_options())
+    pending = sessions.pending("mfa") if _body().get("second_step") is True else None
+    return jsonify(passkeys.sign_in_options(pending.user if pending else None))
 
 
 @bp.post("/passkey")
@@ -508,8 +509,17 @@ def passkey_sign_in() -> Response:
     if not isinstance(credential, dict):
         raise AccountError("passkey_failed")
     user = passkeys.authenticate(credential)
-    # A step-up in progress for this person ends with the passkey as well as with a code.
     pending = sessions.pending("mfa")
+    if _body().get("second_step") is True:
+        # The second step of a password sign-in: the passkey must be that person's.
+        if pending is None:
+            raise AccountError("no_pending_sign_in")
+        if pending.user.id != user.id:
+            raise AccountError("passkey_other_account")
+        sessions.end_replaced(pending)
+        methods = [*dict.fromkeys([*pending.methods, *passkeys.METHODS])]
+        return _signed_in(user, methods, "sign_in")
+    # A step-up in progress for this person ends with the passkey as well as with a code.
     if pending is not None and pending.user.id == user.id:
         sessions.end_replaced(pending)
     return _signed_in(user, passkeys.METHODS, "sign_in")

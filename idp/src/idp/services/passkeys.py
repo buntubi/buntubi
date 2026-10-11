@@ -136,11 +136,22 @@ def register(user: User, credential: dict[str, Any]) -> Passkey:
     return passkey
 
 
-def sign_in_options() -> dict[str, Any]:
-    """No list of credentials: the browser offers the passkeys it has for this site."""
+def sign_in_options(user: User | None = None) -> dict[str, Any]:
+    """
+    Without a user, no list of credentials: the browser offers the passkeys it has for this site.
+    With one (the second step of their sign-in), only theirs.
+    """
     rp_id, _ = _relying_party()
+    allowed = (
+        [
+            PublicKeyCredentialDescriptor(id=p.credential_id, transports=_transports(p.transports))
+            for p in list_for(user)
+        ]
+        if user is not None
+        else None
+    )
     options = generate_authentication_options(
-        rp_id=rp_id, user_verification=UserVerificationRequirement.REQUIRED
+        rp_id=rp_id, user_verification=UserVerificationRequirement.REQUIRED, allow_credentials=allowed
     )
     _keep_challenge(_SIGN_IN, options.challenge)
     result: dict[str, Any] = json.loads(options_to_json(options))

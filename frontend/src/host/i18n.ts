@@ -178,6 +178,8 @@ const fr: Text = {
     pending: 'Vérification',
     useBackup: 'Utiliser un code de secours',
     useApp: 'Utiliser l’application',
+    usePasskey: 'Utiliser une clé d’accès',
+    passkeyPending: 'En attente de votre appareil',
   },
   deviceActivate: {
     intro: 'Saisissez le code affiché sur votre appareil. N’autorisez qu’un appareil que vous utilisez en ce moment.',
@@ -213,6 +215,7 @@ const fr: Text = {
     reauth_required: 'Saisissez votre mot de passe pour continuer.',
     invalid_name: 'Donnez-lui un nom de 64 caractères au plus.',
     not_found: 'Introuvable : la page n’est peut-être plus à jour.',
+    passkey_other_account: 'Cette clé d’accès appartient à un autre compte.',
     this_device: 'Pour cet appareil, utilisez « Se déconnecter » dans le menu du compte.',
     platform_app: 'On quitte cette application en se déconnectant.',
     email_mismatch: 'Ce n’est pas l’adresse de ce compte.',
@@ -355,6 +358,8 @@ const en: Text = {
     pending: 'Checking',
     useBackup: 'Use a backup code',
     useApp: 'Use the authenticator app',
+    usePasskey: 'Use a passkey',
+    passkeyPending: 'Waiting for your device',
   },
   deviceActivate: {
     intro: 'Enter the code shown on your device. Only allow a device you are using right now.',
@@ -390,6 +395,7 @@ const en: Text = {
     reauth_required: 'Enter your password to go on.',
     invalid_name: 'Give it a name of 64 characters at most.',
     not_found: 'Not found: the page may be out of date.',
+    passkey_other_account: 'This passkey belongs to another account.',
     this_device: 'For this device, use Sign out in the account menu.',
     platform_app: 'You leave this app by signing out.',
     email_mismatch: 'This is not this account’s address.',

@@ -119,6 +119,12 @@ const screens: Record<string, () => Screen> = {
     body: () => (
       <idp-mfa-verify
         action={(input) => api('POST', '/api/mfa/verify', input)}
+        hasPasskey={props.passkey === true}
+        passkeyAction={async () => {
+          const options = await api<Record<string, unknown>>('POST', '/api/passkey/options', { second_step: true });
+          const credential = await getPasskey(options);
+          return api('POST', '/api/passkey', { credential, second_step: true });
+        }}
         labels={t.mfaVerify}
         messages={t.messages}
         onSuccess={(event) => follow(event.detail.result)}

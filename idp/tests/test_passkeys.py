@@ -6,6 +6,7 @@ from flask import Flask
 from flask.testing import FlaskClient
 from soft_authenticator import SoftAuthenticator
 from sqlalchemy import select, update
+from test_mfa import enable, password_step
 
 from idp.db import db, utcnow
 from idp.models import LoginSession
@@ -117,3 +118,40 @@ def test_rename_and_remove_only_ones_own(
 
     assert api(browser, "DELETE", f"/api/account/passkeys/{key}", None, csrf).status_code == 200
     assert _sign_in(app.test_client(), device)["error"] == "passkey_failed"
+
+
+def test_a_passkey_answers_the_second_step(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    csrf = sign_up(browser, outbox)
+    enable(browser, csrf)
+    device = SoftAuthenticator(ISSUER)
+    _add(browser, csrf, device)
+
+    other, page, _ = password_step(app)
+    config = page_config(other, "/mfa")
+    assert config["props"]["passkey"] is True
+    options = api(other, "POST", "/api/passkey/options", {"second_step": True}, page).json
+    assert [c["id"] for c in options["allowCredentials"]] == [device.get(options)["rawId"]]
+    answer = device.get(api(other, "POST", "/api/passkey/options", {"second_step": True}, page).json)
+    done = api(other, "POST", "/api/passkey", {"credential": answer, "second_step": True}, page)
+    assert "redirect" in done.json
+    with app.app_context():
+        login = db().scalars(select(LoginSession).order_by(LoginSession.created_at.desc())).first()
+        assert login is not None and list(login.auth_methods) == ["pwd", "hwk", "mfa"]
+
+
+def test_the_second_step_refuses_someone_elses_passkey(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    csrf = sign_up(browser, outbox)
+    enable(browser, csrf)
+    bob = app.test_client()
+    bob_csrf = sign_up(bob, outbox, email="bob@example.test")
+    bobs_device = SoftAuthenticator(ISSUER)
+    _add(bob, bob_csrf, bobs_device)
+
+    other, page, _ = password_step(app)
+    answer = bobs_device.get(api(other, "POST", "/api/passkey/options", {}, page).json)
+    refused = api(other, "POST", "/api/passkey", {"credential": answer, "second_step": True}, page)
+    assert refused.json["error"] == "passkey_other_account"

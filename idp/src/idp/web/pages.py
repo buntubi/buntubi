@@ -19,7 +19,7 @@ from idp.db import db
 from idp.models import UserPicture
 from idp.oauth.server import authorization, query_client
 from idp.security import csrf
-from idp.services import platform, sessions
+from idp.services import passkeys, platform, sessions
 
 bp = Blueprint("pages", __name__)
 
@@ -101,9 +101,11 @@ def verify_email() -> Any:
 
 @bp.get("/mfa")
 def mfa_step() -> Any:
-    if sessions.pending("mfa") is None:
+    pending = sessions.pending("mfa")
+    if pending is None:
         return redirect(url_for("pages.signin"))
-    return shell("idp-mfa-verify")
+    # A passkey of this person's also answers the second step.
+    return shell("idp-mfa-verify", passkey=bool(passkeys.list_for(pending.user)))
 
 
 @bp.get("/forgot-password")

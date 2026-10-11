@@ -3,7 +3,8 @@
  * when the phone is not at hand. `success` carries the action's result.
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import { Show } from '@fluixi/core';
+import { onMount, Show } from '@fluixi/core';
+import { passkeysSupported } from '@idp/sdk/webauthn';
 import { signal } from '@fluixi/reactive/signal';
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Input } from '@fluixi-ui/input';
@@ -25,6 +26,8 @@ export interface MfaVerifyLabels {
   pending: string;
   useBackup: string;
   useApp: string;
+  usePasskey: string;
+  passkeyPending: string;
 }
 
 export const mfaVerifyLabels: MfaVerifyLabels = {
@@ -36,6 +39,8 @@ export const mfaVerifyLabels: MfaVerifyLabels = {
   pending: 'Checking',
   useBackup: 'Use a backup code',
   useApp: 'Use the authenticator app',
+  usePasskey: 'Use a passkey',
+  passkeyPending: 'Waiting for your device',
 };
 
 export interface MfaVerifyEvents {
@@ -45,6 +50,9 @@ export interface MfaVerifyEvents {
 
 const props = {
   action: prop.any<ElementAction<MfaCode> | undefined>(undefined),
+  /** Answers the step with one of the person's passkeys; offered when `hasPasskey`. */
+  passkeyAction: prop.any<ElementAction<void> | undefined>(undefined),
+  hasPasskey: prop.boolean(false),
   labels: prop.object<MfaVerifyLabels>(mfaVerifyLabels),
   messages: prop.object<Messages>({}),
 };
@@ -57,6 +65,15 @@ export class IdpMfaVerify extends typedElement(props) {
     const code = signal('');
     const invalid = signal(false);
     const { run, pending, error } = useElementAction('idp-mfa-verify', () => this.action, text);
+    const passkey = useElementAction('idp-mfa-verify-passkey', () => this.passkeyAction, text);
+    // A browser check, so in onMount.
+    const canPasskey = signal(false);
+    onMount(() => canPasskey.set(this.hasPasskey && !!this.passkeyAction && passkeysSupported()));
+    const askPasskey = () =>
+      passkey.run(undefined).then(
+        (result) => this.emit('success', { result }),
+        () => {},
+      );
 
     const submit = () => {
       if (pending()) return;
@@ -78,7 +95,7 @@ export class IdpMfaVerify extends typedElement(props) {
       invalid.set(false);
     };
 
-    const problem = () => (invalid() ? text(backup() ? 'form.backupCode' : 'form.code') : error());
+    const problem = () => (invalid() ? text(backup() ? 'form.backupCode' : 'form.code') : error() ?? passkey.error());
 
     return (
       <form
@@ -119,6 +136,11 @@ export class IdpMfaVerify extends typedElement(props) {
         <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
           {() => (pending() ? label().pending : label().submit)}
         </Button>
+        <Show when={canPasskey()}>
+          <Button type="button" variant="outline" tone="neutral" data-part="passkey" disabled={passkey.pending()} onPress={askPasskey}>
+            {() => (passkey.pending() ? label().passkeyPending : label().usePasskey)}
+          </Button>
+        </Show>
         <Button type="button" variant="ghost" onPress={toggle}>
           {() => (backup() ? label().useApp : label().useBackup)}
         </Button>
