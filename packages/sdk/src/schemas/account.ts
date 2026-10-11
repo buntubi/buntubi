@@ -36,9 +36,18 @@ export const twoStepCodeSchema = z.object({
     .regex(/^([0-9]{6}|[A-Za-z0-9]{4}-?[A-Za-z0-9]{4})$/, 'form.code'),
 });
 
+export const passkeyNameSchema = z.object({
+  name: z.string().trim().min(1, 'form.required').max(64, 'form.tooLong'),
+});
+
+/** The password again, when a sign-in is too old to add a way in. */
+export const reauthSchema = z.object({ password: z.string().min(1, 'form.required') });
+
 export type NameInput = z.infer<typeof nameSchema>;
 export type PhoneInput = z.infer<typeof phoneSchema>;
 export type CountryInput = z.infer<typeof countrySchema>;
 export type EmailChangeInput = z.infer<typeof emailChangeSchema>;
 export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
 export type TwoStepCodeInput = z.infer<typeof twoStepCodeSchema>;
+export type PasskeyNameInput = z.infer<typeof passkeyNameSchema>;
+export type ReauthInput = z.infer<typeof reauthSchema>;

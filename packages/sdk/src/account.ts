@@ -71,6 +71,24 @@ export interface AccountService {
   /** A current code (or a backup code) replaces the backup codes: answers the new ones. */
   renewBackupCodes(code: string): Promise<string[]>;
   disableTwoStep(code: string): Promise<void>;
+  /**
+   * Makes a passkey on this device and keeps it. A sign-in older than a few minutes refuses with
+   * `reauth_required`: call again with the password.
+   */
+  addPasskey(password?: string): Promise<void>;
+  renamePasskey(id: string, name: string): Promise<void>;
+  removePasskey(id: string): Promise<void>;
+}
+
+export interface Passkey {
+  id: string;
+  name: string;
+  /** The password manager that keeps it, when it says (iCloud Keychain, Google Password Manager). */
+  provider: string;
+  /** Synced to the person's other devices. */
+  synced: boolean;
+  created_at: string;
+  last_used_at: string | null;
 }
 
 export interface TwoStepEnrolment {
@@ -99,7 +117,9 @@ export type ActivityKind =
   | 'email_change_requested'
   | 'email_changed'
   | 'signed_out_everywhere'
-  | 'signed_out_others';
+  | 'signed_out_others'
+  | 'passkey_added'
+  | 'passkey_removed';
 
 export interface ActivityEntry {
   kind: ActivityKind;
@@ -110,6 +130,10 @@ export interface ActivityEntry {
   system: string;
   /** A sign-in that asked for the second factor. */
   two_step: boolean;
+  /** A sign-in with a passkey. */
+  passkey: boolean;
+  /** The passkey's name, for passkey_added and passkey_removed. */
+  name: string | null;
   /** Wrong passwords in a row from one address are one entry. */
   count: number;
 }

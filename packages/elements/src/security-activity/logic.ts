@@ -10,6 +10,9 @@ export interface SecurityActivityLabels {
   when: string;
   kinds: Record<ActivityKind, string>;
   signInTwoStep: string;
+  signInPasskey: string;
+  /** {what} happened to the passkey called {name}. */
+  withName: string;
   /** {n} is the number of tries in a row. */
   wrongPasswords: string;
   /** {browser} on {system}. */
@@ -40,8 +43,12 @@ export const securityActivityLabels: SecurityActivityLabels = {
     email_changed: 'Email address changed',
     signed_out_everywhere: 'Signed out everywhere by an administrator',
     signed_out_others: 'Other devices signed out',
+    passkey_added: 'Passkey added',
+    passkey_removed: 'Passkey removed',
   },
   signInTwoStep: 'Signed in with two-step',
+  signInPasskey: 'Signed in with a passkey',
+  withName: '{what}: {name}',
   wrongPasswords: 'Wrong password, {n} tries',
   device: '{browser} on {system}',
   unknownDevice: 'Unknown browser',

@@ -4,7 +4,7 @@ check is rate-limited. Errors are {"error": "<code>"}, which the screens transla
 """
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, url_for
@@ -15,8 +15,9 @@ from idp.db import db, utcnow
 from idp.extensions import limiter
 from idp.models import Consent, DeviceCode, LoginSession, User
 from idp.security import csrf
+from idp.security.passwords import verify_password
 from idp.security.tokens import normalize_user_code
-from idp.services import accounts, activity, audit, mail, mfa, own_apps, platform, profile, sessions
+from idp.services import accounts, activity, audit, mail, mfa, own_apps, passkeys, platform, profile, sessions
 from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -423,6 +424,81 @@ def change_password() -> Response:
         audit.record("signed_out_others", user=login.user)
     db().commit()
     return jsonify(ok=True)
+
+
+# Adding a way in asks for the password again once the sign-in is older than this.
+_RECENT_SIGN_IN = timedelta(minutes=10)
+
+
+@bp.get("/account/passkeys")
+def list_passkeys() -> Response:
+    return jsonify(passkeys=[passkeys.as_json(p) for p in passkeys.list_for(_me())])
+
+
+@bp.post("/account/passkeys/options")
+@limiter.limit("10 per minute")
+def passkey_registration_options() -> Response:
+    login = sessions.current()
+    if login is None:
+        raise AccountError("not_signed_in")
+    if utcnow() - login.created_at > _RECENT_SIGN_IN:
+        password = _text(_body(), "password", 256)
+        if not password:
+            raise AccountError("reauth_required")
+        if login.user.password_hash is None or not verify_password(login.user.password_hash, password):
+            raise AccountError("wrong_password")
+    options = passkeys.registration_options(login.user)
+    db().commit()
+    return jsonify(options)
+
+
+@bp.post("/account/passkeys")
+@limiter.limit("10 per minute")
+def add_passkey() -> Response:
+    user = _me()
+    credential = _body().get("credential")
+    if not isinstance(credential, dict):
+        raise AccountError("passkey_failed")
+    passkey = passkeys.register(user, credential)
+    audit.record("passkey_added", user=user, name=passkey.name)
+    db().commit()
+    return jsonify(passkeys.as_json(passkey))
+
+
+@bp.patch("/account/passkeys/<passkey_id>")
+def rename_passkey(passkey_id: str) -> Response:
+    passkey = passkeys.rename(_me(), passkey_id, _text(_body(), "name", 128))
+    db().commit()
+    return jsonify(passkeys.as_json(passkey))
+
+
+@bp.delete("/account/passkeys/<passkey_id>")
+def remove_passkey(passkey_id: str) -> Response:
+    user = _me()
+    name = passkeys.remove(user, passkey_id)
+    audit.record("passkey_removed", user=user, name=name)
+    db().commit()
+    return jsonify(ok=True)
+
+
+@bp.post("/passkey/options")
+@limiter.limit("20 per minute")
+def passkey_sign_in_options() -> Response:
+    return jsonify(passkeys.sign_in_options())
+
+
+@bp.post("/passkey")
+@limiter.limit("10 per minute")
+def passkey_sign_in() -> Response:
+    credential = _body().get("credential")
+    if not isinstance(credential, dict):
+        raise AccountError("passkey_failed")
+    user = passkeys.authenticate(credential)
+    # A step-up in progress for this person ends with the passkey as well as with a code.
+    pending = sessions.pending("mfa")
+    if pending is not None and pending.user.id == user.id:
+        sessions.end_replaced(pending)
+    return _signed_in(user, passkeys.METHODS, "sign_in")
 
 
 @bp.get("/account/activity")

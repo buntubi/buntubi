@@ -283,7 +283,10 @@
     "./security-activity/logic": "./src/security-activity/logic.ts",
     "./two-step-section": "./src/two-step-section/two-step-section.tsx",
     "./two-step-section/view": "./src/two-step-section/view.tsx",
-    "./two-step-section/logic": "./src/two-step-section/logic.ts"
+    "./two-step-section/logic": "./src/two-step-section/logic.ts",
+    "./passkeys-section": "./src/passkeys-section/passkeys-section.tsx",
+    "./passkeys-section/view": "./src/passkeys-section/view.tsx",
+    "./passkeys-section/logic": "./src/passkeys-section/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

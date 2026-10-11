@@ -12,7 +12,15 @@ import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
 import { provideRoot } from '@fluixi/start/di';
 import { Grid, Stack } from '@fluixi-ui/layout';
-import { Account, type AccountActivity, type AccountService, type AccountSummary, type TwoStepEnrolment } from '@idp/sdk/account';
+import {
+  Account,
+  type AccountActivity,
+  type AccountService,
+  type AccountSummary,
+  type Passkey,
+  type TwoStepEnrolment,
+} from '@idp/sdk/account';
+import { createPasskey } from '@idp/sdk/webauthn';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
 import type { AccountCheck } from '@idp/elements/account-check/logic';
@@ -23,6 +31,7 @@ import '@idp/elements/contact-section';
 import '@idp/elements/preferences-section';
 import '@idp/elements/profile-section';
 import '@idp/elements/page-header';
+import '@idp/elements/passkeys-section';
 import '@idp/elements/password-section';
 import '@idp/elements/security-activity';
 import '@idp/elements/two-step-section';
@@ -103,12 +112,23 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     confirmTwoStep: (code) => backupCodes(api('POST', '/api/mfa/totp/confirm', { code })),
     renewBackupCodes: (code) => backupCodes(api('POST', '/api/mfa/backup-codes', { code })),
     disableTwoStep: (code) => changed(api('POST', '/api/mfa/disable', { code })),
+    addPasskey: async (password) => {
+      const options = await api<Record<string, unknown>>('POST', '/api/account/passkeys/options', password ? { password } : {});
+      const credential = await createPasskey(options);
+      await changed(api('POST', '/api/account/passkeys', { credential }));
+    },
+    renamePasskey: (id, name) => changed(api('PATCH', `/api/account/passkeys/${encodeURIComponent(id)}`, { name })),
+    removePasskey: (id) => changed(api('DELETE', `/api/account/passkeys/${encodeURIComponent(id)}`)),
   };
   provideRoot([{ provide: Account, useValue: service }]);
   const summary = () => api<AccountSummary>('GET', '/api/account');
   const security = async () => {
-    const [account, activity] = await Promise.all([summary(), api<AccountActivity>('GET', '/api/account/activity')]);
-    return { account, activity };
+    const [account, activity, keys] = await Promise.all([
+      summary(),
+      api<AccountActivity>('GET', '/api/account/activity'),
+      api<{ passkeys: Passkey[] }>('GET', '/api/account/passkeys'),
+    ]);
+    return { account, activity, passkeys: keys.passkeys };
   };
   const describe = (error: unknown) => {
     const code = error instanceof Error ? error.message : 'generic';
@@ -255,7 +275,7 @@ export function mountAccount(root: HTMLElement, context: Context): void {
   }
 
   function Security(): ComponentChild {
-    const loaded = useRouteData<{ account: AccountSummary; activity: AccountActivity }>();
+    const loaded = useRouteData<{ account: AccountSummary; activity: AccountActivity; passkeys: Passkey[] }>();
     const data = () => loaded()?.account;
     const t = context.text;
     return (
@@ -267,6 +287,13 @@ export function mountAccount(root: HTMLElement, context: Context): void {
             changedAt={data()?.user.password_changed_at ?? ''}
             locale={config.locale}
             labels={w.security.password}
+            messages={t.messages}
+            describe={describe}
+          />
+          <idp-passkeys-section
+            passkeys={loaded()?.passkeys ?? []}
+            locale={config.locale}
+            labels={w.security.passkeys}
             messages={t.messages}
             describe={describe}
           />

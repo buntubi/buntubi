@@ -20,6 +20,7 @@ import './elements/mfa-verify/mfa-verify.js';
 import type { AccountItem } from './elements/account-select/account-select.js';
 import { createApi, type Redirect } from './host/api.js';
 import { lookOf } from '@idp/sdk/plugins';
+import { getPasskey } from '@idp/sdk/webauthn';
 import uiPlugins from 'virtual:idp-ui-plugins';
 import { applyBrand } from './host/brand.js';
 import { readConfig } from './host/config.js';
@@ -53,6 +54,11 @@ const screens: Record<string, () => Screen> = {
     body: () => (
       <idp-sign-in
         action={(input) => api('POST', '/api/session', input)}
+        passkeyAction={async ({ conditional, signal }) => {
+          const options = await api<Record<string, unknown>>('POST', '/api/passkey/options', {});
+          const credential = await getPasskey(options, conditional, signal);
+          return api('POST', '/api/passkey', { credential });
+        }}
         schema={signInSchema}
         labels={t.signIn}
         messages={t.messages}

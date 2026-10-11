@@ -28,6 +28,8 @@ KINDS = {
     "email_changed": "email_changed",
     "admin.user_signed_out": "signed_out_everywhere",
     "signed_out_others": "signed_out_others",
+    "passkey_added": "passkey_added",
+    "passkey_removed": "passkey_removed",
 }
 
 
@@ -60,6 +62,8 @@ def recent(user: User, limit: int = 50) -> list[dict[str, Any]]:
                 "ip": row.ip,
                 **devices.describe(row.user_agent),
                 "two_step": "mfa" in methods,
+                "passkey": "hwk" in methods,
+                "name": row.details.get("name") if isinstance(row.details, dict) else None,
                 "count": 1,
             }
         )

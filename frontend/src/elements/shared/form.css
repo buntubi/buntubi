@@ -57,3 +57,25 @@
     grid-template-columns: 1fr;
   }
 }
+/* "or" between two ways in, as a rule with the word in the middle. */
+.idp-form .idp-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--flx-ui-color-fg-muted);
+  font-size: 13px;
+}
+.idp-form .idp-or::before,
+.idp-form .idp-or::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--flx-ui-color-border);
+}
+.idp-form [data-part='passkey'] {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  font-size: 15px;
+  gap: 8px;
+}

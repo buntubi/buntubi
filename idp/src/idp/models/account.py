@@ -80,6 +80,25 @@ class TotpCredential(IdMixin, Base):
     last_used_step: Mapped[int | None] = mapped_column(Integer)
 
 
+class Passkey(IdMixin, Base):
+    """A WebAuthn credential. Only its public key is kept; the private key never leaves the device."""
+
+    __tablename__ = "passkeys"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    credential_id: Mapped[bytes] = mapped_column(LargeBinary, unique=True)
+    public_key: Mapped[bytes] = mapped_column(LargeBinary)
+    sign_count: Mapped[int] = mapped_column(Integer, default=0)
+    transports: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list)
+    # Which kind of authenticator made it (a password manager, a security key), when it says.
+    aaguid: Mapped[str] = mapped_column(String(36), default="")
+    # Synced to the person's other devices by their password manager.
+    backed_up: Mapped[bool] = mapped_column(default=False)
+    name: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    last_used_at: Mapped[datetime | None]
+
+
 class BackupCode(IdMixin, Base):
     __tablename__ = "backup_codes"
 

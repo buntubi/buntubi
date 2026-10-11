@@ -15,6 +15,7 @@ dependencies = [
   "requests>=2.32",
   "segno>=1.6",
   "email-validator>=2.2",
+  "webauthn>=3.0,<4",
 ]
 
 [project.optional-dependencies]

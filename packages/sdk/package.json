@@ -19,7 +19,8 @@
     "./schemas/team": "./src/schemas/team.ts",
     "./schemas/apps": "./src/schemas/apps.ts",
     "./account": "./src/account.ts",
-    "./schemas/account": "./src/schemas/account.ts"
+    "./schemas/account": "./src/schemas/account.ts",
+    "./webauthn": "./src/webauthn.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

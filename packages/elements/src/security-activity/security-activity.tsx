@@ -21,7 +21,7 @@ const props = {
 };
 
 const WARN: ActivityKind[] = ['sign_in_failed', 'backup_code_used', 'mfa_disabled', 'password_reset_sent', 'signed_out_everywhere'];
-const INFO: ActivityKind[] = ['email_change_requested', 'signed_out_others', 'password_reset'];
+const INFO: ActivityKind[] = ['email_change_requested', 'signed_out_others', 'password_reset', 'passkey_added', 'passkey_removed'];
 
 const toneOf = (kind: ActivityKind): ActivityTone => (WARN.includes(kind) ? 'warn' : INFO.includes(kind) ? 'info' : 'ok');
 
@@ -29,9 +29,11 @@ export class IdpSecurityActivity extends typedElement(props) {
   protected override render(): unknown {
     const labels = () => ({ ...securityActivityLabels, ...this.labels, kinds: { ...securityActivityLabels.kinds, ...this.labels.kinds } });
     const what = (entry: ActivityEntry, l: SecurityActivityLabels) => {
+      if (entry.kind === 'sign_in' && entry.passkey) return l.signInPasskey;
       if (entry.kind === 'sign_in' && entry.two_step) return l.signInTwoStep;
       if (entry.kind === 'sign_in_failed' && entry.count > 1) return l.wrongPasswords.replace('{n}', String(entry.count));
-      return l.kinds[entry.kind];
+      const said = l.kinds[entry.kind];
+      return entry.name ? l.withName.replace('{what}', said).replace('{name}', entry.name) : said;
     };
     const where = (entry: ActivityEntry, l: SecurityActivityLabels) => {
       const device =
