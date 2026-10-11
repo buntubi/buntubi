@@ -3,6 +3,8 @@
  * stands on the page itself. On a phone the hero folds into a brand row above the form.
  */
 import { Dynamic, Show } from '@fluixi/core';
+import { Button } from '@fluixi-ui/button';
+import { ThemeToggle, type ThemeToggleLabels } from '@idp/shell/theme-toggle';
 import type { ComponentChild } from '@fluixi/dom';
 import type { Brand, Locale } from './config.js';
 
@@ -22,6 +24,21 @@ export interface PageProps {
   layout?: 'hero' | 'card';
   /** Under the card: the platform's policies. */
   links?: { label: string; href: string }[];
+  /** The theme control's words. */
+  theme: ThemeToggleLabels;
+}
+
+/** Theme and language: the same two controls the account area's header has. */
+function Tools(props: { theme: ThemeToggleLabels; language: string; href: () => string; lang: string }): ComponentChild {
+  return (
+    <div class="idp-tools">
+      <ThemeToggle labels={props.theme} />
+      {/* The page is drawn in its language by the server: switching reloads it. */}
+      <Button variant="ghost" tone="neutral" size="sm" lang={props.lang} onPress={() => window.location.assign(props.href())}>
+        {() => props.language}
+      </Button>
+    </div>
+  );
 }
 
 function BrandMark(props: { brand: Brand }): ComponentChild {
@@ -56,6 +73,7 @@ export function Page(props: PageProps): ComponentChild {
   if (props.layout === 'card') {
     return (
       <div class="idp-card-page">
+        <Tools theme={props.theme} language={props.languageLabel} href={switchHref} lang={other()} />
         <main class="idp-card">
           <header class="idp-card-head">
             <BrandSquare brand={props.brand} />
@@ -66,9 +84,6 @@ export function Page(props: PageProps): ComponentChild {
           <footer class="idp-card-note">{props.footer}</footer>
         </main>
         <nav class="idp-card-links" aria-label={props.languageLabel}>
-          <a href={switchHref()} hreflang={other()}>
-            {() => props.languageLabel}
-          </a>
           {(props.links ?? []).map((link) => (
             <a href={link.href}>{link.label}</a>
           ))}
@@ -78,6 +93,7 @@ export function Page(props: PageProps): ComponentChild {
   }
   return (
     <div class="idp-shell">
+      <Tools theme={props.theme} language={props.languageLabel} href={switchHref} lang={other()} />
       <Show
         when={props.aside}
         fallback={
@@ -115,9 +131,6 @@ export function Page(props: PageProps): ComponentChild {
           {props.children}
           <footer class="idp-footer">{props.footer}</footer>
         </div>
-        <a class="idp-language" href={switchHref()} hreflang={other()}>
-          {() => props.languageLabel}
-        </a>
       </main>
     </div>
   );

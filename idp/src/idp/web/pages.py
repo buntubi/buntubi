@@ -52,7 +52,7 @@ def _brand() -> dict[str, Any]:
     )
 
 
-# Where the account area keeps the reader's light or dark choice (@idp/theme's schemeKey).
+# Where every provider page keeps the reader's light or dark choice (@idp/theme's schemeKey).
 SCHEME_COOKIE = "idp-scheme"
 
 
@@ -81,8 +81,7 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         },
         "props": props,
     }
-    scheme = _scheme() if account else None
-    return render_template("shell.html", config=config, locale=config["locale"], scheme=scheme)
+    return render_template("shell.html", config=config, locale=config["locale"], scheme=_scheme())
 
 
 @bp.get("/")

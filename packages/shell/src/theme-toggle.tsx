@@ -1,7 +1,13 @@
-/** The colour scheme, cycled light, dark, system: the same control in every frame. */
-import { useColorScheme } from '@fluixi/core';
+/** The colour scheme, picked from a menu (light, dark, system): the same control in every frame. */
+import { For, useColorScheme } from '@fluixi/core';
 import type { ComponentChild } from '@fluixi/dom';
-import { Button } from '@fluixi-ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuPortal,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@fluixi-ui/dropdown-menu';
 import { icons } from './icons.js';
 
 export const SCHEMES = ['light', 'dark', 'system'] as const;
@@ -12,22 +18,45 @@ export interface ThemeToggleLabels {
   schemes: Record<Scheme, string>;
 }
 
+const ICON: Record<Scheme, string> = { light: icons.sun, dark: icons.moon, system: icons.monitor };
+
+const Icon = (props: { path: string }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+    <path d={props.path} />
+  </svg>
+);
+
 export function ThemeToggle(props: { labels: ThemeToggleLabels }): ComponentChild {
   const scheme = useColorScheme();
-  const next = (): Scheme => SCHEMES[(SCHEMES.indexOf(scheme.value() as Scheme) + 1) % SCHEMES.length]!;
-  const icon = () => (scheme.value() === 'system' ? icons.monitor : scheme.value() === 'dark' ? icons.moon : icons.sun);
+  const current = () => scheme.value() as Scheme;
   return (
-    <Button
-      variant="outline"
-      tone="neutral"
-      size="sm"
-      aria-label={() => `${props.labels.theme}: ${props.labels.schemes[scheme.value() as Scheme]}`}
-      title={() => props.labels.schemes[next()]}
-      onPress={() => scheme.set(next())}
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-        <path d={icon()} />
-      </svg>
-    </Button>
+    <DropdownMenu placement="bottom-end">
+      <style scoped>{`
+        .choice { display: flex; align-items: center; gap: 10px; }
+      `}</style>
+      {/* The trigger wears fluixi-ui's button attributes: it looks like the other icon buttons, skins included. */}
+      <DropdownMenuTrigger
+        data-variant="outline"
+        data-tone="neutral"
+        data-size="sm"
+        aria-label={() => `${props.labels.theme}: ${props.labels.schemes[current()]}`}
+      >
+        <Icon path={ICON[current()]} />
+      </DropdownMenuTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuContent aria-label={props.labels.theme}>
+          <For each={[...SCHEMES]}>
+            {(choice) => (
+              <DropdownMenuRadioItem checked={current() === choice} onSelect={() => scheme.set(choice)}>
+                <span class="choice">
+                  <Icon path={ICON[choice]} />
+                  {() => props.labels.schemes[choice]}
+                </span>
+              </DropdownMenuRadioItem>
+            )}
+          </For>
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   );
 }

@@ -11,6 +11,9 @@ importers:
       '@fluixi-ui/button':
         specifier: link:../../../../fluixi-ui/packages/button
         version: link:../../../../fluixi-ui/packages/button
+      '@fluixi-ui/dropdown-menu':
+        specifier: link:../../../../fluixi-ui/packages/dropdown-menu
+        version: link:../../../../fluixi-ui/packages/dropdown-menu
       '@fluixi-ui/layout':
         specifier: link:../../../../fluixi-ui/packages/layout
         version: link:../../../../fluixi-ui/packages/layout

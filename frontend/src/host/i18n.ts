@@ -64,6 +64,7 @@ export interface Text {
   resetPassword: ResetPasswordLabels;
   consent: ConsentLabels;
   accountSelect: AccountSelectLabels;
+  theme: { theme: string; schemes: { light: string; dark: string; system: string } };
   deviceActivate: DeviceActivateLabels;
   mfaVerify: MfaVerifyLabels;
   scopes: Record<string, string>;
@@ -172,6 +173,7 @@ const fr: Text = {
     deny: 'Annuler',
     pending: 'Un instant',
   },
+  theme: { theme: 'Thème', schemes: { light: 'Clair', dark: 'Sombre', system: 'Système' } },
   accountSelect: {
     other: 'Utiliser un autre compte',
     signedIn: 'Connecté',
@@ -359,6 +361,7 @@ const en: Text = {
     deny: 'Cancel',
     pending: 'One moment',
   },
+  theme: { theme: 'Theme', schemes: { light: 'Light', dark: 'Dark', system: 'System' } },
   accountSelect: {
     other: 'Use another account',
     signedIn: 'Signed in',

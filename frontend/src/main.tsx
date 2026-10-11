@@ -3,7 +3,8 @@
  * hands the elements their words and actions, and follows the provider's answers. Leaving a
  * screen is always a full page load, since the next step is the provider's to decide.
  */
-import { render, Show } from '@fluixi/core';
+import { render, Show, ThemeProvider } from '@fluixi/core';
+import { createDocumentScheme } from '@idp/theme/document';
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
 import { Button } from '@fluixi-ui/button';
@@ -287,8 +288,11 @@ const screen = screens[config.element]?.();
 const look = lookOf(uiPlugins, config.brand.look);
 await Promise.all([look?.styles?.(), look?.aside?.load()]);
 if (root && screen) {
-  render(
-    () => (
+  render(() => {
+    // Inside the render, so a reload keeps the reader's choice (the account area's cookie).
+    const scheme = createDocumentScheme();
+    return (
+      <ThemeProvider themes={{ scheme }}>
       <Page
         brand={config.brand}
         aside={look?.aside?.element}
@@ -303,11 +307,12 @@ if (root && screen) {
         heroTitle={config.brand.tagline ?? t.hero.title}
         heroText={t.hero.text}
         languageLabel={t.links.language}
+        theme={t.theme}
         footer={screen.footer?.()}
       >
         {screen.body()}
       </Page>
-    ),
-    root,
-  );
+      </ThemeProvider>
+    );
+  }, root);
 }
