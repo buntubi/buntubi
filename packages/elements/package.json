@@ -310,7 +310,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@bambiste/countries": "^0.2.0",
+    "@bambiste/countries": "^0.2.1",
     "@fluixi-ui/badge": "link:../../../../fluixi-ui/packages/badge",
     "@fluixi-ui/button": "link:../../../../fluixi-ui/packages/button",
     "@fluixi-ui/checkbox": "link:../../../../fluixi-ui/packages/checkbox",

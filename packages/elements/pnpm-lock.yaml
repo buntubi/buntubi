@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@bambiste/countries':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.2.1
+        version: 0.2.1
       '@fluixi-ui/badge':
         specifier: link:../../../../fluixi-ui/packages/badge
         version: link:../../../../fluixi-ui/packages/badge
@@ -81,8 +81,8 @@ importers:
 
 packages:
 
-  '@bambiste/countries@0.2.0':
-    resolution: {integrity: sha512-DxLddGWPaJlzI89RFI00qnCNX7W5tqLMg2uSGcZeLpXOCjNQ6iqb2G8ZOurNim2TENeNK7aQyueHFaANOyA5MA==}
+  '@bambiste/countries@0.2.1':
+    resolution: {integrity: sha512-Xs1gau8uy3IZAau5MCkwtXEUBRYZVXIjwixqIHRqhUG1jCFrHWMIKsHcYcnGxAsj4V5aYbPO61gVscLrqMxiLQ==}
 
   '@fluixi/forms-core@0.2.1-alpha.2':
     resolution: {integrity: sha512-Uxsi981p6j5QsgoQ5ubrhfl/QOGq0tWyjxyR30N3zyhJeGeItAkT3CdNgD16SmBAmHHSYAF2/+tLZPB2jRy0+g==}
@@ -233,7 +233,7 @@ packages:
 
 snapshots:
 
-  '@bambiste/countries@0.2.0': {}
+  '@bambiste/countries@0.2.1': {}
 
   '@fluixi/forms-core@0.2.1-alpha.2(@fluixi/reactive@..+..+..+fluixi-core+packages+reactive)':
     dependencies:
