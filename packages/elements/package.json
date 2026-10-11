@@ -286,12 +286,25 @@
     "./two-step-section/logic": "./src/two-step-section/logic.ts",
     "./passkeys-section": "./src/passkeys-section/passkeys-section.tsx",
     "./passkeys-section/view": "./src/passkeys-section/view.tsx",
-    "./passkeys-section/logic": "./src/passkeys-section/logic.ts"
+    "./passkeys-section/logic": "./src/passkeys-section/logic.ts",
+    "./device": "./src/device/device.tsx",
+    "./device/view": "./src/device/view.tsx",
+    "./device/logic": "./src/device/logic.ts",
+    "./devices": "./src/devices/devices.tsx",
+    "./devices/view": "./src/devices/view.tsx",
+    "./devices/logic": "./src/devices/logic.ts",
+    "./connected-app": "./src/connected-app/connected-app.tsx",
+    "./connected-app/view": "./src/connected-app/view.tsx",
+    "./connected-app/logic": "./src/connected-app/logic.ts",
+    "./connected-apps": "./src/connected-apps/connected-apps.tsx",
+    "./connected-apps/view": "./src/connected-apps/view.tsx",
+    "./connected-apps/logic": "./src/connected-apps/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@bambiste/countries": "link:../../../../bambiste-countries",
     "@fluixi-ui/badge": "link:../../../../fluixi-ui/packages/badge",
     "@fluixi-ui/button": "link:../../../../fluixi-ui/packages/button",
     "@fluixi-ui/checkbox": "link:../../../../fluixi-ui/packages/checkbox",

@@ -78,6 +78,47 @@ export interface AccountService {
   addPasskey(password?: string): Promise<void>;
   renamePasskey(id: string, name: string): Promise<void>;
   removePasskey(id: string): Promise<void>;
+  /** Ends a session on another device, with the tokens apps hold through it. */
+  signOutDevice(id: string): Promise<void>;
+  /** Ends every session but this one. */
+  signOutOtherDevices(): Promise<void>;
+  /** Takes back an app's access: it asks again next time. */
+  removeApp(id: string): Promise<void>;
+}
+
+/** A browser or phone signed in to the account. */
+export interface Device {
+  id: string;
+  /** Empty when the browser did not say. */
+  browser: string;
+  system: string;
+  ip: string | null;
+  signed_in_at: string;
+  last_seen_at: string;
+  /** Seen in the last few minutes. */
+  active_now: boolean;
+  /** Not seen for more than 30 days. */
+  inactive: boolean;
+  /** How it signed in, as amr values: pwd, otp, backup, hwk, mfa. */
+  methods: string[];
+  /** Signed in on this browser. */
+  here: boolean;
+}
+
+/** An app that uses the account. */
+export interface ConnectedApp {
+  /** The OAuth client_id. */
+  id: string;
+  name: string;
+  logo: string | null;
+  /** Who makes it: the organization, or the platform's brand for its own apps. */
+  by: string;
+  /** One of the platform's own apps: never asks, cannot be removed here. */
+  platform: boolean;
+  since: string | null;
+  last_used_at: string | null;
+  /** What it may see or do; `description` is the platform's own words, when it has some. */
+  scopes: { name: string; description: string }[];
 }
 
 export interface Passkey {
@@ -119,7 +160,9 @@ export type ActivityKind =
   | 'signed_out_everywhere'
   | 'signed_out_others'
   | 'passkey_added'
-  | 'passkey_removed';
+  | 'passkey_removed'
+  | 'device_signed_out'
+  | 'app_access_removed';
 
 export interface ActivityEntry {
   kind: ActivityKind;

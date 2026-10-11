@@ -6,6 +6,8 @@ import { Input } from '@fluixi-ui/input';
 import { infoStyles } from '../info-shared/styles.js';
 import { viewToken } from '../view.js';
 import type { ContactSectionLogic } from './logic.js';
+import '@bambiste/countries/elements';
+import type {} from '../bambiste-jsx.js';
 
 /** What the last change did, under the rows; an edit shows its own error inside its form. */
 const Messages = (props: { p: ContactSectionLogic }) => (
@@ -25,7 +27,9 @@ const Messages = (props: { p: ContactSectionLogic }) => (
 
 export const contactSectionView = (p: ContactSectionLogic) => (
   <section part="contact" class="card" aria-labelledby="idp-contact-title">
-    <style scoped>{`${infoStyles}`}</style>
+    <style scoped>{`${infoStyles}
+      bc-phone-input { max-width: 420px; }
+    `}</style>
     <h2 id="idp-contact-title">{() => p.labels().title}</h2>
     <div class="row">
       <span class="label">{() => p.labels().email}</span>
@@ -88,7 +92,7 @@ export const contactSectionView = (p: ContactSectionLogic) => (
           <span class="label">{() => p.labels().phone}</span>
           <span class="value">
             <Show when={p.phone()} fallback={<span class="muted">{() => p.labels().noPhone}</span>}>
-              {() => p.phone()}
+              {() => p.phoneShown()}
             </Show>
           </span>
           <span class="buttons">
@@ -107,7 +111,19 @@ export const contactSectionView = (p: ContactSectionLogic) => (
       <Form form={p.phoneForm} onSubmit={(values) => p.savePhone(values)} novalidate>
         <div class="edit">
           <FormField control={p.phoneForm.get('phone')} label={() => p.labels().phone} description={() => p.labels().phoneHint}>
-            {(b) => <Input type="tel" name="phone" autocomplete="tel" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+            {(b) => (
+              <bc-phone-input
+                name="phone"
+                value={b.value()}
+                country={p.country()}
+                preferred={p.country()}
+                locale={p.locale()}
+                aria-label={p.labels().phone}
+                aria-invalid={b['aria-invalid']()}
+                onInput={(event) => p.typePhone(event.detail.value)}
+                onChange={(event) => b.onChange(event.detail.value)}
+              />
+            )}
           </FormField>
           <Show when={p.error()}>
             <p class="alert" role="alert">

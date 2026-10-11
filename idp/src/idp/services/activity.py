@@ -30,6 +30,8 @@ KINDS = {
     "signed_out_others": "signed_out_others",
     "passkey_added": "passkey_added",
     "passkey_removed": "passkey_removed",
+    "device_signed_out": "device_signed_out",
+    "app_access_removed": "app_access_removed",
 }
 
 

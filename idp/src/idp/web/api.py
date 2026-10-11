@@ -4,6 +4,7 @@ check is rate-limited. Errors are {"error": "<code>"}, which the screens transla
 """
 
 import re
+import uuid
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -17,7 +18,19 @@ from idp.models import Consent, DeviceCode, LoginSession, User
 from idp.security import csrf
 from idp.security.passwords import verify_password
 from idp.security.tokens import normalize_user_code
-from idp.services import accounts, activity, audit, mail, mfa, own_apps, passkeys, platform, profile, sessions
+from idp.services import (
+    accounts,
+    activity,
+    audit,
+    connected,
+    mail,
+    mfa,
+    own_apps,
+    passkeys,
+    platform,
+    profile,
+    sessions,
+)
 from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -499,6 +512,51 @@ def passkey_sign_in() -> Response:
     if pending is not None and pending.user.id == user.id:
         sessions.end_replaced(pending)
     return _signed_in(user, passkeys.METHODS, "sign_in")
+
+
+def _here() -> set[uuid.UUID]:
+    """The sessions signed in on this browser."""
+    return {login.id for login in sessions.all_signed_in()}
+
+
+@bp.get("/account/devices")
+def list_devices() -> Response:
+    return jsonify(devices=connected.sessions_of(_me(), _here()))
+
+
+@bp.delete("/account/devices/<session_id>")
+def sign_out_device(session_id: str) -> Response:
+    user = _me()
+    login = connected.sign_out_session(user, session_id, _here())
+    audit.record("device_signed_out", user=user, device=f"{login.user_agent or ''}"[:120])
+    db().commit()
+    return jsonify(ok=True)
+
+
+@bp.post("/account/devices/sign-out-others")
+def sign_out_other_devices() -> Response:
+    login = sessions.current()
+    if login is None:
+        raise AccountError("not_signed_in")
+    accounts.sign_out_others(login.user, login)
+    audit.record("signed_out_others", user=login.user)
+    db().commit()
+    return jsonify(ok=True)
+
+
+@bp.get("/account/apps")
+def list_connected_apps() -> Response:
+    user = _me()
+    return jsonify(apps=connected.apps_of(user, user.locale))
+
+
+@bp.delete("/account/apps/<client_id>")
+def remove_connected_app(client_id: str) -> Response:
+    user = _me()
+    client = connected.remove_app(user, client_id)
+    audit.record("app_access_removed", user=user, client=client, name=client.name)
+    db().commit()
+    return jsonify(ok=True)
 
 
 @bp.get("/account/activity")

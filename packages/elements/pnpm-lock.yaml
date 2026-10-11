@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@bambiste/countries':
+        specifier: link:../../../../bambiste-countries
+        version: link:../../../../bambiste-countries
       '@fluixi-ui/badge':
         specifier: link:../../../../fluixi-ui/packages/badge
         version: link:../../../../fluixi-ui/packages/badge

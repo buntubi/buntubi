@@ -17,6 +17,8 @@ import {
   type AccountActivity,
   type AccountService,
   type AccountSummary,
+  type ConnectedApp,
+  type Device,
   type Passkey,
   type TwoStepEnrolment,
 } from '@idp/sdk/account';
@@ -26,6 +28,8 @@ import '@idp/elements/account-check';
 import type { AccountCheck } from '@idp/elements/account-check/logic';
 import '@idp/elements/account-hello';
 import '@idp/elements/account-switcher';
+import '@idp/elements/connected-apps';
+import '@idp/elements/devices';
 import '@idp/elements/app-launcher';
 import '@idp/elements/contact-section';
 import '@idp/elements/preferences-section';
@@ -46,6 +50,8 @@ const ICONS = {
   home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
   person: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
   lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
+  laptop: 'M4 5h16v10H4zM2 19h20',
+  apps: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
 };
 
 /** The account area's addresses, built in one place. */
@@ -54,6 +60,8 @@ const paths = {
   info: () => '/account/info',
   emailConfirm: () => '/account/email/confirm',
   security: () => '/account/security',
+  devices: () => '/account/devices',
+  apps: () => '/account/apps',
   signIn: () => '/signin',
 } as const;
 
@@ -119,6 +127,9 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     },
     renamePasskey: (id, name) => changed(api('PATCH', `/api/account/passkeys/${encodeURIComponent(id)}`, { name })),
     removePasskey: (id) => changed(api('DELETE', `/api/account/passkeys/${encodeURIComponent(id)}`)),
+    signOutDevice: (id) => changed(api('DELETE', `/api/account/devices/${encodeURIComponent(id)}`)),
+    signOutOtherDevices: () => changed(api('POST', '/api/account/devices/sign-out-others', {})),
+    removeApp: (id) => changed(api('DELETE', `/api/account/apps/${encodeURIComponent(id)}`)),
   };
   provideRoot([{ provide: Account, useValue: service }]);
   const summary = () => api<AccountSummary>('GET', '/api/account');
@@ -141,7 +152,13 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     const collapsed = signal(false);
     const item = (label: string, href: string, icon: string) => ({ label, href, icon, current: location.pathname === href });
     const crumbs = (): Crumb[] => {
-      const here = location.pathname === paths.security() ? w.nav.security : location.pathname === paths.home() ? w.nav.home : w.nav.info;
+      const titles: Record<string, string> = {
+        [paths.home()]: w.nav.home,
+        [paths.security()]: w.nav.security,
+        [paths.devices()]: w.nav.devices,
+        [paths.apps()]: w.nav.apps,
+      };
+      const here = titles[location.pathname] ?? w.nav.info;
       return [{ label: w.product, href: paths.home() }, { label: here }];
     };
     return (
@@ -152,6 +169,8 @@ export function mountAccount(root: HTMLElement, context: Context): void {
               item(w.nav.home, paths.home(), ICONS.home),
               item(w.nav.info, paths.info(), ICONS.person),
               item(w.nav.security, paths.security(), ICONS.lock),
+              item(w.nav.devices, paths.devices(), ICONS.laptop),
+              item(w.nav.apps, paths.apps(), ICONS.apps),
             ], }]}
         sidebarLabels={{ product: w.product, ...w.sidebar }}
         collapsed={collapsed()}
@@ -206,6 +225,20 @@ export function mountAccount(root: HTMLElement, context: Context): void {
               href={paths.security()}
               icon={ICONS.lock}
             />
+            <idp-account-area
+              title={w.areas.devices.title}
+              note={w.areas.devices.note}
+              link={w.areas.devices.link}
+              href={paths.devices()}
+              icon={ICONS.laptop}
+            />
+            <idp-account-area
+              title={w.areas.apps.title}
+              note={w.areas.apps.note}
+              link={w.areas.apps.link}
+              href={paths.apps()}
+              icon={ICONS.apps}
+            />
           </Grid>
           <idp-app-launcher apps={data()?.apps ?? []} title={w.apps} />
         </Stack>
@@ -234,6 +267,8 @@ export function mountAccount(root: HTMLElement, context: Context): void {
             verified={user()?.email_verified === true}
             pendingEmail={user()?.pending_email ?? ''}
             phone={user()?.phone ?? ''}
+            country={user()?.country ?? ''}
+            locale={config.locale}
             labels={w.info.contact}
             messages={context.text.messages}
             describe={describe}
@@ -269,6 +304,37 @@ export function mountAccount(root: HTMLElement, context: Context): void {
             </Show>
             <Link href={paths.info()}>{w.emailConfirm.back}</Link>
           </section>
+        </Show>
+      </Stack>
+    );
+  }
+
+  function Devices(): ComponentChild {
+    const data = useRouteData<Device[]>();
+    return (
+      <Stack gap={5}>
+        <idp-page-header title={w.devices.title} intro={w.devices.intro} />
+        <Show when={data()} fallback={<p>{w.loading}</p>}>
+          <idp-devices devices={data() ?? []} locale={config.locale} labels={w.devices.list} describe={describe} />
+        </Show>
+      </Stack>
+    );
+  }
+
+  function Apps(): ComponentChild {
+    const data = useRouteData<ConnectedApp[]>();
+    return (
+      <Stack gap={5}>
+        <idp-page-header title={w.connected.title} intro={w.connected.intro} />
+        <Show when={data()} fallback={<p>{w.loading}</p>}>
+          <idp-connected-apps
+            apps={data() ?? []}
+            brand={config.brand.name ?? ''}
+            locale={config.locale}
+            scopeWords={context.text.scopes}
+            labels={w.connected.list}
+            describe={describe}
+          />
         </Show>
       </Stack>
     );
@@ -327,6 +393,16 @@ export function mountAccount(root: HTMLElement, context: Context): void {
         { path: paths.info(), component: Info, data: summary },
         { path: paths.emailConfirm(), component: EmailConfirm, data: confirmEmail },
         { path: paths.security(), component: Security, data: security },
+        {
+          path: paths.devices(),
+          component: Devices,
+          data: async () => (await api<{ devices: Device[] }>('GET', '/api/account/devices')).devices,
+        },
+        {
+          path: paths.apps(),
+          component: Apps,
+          data: async () => (await api<{ apps: ConnectedApp[] }>('GET', '/api/account/apps')).apps,
+        },
       ],
     },
   ];

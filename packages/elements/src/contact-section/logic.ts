@@ -45,7 +45,7 @@ export const contactSectionLabels: ContactSectionLabels = {
   cancelChange: 'Cancel the change',
   linkSent: 'Link sent. Open it from the new address.',
   phone: 'Phone',
-  phoneHint: 'International format, for example +221 77 000 00 00',
+  phoneHint: 'Pick the country, then type the number.',
   noPhone: 'None',
   add: 'Add',
   edit: 'Edit',
@@ -72,6 +72,13 @@ export interface ContactSectionLogic {
   verified: () => boolean;
   pendingEmail: () => string;
   phone: () => string;
+  /** The number spaced for reading, e.g. +221 771 23 45 67. */
+  phoneShown: () => string;
+  /** The account's country: where a new number starts. */
+  country: () => string;
+  locale: () => string;
+  /** The number while it is typed: kept without showing an error yet. */
+  typePhone: (value: string) => void;
   editing: () => ContactEditing;
   edit: (what: ContactEditing) => void;
   emailForm: EmailForm;

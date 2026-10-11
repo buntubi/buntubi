@@ -6,6 +6,7 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
+import { formatPhone } from '@bambiste/countries';
 import { Account } from '@idp/sdk/account';
 import { emailChangeSchema, phoneSchema, type EmailChangeInput, type PhoneInput } from '@idp/sdk/schemas/account';
 import { messageReader, type Messages } from '../messages.js';
@@ -26,6 +27,9 @@ const props = {
   verified: prop.boolean(false),
   pendingEmail: prop.string(''),
   phone: prop.string(''),
+  /** The account's country, alpha-2: the phone field starts there. */
+  country: prop.string(''),
+  locale: prop.string('en'),
   emailSchema: prop.any<FormSchema<EmailChangeInput>>(emailChangeSchema),
   phoneSchema: prop.any<FormSchema<PhoneInput>>(phoneSchema),
   labels: prop.object<Partial<ContactSectionLabels>>({}),
@@ -71,6 +75,10 @@ export class IdpContactSection extends typedElement(props) {
       verified: () => this.verified,
       pendingEmail: () => this.pendingEmail,
       phone: () => this.phone,
+      phoneShown: () => (this.phone ? formatPhone(this.phone) : ''),
+      country: () => this.country.toUpperCase(),
+      locale: () => this.locale,
+      typePhone: (value) => phoneForm.get('phone').setValue(value, { pristine: true }),
       editing,
       edit: (what) => {
         error.set(null);
