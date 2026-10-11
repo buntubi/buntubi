@@ -21,8 +21,8 @@ extensions or Kong plugins. A hook in token issuance is a function call, with no
 trip. Keep a hook fast and free of side effects it cannot undo; the provider calls some of them
 on every token.
 
-The working example is acme's plugin, in the acme repository at
-`packages/idp-plugin`: a Python half (`python/acme_idp`) and a UI half (`src/ui`).
+The examples below follow one fictional plugin, `acme`, from its first file to its pages in the
+console.
 
 ## The provider plugin
 
@@ -220,8 +220,8 @@ def blueprint() -> Blueprint:
 ```
 
 A plugin that needs another service's data relays to it from here, keeping that service's
-credentials on the provider. acme's plugin does this for module statuses: the console calls
-`/api/plugins/acme/modules`, the plugin calls acme's operator API with its own token.
+credentials on the provider: the console calls `/api/plugins/acme/usage`, and the plugin calls
+acme's billing service with a token only the provider holds.
 
 ## The UI plugin
 
