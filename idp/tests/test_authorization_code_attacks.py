@@ -17,7 +17,7 @@ from idp.db import db, utcnow
 from idp.models import AuthorizationCode
 from idp.services import mail, sessions
 
-from conftest import ISSUER, REDIRECT, add_client, authorize_query, pkce, sign_up
+from conftest import ISSUER, REDIRECT, add_client, api, authorize_query, pkce, sign_up
 
 OTHER_REDIRECT = "http://localhost:9000/other"
 
@@ -182,3 +182,15 @@ def test_the_answer_names_the_issuer(app: Flask, browser: FlaskClient, outbox: l
 def test_a_return_address_stays_on_this_site(path: str) -> None:
     # Browsers drop tabs and line breaks from addresses, so "/\t/x" is followed as "//x".
     assert not sessions.is_local_path(path)
+
+
+def test_declining_gives_no_code(app: Flask, browser: FlaskClient, outbox: list[mail.Message]) -> None:
+    add_client(app)
+    csrf = sign_up(browser, outbox)
+    _, challenge = pkce()
+    query = authorize_query(challenge)
+    browser.get("/oauth/authorize?" + urlencode(query))
+    declined = api(browser, "POST", "/oauth/authorize?" + urlencode(query), {"approve": False}, csrf)
+    params = parse_qs(urlparse(declined.json["redirect"]).query)
+    assert params["error"] == ["access_denied"] and "code" not in params
+    assert params["state"] == ["s1"] and params["iss"] == [ISSUER]
