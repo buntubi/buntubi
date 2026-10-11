@@ -2,9 +2,13 @@
  * The two-step card. Off: turning it on shows the QR code and the key, then takes a first code.
  * Turned on, or renewed: the backup codes, shown this once. On: renew the codes or turn it off,
  * both with a current code. Goes through the injected `Account` service.
+ *
+ * `start` opens the setup at once, for a page that offers it on its own; `enabled` says the
+ * setup is finished, its backup codes saved, and `cancel` that it was left before that.
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
+import { onMount } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Account, type TwoStepEnrolment } from '@idp/sdk/account';
@@ -13,11 +17,20 @@ import { shortDate } from '../dates.js';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
 import { useView } from '../view.js';
-import { twoStepSectionLabels, type CodeForm, type TwoStepSectionLabels, type TwoStepSectionLogic, type TwoStepStep } from './logic.js';
+import {
+  twoStepSectionLabels,
+  type CodeForm,
+  type TwoStepSectionEvents,
+  type TwoStepSectionLabels,
+  type TwoStepSectionLogic,
+  type TwoStepStep,
+} from './logic.js';
 import { TwoStepSectionView } from './view.js';
 
 const props = {
   enabled: prop.boolean(false),
+  /** Begin turning it on as soon as it shows. */
+  start: prop.boolean(false),
   /** ISO: when it was turned on. */
   since: prop.string(''),
   backupCodesLeft: prop.number(0),
@@ -43,7 +56,18 @@ export class IdpTwoStepSection extends typedElement(props) {
     const copied = signal(false);
     const busy = signal(false);
     const error = signal<string | null>(null);
+    const startNow = this.start;
+    // Turned on here: shown as on before the host has loaded the account again.
+    const turnedOn = signal(false);
+    // The codes on screen came from turning it on, rather than from renewing them.
+    let fresh = false;
     const go = (next: TwoStepStep) => {
+      if (next === 'idle' && fresh) {
+        fresh = false;
+        this.emit('enabled', {});
+      } else if (next === 'idle' && startNow && step() === 'enrolling') {
+        this.emit('cancel', {});
+      }
       form.get('code').reset('');
       copied.set(false);
       error.set(null);
@@ -66,7 +90,7 @@ export class IdpTwoStepSection extends typedElement(props) {
     };
     const logic: TwoStepSectionLogic = {
       labels,
-      enabled: () => this.enabled,
+      enabled: () => this.enabled || turnedOn(),
       added: () => (this.since ? labels().addedOn.replace('{date}', shortDate(this.since, this.locale)) : ''),
       left: () => this.backupCodesLeft,
       total: () => this.backupCodesTotal,
@@ -85,7 +109,12 @@ export class IdpTwoStepSection extends typedElement(props) {
       submit: (values) =>
         run(async () => {
           const code = values.code.trim();
-          if (step() === 'enrolling') show(await account.confirmTwoStep(code));
+          if (step() === 'enrolling') {
+            const list = await account.confirmTwoStep(code);
+            fresh = true;
+            turnedOn.set(true);
+            show(list);
+          }
           else if (step() === 'renew') show(await account.renewBackupCodes(code));
           else if (step() === 'disable') {
             await account.disableTwoStep(code);
@@ -100,6 +129,9 @@ export class IdpTwoStepSection extends typedElement(props) {
       busy,
       error,
     };
+    onMount(() => {
+      if (startNow) void logic.begin();
+    });
     return useView(TwoStepSectionView)(logic);
   }
 }
@@ -111,6 +143,6 @@ declare global {
     'idp-two-step-section': IdpTwoStepSection;
   }
   interface JSXCustomElements {
-    'idp-two-step-section': ElementAttributes<typeof props>;
+    'idp-two-step-section': ElementAttributes<typeof props, TwoStepSectionEvents>;
   }
 }

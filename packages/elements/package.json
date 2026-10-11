@@ -307,7 +307,13 @@
     "./account-deletion/logic": "./src/account-deletion/logic.ts",
     "./invitation-row": "./src/invitation-row/invitation-row.tsx",
     "./invitation-row/view": "./src/invitation-row/view.tsx",
-    "./invitation-row/logic": "./src/invitation-row/logic.ts"
+    "./invitation-row/logic": "./src/invitation-row/logic.ts",
+    "./secure-option": "./src/secure-option/secure-option.tsx",
+    "./secure-option/view": "./src/secure-option/view.tsx",
+    "./secure-option/logic": "./src/secure-option/logic.ts",
+    "./secure-account": "./src/secure-account/secure-account.tsx",
+    "./secure-account/view": "./src/secure-account/view.tsx",
+    "./secure-account/logic": "./src/secure-account/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

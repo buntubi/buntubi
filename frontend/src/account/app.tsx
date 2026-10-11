@@ -21,9 +21,7 @@ import {
   type ConnectedApp,
   type Device,
   type Passkey,
-  type TwoStepEnrolment,
 } from '@idp/sdk/account';
-import { createPasskey } from '@idp/sdk/webauthn';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
 import '@idp/elements/account-deletion';
@@ -48,6 +46,7 @@ import type { Api, Redirect } from '../host/api.js';
 import type { PageConfig } from '../host/config.js';
 import type { Text } from '../host/i18n.js';
 import { accountWords, type AccountWords } from './i18n.js';
+import { accountService } from './service.js';
 
 const ICONS = {
   home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
@@ -101,55 +100,7 @@ function checksOf(summary: AccountSummary, w: AccountWords): AccountCheck[] {
 export function mountAccount(root: HTMLElement, context: Context): void {
   const { api, words: w, config } = context;
   // Every change shows at once: the pages on screen load the summary again.
-  const changed = async (call: Promise<unknown>) => {
-    await call;
-    revalidate(() => true);
-  };
-  const backupCodes = async (call: Promise<{ backup_codes: string[] }>) => {
-    const { backup_codes } = await call;
-    revalidate(() => true);
-    return backup_codes;
-  };
-  const service: AccountService = {
-    switchTo: async (id) => (await api<Redirect>('POST', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
-    signOut: async (id) => (await api<Redirect>('DELETE', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
-    signOutAll: async () => (await api<Redirect>('DELETE', '/api/accounts')).redirect,
-    updateProfile: (patch) => changed(api('PATCH', '/api/account/profile', patch)),
-    setPicture: (picture) => changed(api('POST', '/api/account/picture', picture)),
-    removePicture: () => changed(api('DELETE', '/api/account/picture')),
-    requestEmailChange: (input) => changed(api('POST', '/api/account/email', input)),
-    cancelEmailChange: () => changed(api('DELETE', '/api/account/email')),
-    confirmEmailChange: async (token) => (await api<{ email: string }>('POST', '/api/account/email/confirm', { token })).email,
-    changePassword: (input) => changed(api('POST', '/api/account/password', input)),
-    beginTwoStep: () => api<TwoStepEnrolment>('POST', '/api/mfa/totp', {}),
-    confirmTwoStep: (code) => backupCodes(api('POST', '/api/mfa/totp/confirm', { code })),
-    renewBackupCodes: (code) => backupCodes(api('POST', '/api/mfa/backup-codes', { code })),
-    disableTwoStep: (code) => changed(api('POST', '/api/mfa/disable', { code })),
-    addPasskey: async (password) => {
-      const options = await api<Record<string, unknown>>('POST', '/api/account/passkeys/options', password ? { password } : {});
-      const credential = await createPasskey(options);
-      await changed(api('POST', '/api/account/passkeys', { credential }));
-    },
-    renamePasskey: (id, name) => changed(api('PATCH', `/api/account/passkeys/${encodeURIComponent(id)}`, { name })),
-    removePasskey: (id) => changed(api('DELETE', `/api/account/passkeys/${encodeURIComponent(id)}`)),
-    signOutDevice: (id) => changed(api('DELETE', `/api/account/devices/${encodeURIComponent(id)}`)),
-    signOutOtherDevices: () => changed(api('POST', '/api/account/devices/sign-out-others', {})),
-    removeApp: (id) => changed(api('DELETE', `/api/account/apps/${encodeURIComponent(id)}`)),
-    downloadData: async () => {
-      // A file to save, so fetched as a blob and handed to the browser's download.
-      const response = await fetch('/api/account/export', { credentials: 'same-origin' });
-      if (!response.ok) throw new Error(response.status === 429 ? 'too_many_requests' : 'generic');
-      const name = /filename="([^"]+)"/.exec(response.headers.get('Content-Disposition') ?? '')?.[1] ?? 'account.json';
-      const href = URL.createObjectURL(await response.blob());
-      const link = document.createElement('a');
-      link.href = href;
-      link.download = name;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(href), 1000);
-      revalidate(() => true);
-    },
-    deleteAccount: async (input) => (await api<Redirect>('DELETE', '/api/account', input)).redirect,
-  };
+  const service = accountService(api, () => revalidate(() => true));
   provideRoot([{ provide: Account, useValue: service }]);
   const summary = () => api<AccountSummary>('GET', '/api/account');
   const security = async () => {

@@ -19,7 +19,7 @@ from idp.db import db
 from idp.models import UserPicture
 from idp.oauth.server import authorization, query_client
 from idp.security import csrf
-from idp.services import passkeys, platform, sessions
+from idp.services import passkeys, platform, security_prompt, sessions
 
 bp = Blueprint("pages", __name__)
 
@@ -182,6 +182,18 @@ def accounts() -> str:
         # The app that will see the chosen account.
         client=client.name if client is not None else None,
     )
+
+
+@bp.get("/secure-account")
+def secure_account() -> Any:
+    """Once after signing up: a passkey or two-step sign-in, or not now."""
+    login = sessions.current()
+    db().commit()
+    if login is None:
+        return redirect(url_for("pages.signin"))
+    if not security_prompt.applies(login.user):
+        return redirect(sessions.take_return_to(url_for("pages.account")))
+    return shell("idp-secure-account")
 
 
 @bp.get("/account")

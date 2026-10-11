@@ -86,3 +86,10 @@ export interface TwoStepSectionLogic {
   busy: () => boolean;
   error: () => string | null;
 }
+
+export interface TwoStepSectionEvents {
+  /** Turned on, and its backup codes saved. */
+  enabled: Record<string, never>;
+  /** Started with `start`, and left before turning it on. */
+  cancel: Record<string, never>;
+}

@@ -8,6 +8,7 @@ import type { ConsentLabels } from '../elements/consent/consent.js';
 import type { AccountSelectLabels } from '../elements/account-select/account-select.js';
 import type { DeviceActivateLabels } from '../elements/device-activate/device-activate.js';
 import type { MfaVerifyLabels } from '../elements/mfa-verify/mfa-verify.js';
+import type { SecureAccountLabels } from '@idp/elements/secure-account/logic';
 import type { Messages } from '../elements/shared/messages.js';
 import type { Locale } from './config.js';
 
@@ -28,6 +29,7 @@ export interface Text {
     blocked: string;
     mfa: string;
     twoStep: string;
+    secureAccount: string;
     yourApps: string;
   };
   /** One line under some titles, keyed like `titles`. */
@@ -67,6 +69,7 @@ export interface Text {
   theme: { theme: string; schemes: { light: string; dark: string; system: string } };
   deviceActivate: DeviceActivateLabels;
   mfaVerify: MfaVerifyLabels;
+  secureAccount: SecureAccountLabels;
   scopes: Record<string, string>;
   messages: Messages;
 }
@@ -88,6 +91,7 @@ const fr: Text = {
     blocked: 'Accès bloqué',
     mfa: 'Validation en deux étapes',
     twoStep: 'Validation en deux étapes',
+    secureAccount: 'Protégez votre compte',
     yourApps: 'Vos applications',
   },
   subtitles: {
@@ -179,6 +183,26 @@ const fr: Text = {
     signedIn: 'Connecté',
     continueTo: 'pour continuer vers {app}',
     sees: '{app} voit le compte que vous choisissez, et seulement ce que vous autorisez.',
+  },
+  secureAccount: {
+    intro: 'Un mot de passe seul peut être deviné ou volé. Ajoutez l’une de ces protections maintenant, ou plus tard depuis Sécurité dans votre compte.',
+    passkey: {
+      title: 'Une clé d’accès',
+      text: 'Connectez-vous avec votre empreinte, votre visage ou le verrouillage de l’écran. Rien à saisir, rien à voler.',
+      badge: 'Recommandé',
+      action: 'Ajouter une clé',
+    },
+    app: {
+      title: 'Validation en deux étapes',
+      text: 'Après le mot de passe, un code d’une application d’authentification sur votre téléphone.',
+      action: 'Configurer',
+    },
+    later: 'Pas maintenant',
+    laterNote: 'Vous pourrez ajouter l’une ou l’autre plus tard depuis Sécurité dans votre compte.',
+    passkeyDone: 'Votre clé d’accès est prête. La prochaine fois, connectez-vous avec elle.',
+    appDone: 'La validation en deux étapes est activée.',
+    continue: 'Continuer',
+    error: 'Une erreur est survenue. Réessayez.',
   },
   mfaVerify: {
     intro: 'Saisissez le code à 6 chiffres affiché par votre application d’authentification.',
@@ -276,6 +300,7 @@ const en: Text = {
     blocked: 'Access blocked',
     mfa: 'Two-step sign-in',
     twoStep: 'Two-step sign-in',
+    secureAccount: 'Protect your account',
     yourApps: 'Your apps',
   },
   subtitles: {
@@ -367,6 +392,26 @@ const en: Text = {
     signedIn: 'Signed in',
     continueTo: 'to continue to {app}',
     sees: '{app} sees the account you choose, and only what you allow.',
+  },
+  secureAccount: {
+    intro: 'A password alone can be guessed or stolen. Add one of these now, or later from Security in your account.',
+    passkey: {
+      title: 'A passkey',
+      text: 'Sign in with your fingerprint, face or screen lock. Nothing to type, nothing to steal.',
+      badge: 'Recommended',
+      action: 'Add a passkey',
+    },
+    app: {
+      title: 'Two-step sign-in',
+      text: 'After your password, a code from an authenticator app on your phone.',
+      action: 'Set up',
+    },
+    later: 'Not now',
+    laterNote: 'You can add either one later from Security in your account.',
+    passkeyDone: 'Your passkey is ready. Next time, sign in with it.',
+    appDone: 'Two-step sign-in is on.',
+    continue: 'Continue',
+    error: 'Something went wrong. Try again.',
   },
   mfaVerify: {
     intro: 'Enter the 6-digit code from your authenticator app.',

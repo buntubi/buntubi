@@ -30,6 +30,7 @@ from idp.services import (
     passkeys,
     platform,
     profile,
+    security_prompt,
     sessions,
 )
 from idp.services.accounts import AccountError, NewAccount
@@ -75,6 +76,10 @@ def _signed_in(user: User, methods: list[str], event: str) -> Response:
     for organization in platform.accept_invitations(user):
         audit.record("developer.member_joined", user=user, organization=str(organization.id))
     db().commit()
+    # Just verified and nothing but a password: offered a passkey or two-step once, the way
+    # back to the app kept for after.
+    if event == "email_verified" and security_prompt.applies(user):
+        return jsonify(redirect=url_for("pages.secure_account"))
     return jsonify(redirect=sessions.take_return_to(url_for("pages.account")))
 
 
@@ -450,6 +455,14 @@ _RECENT_SIGN_IN = timedelta(minutes=10)
 @bp.get("/account/passkeys")
 def list_passkeys() -> Response:
     return jsonify(passkeys=[passkeys.as_json(p) for p in passkeys.list_for(_me())])
+
+
+@bp.post("/account/security-prompt")
+def answer_security_prompt() -> Response:
+    """Skipped, or done with: on to where sign-up was headed."""
+    security_prompt.answer(_me())
+    db().commit()
+    return jsonify(redirect=sessions.take_return_to(url_for("pages.account")))
 
 
 @bp.post("/account/passkeys/options")

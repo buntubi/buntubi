@@ -36,6 +36,26 @@ const props = config.props;
 const str = (key: string) => (typeof props[key] === 'string' ? (props[key] as string) : '');
 
 const go = (url: string) => window.location.assign(url);
+const describe = (error: unknown) => {
+  const code = error instanceof Error ? error.message : 'generic';
+  return t.messages[code] ?? t.messages.generic ?? '';
+};
+
+// The offer after signing up: its elements and the Account service, only on its own page.
+const secure =
+  config.element === 'idp-secure-account'
+    ? await (async () => {
+        const [{ accountService }, { accountWords }, { provideRoot }, { Account }] = await Promise.all([
+          import('./account/service.js'),
+          import('./account/i18n.js'),
+          import('@fluixi/start/di'),
+          import('@idp/sdk/account'),
+          import('@idp/elements/secure-account'),
+        ]);
+        provideRoot([{ provide: Account, useValue: accountService(api) }]);
+        return { twoStep: (accountWords[config.locale] ?? accountWords.fr).security.twoStepCard };
+      })()
+    : null;
 const follow = (result: unknown) => {
   const answer = result as Partial<Redirect> & { next?: string };
   const steps: Record<string, string> = { verify_email: '/verify-email', mfa: '/mfa' };
@@ -262,6 +282,20 @@ const screens: Record<string, () => Screen> = {
       footer: () => <FooterLink href="/accounts">{t.links.switchAccount}</FooterLink>,
     };
   },
+
+  'idp-secure-account': () => ({
+    key: 'secureAccount',
+    body: () => (
+      <idp-secure-account
+        locale={config.locale}
+        labels={t.secureAccount}
+        twoStepLabels={secure?.twoStep ?? {}}
+        messages={t.messages}
+        describe={describe}
+        onAnswer={() => void api<Redirect>('POST', '/api/account/security-prompt', {}).then((answer) => go(answer.redirect))}
+      />
+    ),
+  }),
 
   'idp-signed-out': () => ({
     key: 'signedOut',

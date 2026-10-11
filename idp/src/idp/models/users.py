@@ -20,6 +20,8 @@ class User(IdMixin, TimestampMixin, Base):
     password_hash: Mapped[str | None] = mapped_column(String(255))
     # None: unchanged since the account was made.
     password_changed_at: Mapped[datetime | None]
+    # When they answered the offer of a passkey or two-step after signing up; None: not yet.
+    security_prompt_answered_at: Mapped[datetime | None]
     given_name: Mapped[str] = mapped_column(String(100), default="")
     family_name: Mapped[str] = mapped_column(String(100), default="")
     locale: Mapped[str] = mapped_column(String(10), default="fr")
