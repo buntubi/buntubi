@@ -1,15 +1,17 @@
-/** The default look: the language as a segmented choice, the country as a list. */
-import { For, Show } from '@fluixi/core';
-import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
+/** The default look: the language as a segmented choice, the country as a searchable list with flags. */
+import { Show } from '@fluixi/core';
 import { infoStyles } from '../info-shared/styles.js';
 import { viewToken } from '../view.js';
 import type { PreferencesSectionLogic } from './logic.js';
 import '../segmented/segmented.js';
+import '@bambiste/countries/elements';
+import type {} from '../bambiste-jsx.js';
 
 export const preferencesSectionView = (p: PreferencesSectionLogic) => (
   <section part="preferences" class="card" aria-labelledby="idp-preferences-title">
     <style scoped>{`${infoStyles}
       .choice { flex: 1; min-width: 200px; display: grid; gap: 4px; justify-items: start; }
+      bc-country-select { width: 100%; max-width: 420px; }
     `}</style>
     <h2 id="idp-preferences-title">{() => p.labels().title}</h2>
     <div class="row">
@@ -31,21 +33,15 @@ export const preferencesSectionView = (p: PreferencesSectionLogic) => (
     <div class="row">
       <span class="label">{() => p.labels().country}</span>
       <span class="choice">
-        <Select
+        <bc-country-select
+          name="country"
           value={p.country()}
+          locale={p.locale()}
           placeholder={p.labels().noCountry}
-          labels={(code: string) => p.countries().find((entry) => entry.code === code)?.name ?? code}
-          onChange={(code: string) => void p.setCountry(code)}
-        >
-          <SelectTrigger part="country">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectPortal>
-            <SelectContent>
-              <For each={p.countries()}>{(entry) => <SelectItem value={entry.code}>{entry.name}</SelectItem>}</For>
-            </SelectContent>
-          </SelectPortal>
-        </Select>
+          disabled={p.busy()}
+          aria-label={p.labels().country}
+          onChange={(event) => void p.setCountry(event.detail.value)}
+        />
         <span class="muted">{() => p.labels().countryHint}</span>
       </span>
     </div>

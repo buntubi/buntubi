@@ -330,6 +330,7 @@ def account_summary() -> Any:
             "locale": user.locale,
             "phone": user.phone,
             "country": user.country,
+            "address": profile.address_of(user),
             "picture": user.picture,
             "pending_email": profile.pending_email(user),
             "created_at": user.created_at.isoformat(),
@@ -374,7 +375,7 @@ _COUNTRY = re.compile(r"^([A-Za-z]{2})?$")
 
 @bp.patch("/account/profile")
 def update_profile() -> Response:
-    """Name, phone, country and language; only the fields sent change."""
+    """Name, phone, country, address and language; only the fields sent change."""
     data = _body()
     user = _me()
     fields: dict[str, str] = {}
@@ -394,7 +395,12 @@ def update_profile() -> Response:
         fields["country"] = data["country"].strip()
     if data.get("locale") in ("fr", "en"):
         fields["locale"] = data["locale"]
-    profile.update(user, **fields)
+    address = data.get("address")
+    if isinstance(address, dict):
+        parts = {k: v for k, v in address.items() if isinstance(v, str)}
+        profile.set_address(user, parts)
+        fields.update({f"address.{k}": "" for k in parts})
+    profile.update(user, **{k: v for k, v in fields.items() if not k.startswith("address.")})
     audit.record("profile_updated", user=user, fields=sorted(fields))
     db().commit()
     return jsonify(updated=sorted(fields))

@@ -23,7 +23,7 @@ from idp.db import db, utcnow
 from idp.models import ApiProduct, AppReview, AuditEvent, Client, LoginSession, Organization, Scope, User
 from idp.models.clients import GRANT_TYPES
 from idp.oauth.server import require_token
-from idp.services import accounts, audit, mail, mfa
+from idp.services import accounts, audit, mail, mfa, profile
 from idp.services import platform as p
 from idp.services.accounts import AccountError, sign_out_everywhere
 from idp.services.credentials import issue_client_secret, rotate_client_secret
@@ -145,6 +145,7 @@ def _user_json(user: User, last_sign_in: datetime | None = None) -> dict[str, An
         "locale": user.locale,
         "country": user.country,
         "phone": user.phone,
+        "address": profile.address_of(user),
         "roles": user.roles,
         "superadmin": user.is_superadmin,
         "developer": user.developer_since is not None,
@@ -306,6 +307,16 @@ class UserIn(BaseModel):
     password: str | None = Field(default=None, min_length=1, max_length=256)
 
 
+class AddressPatch(BaseModel):
+    """The parts of a postal address; an empty string clears one."""
+
+    street_address: str | None = Field(default=None, max_length=300)
+    locality: str | None = Field(default=None, max_length=100)
+    region: str | None = Field(default=None, max_length=100)
+    postal_code: str | None = Field(default=None, max_length=20)
+    country: str | None = Field(default=None, pattern=r"^([A-Z]{2})?$")
+
+
 class UserPatch(BaseModel):
     given_name: str | None = Field(default=None, max_length=100)
     family_name: str | None = Field(default=None, max_length=100)
@@ -313,6 +324,7 @@ class UserPatch(BaseModel):
     # Two-letter ISO 3166, and E.164; an empty string clears them.
     country: str | None = Field(default=None, pattern=r"^([A-Z]{2})?$")
     phone: str | None = Field(default=None, pattern=r"^(\+[1-9][0-9]{6,14})?$")
+    address: AddressPatch | None = None
 
 
 def _reset_url() -> str:
@@ -371,6 +383,10 @@ def update_user(user_id: str, admin: User) -> Response:
     for name in ("country", "phone"):
         if name in patch.model_fields_set:
             setattr(user, name, getattr(patch, name) or None)
+    if patch.address is not None:
+        profile.set_address(
+            user, {k: v for k, v in patch.address.model_dump(exclude_unset=True).items() if v is not None}
+        )
     audit.record("admin.user_updated", user=admin, target=str(user.id), fields=sorted(patch.model_fields_set))
     db().commit()
     return jsonify(user=_one_user_json(user))

@@ -14,6 +14,12 @@ export interface UserProfileLabels {
   countryHint: string;
   phone: string;
   phoneHint: string;
+  address: string;
+  street: string;
+  postalCode: string;
+  locality: string;
+  region: string;
+  addressCountry: string;
   save: string;
   saved: string;
   account: string;
@@ -72,6 +78,12 @@ export const userProfileLabels: UserProfileLabels = {
   countryHint: 'Where the person lives; the phone starts there.',
   phone: 'Phone',
   phoneHint: 'Pick the country, then type the number.',
+  address: 'Postal address',
+  street: 'Street and number',
+  postalCode: 'Postal code',
+  locality: 'City',
+  region: 'Region or state',
+  addressCountry: 'Country',
   save: 'Save',
   saved: 'Saved.',
   account: 'Account',

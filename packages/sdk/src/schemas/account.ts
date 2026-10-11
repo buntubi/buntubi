@@ -15,6 +15,14 @@ export const phoneSchema = z.object({
     .pipe(z.string().regex(/^(\+[1-9][0-9]{6,14})?$/, 'form.phone')),
 });
 
+export const addressSchema = z.object({
+  street_address: z.string().trim().max(300, 'form.tooLong'),
+  locality: z.string().trim().max(100, 'form.tooLong'),
+  region: z.string().trim().max(100, 'form.tooLong'),
+  postal_code: z.string().trim().max(20, 'form.tooLong'),
+  country: z.string().trim().regex(/^([A-Za-z]{2})?$/, 'form.country'),
+});
+
 export const countrySchema = z.object({ country: z.string().trim().regex(/^([A-Za-z]{2})?$/, 'form.country') });
 
 export const emailChangeSchema = z.object({
@@ -52,6 +60,7 @@ export const deleteAccountSchema = z.object({
 export type NameInput = z.infer<typeof nameSchema>;
 export type PhoneInput = z.infer<typeof phoneSchema>;
 export type CountryInput = z.infer<typeof countrySchema>;
+export type AddressInput = z.infer<typeof addressSchema>;
 export type EmailChangeInput = z.infer<typeof emailChangeSchema>;
 export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
 export type TwoStepCodeInput = z.infer<typeof twoStepCodeSchema>;

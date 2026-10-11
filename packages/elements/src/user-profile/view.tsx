@@ -2,7 +2,7 @@
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
-import { Input } from '@fluixi-ui/input';
+import { Input, Textarea } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { UserProfileLogic } from './logic.js';
 import '@bambiste/countries/elements';
@@ -18,6 +18,7 @@ export const userProfileView = (p: UserProfileLogic) => (
       h2 { margin: 0; font-size: 14px; font-weight: 600; }
       .fields { display: grid; gap: 14px; }
       .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .sub-title { margin: 6px 0 0; font-size: 13px; font-weight: 600; color: var(--idp-muted); }
       dl { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 20px; font-size: 13.5px; }
       dt { color: var(--idp-muted); }
       dd { margin: 0; min-width: 0; overflow-wrap: anywhere; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -83,6 +84,34 @@ export const userProfileView = (p: UserProfileLogic) => (
                     aria-label={p.labels().phone}
                     aria-invalid={b['aria-invalid']()}
                     onInput={(event) => p.typePhone(event.detail.value)}
+                    onChange={(event) => b.onChange(event.detail.value)}
+                  />
+                )}
+              </FormField>
+            </div>
+            <h3 class="sub-title">{() => p.labels().address}</h3>
+            <FormField control={p.form.get('street_address')} label={() => p.labels().street}>
+              {(b) => <Textarea name="street_address" rows={2} value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+            </FormField>
+            <div class="row">
+              <FormField control={p.form.get('postal_code')} label={() => p.labels().postalCode}>
+                {(b) => <Input name="postal_code" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+              </FormField>
+              <FormField control={p.form.get('locality')} label={() => p.labels().locality}>
+                {(b) => <Input name="locality" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+              </FormField>
+            </div>
+            <div class="row">
+              <FormField control={p.form.get('region')} label={() => p.labels().region}>
+                {(b) => <Input name="region" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+              </FormField>
+              <FormField control={p.form.get('address_country')} label={() => p.labels().addressCountry}>
+                {(b) => (
+                  <bc-country-select
+                    name="address_country"
+                    value={b.value()}
+                    locale={p.locale()}
+                    aria-label={p.labels().addressCountry}
                     onChange={(event) => b.onChange(event.detail.value)}
                   />
                 )}

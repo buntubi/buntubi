@@ -26,6 +26,7 @@ export interface AccountSummary {
     phone: string | null;
     /** Two-letter ISO 3166 code. */
     country: string | null;
+    address: PostalAddress;
     picture: string | null;
     /** A new address waiting for its link to be opened. */
     pending_email: string | null;
@@ -212,7 +213,20 @@ export interface ProfilePatch {
   family_name?: string;
   phone?: string;
   country?: string;
+  /** The parts sent change; an empty one clears it. */
+  address?: Partial<PostalAddress>;
   locale?: 'fr' | 'en';
+}
+
+/** A postal address, in the parts of the OIDC address claim. Empty strings when not set. */
+export interface PostalAddress {
+  /** Can hold several lines. */
+  street_address: string;
+  locality: string;
+  region: string;
+  postal_code: string;
+  /** Two-letter ISO 3166 code. */
+  country: string | null;
 }
 
 export const Account = injectionToken<AccountService>('Account');

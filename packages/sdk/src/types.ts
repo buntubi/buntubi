@@ -1,4 +1,5 @@
 /** What the provider's developer API answers with, as the portal and its elements see it. */
+import type { PostalAddress } from './account.js';
 
 export type Role = 'owner' | 'manager' | 'developer' | 'reviewer' | 'viewer';
 export type Environment = 'sandbox' | 'live';
@@ -168,6 +169,7 @@ export interface AdminUser {
   country: string | null;
   /** E.164. */
   phone: string | null;
+  address: PostalAddress;
   roles: string[];
   /** Made from the command line; manages the admins, and the console cannot demote or disable it. */
   superadmin: boolean;
@@ -204,6 +206,8 @@ export interface UserEdit {
   locale?: 'fr' | 'en';
   country?: string;
   phone?: string;
+  /** The parts sent change; an empty one clears it. */
+  address?: Partial<PostalAddress>;
 }
 
 export type Sensitivity = 'public' | 'sensitive' | 'restricted';

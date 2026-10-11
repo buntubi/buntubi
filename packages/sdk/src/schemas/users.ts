@@ -25,6 +25,11 @@ export const userEditSchema = z.object({
     .string()
     .transform((value) => value.replace(/\s/g, ''))
     .pipe(z.string().regex(/^(\+[1-9][0-9]{6,14})?$/, 'form.phone')),
+  street_address: z.string().trim().max(300, 'form.tooLong'),
+  postal_code: z.string().trim().max(20, 'form.tooLong'),
+  locality: z.string().trim().max(100, 'form.tooLong'),
+  region: z.string().trim().max(100, 'form.tooLong'),
+  address_country: z.string().trim().regex(/^([A-Za-z]{2})?$/, 'form.country'),
 });
 
 export type NewUserInput = z.infer<typeof newUserSchema>;

@@ -1,9 +1,8 @@
 /** The preferences card. Each pick is saved at once; a new language is announced with `language`. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import { memo, signal } from '@fluixi/reactive/signal';
+import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
 import { Account } from '@idp/sdk/account';
-import { countries } from '../countries.js';
 import { useView } from '../view.js';
 import {
   preferencesSectionLabels,
@@ -25,7 +24,6 @@ export class IdpPreferencesSection extends typedElement(props) {
     const account = inject(Account);
     const labels = () => ({ ...preferencesSectionLabels, ...this.labels });
     const locale = () => (this.locale === 'en' ? 'en' : 'fr');
-    const list = memo(() => countries(locale()));
     const busy = signal(false);
     const notice = signal<string | null>(null);
     const error = signal<string | null>(null);
@@ -48,7 +46,6 @@ export class IdpPreferencesSection extends typedElement(props) {
       labels,
       locale,
       country: () => (this.country ?? '').toUpperCase(),
-      countries: list,
       setLocale: async (next) => {
         if (await run(() => account.updateProfile({ locale: next }))) this.emit('language', { locale: next });
       },

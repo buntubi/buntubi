@@ -354,6 +354,15 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "locale": STRING,
             "country": MAYBE_STRING,
             "phone": MAYBE_STRING,
+            "address": obj(
+                {
+                    "street_address": STRING,
+                    "locality": STRING,
+                    "region": STRING,
+                    "postal_code": STRING,
+                    "country": MAYBE_STRING,
+                }
+            ),
             "roles": STRINGS,
             "superadmin": BOOL,
             "developer": BOOL,
@@ -1089,6 +1098,8 @@ def build() -> dict[str, Any]:
         "openid": "Sign-in",
         "profile": "Name and picture",
         "email": "Email address",
+        "phone": "Phone number",
+        "address": "Postal address",
         "offline_access": "Refresh tokens",
         "developer": "The developer API",
         "admin": "The admin API (admin role and a second factor at sign-in)",

@@ -29,6 +29,13 @@ class User(IdMixin, TimestampMixin, Base):
     # Two-letter ISO 3166 code, and a phone number in E.164.
     country: Mapped[str | None] = mapped_column(String(2))
     phone: Mapped[str | None] = mapped_column(String(20))
+    # A postal address, in the parts of the OIDC address claim. Its country can differ from
+    # `country`, which is where the person lives.
+    address_street: Mapped[str] = mapped_column(String(300), default="")
+    address_locality: Mapped[str] = mapped_column(String(100), default="")
+    address_region: Mapped[str] = mapped_column(String(100), default="")
+    address_postal_code: Mapped[str] = mapped_column(String(20), default="")
+    address_country: Mapped[str | None] = mapped_column(String(2))
     # "admin" opens the admin API. "superadmin", given only from the command line, also gives and
     # takes the admin role in the console, and the console cannot disable or demote it.
     roles: Mapped[list[str]] = mapped_column(ARRAY(String(32)), default=list)

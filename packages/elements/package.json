@@ -274,7 +274,6 @@
     "./preferences-section": "./src/preferences-section/preferences-section.tsx",
     "./preferences-section/view": "./src/preferences-section/view.tsx",
     "./preferences-section/logic": "./src/preferences-section/logic.ts",
-    "./countries": "./src/countries.ts",
     "./password-section": "./src/password-section/password-section.tsx",
     "./password-section/view": "./src/password-section/view.tsx",
     "./password-section/logic": "./src/password-section/logic.ts",
@@ -313,7 +312,10 @@
     "./secure-option/logic": "./src/secure-option/logic.ts",
     "./secure-account": "./src/secure-account/secure-account.tsx",
     "./secure-account/view": "./src/secure-account/view.tsx",
-    "./secure-account/logic": "./src/secure-account/logic.ts"
+    "./secure-account/logic": "./src/secure-account/logic.ts",
+    "./address-section": "./src/address-section/address-section.tsx",
+    "./address-section/view": "./src/address-section/view.tsx",
+    "./address-section/logic": "./src/address-section/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

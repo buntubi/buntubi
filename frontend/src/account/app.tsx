@@ -32,6 +32,7 @@ import '@idp/elements/connected-apps';
 import '@idp/elements/data-export';
 import '@idp/elements/devices';
 import '@idp/elements/app-launcher';
+import '@idp/elements/address-section';
 import '@idp/elements/contact-section';
 import '@idp/elements/preferences-section';
 import '@idp/elements/profile-section';
@@ -249,6 +250,14 @@ export function mountAccount(root: HTMLElement, context: Context): void {
             country={user()?.country ?? ''}
             locale={config.locale}
             labels={w.info.contact}
+            messages={context.text.messages}
+            describe={describe}
+          />
+          <idp-address-section
+            address={user()?.address}
+            country={user()?.country ?? ''}
+            locale={config.locale}
+            labels={w.info.address}
             messages={context.text.messages}
             describe={describe}
           />

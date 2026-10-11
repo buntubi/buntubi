@@ -10,7 +10,7 @@ from sqlalchemy import select
 from idp import plugins
 from idp.db import db, utcnow
 from idp.models import AuditEvent, Client, LoginSession, Organization, OrganizationMember, User
-from idp.services import backchannel, connected, passkeys
+from idp.services import backchannel, connected, passkeys, profile
 
 
 def export(user: User, here: set[Any]) -> dict[str, Any]:
@@ -33,6 +33,7 @@ def export(user: User, here: set[Any]) -> dict[str, Any]:
             "locale": user.locale,
             "country": user.country,
             "phone": user.phone,
+            "address": profile.address_of(user),
             "picture": user.picture,
             "roles": list(user.roles),
             "created_at": user.created_at.isoformat(),

@@ -83,6 +83,16 @@ def test_the_profile_page_and_its_edits(app: Flask, outbox: list[mail.Message]) 
     bad = admin_call(owner_browser, owner, "PATCH", f"/users/{target}", {"phone": "12"})
     assert bad.status_code == 400 or bad.status_code == 422
 
+    moved = admin_call(
+        owner_browser,
+        owner,
+        "PATCH",
+        f"/users/{target}",
+        {"address": {"locality": "Thiès", "postal_code": "21000"}},
+    ).json["user"]
+    assert moved["address"]["locality"] == "Thiès" and moved["address"]["street_address"] == ""
+    assert moved["country"] == "SN", "the address leaves the rest alone"
+
 
 def test_the_security_actions(app: Flask, outbox: list[mail.Message]) -> None:
     owner_browser, owner, dev_browser, dev = setup_people(app, outbox)

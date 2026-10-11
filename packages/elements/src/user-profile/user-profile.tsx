@@ -53,6 +53,11 @@ export class IdpUserProfile extends typedElement(props) {
       locale: createField(start?.locale === 'en' ? 'en' : 'fr'),
       country: createField(start?.country ?? '', { validators: [check('country')] }),
       phone: createField(start?.phone ?? '', { validators: [check('phone')] }),
+      street_address: createField(start?.address?.street_address ?? '', { validators: [check('street_address')] }),
+      postal_code: createField(start?.address?.postal_code ?? '', { validators: [check('postal_code')] }),
+      locality: createField(start?.address?.locality ?? '', { validators: [check('locality')] }),
+      region: createField(start?.address?.region ?? '', { validators: [check('region')] }),
+      address_country: createField(start?.address?.country ?? start?.country ?? '', { validators: [check('address_country')] }),
     });
     const busy = signal(false);
     const notice = signal<string | null>(null);
@@ -90,6 +95,13 @@ export class IdpUserProfile extends typedElement(props) {
               locale: values.locale === 'en' ? 'en' : 'fr',
               country: values.country.trim().toUpperCase(),
               phone: values.phone.replace(/\s/g, ''),
+              address: {
+                street_address: values.street_address.trim(),
+                postal_code: values.postal_code.trim(),
+                locality: values.locality.trim(),
+                region: values.region.trim(),
+                country: values.address_country.trim().toUpperCase(),
+              },
             }),
           labels().saved,
         );

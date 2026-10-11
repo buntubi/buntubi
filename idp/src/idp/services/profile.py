@@ -44,6 +44,54 @@ def update(
         user.locale = locale
 
 
+# Each part of an address and its longest length; the street can hold several lines.
+ADDRESS_PARTS = {"street_address": 300, "locality": 100, "region": 100, "postal_code": 20, "country": 2}
+
+
+def address_of(user: User) -> dict[str, str | None]:
+    return {
+        "street_address": user.address_street,
+        "locality": user.address_locality,
+        "region": user.address_region,
+        "postal_code": user.address_postal_code,
+        "country": user.address_country,
+    }
+
+
+def set_address(user: User, parts: dict[str, str]) -> None:
+    """Sets the parts given; an empty one clears it. Lengths and the country are checked first."""
+    for key, value in parts.items():
+        if key not in ADDRESS_PARTS or len(value) > ADDRESS_PARTS[key]:
+            raise AccountError("invalid_address")
+    if (
+        "country" in parts
+        and parts["country"]
+        and not (len(parts["country"]) == 2 and parts["country"].isalpha())
+    ):
+        raise AccountError("invalid_country")
+    columns = {
+        "street_address": "address_street",
+        "locality": "address_locality",
+        "region": "address_region",
+        "postal_code": "address_postal_code",
+    }
+    for key, column in columns.items():
+        if key in parts:
+            setattr(user, column, parts[key].strip())
+    if "country" in parts:
+        user.address_country = parts["country"].strip().upper() or None
+
+
+def address_claim(user: User) -> dict[str, str] | None:
+    """The OIDC address claim: the parts that are set, and `formatted` from them; None when empty."""
+    parts = {k: v for k, v in address_of(user).items() if v}
+    if not parts:
+        return None
+    city = " ".join(p for p in (parts.get("postal_code"), parts.get("locality")) if p)
+    lines = [parts.get("street_address", ""), city, parts.get("region", ""), parts.get("country", "")]
+    return {**parts, "formatted": "\n".join(line for line in lines if line)}
+
+
 def set_picture(user: User, content_type: str, data: bytes) -> None:
     if content_type not in PICTURE_TYPES:
         raise AccountError("unsupported_picture")

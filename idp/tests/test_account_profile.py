@@ -111,3 +111,62 @@ def test_a_pending_change_can_be_cancelled(
         api(browser, "POST", "/api/account/email/confirm", {"token": token}, csrf).json["error"]
         == "link_expired"
     )
+
+
+ADDRESS = {
+    "street_address": "12 rue Carnot\nAppartement 4",
+    "locality": "Dakar",
+    "region": "Dakar",
+    "postal_code": "10200",
+    "country": "sn",
+}
+
+
+def test_the_postal_address_is_kept_by_parts_and_given_as_the_address_claim(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    from sqlalchemy import select
+
+    from idp.db import db
+    from idp.models import User
+    from idp.oauth.claims import user_claims
+
+    csrf = sign_up(browser, outbox)
+    done = api(browser, "PATCH", "/api/account/profile", {"address": ADDRESS}, csrf)
+    assert done.status_code == 200, done.json
+    address = browser.get("/api/account").json["user"]["address"]
+    assert address == {**ADDRESS, "country": "SN"}
+
+    # Only the parts sent change; an empty one clears it.
+    api(browser, "PATCH", "/api/account/profile", {"address": {"region": ""}}, csrf)
+    assert browser.get("/api/account").json["user"]["address"]["region"] == ""
+    too_long = api(browser, "PATCH", "/api/account/profile", {"address": {"postal_code": "1" * 21}}, csrf)
+    assert too_long.json["error"] == "invalid_address"
+    bad_country = api(browser, "PATCH", "/api/account/profile", {"address": {"country": "S1"}}, csrf)
+    assert bad_country.json["error"] == "invalid_country"
+
+    with app.app_context():
+        user = db().scalar(select(User).where(User.email == "awa@example.test"))
+        assert user is not None
+        claim = user_claims(user, "openid address")["address"]
+        assert claim["postal_code"] == "10200" and "region" not in claim
+        assert claim["formatted"] == "12 rue Carnot\nAppartement 4\n10200 Dakar\nSN"
+        assert "address" not in user_claims(user, "openid profile"), "only with the address scope"
+
+    export = browser.get("/api/account/export").json
+    assert export["profile"]["address"]["locality"] == "Dakar"
+
+
+def test_an_empty_address_gives_no_claim(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    from sqlalchemy import select
+
+    from idp.db import db
+    from idp.models import User
+    from idp.oauth.claims import user_claims
+
+    sign_up(browser, outbox)
+    with app.app_context():
+        user = db().scalar(select(User).where(User.email == "awa@example.test"))
+        assert user is not None and "address" not in user_claims(user, "openid address")

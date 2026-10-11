@@ -1,6 +1,4 @@
 /** The preferences card: language and country, saved on pick; apart from the look. */
-import type { Country } from '../countries.js';
-
 export interface PreferencesSectionLabels {
   title: string;
   language: string;
@@ -19,7 +17,7 @@ export const preferencesSectionLabels: PreferencesSectionLabels = {
   languageHint: 'Pages and emails from your account use it.',
   languages: { fr: 'Français', en: 'English' },
   country: 'Country',
-  countryHint: 'Used for phone numbers and formats.',
+  countryHint: 'Where you live. New phone numbers start from it.',
   noCountry: 'Not set',
   saved: 'Saved.',
   error: 'Something went wrong. Try again.',
@@ -34,7 +32,6 @@ export interface PreferencesSectionLogic {
   labels: () => PreferencesSectionLabels;
   locale: () => 'fr' | 'en';
   country: () => string;
-  countries: () => Country[];
   setLocale: (locale: 'fr' | 'en') => Promise<void>;
   setCountry: (code: string) => Promise<void>;
   busy: () => boolean;
