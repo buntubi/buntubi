@@ -9,8 +9,8 @@ from sqlalchemy import select
 
 from idp import plugins
 from idp.db import db, utcnow
-from idp.models import AuditEvent, Client, Organization, OrganizationMember, User
-from idp.services import connected, passkeys
+from idp.models import AuditEvent, Client, LoginSession, Organization, OrganizationMember, User
+from idp.services import backchannel, connected, passkeys
 
 
 def export(user: User, here: set[Any]) -> dict[str, Any]:
@@ -100,4 +100,10 @@ def portal_url() -> str | None:
 def delete(user: User) -> None:
     """The account and, through the database, its sessions, tokens, consents and passkeys."""
     plugins.emit("user.deleted", {"user": str(user.id)})
+    # Told before the rows go, while the grants still name the apps.
+    backchannel.notify(
+        db().scalars(
+            select(LoginSession.id).where(LoginSession.user_id == user.id, LoginSession.revoked_at.is_(None))
+        )
+    )
     db().delete(user)

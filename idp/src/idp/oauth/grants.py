@@ -151,6 +151,13 @@ class OpenIDCode(_OpenIDCode):  # type: ignore[misc]
             "exp": now + ID_TOKEN_TTL,
         }
 
+    def get_authorization_code_claims(self, authorization_code: Any) -> dict[str, Any]:
+        claims: dict[str, Any] = super().get_authorization_code_claims(authorization_code)
+        # The sign-in the token came from, which a back-channel logout names.
+        if authorization_code.session_id is not None:
+            claims["sid"] = str(authorization_code.session_id)
+        return claims
+
     def generate_user_info(self, user: User, scope: str) -> UserInfo:
         return UserInfo(user_claims(user, scope))
 

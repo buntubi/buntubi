@@ -128,6 +128,10 @@ class AccessTokenRecord(Base):
     client_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"))
     user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     refresh_family_id: Mapped[uuid.UUID | None] = mapped_column(index=True)
+    # The sign-in it came from: whose end the client hears of (back-channel logout).
+    session_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("login_sessions.id", ondelete="SET NULL"), index=True
+    )
     scope: Mapped[str] = mapped_column(String(1000))
     issued_at: Mapped[datetime] = mapped_column(default=utcnow)
     expires_at: Mapped[datetime] = mapped_column(index=True)

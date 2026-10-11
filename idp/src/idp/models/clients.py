@@ -59,6 +59,9 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     name: Mapped[str] = mapped_column(String(120))
     redirect_uris: Mapped[list[str]] = mapped_column(ARRAY(String(2048)), default=list)
     post_logout_redirect_uris: Mapped[list[str]] = mapped_column(ARRAY(String(2048)), default=list)
+    # Where the provider posts a logout token when a session this client took part in ends
+    # (OpenID Connect Back-Channel Logout); none: the client is not told.
+    backchannel_logout_uri: Mapped[str | None] = mapped_column(String(2048))
     grant_types: Mapped[list[str]] = mapped_column(
         ARRAY(String(64)), default=lambda: ["authorization_code", "refresh_token"]
     )

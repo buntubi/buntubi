@@ -15,6 +15,7 @@ from flask import request, session
 from idp.config import get_settings
 from idp.db import db, utcnow
 from idp.models import LoginSession, User
+from idp.services import backchannel
 
 _SIDS = "sids"
 _CURRENT = "sid"
@@ -70,6 +71,7 @@ def switch_to(session_id: str) -> LoginSession | None:
 
 def end(login: LoginSession) -> None:
     login.revoked_at = utcnow()
+    backchannel.notify([login.id])
     sid = str(login.id)
     session[_SIDS] = [s for s in session.get(_SIDS, []) if s != sid]
     if session.get(_CURRENT) == sid:
@@ -102,8 +104,10 @@ def sign_out_here(session_id: str) -> LoginSession | None:
 
 
 def end_all_here() -> None:
-    for login in all_signed_in():
+    ended = all_signed_in()
+    for login in ended:
         login.revoked_at = utcnow()
+    backchannel.notify([login.id for login in ended])
     session.clear()
 
 

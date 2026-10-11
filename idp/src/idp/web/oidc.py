@@ -38,6 +38,8 @@ def discovery() -> Response:
         introspection_endpoint=f"{issuer}/oauth/introspect",
         device_authorization_endpoint=f"{issuer}/oauth/device_authorization",
         end_session_endpoint=f"{issuer}/oauth/logout",
+        backchannel_logout_supported=True,
+        backchannel_logout_session_supported=True,
         check_session_iframe=f"{issuer}/oauth/check-session",
         scopes_supported=list(SCOPES),
         response_types_supported=["code"],

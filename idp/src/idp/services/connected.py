@@ -12,7 +12,7 @@ from sqlalchemy import func, select, update
 from idp.config import get_settings
 from idp.db import db, utcnow
 from idp.models import AccessTokenRecord, Client, Consent, LoginSession, RefreshToken, Scope, User
-from idp.services import devices
+from idp.services import backchannel, devices
 from idp.services.accounts import AccountError
 
 
@@ -96,6 +96,7 @@ def sign_out_session(user: User, session_id: str, here: set[uuid.UUID]) -> Login
     if login is None:
         raise AccountError("not_found")
     login.revoked_at = utcnow()
+    backchannel.notify([login.id])
     _revoke_tokens(user, session_id=login.id)
     return login
 

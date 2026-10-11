@@ -10,7 +10,7 @@ from idp.config import Settings, get_settings
 from idp.db import init_db
 from idp.extensions import limiter
 from idp.oauth.server import init_oauth
-from idp.services import session_check
+from idp.services import backchannel, session_check
 from idp.web import admin, api, developer, oidc, openapi, pages
 
 # Endpoints a browser application (SPA) calls cross-origin.
@@ -46,6 +46,9 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.register_blueprint(openapi.bp)
     _init_plugins(app, settings)
     cli.register(app)
+
+    # Logout tokens for the sessions this request ended, once it is answered.
+    app.after_request(backchannel.flush)
 
     @app.after_request
     def _headers(response: Response) -> Response:

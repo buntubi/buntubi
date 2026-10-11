@@ -107,6 +107,7 @@ def save_token(token: dict[str, Any], request: Any) -> None:
             client_id=client.id,
             user_id=user.id if user is not None else None,
             refresh_family_id=family_id,
+            session_id=context.session_id if context else None,
             scope=token.get("scope", ""),
             expires_at=datetime.fromtimestamp(claims["exp"], UTC),
         )

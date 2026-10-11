@@ -18,7 +18,7 @@ from idp.db import db, utcnow
 from idp.models import AccessTokenRecord, EmailToken, LoginSession, RefreshToken, User
 from idp.security import passwords
 from idp.security.tokens import hash_token, matches, new_numeric_code, new_token
-from idp.services import mail
+from idp.services import backchannel, mail
 
 VERIFY_EMAIL = "verify_email"
 RESET_PASSWORD = "reset_password"  # noqa: S105  (a purpose, not a secret)
@@ -302,11 +302,9 @@ def sign_out_others(user: User, keep: LoginSession) -> None:
     bare access token is not tied to a session and runs out on its own.
     """
     now = utcnow()
-    db().execute(
-        update(LoginSession)
-        .where(LoginSession.user_id == user.id, LoginSession.id != keep.id, LoginSession.revoked_at.is_(None))
-        .values(revoked_at=now)
-    )
+    others = LoginSession.user_id == user.id, LoginSession.id != keep.id, LoginSession.revoked_at.is_(None)
+    backchannel.notify(db().scalars(select(LoginSession.id).where(*others)))
+    db().execute(update(LoginSession).where(*others).values(revoked_at=now))
     families = select(RefreshToken.family_id).where(
         RefreshToken.user_id == user.id, RefreshToken.session_id.is_distinct_from(keep.id)
     )
@@ -333,6 +331,10 @@ def sign_out_others(user: User, keep: LoginSession) -> None:
 def sign_out_everywhere(user: User) -> None:
     """Ends every session and token of this user: whoever knew the old password is out."""
     now = utcnow()
+    open_sessions = select(LoginSession.id).where(
+        LoginSession.user_id == user.id, LoginSession.revoked_at.is_(None)
+    )
+    backchannel.notify(db().scalars(open_sessions))
     for model in (LoginSession, RefreshToken, AccessTokenRecord):
         db().execute(
             update(model).where(model.user_id == user.id, model.revoked_at.is_(None)).values(revoked_at=now)
