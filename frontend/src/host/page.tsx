@@ -18,6 +18,10 @@ export interface PageProps {
   languageLabel: string;
   children?: ComponentChild;
   footer?: ComponentChild;
+  /** `card`: one centred card and no hero, for a short choice such as picking an account. */
+  layout?: 'hero' | 'card';
+  /** Under the card: the platform's policies. */
+  links?: { label: string; href: string }[];
 }
 
 function BrandMark(props: { brand: Brand }): ComponentChild {
@@ -29,6 +33,18 @@ function BrandMark(props: { brand: Brand }): ComponentChild {
     );
 }
 
+/** The brand's logo, or its first letter on its colour. */
+function BrandSquare(props: { brand: Brand }): ComponentChild {
+  return () =>
+    props.brand.logo ? (
+      <img class="idp-card-logo" src={props.brand.logo} alt={props.brand.name ?? ''} />
+    ) : (
+      <span class="idp-card-mark" aria-hidden="true">
+        {(props.brand.name ?? '?').trim().charAt(0).toUpperCase()}
+      </span>
+    );
+}
+
 export function Page(props: PageProps): ComponentChild {
   const other = () => (props.locale === 'fr' ? 'en' : 'fr');
   // The same page in the other language: the query (an authorization request, a reset token) stays.
@@ -37,6 +53,29 @@ export function Page(props: PageProps): ComponentChild {
     query.set('lang', other());
     return `?${query}`;
   };
+  if (props.layout === 'card') {
+    return (
+      <div class="idp-card-page">
+        <main class="idp-card">
+          <header class="idp-card-head">
+            <BrandSquare brand={props.brand} />
+            <h1>{() => props.title}</h1>
+            {() => (props.subtitle ? <p>{props.subtitle}</p> : null)}
+          </header>
+          {props.children}
+          <footer class="idp-card-note">{props.footer}</footer>
+        </main>
+        <nav class="idp-card-links" aria-label={props.languageLabel}>
+          <a href={switchHref()} hreflang={other()}>
+            {() => props.languageLabel}
+          </a>
+          {(props.links ?? []).map((link) => (
+            <a href={link.href}>{link.label}</a>
+          ))}
+        </nav>
+      </div>
+    );
+  }
   return (
     <div class="idp-shell">
       <Show

@@ -42,6 +42,8 @@ export interface Text {
     switchAccount: string;
     signOut: string;
     language: string;
+    privacy: string;
+    terms: string;
   };
   notes: {
     deviceDone: string;
@@ -106,6 +108,8 @@ const fr: Text = {
     switchAccount: 'Changer de compte',
     signOut: 'Se déconnecter',
     language: 'English',
+    privacy: 'Confidentialité',
+    terms: 'Conditions',
   },
   notes: {
     deviceDone: 'Vous pouvez fermer cette page et revenir sur votre appareil.',
@@ -168,7 +172,12 @@ const fr: Text = {
     deny: 'Annuler',
     pending: 'Un instant',
   },
-  accountSelect: { other: 'Utiliser un autre compte' },
+  accountSelect: {
+    other: 'Utiliser un autre compte',
+    signedIn: 'Connecté',
+    continueTo: 'pour continuer vers {app}',
+    sees: '{app} voit le compte que vous choisissez, et seulement ce que vous autorisez.',
+  },
   mfaVerify: {
     intro: 'Saisissez le code à 6 chiffres affiché par votre application d’authentification.',
     backupIntro: 'Saisissez l’un des codes de secours que vous avez enregistrés. Chacun ne sert qu’une fois.',
@@ -286,6 +295,8 @@ const en: Text = {
     switchAccount: 'Switch account',
     signOut: 'Sign out',
     language: 'Français',
+    privacy: 'Privacy',
+    terms: 'Terms',
   },
   notes: {
     deviceDone: 'You can close this page and go back to your device.',
@@ -348,7 +359,12 @@ const en: Text = {
     deny: 'Cancel',
     pending: 'One moment',
   },
-  accountSelect: { other: 'Use another account' },
+  accountSelect: {
+    other: 'Use another account',
+    signedIn: 'Signed in',
+    continueTo: 'to continue to {app}',
+    sees: '{app} sees the account you choose, and only what you allow.',
+  },
   mfaVerify: {
     intro: 'Enter the 6-digit code from your authenticator app.',
     backupIntro: 'Enter one of the backup codes you saved. Each one works once.',

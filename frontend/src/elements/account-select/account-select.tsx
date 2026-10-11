@@ -3,10 +3,9 @@
  * resolves; "another account" emits `other`.
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import { For } from '@fluixi/core';
+import { For, Show } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
 import { Button } from '@fluixi-ui/button';
-import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
 import type { ElementAction } from '../shared/element-action.js';
 import { initials } from '../shared/initials.js';
 import './account-select.css';
@@ -15,13 +14,24 @@ export interface AccountItem {
   id: string;
   email: string;
   name: string;
+  picture?: string | null;
 }
 
 export interface AccountSelectLabels {
   other: string;
+  signedIn: string;
+  /** The subtitle with an app: {app} is its name. */
+  continueTo: string;
+  /** The note under the list with an app. */
+  sees: string;
 }
 
-export const accountSelectLabels: AccountSelectLabels = { other: 'Use another account' };
+export const accountSelectLabels: AccountSelectLabels = {
+  other: 'Use another account',
+  signedIn: 'Signed in',
+  continueTo: 'to continue to {app}',
+  sees: '{app} sees the account you choose, and only what you allow.',
+};
 
 export interface AccountSelectEvents {
   select: { id: string; result: unknown };
@@ -31,8 +41,11 @@ export interface AccountSelectEvents {
 const props = {
   accounts: prop.object<AccountItem[]>([]),
   action: prop.any<ElementAction<{ id: string }> | undefined>(undefined),
-  labels: prop.object<AccountSelectLabels>(accountSelectLabels),
+  labels: prop.object<Partial<AccountSelectLabels>>({}),
 };
+
+// Each avatar takes a tone in turn, so two accounts of one person still look apart.
+const TONES = ['accent', 'ok', 'info', 'warn'];
 
 export class IdpAccountSelect extends typedElement(props) {
   protected override render(): unknown {
@@ -52,39 +65,47 @@ export class IdpAccountSelect extends typedElement(props) {
     };
 
     return (
-      <div class="idp-accounts" role="list">
+      <ul class="idp-accounts">
         <For each={this.accounts}>
-          {(account) => (
-            <div role="listitem">
+          {(account, index) => (
+            <li>
               <Button
                 variant="ghost"
+                tone="neutral"
                 class="idp-account"
                 aria-busy={() => (busy() === account.id ? 'true' : 'false')}
                 disabled={busy() !== null}
                 onPress={() => choose(account.id)}
               >
-                <Avatar class="idp-account-avatar" aria-hidden="true">
-                  <AvatarFallback>{initials(account.name || account.email)}</AvatarFallback>
-                </Avatar>
-                <span class="idp-account-text">
-                  {account.name ? <span class="idp-account-name">{account.name}</span> : null}
-                  <span class="idp-account-email">{account.email}</span>
+                <span class="idp-account-avatar" data-tone={TONES[index() % TONES.length]} aria-hidden="true">
+                  <Show when={account.picture} fallback={initials(account.name || account.email)}>
+                    <img src={account.picture ?? ''} alt="" />
+                  </Show>
                 </span>
+                <span class="idp-account-text">
+                  <span class="idp-account-name">{account.name || account.email}</span>
+                  <Show when={account.name}>
+                    <span class="idp-account-email">{account.email}</span>
+                  </Show>
+                </span>
+                <span class="idp-account-state">{() => label().signedIn}</span>
               </Button>
-            </div>
+            </li>
           )}
         </For>
-        <div role="listitem">
-          <Button variant="ghost" class="idp-account" disabled={busy() !== null} onPress={() => this.emit('other', {})}>
-            <Avatar class="idp-account-avatar" aria-hidden="true">
-              <AvatarFallback>+</AvatarFallback>
-            </Avatar>
+        <li>
+          <Button variant="ghost" tone="neutral" class="idp-account" disabled={busy() !== null} onPress={() => this.emit('other', {})}>
+            <span class="idp-account-avatar idp-account-add" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </span>
             <span class="idp-account-text">
-              <span class="idp-account-name">{() => label().other}</span>
+              <span class="idp-account-other">{() => label().other}</span>
             </span>
           </Button>
-        </div>
-      </div>
+        </li>
+      </ul>
     );
   }
 }

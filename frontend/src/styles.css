@@ -254,3 +254,86 @@ body {
     font-size: 26px;
   }
 }
+
+/* The card layout: one centred card on the page, the platform's links under it. */
+.idp-card-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 48px 16px;
+  box-sizing: border-box;
+  background: var(--flx-ui-color-bg-subtle);
+}
+.idp-card {
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  border: 1px solid var(--flx-ui-color-border);
+  border-radius: 16px;
+  background: var(--flx-ui-color-bg);
+  box-shadow: 0 1px 2px rgba(16, 18, 22, 0.04);
+}
+.idp-card-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.idp-card-head h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.idp-card-head p {
+  margin: 0;
+  color: var(--flx-ui-color-fg-muted);
+}
+.idp-card-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--idp-hero-fg);
+  background: var(--idp-hero);
+}
+.idp-card-logo {
+  max-width: 160px;
+  max-height: 40px;
+}
+.idp-card-note {
+  color: var(--flx-ui-color-fg-muted);
+  font-size: 12.5px;
+  text-align: center;
+}
+.idp-card-note:empty {
+  display: none;
+}
+.idp-card-note p {
+  margin: 0;
+}
+.idp-card-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  font-size: 12.5px;
+}
+.idp-card-links a {
+  color: var(--flx-ui-color-fg-muted);
+  text-decoration: none;
+}
+.idp-card-links a:hover {
+  text-decoration: underline;
+}

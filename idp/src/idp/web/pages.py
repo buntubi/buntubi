@@ -34,11 +34,16 @@ def _locale() -> str:
     return request.accept_languages.best_match(LOCALES) or "fr"
 
 
-def _brand() -> dict[str, Any]:
-    """The look of the client this sign-in is for, from the authorization request being resumed."""
+def _resumed_client() -> Any:
+    """The client of the authorization request this page will resume, if any."""
     return_to = session.get("return_to") or request.full_path
     client_id = parse_qs(urlparse(return_to).query).get("client_id", [None])[0]
-    client = query_client(client_id) if client_id else None
+    return query_client(client_id) if client_id else None
+
+
+def _brand() -> dict[str, Any]:
+    """The look of the client this sign-in is for, from the authorization request being resumed."""
+    client = _resumed_client()
     if client is not None:
         return plugins.page_brand(client, {"name": client.name, **client.brand})
     platform = get_settings().brand()
@@ -70,6 +75,10 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         "locale": _locale(),
         "csrf": csrf.token(),
         "brand": _brand(),
+        # The platform's own policies, linked under its pages.
+        "links": {
+            key: value for key, value in get_settings().brand().items() if key in ("privacy_url", "terms_url")
+        },
         "props": props,
     }
     scheme = _scheme() if account else None
@@ -164,9 +173,15 @@ def blocked(client: Any) -> tuple[str, int]:
 def accounts() -> str:
     logins = sessions.all_signed_in()
     db().commit()
+    client = _resumed_client()
     return shell(
         "idp-account-select",
-        accounts=[{"id": str(a.id), "email": a.user.email, "name": a.user.name} for a in logins],
+        accounts=[
+            {"id": str(a.id), "email": a.user.email, "name": a.user.name, "picture": a.user.picture}
+            for a in logins
+        ],
+        # The app that will see the chosen account.
+        client=client.name if client is not None else None,
     )
 
 

@@ -17,6 +17,8 @@ export interface PageConfig {
   locale: Locale;
   csrf: string;
   brand: Brand;
+  /** The platform's own policies. */
+  links?: { privacy_url?: string; terms_url?: string };
   props: Record<string, unknown>;
 }
 

@@ -46,6 +46,9 @@ interface Screen {
   key: keyof typeof t.titles;
   body: () => ComponentChild;
   footer?: () => ComponentChild;
+  layout?: 'hero' | 'card';
+  /** In place of the key's subtitle. */
+  subtitle?: string;
 }
 
 const screens: Record<string, () => Screen> = {
@@ -199,6 +202,9 @@ const screens: Record<string, () => Screen> = {
 
   'idp-account-select': () => ({
     key: 'accounts',
+    layout: 'card',
+    subtitle: str('client') ? t.accountSelect.continueTo.replace('{app}', str('client')) : undefined,
+    footer: () => (str('client') ? <p>{t.accountSelect.sees.replace('{app}', str('client'))}</p> : null),
     body: () => (
       <idp-account-select
         accounts={(props.accounts as AccountItem[] | undefined) ?? []}
@@ -288,7 +294,12 @@ if (root && screen) {
         aside={look?.aside?.element}
         locale={config.locale}
         title={t.titles[screen.key]}
-        subtitle={t.subtitles[screen.key]}
+        subtitle={screen.subtitle ?? t.subtitles[screen.key]}
+        layout={screen.layout}
+        links={[
+          ...(config.links?.privacy_url ? [{ label: t.links.privacy, href: config.links.privacy_url }] : []),
+          ...(config.links?.terms_url ? [{ label: t.links.terms, href: config.links.terms_url }] : []),
+        ]}
         heroTitle={config.brand.tagline ?? t.hero.title}
         heroText={t.hero.text}
         languageLabel={t.links.language}
