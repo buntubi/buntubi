@@ -277,3 +277,22 @@ def test_test_users_and_the_organization_limit(app: Flask, browser: FlaskClient,
         new_organization(browser, dev)
     over = call(browser, dev, "POST", "/organizations", {"name": "One too many"})
     assert over.status_code == 409 and over.json == {"error": "too_many_organizations", "limit": 10}
+
+
+def test_a_developer_app_can_ask_for_the_phone_and_the_address(
+    app: Flask, browser: FlaskClient, dev: dict[str, str]
+) -> None:
+    # Both are personal data: sensitive, so a live app needs a review for them.
+    organization_id = new_organization(browser, dev)
+    made = call(
+        browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {"name": "Shop", "redirect_uris": ["https://shop.example/cb"], "scopes": ["phone", "address"]},
+    )
+    assert made.status_code == 201, made.json
+    catalogue = {
+        s["name"]: s for p in call(browser, dev, "GET", "/products").json["items"] for s in p["scopes"]
+    }
+    assert catalogue["address"]["sensitivity"] == "sensitive" == catalogue["phone"]["sensitivity"]
