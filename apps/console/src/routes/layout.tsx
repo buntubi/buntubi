@@ -2,7 +2,8 @@
  * Every console page: the workspace shell the portal uses, with the console's sections, the
  * progress bar, a refused sign-in's notice, and the matched route.
  */
-import { useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
+import { revalidate, useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
+import '@idp/elements/page-error';
 import '@idp/elements/access-gate';
 import '@idp/elements/auth-notice';
 import type { SidebarGroup } from '@idp/elements/sidebar/logic';
@@ -17,7 +18,7 @@ import type { Gate as GateCode } from '../lib/types.js';
 import { PageBoundary } from '../components/page-boundary.js';
 import { authNoticeLabels } from '../lib/auth-notice.js';
 import { locale, setLocale, t } from '../lib/i18n.js';
-import { accessGateLabels, shellLabels, sidebarLabels } from '../lib/labels.js';
+import { accessGateLabels, pageErrorLabels, shellLabels, sidebarLabels } from '../lib/labels.js';
 import { auth, idpUrl } from '../services/auth.js';
 import { paths } from '../lib/paths.js';
 import { brand, enabledPlugins, overview } from '../data/admin.js';
@@ -30,13 +31,23 @@ interface ShellData {
   pending: number;
   /** The plugins the provider runs, by id. */
   plugins: string[];
+  /** The provider did not answer: the console says so instead of showing an empty frame. */
+  unreachable?: boolean;
 }
 
-export const routeData = async (): Promise<ShellData> => {
-  const [platform, counts] = await Promise.all([brand(), overview()]);
-  // The plugins' pages only once the console is open to this visitor.
-  const plugins = counts.gate ? [] : await enabledPlugins();
-  return { brand: platform, gate: counts.gate, pending: counts.overview?.pending_reviews ?? 0, plugins };
+export const routeData = async ({ location }: { location: () => { query: Record<string, string> } }): Promise<ShellData> => {
+  const down: ShellData = { brand: {} as Brand, gate: null, pending: 0, plugins: [], unreachable: true };
+  // The sign-in found the provider down and came back to say so.
+  if (location().query.auth_error === 'provider_unreachable') return down;
+  try {
+    const [platform, counts] = await Promise.all([brand(), overview()]);
+    // The plugins' pages only once the console is open to this visitor.
+    const plugins = counts.gate ? [] : await enabledPlugins();
+    return { brand: platform, gate: counts.gate, pending: counts.overview?.pending_reviews ?? 0, plugins };
+  } catch {
+    // Everything the shell needs comes from the provider: it is down or out of reach.
+    return down;
+  }
 };
 
 const SECTIONS = [
@@ -92,6 +103,23 @@ export default function RootLayout() {
   };
   const platform = () => data()?.brand.name ?? '';
   return (
+    <Show
+      when={!data()?.unreachable}
+      fallback={
+        <main class="unreachable">
+          <idp-page-error
+            message={t('page.unreachable')}
+            labels={pageErrorLabels()}
+            onRetry={() => {
+              // Back to the page without the provider's error: loading it again checks the session
+              // or starts the sign-in afresh.
+              if (location.query.auth_error) window.location.assign(location.pathname);
+              else revalidate(() => true);
+            }}
+          />
+        </main>
+      }
+    >
     <BrandContext.Provider value={() => data()?.brand ?? {}}>
       <div class="progress" classList={{ active: routing() }} aria-hidden="true" />
       {/* Closed: no page renders, so no page asks the admin API what it would refuse. */}
@@ -134,5 +162,6 @@ export default function RootLayout() {
       </Shell>
       </Show>
     </BrandContext.Provider>
+    </Show>
   );
 }

@@ -24,8 +24,9 @@ class AdminRefusal extends Error {
 async function call<T>(method: Method, path: string, body?: unknown): Promise<T> {
   const { requestAuth } = await import('@fluixi/oauth2/server');
   const { publicEnv } = await import('@fluixi/start/env');
-  const { fetch } = await requestAuth();
-  if (!fetch) throw new AdminRefusal('signed_out', 401);
+  const { fetch, unreachable } = await requestAuth();
+  // A session the provider could not confirm because it did not answer: not a signed-out visitor.
+  if (!fetch) throw new AdminRefusal(unreachable ? 'provider_unreachable' : 'signed_out', unreachable ? undefined : 401);
   const response = await fetch(`${publicEnv().IDP_URL}/admin/api${path}`, {
     method,
     headers: body === undefined ? {} : { 'content-type': 'application/json' },
@@ -242,8 +243,9 @@ export const pluginCall = async (input: { plugin: string; method: Method; path: 
   'use server';
   const { requestAuth } = await import('@fluixi/oauth2/server');
   const { publicEnv } = await import('@fluixi/start/env');
-  const { fetch } = await requestAuth();
-  if (!fetch) throw new AdminRefusal('signed_out', 401);
+  const { fetch, unreachable } = await requestAuth();
+  // A session the provider could not confirm because it did not answer: not a signed-out visitor.
+  if (!fetch) throw new AdminRefusal(unreachable ? 'provider_unreachable' : 'signed_out', unreachable ? undefined : 401);
   const response = await fetch(`${publicEnv().IDP_URL}/api/plugins/${encodeURIComponent(input.plugin)}${input.path}`, {
     method: input.method,
     headers: input.body === undefined ? {} : { 'content-type': 'application/json' },

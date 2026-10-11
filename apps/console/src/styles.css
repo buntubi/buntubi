@@ -32,3 +32,16 @@ body {
   font-family: var(--idp-mono);
   font-size: 12.5px;
 }
+
+/* The provider is out of reach: its message, alone in the middle of the page. */
+.unreachable {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.unreachable > idp-page-error {
+  width: 100%;
+  max-width: 520px;
+}
