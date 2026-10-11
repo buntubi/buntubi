@@ -1,5 +1,6 @@
 """The authorization code flow end to end, and the ways it must refuse."""
 
+from datetime import timedelta
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlparse
 
@@ -7,7 +8,10 @@ from flask import Flask
 from flask.testing import FlaskClient
 from joserfc import jwt
 from joserfc.jwk import KeySet
+from sqlalchemy import update
 
+from idp.db import db, utcnow
+from idp.models import RefreshToken
 from idp.services import mail
 
 from conftest import (
@@ -91,6 +95,14 @@ def test_full_flow(app: Flask, browser: FlaskClient, outbox: list[mail.Message])
     assert rotated.status_code == 200, rotated.json
     newer = rotated.json["refresh_token"]
     assert newer != body["refresh_token"]
+    # Presented again a minute later: a theft, not two requests racing (RENEWAL_RACE).
+    with app.app_context():
+        db().execute(
+            update(RefreshToken)
+            .where(RefreshToken.rotated_at.is_not(None))
+            .values(rotated_at=utcnow() - timedelta(minutes=1))
+        )
+        db().commit()
     reused = browser.post(
         "/oauth/token",
         data={"grant_type": "refresh_token", "refresh_token": body["refresh_token"], "client_id": "spa"},

@@ -10,6 +10,7 @@ from typing import Any
 
 from authlib.integrations.flask_oauth2 import AuthorizationServer, ResourceProtector
 from authlib.oauth2.rfc6749 import scope_to_list
+from authlib.oauth2.rfc6749.errors import UnauthorizedClientError
 from authlib.oauth2.rfc6750 import BearerTokenGenerator, BearerTokenValidator
 from authlib.oauth2.rfc7009 import RevocationEndpoint as _RevocationEndpoint
 from authlib.oauth2.rfc7662 import IntrospectionEndpoint as _IntrospectionEndpoint
@@ -286,8 +287,18 @@ class IntrospectionEndpoint(_IntrospectionEndpoint):  # type: ignore[misc]
         }
 
 
+DEVICE_GRANT = "urn:ietf:params:oauth:grant-type:device_code"
+
+
 class DeviceAuthorizationEndpoint(_DeviceAuthorizationEndpoint):  # type: ignore[misc]
     USER_CODE_TYPE = "string"
+
+    def authenticate_client(self, request: Any) -> Client:
+        """Only an app registered for the device grant gets a code a person could approve."""
+        client: Client = super().authenticate_client(request)
+        if not client.check_grant_type(DEVICE_GRANT):
+            raise UnauthorizedClientError()
+        return client
 
     def generate_user_code(self) -> str:
         return new_user_code()

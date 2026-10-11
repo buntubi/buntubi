@@ -194,16 +194,27 @@ class OpenIDCode(_OpenIDCode):  # type: ignore[misc]
         return UserInfo(user_claims(user, scope))
 
 
+# A rotated refresh token presented again this soon is a race between two requests of one app
+# (a page and its data, two tabs), not a theft: refused without ending the family. Later, it is.
+RENEWAL_RACE = timedelta(seconds=10)
+
+
 class RefreshTokenGrant(grants.RefreshTokenGrant):  # type: ignore[misc]
     TOKEN_ENDPOINT_AUTH_METHODS = PUBLIC_AND_CONFIDENTIAL
     INCLUDE_NEW_REFRESH_TOKEN = True
 
     def authenticate_refresh_token(self, refresh_token: str) -> RefreshToken | None:
-        row = db().scalar(select(RefreshToken).where(RefreshToken.token_hash == hash_token(refresh_token)))
+        # Locked until this request commits: two renewals at once are served one after the other.
+        row = db().scalar(
+            select(RefreshToken).where(RefreshToken.token_hash == hash_token(refresh_token)).with_for_update()
+        )
         if row is None:
             return None
         if row.rotated_at is not None and row.revoked_at is None:
-            # Already exchanged once: this copy was stolen, or the first one was. End them all.
+            if utcnow() - row.rotated_at < RENEWAL_RACE:
+                # Renewed a moment ago: two requests of the same app raced. Refused, family kept.
+                return None
+            # Exchanged earlier: this copy was stolen, or the first one was. End them all.
             revoke_family(row.family_id)
             return None
         if row.revoked_at is not None or row.is_expired():
