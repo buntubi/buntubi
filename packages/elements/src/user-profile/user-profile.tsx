@@ -94,6 +94,8 @@ export class IdpUserProfile extends typedElement(props) {
           labels().saved,
         );
       },
+      typePhone: (value) => form.get('phone').setValue(value, { pristine: true }),
+      locale: () => this.locale,
       act: async (action: ProfileAction) => {
         const u = user();
         if (!u) return;

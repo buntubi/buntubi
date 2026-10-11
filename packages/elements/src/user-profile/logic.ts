@@ -69,9 +69,9 @@ export const userProfileLabels: UserProfileLabels = {
   language: 'Language',
   languages: { fr: 'Français', en: 'English' },
   country: 'Country',
-  countryHint: 'Two letters, such as SN or FR',
+  countryHint: 'Where the person lives; the phone starts there.',
   phone: 'Phone',
-  phoneHint: 'International format, such as +221771234567',
+  phoneHint: 'Pick the country, then type the number.',
   save: 'Save',
   saved: 'Saved.',
   account: 'Account',
@@ -140,6 +140,9 @@ export interface UserProfileLogic {
   date: (iso: string | null | undefined) => string;
   form: ProfileForm;
   save: (values: ProfileValues) => Promise<void>;
+  /** The number while it is typed: kept without showing an error yet. */
+  typePhone: (value: string) => void;
+  locale: () => string;
   act: (action: ProfileAction) => Promise<void>;
   busy: () => boolean;
   /** What the last action did, in words. */

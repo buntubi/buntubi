@@ -5,6 +5,8 @@ import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { UserProfileLogic } from './logic.js';
+import '@bambiste/countries/elements';
+import type {} from '../bambiste-jsx.js';
 import '../segmented/segmented.js';
 
 export const userProfileView = (p: UserProfileLogic) => (
@@ -61,10 +63,29 @@ export const userProfileView = (p: UserProfileLogic) => (
             </FormField>
             <div class="row">
               <FormField control={p.form.get('country')} label={() => p.labels().country} description={() => p.labels().countryHint}>
-                {(b) => <Input name="country" maxlength={2} value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+                {(b) => (
+                  <bc-country-select
+                    name="country"
+                    value={b.value()}
+                    locale={p.locale()}
+                    aria-label={p.labels().country}
+                    onChange={(event) => b.onChange(event.detail.value)}
+                  />
+                )}
               </FormField>
               <FormField control={p.form.get('phone')} label={() => p.labels().phone} description={() => p.labels().phoneHint}>
-                {(b) => <Input type="tel" name="phone" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />}
+                {(b) => (
+                  <bc-phone-input
+                    name="phone"
+                    value={b.value()}
+                    country={p.form.get('country').value()}
+                    locale={p.locale()}
+                    aria-label={p.labels().phone}
+                    aria-invalid={b['aria-invalid']()}
+                    onInput={(event) => p.typePhone(event.detail.value)}
+                    onChange={(event) => b.onChange(event.detail.value)}
+                  />
+                )}
               </FormField>
             </div>
             <div>
