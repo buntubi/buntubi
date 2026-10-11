@@ -1,5 +1,7 @@
 """The account area: its page, its summary, and several accounts signed in on one browser."""
 
+from urllib.parse import quote
+
 from flask import Flask
 from flask.testing import FlaskClient
 
@@ -50,3 +52,17 @@ def test_two_accounts_on_one_browser(app: Flask, browser: FlaskClient, outbox: l
     everything = browser.delete("/api/accounts", headers=headers)
     assert everything.json["redirect"].endswith("/signin")
     assert browser.get("/api/account").status_code == 401
+
+
+def test_the_page_is_drawn_in_the_saved_scheme(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    sign_up(browser, outbox)
+    assert "data-theme" not in browser.get("/account").get_data(as_text=True).split(">", 2)[1]
+    # As the browser writes it: URL-encoded JSON.
+    browser.set_cookie("idp-scheme", quote('{"v":1,"value":"dark","createdAt":1}'))
+    assert 'data-theme="dark"' in browser.get("/account/security").get_data(as_text=True)
+    browser.set_cookie("idp-scheme", '{"v":1,"value":"system"}')
+    assert "data-theme" not in browser.get("/account").get_data(as_text=True).split(">", 2)[1]
+    browser.set_cookie("idp-scheme", "not json")
+    assert browser.get("/account").status_code == 200

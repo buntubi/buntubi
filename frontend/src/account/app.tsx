@@ -406,13 +406,14 @@ export function mountAccount(root: HTMLElement, context: Context): void {
       ],
     },
   ];
-  const scheme = createDocumentScheme();
-  render(
-    () => (
+  render(() => {
+    // Made inside the render: the scheme keeps the page's attribute in step only from there,
+    // so made outside it a reload lost the reader's choice.
+    const scheme = createDocumentScheme();
+    return (
       <ThemeProvider themes={{ scheme }}>
         <Router routes={routes as never} />
       </ThemeProvider>
-    ),
-    root,
-  );
+    );
+  }, root);
 }

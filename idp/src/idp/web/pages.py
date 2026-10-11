@@ -4,8 +4,9 @@ behaviour is in the elements (frontend/); these routes only decide which one, in
 with which client's brand.
 """
 
+import json
 from typing import Any
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 from authlib.oauth2 import OAuth2Error
 from authlib.oauth2.rfc6749 import scope_to_list
@@ -46,6 +47,21 @@ def _brand() -> dict[str, Any]:
     )
 
 
+# Where the account area keeps the reader's light or dark choice (@idp/theme's schemeKey).
+SCHEME_COOKIE = "idp-scheme"
+
+
+def _scheme() -> str | None:
+    """The saved light or dark choice, so the page is drawn in it before any script runs."""
+    try:
+        # Written by the browser URL-encoded.
+        saved = json.loads(unquote(request.cookies.get(SCHEME_COOKIE, "")))
+    except ValueError:
+        return None
+    value = saved.get("value") if isinstance(saved, dict) else saved
+    return value if value in ("light", "dark") else None
+
+
 def shell(element: str, *, account: bool = False, **props: Any) -> str:
     config = {
         "element": element,
@@ -56,7 +72,8 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         "brand": _brand(),
         "props": props,
     }
-    return render_template("shell.html", config=config, locale=config["locale"])
+    scheme = _scheme() if account else None
+    return render_template("shell.html", config=config, locale=config["locale"], scheme=scheme)
 
 
 @bp.get("/")
