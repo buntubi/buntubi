@@ -8,6 +8,7 @@ import type { Role } from '@idp/sdk/types';
 import { ROLES } from '../team/logic.js';
 import { viewToken } from '../view.js';
 import type { MembersLogic } from './logic.js';
+import '../invitation-row/invitation-row.js';
 
 export const membersView = (m: MembersLogic) => (
   <section part="members" class="card" aria-labelledby="idp-members-title">
@@ -22,6 +23,9 @@ export const membersView = (m: MembersLogic) => (
       .roles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 14px 20px 18px; border-top: 1px solid var(--idp-border); }
       .roles > :deep(idp-role-card) { display: block; }
       .alert { margin: 0; padding: 0 20px 14px; color: var(--idp-bad); font-size: 13px; }
+      .done { margin: 0; padding: 0 20px 14px; color: var(--idp-ok); font-size: 13px; }
+      .waiting { padding: 10px 20px 6px; border-top: 1px solid var(--idp-border); color: var(--idp-muted); font-size: 12.5px; font-weight: 500; }
+      .invitations > :deep(idp-invitation-row) { display: block; }
       @media (max-width: 860px) { .columns { display: none; } .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .invite { grid-template-columns: 1fr; } }
     `}</style>
     <div class="head">
@@ -97,6 +101,28 @@ export const membersView = (m: MembersLogic) => (
         </For>
       </div>
     </div>
+    <Show when={m.invitations().length}>
+      <div class="waiting">{() => m.labels().invitations}</div>
+      <div class="invitations">
+        <For each={m.invitations()} by={(invitation) => invitation.id}>
+          {(invitation) => (
+            <idp-invitation-row
+              invitation={invitation()}
+              canManage={m.canManage()}
+              busy={m.busy() === invitation().id}
+              locale={m.locale()}
+              labels={m.labels()}
+              onWithdraw={(event) => void m.withdraw(event.detail.id)}
+            />
+          )}
+        </For>
+      </div>
+    </Show>
+    <Show when={m.notice()}>
+      <p class="done" role="status">
+        {() => m.notice()}
+      </p>
+    </Show>
     <Show when={m.error()}>
       <p class="alert" role="alert">
         {() => m.error()}

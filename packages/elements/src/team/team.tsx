@@ -4,7 +4,7 @@
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import type { Member } from '@idp/sdk/types';
+import type { Invitation, Member } from '@idp/sdk/types';
 import '../members/members.js';
 import '../segmented/segmented.js';
 import '../test-users/test-users.js';
@@ -18,6 +18,8 @@ const props = {
   /** The organization's name, for the header. */
   name: prop.string(''),
   members: prop.object<Member[]>([]),
+  /** Addresses asked to join that have no account yet. */
+  invitations: prop.object<Invitation[]>([]),
   testUsers: prop.object<{ email: string; added_at: string }[]>([]),
   apps: prop.object<{ client_id: string; name: string }[]>([]),
   /** The signed-in person's email, to mark their own row. */
@@ -49,6 +51,7 @@ export class IdpTeam extends typedElement(props) {
       ],
       choose: (value) => tab.set(value),
       organization: () => this.organization,
+      invitations: () => this.invitations,
       members: () =>
         this.members.map((member) => ({
           ...member,

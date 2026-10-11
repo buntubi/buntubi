@@ -229,6 +229,16 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "two_step": BOOL,
         }
     ),
+    "Invitation": obj(
+        {
+            "id": STRING,
+            "email": STRING,
+            "role": ROLE,
+            "apps": STRINGS,
+            "invited_at": TIME,
+            "expires_at": TIME,
+        }
+    ),
     "Secret": obj(
         {
             "id": STRING,
@@ -286,6 +296,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "keys": {"type": "array", "items": ref("ApiKey")},
             "test_users": {"type": "array", "items": obj({"email": STRING, "added_at": TIME})},
             "members": {"type": "array", "items": ref("Member")},
+            "invitations": {"type": "array", "items": ref("Invitation")},
         }
     ),
     # Admin API
@@ -715,10 +726,10 @@ def paths() -> dict[str, dict[str, Any]]:
         },
         "/developer/api/organizations/{organization_id}/members": {
             "post": op(
-                "Add a member (an existing account)",
+                "Add a member, or invite an address with no account (joins at its first verified sign-in)",
                 d,
                 DEVELOPER,
-                one("member", "Member", "201"),
+                {**one("member", "Member", "201"), **one("invitation", "Invitation", "202")},
                 request=body(ref("MemberIn")),
                 params=["organization_id"],
             )
@@ -738,6 +749,15 @@ def paths() -> dict[str, dict[str, Any]]:
                 DEVELOPER,
                 {"200": answer(obj({"removed": BOOL}))},
                 params=["organization_id", "member_id"],
+            ),
+        },
+        "/developer/api/organizations/{organization_id}/invitations/{invitation_id}": {
+            "delete": op(
+                "Withdraw an invitation",
+                d,
+                DEVELOPER,
+                {"200": answer(obj({"withdrawn": BOOL}))},
+                params=["organization_id", "invitation_id"],
             ),
         },
         "/developer/api/organizations/{organization_id}/apps": {

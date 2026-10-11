@@ -304,7 +304,10 @@
     "./data-export/logic": "./src/data-export/logic.ts",
     "./account-deletion": "./src/account-deletion/account-deletion.tsx",
     "./account-deletion/view": "./src/account-deletion/view.tsx",
-    "./account-deletion/logic": "./src/account-deletion/logic.ts"
+    "./account-deletion/logic": "./src/account-deletion/logic.ts",
+    "./invitation-row": "./src/invitation-row/invitation-row.tsx",
+    "./invitation-row/view": "./src/invitation-row/view.tsx",
+    "./invitation-row/logic": "./src/invitation-row/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

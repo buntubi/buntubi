@@ -47,6 +47,8 @@ export const teamView = (t: TeamLogic) => (
       <idp-members
         organization={t.organization()}
         members={t.members()}
+        invitations={t.invitations()}
+        locale={t.locale()}
         apps={t.apps()}
         canManage={t.canManage()}
         labels={t.labels()}

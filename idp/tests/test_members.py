@@ -23,14 +23,15 @@ def add(browser: FlaskClient, bearer: dict[str, str], organization_id: str, **bo
     return call(browser, bearer, "POST", f"/organizations/{organization_id}/members", body)
 
 
-def test_the_creator_is_the_owner_and_members_need_an_account(app: Flask, outbox: list[mail.Message]) -> None:
+def test_the_creator_is_the_owner_and_others_are_added_or_invited(
+    app: Flask, outbox: list[mail.Message]
+) -> None:
     dev_browser, dev, organization_id, _ = sandbox_app(app, outbox)
     listed = call(dev_browser, dev, "GET", "/organizations").json["items"]
     assert [o["role"] for o in listed] == ["owner"]
 
-    assert add(dev_browser, dev, organization_id, email="nobody@example.test").json == {
-        "error": "no_such_account"
-    }
+    invited = add(dev_browser, dev, organization_id, email="nobody@example.test")
+    assert invited.status_code == 202 and invited.json["invitation"]["email"] == "nobody@example.test"
     colleague(app, outbox, "ana@example.test")
     added = add(dev_browser, dev, organization_id, email="ANA@example.test", role="developer")
     assert added.status_code == 201

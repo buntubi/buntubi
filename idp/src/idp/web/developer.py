@@ -16,8 +16,9 @@ from flask import Blueprint, Response, abort, jsonify
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 from idp import plugins
+from idp.config import get_settings
 from idp.db import db, utcnow
-from idp.models import ApiKey, ApiProduct, Client, ClientSecret, OrganizationMember, Scope, User
+from idp.models import ApiKey, ApiProduct, Client, ClientSecret, Invitation, OrganizationMember, Scope, User
 from idp.oauth.server import require_token
 from idp.services import audit, mfa
 from idp.services import platform as p
@@ -151,6 +152,18 @@ def organization_json(member: OrganizationMember) -> dict[str, Any]:
         "platform": organization.is_platform,
         "role": member.role,
         "created_at": organization.created_at.isoformat(),
+    }
+
+
+def invitation_json(invitation: Invitation) -> dict[str, Any]:
+    by_id = {c.id: c.client_id for c in p.apps_of(invitation.organization)}
+    return {
+        "id": str(invitation.id),
+        "email": invitation.email,
+        "role": invitation.role,
+        "apps": [by_id[a] for a in invitation.app_ids if a in by_id],
+        "invited_at": invitation.created_at.isoformat(),
+        "expires_at": invitation.expires_at.isoformat(),
     }
 
 
@@ -308,6 +321,7 @@ def get_organization(organization_id: str, me: User) -> Response:
         keys=[key_json(k) for k in p.keys_of(organization)],
         test_users=[{"email": t.email, "added_at": t.added_at.isoformat()} for t in organization.test_users],
         members=[member_json(m) for m in organization.members],
+        invitations=[invitation_json(i) for i in p.pending_invitations(organization)],
     )
 
 
@@ -350,7 +364,23 @@ def add_member(organization_id: str, me: User) -> tuple[Response, int]:
     actor = p.membership(me, organization_id, "members")
     p.writable(actor.organization)
     data = parse(MemberIn)
-    member = p.add_member(actor, str(data.email), data.role, data.apps)
+    try:
+        member = p.add_member(actor, str(data.email), data.role, data.apps)
+    except p.PlatformError as refusal:
+        if refusal.code != "no_such_account":
+            raise
+        # No account yet: an invitation, accepted once they sign in with this address.
+        signup = f"{get_settings().issuer}/signup"
+        invitation = p.invite(actor, str(data.email), data.role, data.apps, signup)
+        audit.record(
+            "developer.member_invited",
+            user=me,
+            organization=organization_id,
+            member=invitation.email,
+            role=invitation.role,
+        )
+        db().commit()
+        return jsonify(invitation=invitation_json(invitation)), 202
     audit.record(
         "developer.member_added",
         user=me,
@@ -391,6 +421,18 @@ def remove_member(organization_id: str, member_id: str, me: User) -> Response:
     audit.record("developer.member_removed", user=me, organization=organization_id, member=email)
     db().commit()
     return jsonify(removed=True)
+
+
+@bp.delete("/organizations/<organization_id>/invitations/<invitation_id>")
+@developer()
+def withdraw_invitation(organization_id: str, invitation_id: str, me: User) -> Response:
+    actor = p.membership(me, organization_id, "members")
+    invitation = p.withdraw_invitation(actor.organization, invitation_id)
+    audit.record(
+        "developer.invitation_withdrawn", user=me, organization=organization_id, member=invitation.email
+    )
+    db().commit()
+    return jsonify(withdrawn=True)
 
 
 # ── Apps ──────────────────────────────────────────────────────────────────────────────────────

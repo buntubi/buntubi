@@ -10,7 +10,7 @@ import { Developer } from '@idp/sdk/developer';
 import { memberInviteSchema, type MemberInviteInput } from '@idp/sdk/schemas/team';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
-import type { Role } from '@idp/sdk/types';
+import type { Invitation, Role } from '@idp/sdk/types';
 import '../member-row/member-row.js';
 import '../role-card/role-card.js';
 import { ROLES, teamLabels, type MemberRow, type TeamLabels } from '../team/logic.js';
@@ -21,6 +21,8 @@ import { MembersView } from './view.js';
 const props = {
   organization: prop.string(''),
   members: prop.object<MemberRow[]>([]),
+  invitations: prop.object<Invitation[]>([]),
+  locale: prop.string('en'),
   apps: prop.object<{ client_id: string; name: string }[]>([]),
   canManage: prop.boolean(false),
   labels: prop.object<TeamLabels>(teamLabels),
@@ -42,9 +44,11 @@ export class IdpMembers extends typedElement(props) {
     });
     const busy = signal<string | null>(null);
     const error = signal<string | null>(null);
+    const notice = signal<string | null>(null);
     const run = async (key: string, work: () => Promise<unknown>): Promise<boolean> => {
       busy.set(key);
       error.set(null);
+      notice.set(null);
       try {
         await work();
         return true;
@@ -58,6 +62,12 @@ export class IdpMembers extends typedElement(props) {
     const logic: MembersLogic = {
       labels: () => this.labels,
       members: () => this.members,
+      invitations: () => this.invitations,
+      locale: () => this.locale,
+      withdraw: async (invitation) => {
+        await run(invitation, () => developer.withdrawInvitation({ organization: this.organization, invitation }));
+      },
+      notice,
       apps: () => this.apps,
       canManage: () => this.canManage,
       inviting,
@@ -65,9 +75,14 @@ export class IdpMembers extends typedElement(props) {
       inviteForm,
       invite: async (values) => {
         const role: Role = ROLES.includes(values.role as Role) ? (values.role as Role) : 'developer';
-        const done = await run('invite', () =>
-          developer.addMember({ organization: this.organization, email: values.email.trim(), role }),
-        );
+        let answer: unknown = null;
+        const done = await run('invite', async () => {
+          answer = await developer.addMember({ organization: this.organization, email: values.email.trim(), role });
+        });
+        // No account yet: the person was sent an invitation rather than added.
+        if (done && answer && typeof answer === 'object' && 'invited_at' in answer) {
+          notice.set(this.labels.invited.replace('{email}', (answer as Invitation).email));
+        }
         if (done) {
           inviteForm.get('email').reset('');
           inviting.set(false);

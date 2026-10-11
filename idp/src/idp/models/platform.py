@@ -55,10 +55,38 @@ class Organization(IdMixin, TimestampMixin, Base):
     members: Mapped[list["OrganizationMember"]] = relationship(
         back_populates="organization", cascade="all, delete-orphan"
     )
+    invitations: Mapped[list["Invitation"]] = relationship(
+        back_populates="organization", cascade="all, delete-orphan"
+    )
 
     @property
     def is_suspended(self) -> bool:
         return self.suspended_at is not None
+
+
+class Invitation(IdMixin, Base):
+    """
+    Someone asked to join an organization before they had an account. Accepted when an account
+    proves the address (a verified sign-in), until it expires; withdrawn by deleting it.
+    """
+
+    __tablename__ = "invitations"
+    __table_args__ = (UniqueConstraint("organization_id", "email"),)
+
+    organization_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE"), index=True
+    )
+    email: Mapped[str] = mapped_column(String(320), index=True)
+    role: Mapped[str] = mapped_column(String(12))
+    app_ids: Mapped[list[uuid.UUID]] = mapped_column(
+        ARRAY(UUID(as_uuid=True)), default=list, server_default="{}"
+    )
+    invited_by_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    expires_at: Mapped[datetime]
+    accepted_at: Mapped[datetime | None]
+
+    organization: Mapped[Organization] = relationship(back_populates="invitations")
 
 
 class OrganizationMember(IdMixin, Base):

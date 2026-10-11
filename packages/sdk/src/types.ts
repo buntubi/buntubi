@@ -276,6 +276,18 @@ export interface OrganizationDetail {
   keys: ApiKey[];
   test_users: { email: string; added_at: string }[];
   members: Member[];
+  /** Addresses asked to join that have no account yet. */
+  invitations: Invitation[];
+}
+
+/** Someone asked to join before they had an account; they join at their first verified sign-in. */
+export interface Invitation {
+  id: string;
+  email: string;
+  role: Role;
+  apps: string[];
+  invited_at: string;
+  expires_at: string;
 }
 
 /** The platform's brand, from the provider's /.well-known/brand.json. */

@@ -4,7 +4,7 @@
  * never knows where the calls go.
  */
 import { injectionToken } from '@fluixi/start/di';
-import type { ApiKey, App, AppKind, Member, Organization, Platform, Role } from './types.js';
+import type { ApiKey, App, AppKind, Invitation, Member, Organization, Platform, Role } from './types.js';
 
 export interface NewApp {
   name: string;
@@ -60,7 +60,9 @@ export interface DeveloperService {
   revokeKey(input: { organization: string; key: string }): Promise<ApiKey>;
   addTestUser(input: { organization: string; email: string }): Promise<void>;
   removeTestUser(input: { organization: string; email: string }): Promise<void>;
-  addMember(input: { organization: string; email: string; role: Role; apps?: string[] }): Promise<Member>;
+  /** Adds an account, or invites an address with none yet: the answer says which. */
+  addMember(input: { organization: string; email: string; role: Role; apps?: string[] }): Promise<Member | Invitation>;
+  withdrawInvitation(input: { organization: string; invitation: string }): Promise<void>;
   changeMember(input: { organization: string; member: string; role?: Role; apps?: string[] }): Promise<Member>;
   removeMember(input: { organization: string; member: string }): Promise<void>;
 }

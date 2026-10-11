@@ -11,6 +11,7 @@ export type {
   AppReview,
   Brand,
   Me,
+  Invitation,
   Member,
   Organization,
   OrganizationDetail,

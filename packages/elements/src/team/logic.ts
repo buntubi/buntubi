@@ -1,5 +1,5 @@
 /** An organization's people: members with their roles and app access, and sandbox test users. */
-import type { Member, Role } from '@idp/sdk/types';
+import type { Invitation, Member, Role } from '@idp/sdk/types';
 
 export const ROLES: Role[] = ['owner', 'manager', 'developer', 'reviewer', 'viewer'];
 
@@ -25,6 +25,13 @@ export interface TeamLabels {
   invite: string;
   inviteEmail: string;
   inviteHint: string;
+  /** Over the invitations waiting for an account. */
+  invitations: string;
+  /** {date} invited, valid {until}. */
+  invitedOn: string;
+  withdraw: string;
+  /** After an invitation went out: {email} is the address. */
+  invited: string;
   editAccess: string;
   /** That picking no app means every app. */
   accessHint: string;
@@ -62,7 +69,11 @@ export const teamLabels: TeamLabels = {
   },
   invite: 'Invite member',
   inviteEmail: 'Email address',
-  inviteHint: 'The person needs an account on the platform first.',
+  inviteHint: 'Someone without an account gets an email, and joins once they create it with this address.',
+  invitations: 'Waiting for an account',
+  invitedOn: 'invited {date} · until {until}',
+  withdraw: 'Withdraw',
+  invited: 'Invitation sent to {email}: they join once they create their account.',
   editAccess: 'Access',
   accessHint: 'None picked means every app.',
   saveAccess: 'Save access',
@@ -94,6 +105,7 @@ export interface TeamLogic {
   choose: (tab: string) => void;
   organization: () => string;
   members: () => MemberRow[];
+  invitations: () => Invitation[];
   apps: () => { client_id: string; name: string }[];
   testUsers: () => { email: string; added_at: string }[];
   canManage: () => boolean;

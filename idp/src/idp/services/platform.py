@@ -9,6 +9,7 @@ as one that does not exist.
 
 import uuid
 from dataclasses import dataclass, field
+from datetime import timedelta
 
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from sqlalchemy import delete, func, select, update
@@ -22,6 +23,7 @@ from idp.models import (
     ApiProduct,
     AppReview,
     Client,
+    Invitation,
     Organization,
     OrganizationMember,
     OrganizationTestUser,
@@ -30,6 +32,7 @@ from idp.models import (
     User,
 )
 from idp.security.tokens import new_token
+from idp.services import mail
 from idp.services.accounts import AccountError, normalize_email
 from idp.services.credentials import issue_api_key, issue_client_secret
 
@@ -217,6 +220,115 @@ def add_member(actor: OrganizationMember, email: str, role: str, client_ids: lis
     organization.members.append(member)
     db().flush()
     return member
+
+
+# How long an invitation waits for its account.
+INVITATION_TTL = timedelta(days=14)
+
+_INVITE_TEXT = {
+    "fr": (
+        "{inviter} vous invite à rejoindre {organization}",
+        [
+            "{inviter} vous invite à rejoindre {organization} sur {platform}.",
+            "Créez votre compte avec cette adresse : vous ferez partie de l’organisation"
+            " dès votre première connexion.",
+            "L’invitation reste valable 14 jours. Si vous ne l’attendiez pas, ignorez ce message.",
+        ],
+        "Créer mon compte",
+    ),
+    "en": (
+        "{inviter} invites you to join {organization}",
+        [
+            "{inviter} invites you to join {organization} on {platform}.",
+            "Create your account with this address: you will be part of the organization"
+            " from your first sign-in.",
+            "The invitation is valid for 14 days. If you did not expect it, ignore this message.",
+        ],
+        "Create my account",
+    ),
+}
+
+
+def pending_invitations(organization: Organization) -> list[Invitation]:
+    now = utcnow()
+    return [i for i in organization.invitations if i.accepted_at is None and i.expires_at > now]
+
+
+def invite(
+    actor: OrganizationMember, email: str, role: str, client_ids: list[str], signup_url: str
+) -> Invitation:
+    """
+    Asks someone without an account to join, by email. An earlier invitation to the same
+    address is renewed rather than doubled.
+    """
+    organization = actor.organization
+    _check_role_change(actor, role)
+    if organization.is_platform:
+        raise PlatformError("platform_members_are_admins", 422)
+    address = normalize_email(email)
+    pending = pending_invitations(organization)
+    if len(organization.members) + len(pending) >= MAX_MEMBERS:
+        raise PlatformError("too_many_members", 409, limit=MAX_MEMBERS)
+    invitation = next((i for i in organization.invitations if i.email == address), None)
+    if invitation is None:
+        invitation = Invitation(email=address)
+        organization.invitations.append(invitation)
+    invitation.role = role
+    invitation.app_ids = _app_ids(organization, client_ids)
+    invitation.invited_by_id = actor.user_id
+    invitation.created_at = utcnow()
+    invitation.expires_at = utcnow() + INVITATION_TTL
+    invitation.accepted_at = None
+    db().flush()
+    inviter = actor.user
+    subject, lines, action = _INVITE_TEXT.get(inviter.locale, _INVITE_TEXT["fr"])
+    names = {
+        "inviter": inviter.name or inviter.email,
+        "organization": organization.name,
+        "platform": get_settings().brand_name or "",
+    }
+    text, page = mail.render(
+        subject.format(**names), [line.format(**names) for line in lines], link=(action, signup_url)
+    )
+    mail.send(mail.Message(address, subject.format(**names), text, page))
+    return invitation
+
+
+def withdraw_invitation(organization: Organization, invitation_id: str) -> Invitation:
+    key = _uuid(invitation_id)
+    invitation = next((i for i in organization.invitations if i.id == key), None)
+    if invitation is None:
+        raise PlatformError("not_found", 404)
+    organization.invitations.remove(invitation)
+    db().flush()
+    return invitation
+
+
+def accept_invitations(user: User) -> list[Organization]:
+    """
+    The organizations this account was invited to, joined now: its address is proven, so the
+    invitations waiting for it are its own. Called on every verified sign-in.
+    """
+    if not user.email_verified:
+        return []
+    now = utcnow()
+    waiting = db().scalars(
+        select(Invitation).where(
+            Invitation.email == user.email, Invitation.accepted_at.is_(None), Invitation.expires_at > now
+        )
+    )
+    joined = []
+    for invitation in waiting:
+        organization = invitation.organization
+        invitation.accepted_at = now
+        if any(m.user_id == user.id for m in organization.members):
+            continue
+        organization.members.append(
+            OrganizationMember(user_id=user.id, role=invitation.role, app_ids=list(invitation.app_ids))
+        )
+        joined.append(organization)
+    db().flush()
+    return joined
 
 
 def member_of(organization: Organization, member_id: str) -> OrganizationMember:

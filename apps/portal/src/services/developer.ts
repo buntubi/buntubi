@@ -16,6 +16,7 @@ import {
   deleteOrganization,
   publishApp,
   removeMember,
+  withdrawInvitation,
   removeTestUser,
   revokeKey,
   revokeSecret,
@@ -57,6 +58,11 @@ const service: DeveloperService = {
     organization,
   ),
   removeMember: action(({ organization: id, member }) => removeMember(id, member), 'member.remove', organization),
+  withdrawInvitation: action(
+    ({ organization: id, invitation }) => withdrawInvitation(id, invitation),
+    'invitation.withdraw',
+    organization,
+  ),
 };
 
 export const DeveloperModule = defineModule({ name: 'developer', providers: [{ provide: Developer, useValue: service }] });

@@ -19,6 +19,7 @@ export default function TeamPage() {
       organization={current()?.organization.id ?? ''}
       name={current()?.organization.name ?? ''}
       members={current()?.members ?? []}
+      invitations={current()?.invitations ?? []}
       testUsers={current()?.test_users ?? []}
       apps={(current()?.apps ?? []).map((app) => ({ client_id: app.client_id, name: app.name }))}
       me={data()?.me.email ?? ''}

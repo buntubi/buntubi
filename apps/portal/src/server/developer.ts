@@ -5,7 +5,7 @@
  * page words.
  */
 import type { AppPatch, NewApp } from '@idp/sdk/developer';
-import type { ApiKey, App, AppOverview, AppReview, AppWorkspace, Brand, Home, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
+import type { ApiKey, App, AppOverview, AppReview, AppWorkspace, Brand, Home, Invitation, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -218,9 +218,23 @@ export const removeTestUser = async (organizationId: string, email: string): Pro
 export const addMember = async (
   organizationId: string,
   input: { email: string; role: Role; apps?: string[] },
-): Promise<Member> => {
+): Promise<Member | Invitation> => {
   'use server';
-  return (await call<{ member: Member }>('POST', `/organizations/${encodeURIComponent(organizationId)}/members`, input)).member;
+  const answer = await call<{ member?: Member; invitation?: Invitation }>(
+    'POST',
+    `/organizations/${encodeURIComponent(organizationId)}/members`,
+    input,
+  );
+  // An address without an account comes back as an invitation.
+  return (answer.member ?? answer.invitation)!;
+};
+
+export const withdrawInvitation = async (organizationId: string, invitationId: string): Promise<void> => {
+  'use server';
+  await call(
+    'DELETE',
+    `/organizations/${encodeURIComponent(organizationId)}/invitations/${encodeURIComponent(invitationId)}`,
+  );
 };
 
 export const changeMember = async (

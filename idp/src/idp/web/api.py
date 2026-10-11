@@ -71,6 +71,9 @@ def _text(data: dict[str, Any], key: str, limit: int = 320) -> str:
 def _signed_in(user: User, methods: list[str], event: str) -> Response:
     sessions.start(user, methods)
     audit.record(event, user=user, methods=methods)
+    # Organizations that invited this address before it had an account.
+    for organization in platform.accept_invitations(user):
+        audit.record("developer.member_joined", user=user, organization=str(organization.id))
     db().commit()
     return jsonify(redirect=sessions.take_return_to(url_for("pages.account")))
 
