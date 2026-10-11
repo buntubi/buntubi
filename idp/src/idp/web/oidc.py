@@ -51,6 +51,7 @@ def discovery() -> Response:
         revocation_endpoint_auth_methods_supported=["client_secret_basic", "client_secret_post", "none"],
         introspection_endpoint_auth_methods_supported=["client_secret_basic", "client_secret_post"],
         code_challenge_methods_supported=["S256"],
+        authorization_response_iss_parameter_supported=True,
         prompt_values_supported=["none", "login", "consent", "select_account"],
         claims_supported=[
             "sub",
@@ -279,12 +280,17 @@ def _error_redirect(grant: Any, error: str) -> Any:
 
 
 def _with_session_state(response: Any, client_id: str) -> Any:
-    """Adds `session_state` to an authorization answer that goes back to the app."""
+    """
+    Adds `session_state` to an authorization answer that goes back to the app, and `iss`
+    (RFC 9207), so an app that talks to several providers knows which one answered.
+    """
     location = response.headers.get("Location")
     if location and response.status_code in (301, 302, 303, 307):
         state = session_check.session_state(client_id, location)
         response.headers["Location"] = (
-            location + ("&" if "?" in location else "?") + urlencode({"session_state": state})
+            location
+            + ("&" if "?" in location else "?")
+            + urlencode({"session_state": state, "iss": get_settings().issuer})
         )
     return response
 

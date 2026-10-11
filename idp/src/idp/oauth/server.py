@@ -14,7 +14,7 @@ from authlib.oauth2.rfc6750 import BearerTokenGenerator, BearerTokenValidator
 from authlib.oauth2.rfc7009 import RevocationEndpoint as _RevocationEndpoint
 from authlib.oauth2.rfc7662 import IntrospectionEndpoint as _IntrospectionEndpoint
 from authlib.oauth2.rfc8628 import DeviceAuthorizationEndpoint as _DeviceAuthorizationEndpoint
-from flask import Flask, current_app
+from flask import Flask, current_app, g
 from flask import request as flask_request
 from joserfc import jwt as jose_jwt
 from sqlalchemy import select
@@ -101,6 +101,8 @@ def save_token(token: dict[str, Any], request: Any) -> None:
     family_id = (
         context.family_id if context and context.family_id else (uuid.uuid4() if has_refresh else None)
     )
+    # What this request gave, for the authorization code it came from (see AuthorizationCodeGrant).
+    g.issued_token = (claims["jti"], family_id)
     db().add(
         AccessTokenRecord(
             jti=claims["jti"],

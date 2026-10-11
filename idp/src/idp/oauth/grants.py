@@ -15,7 +15,7 @@ from authlib.oauth2.rfc8628 import DeviceCodeGrant as _DeviceCodeGrant
 from authlib.oidc.core import OpenIDCode as _OpenIDCode
 from authlib.oidc.core import UserInfo
 from flask import g
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 
 from idp.config import get_settings
 from idp.db import db, utcnow
@@ -72,12 +72,32 @@ class S256CodeChallenge(CodeChallenge):  # type: ignore[misc]
     SUPPORTED_CODE_CHALLENGE_METHOD = ["S256"]
 
 
+# How long a used or expired code is kept, so a late replay is still recognised.
+CODE_KEPT = timedelta(days=1)
+
+
+def _revoke_issued(code: AuthorizationCode) -> None:
+    """A code used a second time leaked: what its first use gave is withdrawn."""
+    from idp.services import audit
+
+    if code.issued_family_id is not None:
+        revoke_family(code.issued_family_id)
+    if code.issued_jti is not None:
+        db().execute(
+            update(AccessTokenRecord)
+            .where(AccessTokenRecord.jti == code.issued_jti, AccessTokenRecord.revoked_at.is_(None))
+            .values(revoked_at=utcnow())
+        )
+    audit.record("authorization_code_replayed", user=code.user, client=code.client)
+
+
 class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[misc]
     TOKEN_ENDPOINT_AUTH_METHODS = PUBLIC_AND_CONFIDENTIAL
 
     def save_authorization_code(self, code: str, request: Any) -> None:
         login = g.login  # set by the authorize view: the session that approved this request
         data = request.payload.data
+        db().execute(delete(AuthorizationCode).where(AuthorizationCode.expires_at < utcnow() - CODE_KEPT))
         db().add(
             AuthorizationCode(
                 code_hash=hash_token(code),
@@ -96,13 +116,25 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[mis
         )
 
     def query_authorization_code(self, code: str, client: Client) -> AuthorizationCode | None:
-        row = db().scalar(select(AuthorizationCode).where(AuthorizationCode.code_hash == hash_token(code)))
-        if row is None or row.client_id != client.id or row.expires_at <= utcnow():
+        # Locked until this request commits: two redemptions at once are served one after the other.
+        row = db().scalar(
+            select(AuthorizationCode).where(AuthorizationCode.code_hash == hash_token(code)).with_for_update()
+        )
+        if row is None or row.client_id != client.id:
+            return None
+        if row.used_at is not None:
+            _revoke_issued(row)
+            return None
+        if row.expires_at <= utcnow():
             return None
         return row
 
     def delete_authorization_code(self, authorization_code: AuthorizationCode) -> None:
-        db().delete(authorization_code)
+        """Marks it used, with what it gave; it is purged a day later (save_authorization_code)."""
+        authorization_code.used_at = utcnow()
+        authorization_code.issued_jti, authorization_code.issued_family_id = g.pop(
+            "issued_token", (None, None)
+        )
 
     def authenticate_user(self, authorization_code: AuthorizationCode) -> User | None:
         user = authorization_code.user

@@ -55,6 +55,10 @@ class AuthorizationCode(IdMixin, Base, AuthorizationCodeMixin):  # type: ignore[
     auth_time: Mapped[datetime]
     auth_methods: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list)
     expires_at: Mapped[datetime]
+    # Kept once used, with what it gave, so a replay can take that back (RFC 9700 4.4.1).
+    used_at: Mapped[datetime | None]
+    issued_jti: Mapped[str | None] = mapped_column(String(64))
+    issued_family_id: Mapped[uuid.UUID | None]
 
     user: Mapped[User] = relationship()
     client: Mapped[Client] = relationship()

@@ -154,6 +154,11 @@ def sign_up(browser: FlaskClient, outbox: list[mail.Message], email: str = "awa@
     return csrf
 
 
+def nonce_for(challenge: str) -> str:
+    """One nonce per request, as a real client sends: a used one is refused as a replay."""
+    return "n-" + challenge[:16]
+
+
 def authorize_query(challenge: str, **extra: str) -> dict[str, str]:
     return {
         "response_type": "code",
@@ -161,7 +166,7 @@ def authorize_query(challenge: str, **extra: str) -> dict[str, str]:
         "redirect_uri": REDIRECT,
         "scope": "openid profile email offline_access",
         "state": "s1",
-        "nonce": "n1",
+        "nonce": nonce_for(challenge),
         "code_challenge": challenge,
         "code_challenge_method": "S256",
         **extra,

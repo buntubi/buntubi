@@ -10,7 +10,18 @@ from joserfc.jwk import KeySet
 
 from idp.services import mail
 
-from conftest import ISSUER, PASSWORD, REDIRECT, add_client, api, authorize_query, page_config, pkce, sign_up
+from conftest import (
+    ISSUER,
+    PASSWORD,
+    REDIRECT,
+    add_client,
+    api,
+    authorize_query,
+    nonce_for,
+    page_config,
+    pkce,
+    sign_up,
+)
 
 
 def get_code(browser: FlaskClient, csrf: str, challenge: str) -> str:
@@ -58,7 +69,7 @@ def test_full_flow(app: Flask, browser: FlaskClient, outbox: list[mail.Message])
     assert (
         id_token.claims["iss"] == ISSUER
         and id_token.claims["aud"] in ("spa", ["spa"])
-        and id_token.claims["nonce"] == "n1"
+        and id_token.claims["nonce"] == nonce_for(challenge)
     )
     assert id_token.header.get("kid"), "the ID token names its key"
     access = jwt.decode(body["access_token"], keys)
@@ -71,9 +82,6 @@ def test_full_flow(app: Flask, browser: FlaskClient, outbox: list[mail.Message])
         and info.json["email"] == "awa@example.test"
         and info.json["email_verified"] is True
     )
-
-    # The code works once.
-    assert exchange(browser, code, verifier).status_code == 400
 
     # Refresh rotates; presenting the old one again ends the whole family.
     rotated = browser.post(
@@ -96,6 +104,9 @@ def test_full_flow(app: Flask, browser: FlaskClient, outbox: list[mail.Message])
         "/oauth/userinfo", headers={"Authorization": f"Bearer {rotated.json['access_token']}"}
     )
     assert revoked_access.status_code == 401
+
+    # The code works once (what a replay revokes: test_authorization_code_attacks).
+    assert exchange(browser, code, verifier).status_code == 400
 
 
 def test_a_wrong_password_and_an_unknown_email_look_alike(

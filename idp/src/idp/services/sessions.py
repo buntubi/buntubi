@@ -162,7 +162,12 @@ def take_return_to(default: str = "/") -> str:
 
 
 def is_local_path(path: str) -> bool:
-    """A path on this site: not another host ("//evil", "https://..."), not a backslash trick."""
+    """
+    A path on this site: not another host ("//evil", "https://..."), not a backslash trick, and no
+    control characters, which browsers drop (so "/\t/evil" would be followed as "//evil").
+    """
+    if any(ord(c) < 0x20 or ord(c) == 0x7F for c in path):
+        return False
     return path.startswith("/") and not path.startswith("//") and "\\" not in path
 
 
