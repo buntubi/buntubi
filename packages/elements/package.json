@@ -298,7 +298,13 @@
     "./connected-app/logic": "./src/connected-app/logic.ts",
     "./connected-apps": "./src/connected-apps/connected-apps.tsx",
     "./connected-apps/view": "./src/connected-apps/view.tsx",
-    "./connected-apps/logic": "./src/connected-apps/logic.ts"
+    "./connected-apps/logic": "./src/connected-apps/logic.ts",
+    "./data-export": "./src/data-export/data-export.tsx",
+    "./data-export/view": "./src/data-export/view.tsx",
+    "./data-export/logic": "./src/data-export/logic.ts",
+    "./account-deletion": "./src/account-deletion/account-deletion.tsx",
+    "./account-deletion/view": "./src/account-deletion/view.tsx",
+    "./account-deletion/logic": "./src/account-deletion/logic.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

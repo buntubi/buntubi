@@ -43,6 +43,12 @@ export const passkeyNameSchema = z.object({
 /** The password again, when a sign-in is too old to add a way in. */
 export const reauthSchema = z.object({ password: z.string().min(1, 'form.required') });
 
+/** Deleting the account: its address typed again, and the password when the sign-in is old. */
+export const deleteAccountSchema = z.object({
+  email: z.string().trim().min(1, 'form.required'),
+  password: z.string(),
+});
+
 export type NameInput = z.infer<typeof nameSchema>;
 export type PhoneInput = z.infer<typeof phoneSchema>;
 export type CountryInput = z.infer<typeof countrySchema>;
@@ -51,3 +57,4 @@ export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
 export type TwoStepCodeInput = z.infer<typeof twoStepCodeSchema>;
 export type PasskeyNameInput = z.infer<typeof passkeyNameSchema>;
 export type ReauthInput = z.infer<typeof reauthSchema>;
+export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>;

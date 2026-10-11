@@ -21,7 +21,7 @@ const props = {
 };
 
 const WARN: ActivityKind[] = ['sign_in_failed', 'backup_code_used', 'mfa_disabled', 'password_reset_sent', 'signed_out_everywhere'];
-const INFO: ActivityKind[] = ['email_change_requested', 'signed_out_others', 'password_reset', 'passkey_added', 'passkey_removed', 'device_signed_out', 'app_access_removed'];
+const INFO: ActivityKind[] = ['email_change_requested', 'signed_out_others', 'password_reset', 'passkey_added', 'passkey_removed', 'device_signed_out', 'app_access_removed', 'data_exported'];
 
 const toneOf = (kind: ActivityKind): ActivityTone => (WARN.includes(kind) ? 'warn' : INFO.includes(kind) ? 'info' : 'ok');
 

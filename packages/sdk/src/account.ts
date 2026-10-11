@@ -84,6 +84,26 @@ export interface AccountService {
   signOutOtherDevices(): Promise<void>;
   /** Takes back an app's access: it asks again next time. */
   removeApp(id: string): Promise<void>;
+  /** Saves a JSON copy of the account on this device. */
+  downloadData(): Promise<void>;
+  /**
+   * Deletes the account. `email` must be its address; a sign-in a few minutes old needs the
+   * password too. Answers where to go next.
+   */
+  deleteAccount(input: { email: string; password?: string }): Promise<string>;
+}
+
+/** What the Data and account page needs. */
+export interface AccountClosing {
+  last_export_at: string | null;
+  /** The sign-in is old: deleting asks for the password. */
+  password_needed: boolean;
+  /** Where organizations are managed, to give one another owner. */
+  portal_url: string | null;
+  /** Organizations only this account owns: they block the deletion. */
+  organizations: { id: string; name: string }[];
+  /** The platform's last admin cannot leave. */
+  last_admin: boolean;
 }
 
 /** A browser or phone signed in to the account. */
@@ -162,7 +182,8 @@ export type ActivityKind =
   | 'passkey_added'
   | 'passkey_removed'
   | 'device_signed_out'
-  | 'app_access_removed';
+  | 'app_access_removed'
+  | 'data_exported';
 
 export interface ActivityEntry {
   kind: ActivityKind;

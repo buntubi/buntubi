@@ -22,6 +22,7 @@ from idp.services import (
     accounts,
     activity,
     audit,
+    closing,
     connected,
     mail,
     mfa,
@@ -557,6 +558,65 @@ def remove_connected_app(client_id: str) -> Response:
     audit.record("app_access_removed", user=user, client=client, name=client.name)
     db().commit()
     return jsonify(ok=True)
+
+
+@bp.get("/account/export")
+@limiter.limit("5 per hour")
+def export_data() -> Response:
+    """A copy of what the provider keeps about the person, as a JSON file."""
+    user = _me()
+    data = closing.export(user, _here())
+    audit.record("data_exported", user=user)
+    db().commit()
+    response = jsonify(data)
+    day = utcnow().date().isoformat()
+    response.headers["Content-Disposition"] = f'attachment; filename="account-{day}.json"'
+    return response
+
+
+@bp.get("/account/closing")
+def account_closing() -> Response:
+    """What the Data and account page needs: the last copy, and what stops a deletion."""
+    login = sessions.current()
+    if login is None:
+        raise AccountError("not_signed_in")
+    return jsonify(
+        last_export_at=closing.last_export(login.user),
+        password_needed=utcnow() - login.created_at > _RECENT_SIGN_IN,
+        portal_url=closing.portal_url(),
+        **closing.blockers(login.user),
+    )
+
+
+@bp.delete("/account")
+@limiter.limit("5 per minute")
+def delete_account() -> Response:
+    """The person deletes their own account by typing its address; an old sign-in also gives the password."""
+    data = _body()
+    login = sessions.current()
+    if login is None:
+        raise AccountError("not_signed_in")
+    user = login.user
+    if _text(data, "email").strip().lower() != user.email:
+        raise AccountError("email_mismatch")
+    if utcnow() - login.created_at > _RECENT_SIGN_IN:
+        password = _text(data, "password", 256)
+        if not password:
+            raise AccountError("reauth_required")
+        if user.password_hash is None or not verify_password(user.password_hash, password):
+            raise AccountError("wrong_password")
+    blocking = closing.blockers(user)
+    if blocking["organizations"]:
+        raise AccountError("owns_organizations")
+    if blocking["last_admin"]:
+        raise AccountError("last_admin")
+    audit.record("account.deleted", user=user, source="self", email=user.email)
+    sessions.sign_out_here(str(login.id))
+    closing.delete(user)
+    db().commit()
+    # Another account signed in on this browser becomes the current one; else the sign-in page.
+    after = url_for("pages.account") if sessions.current() else url_for("pages.signin")
+    return jsonify(redirect=after)
 
 
 @bp.get("/account/activity")

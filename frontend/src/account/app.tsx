@@ -15,6 +15,7 @@ import { Grid, Stack } from '@fluixi-ui/layout';
 import {
   Account,
   type AccountActivity,
+  type AccountClosing,
   type AccountService,
   type AccountSummary,
   type ConnectedApp,
@@ -25,10 +26,12 @@ import {
 import { createPasskey } from '@idp/sdk/webauthn';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
+import '@idp/elements/account-deletion';
 import type { AccountCheck } from '@idp/elements/account-check/logic';
 import '@idp/elements/account-hello';
 import '@idp/elements/account-switcher';
 import '@idp/elements/connected-apps';
+import '@idp/elements/data-export';
 import '@idp/elements/devices';
 import '@idp/elements/app-launcher';
 import '@idp/elements/contact-section';
@@ -52,6 +55,7 @@ const ICONS = {
   lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
   laptop: 'M4 5h16v10H4zM2 19h20',
   apps: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
+  data: 'M12 3v12M7 10l5 5 5-5M4 21h16',
 };
 
 /** The account area's addresses, built in one place. */
@@ -62,6 +66,7 @@ const paths = {
   security: () => '/account/security',
   devices: () => '/account/devices',
   apps: () => '/account/apps',
+  data: () => '/account/data',
   signIn: () => '/signin',
 } as const;
 
@@ -130,6 +135,20 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     signOutDevice: (id) => changed(api('DELETE', `/api/account/devices/${encodeURIComponent(id)}`)),
     signOutOtherDevices: () => changed(api('POST', '/api/account/devices/sign-out-others', {})),
     removeApp: (id) => changed(api('DELETE', `/api/account/apps/${encodeURIComponent(id)}`)),
+    downloadData: async () => {
+      // A file to save, so fetched as a blob and handed to the browser's download.
+      const response = await fetch('/api/account/export', { credentials: 'same-origin' });
+      if (!response.ok) throw new Error(response.status === 429 ? 'too_many_requests' : 'generic');
+      const name = /filename="([^"]+)"/.exec(response.headers.get('Content-Disposition') ?? '')?.[1] ?? 'account.json';
+      const href = URL.createObjectURL(await response.blob());
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = name;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(href), 1000);
+      revalidate(() => true);
+    },
+    deleteAccount: async (input) => (await api<Redirect>('DELETE', '/api/account', input)).redirect,
   };
   provideRoot([{ provide: Account, useValue: service }]);
   const summary = () => api<AccountSummary>('GET', '/api/account');
@@ -157,6 +176,7 @@ export function mountAccount(root: HTMLElement, context: Context): void {
         [paths.security()]: w.nav.security,
         [paths.devices()]: w.nav.devices,
         [paths.apps()]: w.nav.apps,
+        [paths.data()]: w.nav.data,
       };
       const here = titles[location.pathname] ?? w.nav.info;
       return [{ label: w.product, href: paths.home() }, { label: here }];
@@ -171,6 +191,7 @@ export function mountAccount(root: HTMLElement, context: Context): void {
               item(w.nav.security, paths.security(), ICONS.lock),
               item(w.nav.devices, paths.devices(), ICONS.laptop),
               item(w.nav.apps, paths.apps(), ICONS.apps),
+              item(w.nav.data, paths.data(), ICONS.data),
             ], }]}
         sidebarLabels={{ product: w.product, ...w.sidebar }}
         collapsed={collapsed()}
@@ -238,6 +259,13 @@ export function mountAccount(root: HTMLElement, context: Context): void {
               link={w.areas.apps.link}
               href={paths.apps()}
               icon={ICONS.apps}
+            />
+            <idp-account-area
+              title={w.areas.data.title}
+              note={w.areas.data.note}
+              link={w.areas.data.link}
+              href={paths.data()}
+              icon={ICONS.data}
             />
           </Grid>
           <idp-app-launcher apps={data()?.apps ?? []} title={w.apps} />
@@ -340,6 +368,29 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     );
   }
 
+  function Data(): ComponentChild {
+    const loaded = useRouteData<{ closing: AccountClosing; email: string }>();
+    return (
+      <Stack gap={5}>
+        <idp-page-header title={w.data.title} intro={w.data.intro} />
+        <Show when={loaded()} fallback={<p>{w.loading}</p>}>
+          <idp-data-export lastExportAt={loaded()?.closing.last_export_at ?? ''} locale={config.locale} labels={w.data.export} describe={describe} />
+          <idp-account-deletion
+            email={loaded()?.email ?? ''}
+            organizations={loaded()?.closing.organizations ?? []}
+            lastAdmin={loaded()?.closing.last_admin === true}
+            passwordNeeded={loaded()?.closing.password_needed === true}
+            portalHref={loaded()?.closing.portal_url ?? ''}
+            labels={w.data.deletion}
+            messages={context.text.messages}
+            describe={describe}
+            onLeave={(event) => window.location.assign(event.detail.href)}
+          />
+        </Show>
+      </Stack>
+    );
+  }
+
   function Security(): ComponentChild {
     const loaded = useRouteData<{ account: AccountSummary; activity: AccountActivity; passkeys: Passkey[] }>();
     const data = () => loaded()?.account;
@@ -397,6 +448,14 @@ export function mountAccount(root: HTMLElement, context: Context): void {
           path: paths.devices(),
           component: Devices,
           data: async () => (await api<{ devices: Device[] }>('GET', '/api/account/devices')).devices,
+        },
+        {
+          path: paths.data(),
+          component: Data,
+          data: async () => {
+            const [closing, account] = await Promise.all([api<AccountClosing>('GET', '/api/account/closing'), summary()]);
+            return { closing, email: account.user.email };
+          },
         },
         {
           path: paths.apps(),

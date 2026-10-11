@@ -47,6 +47,7 @@ export const securityActivityLabels: SecurityActivityLabels = {
     passkey_removed: 'Passkey removed',
     device_signed_out: 'A device signed out',
     app_access_removed: 'App access removed',
+    data_exported: 'Copy of your data downloaded',
   },
   signInTwoStep: 'Signed in with two-step',
   signInPasskey: 'Signed in with a passkey',
