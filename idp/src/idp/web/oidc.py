@@ -73,6 +73,7 @@ def discovery() -> Response:
             "email_verified",
             "phone_number",
             "phone_number_verified",
+            "address",
         ],
     )
 
