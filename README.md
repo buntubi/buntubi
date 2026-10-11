@@ -6,6 +6,8 @@ register apps that call those products' APIs.
 
 ## Repository
 
+Each part has its own README with its layout, settings and commands.
+
 | Path | What it is |
 |---|---|
 | `idp/` | The provider (Flask): OAuth and OIDC endpoints, accounts, the developer and admin APIs, the command line |
@@ -15,6 +17,7 @@ register apps that call those products' APIs.
 | `packages/elements/` | The custom elements the portal and console are built from |
 | `packages/sdk/` | Types, services and the Vite plugin shared by the apps and by UI plugins |
 | `packages/shell/`, `packages/skin/`, `packages/theme/` | Layout, skin and colours of the apps |
+| `docs/plugins.md` | Writing and installing plugins |
 | `docs/manual-testing.md` | A walk through every screen on a local install |
 
 ## How it fits together
@@ -153,7 +156,8 @@ look through plugins:
 - UI plugins are named in `IDP_UI_PLUGINS` in `apps/console/.env`, `apps/portal/.env` and
   `frontend/.env`. Restart the apps, and rebuild `frontend`, after changing it.
 
-The hooks are documented in `idp/src/idp/plugins/__init__.py` and `packages/sdk/src/plugins.ts`.
+[docs/plugins.md](docs/plugins.md) covers both halves: every hook and when it runs, the
+catalogue and its sync, events, a plugin's own API, console and portal pages, and sign-in looks.
 
 ## Checks
 
