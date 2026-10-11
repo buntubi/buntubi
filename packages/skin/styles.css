@@ -51,20 +51,21 @@
     background: var(--idp-surface);
     border-color: var(--idp-border-2);
   }
-  /* Restated: the rule above outranks fluixi-ui's own hover. */
+  /* A semantic tone colours the outline's text and border at rest (danger: turn off, remove). */
+  [data-ui='idp'] :where([data-variant='outline']:is([data-tone='danger'], [data-tone='success'], [data-tone='warning']):not([data-badge])) {
+    color: var(--flx-ui-color-primary);
+    border-color: color-mix(in srgb, var(--flx-ui-color-primary) 45%, var(--idp-border));
+  }
+  /* Restated: the rules above outrank fluixi-ui's own states. Hovered, an outline fills with
+     its tone and the text turns to the tone's foreground. */
   [data-ui='idp'] :where([data-variant='outline']:not([data-badge]):hover:not([data-disabled])) {
-    background: var(--idp-surface-2);
-    border-color: color-mix(in srgb, var(--idp-muted) 55%, var(--idp-border-2));
+    background: var(--flx-ui-color-primary-hover);
+    border-color: var(--flx-ui-color-primary-hover);
+    color: var(--flx-ui-color-primary-fg);
   }
-  /* A destructive action that is not the page's main one: the outline, in red. */
-  [data-ui='idp'] :where([data-variant='outline'][data-tone='danger']:not([data-badge])) {
-    color: var(--idp-bad);
-    border-color: color-mix(in srgb, var(--idp-bad) 45%, var(--idp-border));
-  }
-  [data-ui='idp'] :where([data-variant='outline'][data-tone='danger']:not([data-badge]):hover:not([data-disabled])) {
-    background: var(--idp-bad);
-    border-color: var(--idp-bad);
-    color: var(--flx-ui-color-danger-fg);
+  [data-ui='idp'] :where([data-variant='outline']:not([data-badge]):active:not([data-disabled])) {
+    background: var(--flx-ui-color-primary-active);
+    border-color: var(--flx-ui-color-primary-active);
   }
   [data-ui='idp'] :where([data-variant]:not([data-badge]):focus-visible) {
     outline: none;
