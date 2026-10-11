@@ -56,13 +56,13 @@ export class IdpOrganizationRow extends typedElement(props) {
       suspending,
       openSuspend: (open) => {
         suspending.set(open);
-        if (!open) form.get('reason').setValue('');
+        if (!open) form.get('reason').reset('');
       },
       form,
       suspend: (values) =>
         run(async () => {
           await admin.suspendOrganization({ id: id(), reason: values.reason.trim() });
-          form.get('reason').setValue('');
+          form.get('reason').reset('');
           suspending.set(false);
         }),
       restore: () => run(() => admin.restoreOrganization(id())),

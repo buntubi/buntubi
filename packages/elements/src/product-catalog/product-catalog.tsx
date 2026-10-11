@@ -81,7 +81,7 @@ export class IdpProductCatalog extends typedElement(props) {
             availability: 'ga',
           }),
         );
-        if (done) for (const key of PRODUCT_FIELDS) form.get(key).setValue('');
+        if (done) for (const key of PRODUCT_FIELDS) form.get(key).reset('');
       },
       setAvailability: async (slug, availability) => {
         await run(slug, () => admin.setAvailability({ slug, availability }));

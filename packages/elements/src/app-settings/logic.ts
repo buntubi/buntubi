@@ -1,5 +1,6 @@
 /** An app's basic information, apart from how the form looks. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { AppSettingsInput } from '@idp/sdk/schemas/apps';
 
 export type SettingsField = 'name' | 'description' | 'homepage_url' | 'privacy_url' | 'terms_url' | 'logo';
@@ -38,7 +39,7 @@ export const appSettingsLabels: AppSettingsLabels = {
 
 /** The form engine's root, typed per field. */
 export interface AppSettingsForm extends ReactiveForm<AppSettingsInput> {
-  get<K extends keyof AppSettingsInput>(key: K): ReactiveControl<AppSettingsInput[K]>;
+  get<K extends keyof AppSettingsInput>(key: K): FieldControl<AppSettingsInput[K]>;
 }
 
 export interface AppSettingsLogic {

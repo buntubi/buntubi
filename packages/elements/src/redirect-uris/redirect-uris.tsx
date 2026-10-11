@@ -46,7 +46,7 @@ export class IdpRedirectUris extends typedElement(props) {
       add: (values) => {
         const uri = values.uri.trim();
         if (!uris().includes(uri)) edits.set([...uris(), uri]);
-        form.get('uri').setValue('');
+        form.get('uri').reset('');
         saved.set(false);
       },
       remove: (uri) => {

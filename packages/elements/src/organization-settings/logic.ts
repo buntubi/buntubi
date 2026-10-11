@@ -1,5 +1,6 @@
 /** An organization's settings and its deletion, apart from how they look. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { OrganizationInput } from '@idp/sdk/schemas/organizations';
 
 export type OrganizationField = 'name' | 'description' | 'support_email';
@@ -36,7 +37,7 @@ export const organizationSettingsLabels: OrganizationSettingsLabels = {
 
 /** The form engine's root, typed per field. */
 export interface OrganizationSettingsForm extends ReactiveForm<OrganizationInput> {
-  get<K extends keyof OrganizationInput>(key: K): ReactiveControl<OrganizationInput[K]>;
+  get<K extends keyof OrganizationInput>(key: K): FieldControl<OrganizationInput[K]>;
 }
 
 export interface OrganizationSettingsLogic {

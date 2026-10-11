@@ -69,7 +69,7 @@ export class IdpMembers extends typedElement(props) {
           developer.addMember({ organization: this.organization, email: values.email.trim(), role }),
         );
         if (done) {
-          inviteForm.get('email').setValue('');
+          inviteForm.get('email').reset('');
           inviting.set(false);
         }
       },

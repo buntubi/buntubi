@@ -1,5 +1,6 @@
 /** One organization for the platform owner: what it is, and suspending or restoring it. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { SuspendInput } from '@idp/sdk/schemas/organizations';
 import type { AdminOrganization } from '@idp/sdk/types';
 
@@ -36,7 +37,7 @@ export const organizationRowLabels: OrganizationRowLabels = {
 
 /** The form engine's root, typed per field. */
 export interface SuspendForm extends ReactiveForm<SuspendInput> {
-  get<K extends keyof SuspendInput>(key: K): ReactiveControl<SuspendInput[K]>;
+  get<K extends keyof SuspendInput>(key: K): FieldControl<SuspendInput[K]>;
 }
 
 export interface OrganizationRowLogic {

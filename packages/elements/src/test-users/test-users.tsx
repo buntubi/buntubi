@@ -55,7 +55,7 @@ export class IdpTestUsers extends typedElement(props) {
       form,
       add: async (values) => {
         const added = await run('add', () => developer.addTestUser({ organization: this.organization, email: values.email.trim() }));
-        if (added) form.get('email').setValue('');
+        if (added) form.get('email').reset('');
       },
       remove: async (address) => {
         await run(address, () => developer.removeTestUser({ organization: this.organization, email: address }));

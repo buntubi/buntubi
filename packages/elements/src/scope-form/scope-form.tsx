@@ -62,8 +62,8 @@ export class IdpScopeForm extends typedElement(props) {
             descriptions: { fr: values.fr.trim(), en: values.en.trim() },
             notes: '',
           });
-          for (const key of ['name', 'resource', 'fr', 'en'] as const) form.get(key).setValue('');
-          form.get('sensitivity').setValue('public');
+          for (const key of ['name', 'resource', 'fr', 'en'] as const) form.get(key).reset('');
+          form.get('sensitivity').reset('public');
           this.emit('created', { name: values.name.trim() });
         } catch (failure) {
           error.set(this.describe?.(failure) ?? labels().error);

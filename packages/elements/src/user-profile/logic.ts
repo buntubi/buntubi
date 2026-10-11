@@ -1,5 +1,6 @@
 /** One account for the console: its profile, the facts about it, and what an admin may do to it. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { UserEditInput } from '@idp/sdk/schemas/users';
 import type { AdminUser, AdminUserPage, Role } from '@idp/sdk/types';
 
@@ -124,7 +125,7 @@ export type ProfileValues = Omit<UserEditInput, 'locale'> & { locale: string };
 
 /** The form engine's root, typed per field. */
 export interface ProfileForm extends ReactiveForm<ProfileValues> {
-  get<K extends keyof ProfileValues>(key: K): ReactiveControl<ProfileValues[K]>;
+  get<K extends keyof ProfileValues>(key: K): FieldControl<ProfileValues[K]>;
 }
 
 export type ProfileAction = 'reset' | 'signOut' | 'twoStep' | 'disabled' | 'admin';

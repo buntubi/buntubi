@@ -1,5 +1,6 @@
 /** The product catalog's data, words and behaviour, apart from how it looks. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { ProductInput } from '@idp/sdk/schemas/catalogue';
 import type { Availability } from '@idp/sdk/admin';
 
@@ -56,7 +57,7 @@ export const productCatalogLabels: ProductCatalogLabels = {
 
 /** The form engine's root, typed per field. */
 export interface ProductForm extends ReactiveForm<ProductInput> {
-  get<K extends keyof ProductInput>(key: K): ReactiveControl<ProductInput[K]>;
+  get<K extends keyof ProductInput>(key: K): FieldControl<ProductInput[K]>;
 }
 
 export interface ProductCatalogLogic {

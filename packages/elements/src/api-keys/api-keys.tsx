@@ -82,8 +82,8 @@ export class IdpApiKeys extends typedElement(props) {
             scopes: values.scopes.split(/\s+/).filter(Boolean),
           });
           fresh.set(answer.api_key);
-          form.get('name').setValue('');
-          form.get('scopes').setValue('');
+          form.get('name').reset('');
+          form.get('scopes').reset('');
           creating.set(false);
         }),
       revoke: (id) => run(id, async () => void (await developer.revokeKey({ organization: this.organization, key: id }))),

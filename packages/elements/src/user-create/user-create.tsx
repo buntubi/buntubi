@@ -78,7 +78,7 @@ export class IdpUserCreate extends typedElement(props) {
       mode,
       setMode: (next) => {
         mode.set(next);
-        form.get('password').setValue('');
+        form.get('password').reset('');
       },
       busy,
       error,

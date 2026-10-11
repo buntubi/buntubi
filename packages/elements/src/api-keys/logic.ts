@@ -1,5 +1,6 @@
 /** An organization's API keys in one environment, and making one; apart from the look. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { ApiKeyInput } from '@idp/sdk/schemas/apps';
 import type { ApiKey } from '@idp/sdk/types';
 
@@ -40,7 +41,7 @@ export const apiKeysLabels: ApiKeysLabels = {
 
 /** The form engine's root, typed per field. */
 export interface ApiKeyForm extends ReactiveForm<ApiKeyInput> {
-  get<K extends keyof ApiKeyInput>(key: K): ReactiveControl<ApiKeyInput[K]>;
+  get<K extends keyof ApiKeyInput>(key: K): FieldControl<ApiKeyInput[K]>;
 }
 
 export interface ApiKeysLogic {

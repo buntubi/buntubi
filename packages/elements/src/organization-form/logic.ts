@@ -1,5 +1,6 @@
 /** Creating an organization; apart from the look. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { OrganizationInput } from '@idp/sdk/schemas/organizations';
 
 export interface OrganizationFormLabels {
@@ -22,7 +23,7 @@ export type OrganizationFormValues = Pick<OrganizationInput, 'name' | 'support_e
 
 /** The form engine's root, typed per field. */
 export interface OrganizationForm extends ReactiveForm<OrganizationFormValues> {
-  get<K extends keyof OrganizationFormValues>(key: K): ReactiveControl<OrganizationFormValues[K]>;
+  get<K extends keyof OrganizationFormValues>(key: K): FieldControl<OrganizationFormValues[K]>;
 }
 
 export interface OrganizationFormLogic {

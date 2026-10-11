@@ -54,8 +54,8 @@ export class IdpOrganizationForm extends typedElement(props) {
             name: values.name.trim(),
             support_email: values.support_email.trim() || undefined,
           });
-          form.get('name').setValue('');
-          form.get('support_email').setValue('');
+          form.get('name').reset('');
+          form.get('support_email').reset('');
           this.emit('created', { id: organization.id });
         } catch (failure) {
           error.set(this.describe?.(failure) ?? labels().error);

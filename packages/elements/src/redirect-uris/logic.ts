@@ -1,10 +1,11 @@
 /** The addresses an app may send people back to, as a list to edit; apart from the look. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { RedirectUriInput } from '@idp/sdk/schemas/apps';
 
 /** The form engine's root, typed per field. */
 export interface RedirectUriForm extends ReactiveForm<RedirectUriInput> {
-  get<K extends keyof RedirectUriInput>(key: K): ReactiveControl<RedirectUriInput[K]>;
+  get<K extends keyof RedirectUriInput>(key: K): FieldControl<RedirectUriInput[K]>;
 }
 
 export interface RedirectUrisLabels {

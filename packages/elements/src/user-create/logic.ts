@@ -1,5 +1,6 @@
 /** Creating an account from the console: invited by email, or ready with a first password. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { NewUserInput } from '@idp/sdk/schemas/users';
 
 export type CreateMode = 'invite' | 'password';
@@ -43,7 +44,7 @@ export type UserCreateValues = Omit<NewUserInput, 'locale'> & { locale: string }
 
 /** The form engine's root, typed per field. */
 export interface UserCreateForm extends ReactiveForm<UserCreateValues> {
-  get<K extends keyof UserCreateValues>(key: K): ReactiveControl<UserCreateValues[K]>;
+  get<K extends keyof UserCreateValues>(key: K): FieldControl<UserCreateValues[K]>;
 }
 
 export interface UserCreateLogic {

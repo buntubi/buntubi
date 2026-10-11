@@ -1,5 +1,6 @@
 /** Adding a scope to the catalogue; apart from the look. */
-import type { ReactiveControl, ReactiveForm } from '@fluixi-ui/form';
+import type { ReactiveForm } from '@fluixi-ui/form';
+import type { FieldControl } from '../field.js';
 import type { ScopeInput } from '@idp/sdk/schemas/catalogue';
 import type { Sensitivity } from '@idp/sdk/types';
 
@@ -34,7 +35,7 @@ export type ScopeValues = Omit<ScopeInput, 'sensitivity'> & { sensitivity: strin
 
 /** The form engine's root, typed per field. */
 export interface ScopeForm extends ReactiveForm<ScopeValues> {
-  get<K extends keyof ScopeValues>(key: K): ReactiveControl<ScopeValues[K]>;
+  get<K extends keyof ScopeValues>(key: K): FieldControl<ScopeValues[K]>;
 }
 
 export interface ScopeFormLogic {
