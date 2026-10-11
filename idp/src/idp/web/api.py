@@ -37,9 +37,6 @@ from idp.services.accounts import AccountError, NewAccount
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
-# Wrong second-factor codes allowed in one sign-in before it starts over from the password.
-MAX_MFA_FAILURES = 5
-
 
 @bp.before_request
 def _csrf() -> None:
@@ -196,11 +193,11 @@ def mfa_verify() -> Any:
         return jsonify(error="no_pending_sign_in"), 400
     try:
         method = mfa.verify(pending.user, _text(_body(), "code", 16))
-    except AccountError:
-        db().commit()
-        if sessions.count_failure() >= MAX_MFA_FAILURES:
+    except AccountError as error:
+        if error.code == "too_many_attempts":
+            # Back to the password: the pending sign-in is over (the count is the account's).
             sessions.clear_pending()
-            return jsonify(error="too_many_attempts"), 400
+            db().commit()
         raise
     if method == "backup":
         audit.record("mfa_backup_code_used", user=pending.user, left=mfa.remaining_backup_codes(pending.user))

@@ -152,13 +152,16 @@ def request_email_change(user: User, email: str, password: str, confirm_url: str
 def confirm_email_change(user: User, token: str) -> str:
     """The link from the new address was opened by the account's owner: the address changes."""
     row = db().scalar(
-        select(EmailToken).where(
+        select(EmailToken)
+        .where(
             EmailToken.user_id == user.id,
             EmailToken.purpose == CHANGE_EMAIL,
             EmailToken.token_hash == hash_token(token),
             EmailToken.used_at.is_(None),
             EmailToken.expires_at > utcnow(),
         )
+        .with_for_update()
+        .execution_options(populate_existing=True)
     )
     if row is None or row.payload is None:
         raise AccountError("link_expired")

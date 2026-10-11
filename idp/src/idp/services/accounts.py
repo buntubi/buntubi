@@ -257,12 +257,16 @@ def reset_password(token: str, new_password: str) -> User:
     if not passwords.is_acceptable(new_password):
         raise AccountError("weak_password")
     row = db().scalar(
-        select(EmailToken).where(
+        select(EmailToken)
+        .where(
             EmailToken.token_hash == hash_token(token),
             EmailToken.purpose == RESET_PASSWORD,
             EmailToken.used_at.is_(None),
             EmailToken.expires_at > utcnow(),
         )
+        # Locked: the same link used twice at once resets the password once.
+        .with_for_update()
+        .execution_options(populate_existing=True)
     )
     if row is None:
         raise AccountError("link_expired")
@@ -362,6 +366,10 @@ def _replace_token(
 
 
 def _live_token(user: User, purpose: str) -> EmailToken | None:
+    """
+    The latest live code for this purpose, locked until the request commits: guesses sent at
+    the same time are counted one after the other, so the attempt limit holds.
+    """
     return db().scalar(
         select(EmailToken)
         .where(
@@ -371,4 +379,7 @@ def _live_token(user: User, purpose: str) -> EmailToken | None:
             EmailToken.expires_at > utcnow(),
         )
         .order_by(EmailToken.created_at.desc())
+        .limit(1)
+        .with_for_update()
+        .execution_options(populate_existing=True)
     )

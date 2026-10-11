@@ -7,6 +7,7 @@ once: the TOTP step is remembered, a backup code is marked used.
 """
 
 from dataclasses import dataclass
+from datetime import timedelta
 
 import segno
 from sqlalchemy import delete, select
@@ -68,8 +69,44 @@ def confirm(user: User, code: str) -> list[str]:
     return _new_backup_codes(user)
 
 
+# Wrong codes allowed in a row; past them, codes are refused until PAUSE after the last one.
+MAX_FAILURES = 5
+PAUSE = timedelta(minutes=15)
+
+
 def verify(user: User, code: str) -> str:
-    """Checks a code from the app or a backup code; returns which ("otp" or "backup")."""
+    """
+    Checks a code from the app or a backup code; returns which ("otp" or "backup"). The account
+    row is locked first: checks for one account run one at a time, so a code is accepted once
+    and the failure count is exact. A wrong code is counted and committed even though the
+    request is refused; after MAX_FAILURES in a row, `too_many_attempts` until PAUSE has passed
+    since the last one.
+    """
+    fresh = db().scalar(
+        select(User).where(User.id == user.id).with_for_update().execution_options(populate_existing=True)
+    )
+    assert fresh is not None
+    now = utcnow()
+    recent = fresh.second_factor_failed_at is not None and now - fresh.second_factor_failed_at < PAUSE
+    if recent and fresh.second_factor_failures >= MAX_FAILURES:
+        raise AccountError("too_many_attempts")
+    try:
+        method = _check(user, code)
+    except AccountError as error:
+        if error.code != "invalid_code":
+            raise
+        fresh.second_factor_failures = (fresh.second_factor_failures if recent else 0) + 1
+        fresh.second_factor_failed_at = now
+        db().commit()
+        if fresh.second_factor_failures >= MAX_FAILURES:
+            raise AccountError("too_many_attempts") from error
+        raise
+    fresh.second_factor_failures = 0
+    fresh.second_factor_failed_at = None
+    return method
+
+
+def _check(user: User, code: str) -> str:
     found = credential(user)
     if found is None or found.confirmed_at is None:
         raise AccountError("mfa_not_enabled")

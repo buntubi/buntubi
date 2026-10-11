@@ -139,14 +139,6 @@ def pending(stage: str | None = None) -> Pending | None:
     return Pending(user, list(value["methods"]), value["stage"], value.get("replaces"))
 
 
-def count_failure() -> int:
-    """One more wrong code for the pending sign-in; returns how many so far."""
-    value = dict(session.get(_PENDING) or {})
-    value["failures"] = int(value.get("failures", 0)) + 1
-    session[_PENDING] = value
-    return int(value["failures"])
-
-
 def clear_pending() -> None:
     session.pop(_PENDING, None)
 
