@@ -63,7 +63,8 @@ Run from `idp/` as `../.venv/bin/flask --app idp.app:create_app <command>`.
 | `keys generate` | Adds a signing key; the newest signs from then on |
 | `admin create`, `admin check` | Creates the superadmin; checks one exists |
 | `users admins`, `users promote`, `users demote` | Lists admins; gives or takes the admin role |
-| `users delete <pattern> --yes` | Deletes accounts by email (a `*` pattern works); for test accounts |
+| `users delete <pattern> --yes` | Deletes accounts by email (a `*` pattern works), as deleting from the account page does: apps are signed out, plugins told, the audit trail kept without who it was |
+| `prune` | Deletes expired codes and tokens, sign-ins ended more than `IDP_SESSION_RETENTION_DAYS` ago and audit rows older than `IDP_AUDIT_RETENTION_DAYS`; schedule it daily |
 | `platform setup [--file] [--rotate-secrets]` | The platform organization, the apps `platform.toml` lists, and the plugins' catalogue |
 | `clients create`, `clients homepage <client_id> [url]` | A client by hand; set or clear the address it lives at |
 | `plugins list`, `plugins sync` | The plugins running; bring the catalogue in line with them |
@@ -88,7 +89,8 @@ the `IDP_` prefix or from `idp/.env` (see `.env.example`). The ones every deploy
 | `IDP_PLUGINS`, `IDP_PLUGINS_SYNC_ON_START` | The plugins, as a JSON list (`["acme"]`); whether to sync the catalogue at start |
 
 Lifetimes (`IDP_ACCESS_TOKEN_TTL`, `IDP_REFRESH_TOKEN_TTL`, `IDP_SESSION_TTL`, ...) are in
-seconds.
+seconds. What `prune` keeps is in days: `IDP_SESSION_RETENTION_DAYS` (30) for ended sign-ins,
+`IDP_AUDIT_RETENTION_DAYS` (365) for the audit trail.
 
 ## Checks
 
