@@ -6,12 +6,13 @@ import { z } from 'zod';
 
 /**
  * Where sign-in may send people back: https, http on this machine for testing, or an app's own
- * scheme (com.example.app:/callback). Never with a #fragment, which OAuth forbids.
+ * scheme (com.example.app:/callback). Never with a #fragment, which OAuth forbids. The provider's
+ * rule is RedirectUri in idp web/validation.py; keep the two the same.
  */
 export function isRedirectUri(value: string): boolean {
   try {
     const url = new URL(value);
-    const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+    const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
     return (
       !url.hash &&
       (url.protocol === 'https:' || (url.protocol === 'http:' && local) || /^[a-z][a-z0-9+.-]*\.[a-z]/.test(url.protocol))
