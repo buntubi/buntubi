@@ -654,9 +654,8 @@ def delete_account() -> Response:
         raise AccountError("owns_organizations")
     if blocking["last_admin"]:
         raise AccountError("last_admin")
-    audit.record("account.deleted", user=user, source="self", email=user.email)
     sessions.sign_out_here(str(login.id))
-    closing.delete(user)
+    closing.delete(user, source="self")
     db().commit()
     # Another account signed in on this browser becomes the current one; else the sign-in page.
     after = url_for("pages.account") if sessions.current() else url_for("pages.signin")

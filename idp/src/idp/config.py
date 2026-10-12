@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     session_ttl: int = 14 * 24 * 3600
     email_token_ttl: int = 3600
 
+    # How long `flask prune` keeps an ended sign-in (the devices list shows recent ones) and
+    # the audit trail.
+    session_retention_days: int = 30
+    audit_retention_days: int = 365
+
     # Email through Resend. Test mode logs the message instead of sending it.
     resend_api_key: SecretStr | None = None
     email_from: str = "no-reply@localhost"

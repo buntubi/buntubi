@@ -5,12 +5,21 @@ deleting the account themselves.
 
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from idp import plugins
 from idp.db import db, utcnow
-from idp.models import AuditEvent, Client, LoginSession, Organization, OrganizationMember, User
-from idp.services import backchannel, connected, passkeys, profile
+from idp.models import (
+    AuditEvent,
+    BackupCode,
+    Client,
+    LoginSession,
+    Organization,
+    OrganizationMember,
+    TotpCredential,
+    User,
+)
+from idp.services import backchannel, connected, passkeys, profile, retention
 
 
 def export(user: User, here: set[Any]) -> dict[str, Any]:
@@ -39,6 +48,13 @@ def export(user: User, here: set[Any]) -> dict[str, Any]:
             "created_at": user.created_at.isoformat(),
             "password_changed_at": user.password_changed_at.isoformat() if user.password_changed_at else None,
         },
+        "pending_email": profile.pending_email(user),
+        "developer_since": user.developer_since.isoformat() if user.developer_since else None,
+        "linked_accounts": [
+            {"provider": i.provider, "email": i.email, "linked_at": i.created_at.isoformat()}
+            for i in user.identities
+        ],
+        "two_step": _two_step(user),
         "passkeys": [passkeys.as_json(p) for p in passkeys.list_for(user)],
         "devices": connected.sessions_of(user, here),
         "connected_apps": connected.apps_of(user, user.locale),
@@ -53,6 +69,19 @@ def export(user: User, here: set[Any]) -> dict[str, Any]:
             }
             for e in events
         ],
+    }
+
+
+def _two_step(user: User) -> dict[str, Any]:
+    app = db().scalar(select(TotpCredential).where(TotpCredential.user_id == user.id))
+    left = db().scalar(
+        select(func.count())
+        .select_from(BackupCode)
+        .where(BackupCode.user_id == user.id, BackupCode.used_at.is_(None))
+    )
+    return {
+        "authenticator_app_since": app.confirmed_at.isoformat() if app and app.confirmed_at else None,
+        "backup_codes_left": left or 0,
     }
 
 
@@ -98,8 +127,13 @@ def portal_url() -> str | None:
     return next((app.homepage_url for app in apps if "developer" in (app.scope or "").split()), None)
 
 
-def delete(user: User) -> None:
-    """The account and, through the database, its sessions, tokens, consents and passkeys."""
+def delete(user: User, *, source: str) -> None:
+    """
+    The account and, through the database, its sessions, tokens, consents and passkeys. Its audit
+    trail stays without who it was (retention.forget_in_audit); the deletion itself is recorded
+    by the account's id alone. Every way of deleting an account goes through here, so its apps and
+    the plugins hear of it.
+    """
     plugins.emit("user.deleted", {"user": str(user.id)})
     # Told before the rows go, while the grants still name the apps.
     backchannel.notify(
@@ -107,4 +141,7 @@ def delete(user: User) -> None:
             select(LoginSession.id).where(LoginSession.user_id == user.id, LoginSession.revoked_at.is_(None))
         )
     )
+    retention.forget_in_audit(user.id, user.email)
+    # Not through audit.record: that would keep the address and browser of the person just forgotten.
+    db().add(AuditEvent(event="account.deleted", details={"source": source, "account": str(user.id)}))
     db().delete(user)

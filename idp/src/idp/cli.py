@@ -22,7 +22,7 @@ from idp.models import Client, Organization, OrganizationMember, User
 from idp.models.clients import AUTH_METHODS, GRANT_TYPES
 from idp.security import passwords
 from idp.security.keys import generate_key
-from idp.services import audit, mfa, platform
+from idp.services import audit, closing, mfa, platform, retention
 from idp.services.credentials import issue_client_secret
 
 
@@ -207,10 +207,15 @@ def register(app: Flask) -> None:
             )
             db().delete(organization)
         for user in found:
-            audit.record("account.deleted", source="cli", email=user.email)
-            db().delete(user)
+            closing.delete(user, source="cli")
         db().commit()
         click.echo(f"Deleted {len(found)} accounts and {len(orphaned)} organizations.")
+
+    @app.cli.command("prune")
+    def prune() -> None:
+        """Deletes expired codes and tokens, ended sign-ins and old audit rows. Run it daily."""
+        for kind, count in retention.prune().items():
+            click.echo(f"{kind:<20} {count}")
 
     @app.cli.group("plugins")
     def plugins_group() -> None:
