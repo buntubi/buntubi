@@ -28,7 +28,9 @@ class Settings(BaseSettings):
     # A directory of private JWKs (one JSON file each); the newest signs, every one verifies.
     signing_keys_dir: Path
 
-    access_token_ttl: int = 600
+    # Short, because an API checking tokens offline sees a revocation only when the token expires;
+    # APIs that must see it at once introspect the token instead.
+    access_token_ttl: int = 300
     refresh_token_ttl: int = 30 * 24 * 3600
     authorization_code_ttl: int = 60
     session_ttl: int = 14 * 24 * 3600
