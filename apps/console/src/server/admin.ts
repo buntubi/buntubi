@@ -3,6 +3,7 @@
  * the access token stays in the session cookie. Refusals the console words are returned as
  * values; anything else throws its code.
  */
+import { pluginTarget } from '@idp/sdk/plugins';
 import type { Brand } from '@idp/sdk/types';
 import type { ClientRow, Gate, Me, NewUser, UserEdit, UserPage, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
@@ -246,7 +247,10 @@ export const pluginCall = async (input: { plugin: string; method: Method; path: 
   const { fetch, unreachable } = await requestAuth();
   // A session the provider could not confirm because it did not answer: not a signed-out visitor.
   if (!fetch) throw new AdminRefusal(unreachable ? 'provider_unreachable' : 'signed_out', unreachable ? undefined : 401);
-  const response = await fetch(`${publicEnv().IDP_URL}/api/plugins/${encodeURIComponent(input.plugin)}${input.path}`, {
+  // Only the plugin's own API: never a path that resolves into the admin API, with this token.
+  const target = pluginTarget(publicEnv().IDP_URL ?? '', input.plugin, input.method, input.path);
+  if (!target) throw new AdminRefusal('invalid_plugin_call', 400);
+  const response = await fetch(target, {
     method: input.method,
     headers: input.body === undefined ? {} : { 'content-type': 'application/json' },
     body: input.body === undefined ? undefined : JSON.stringify(input.body),

@@ -5,6 +5,7 @@
  * page words.
  */
 import type { AppPatch, NewApp } from '@idp/sdk/developer';
+import { pluginTarget } from '@idp/sdk/plugins';
 import type { ApiKey, App, AppOverview, AppReview, AppWorkspace, Brand, Home, Invitation, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
@@ -259,7 +260,10 @@ export const pluginCall = async (input: { plugin: string; method: string; path: 
   const { publicEnv } = await import('@fluixi/start/env');
   const { fetch } = await requestAuth();
   if (!fetch) throw new ApiRefusal('signed_out', {}, 401);
-  const response = await fetch(`${publicEnv().IDP_URL}/api/plugins/${encodeURIComponent(input.plugin)}${input.path}`, {
+  // Only the plugin's own API: never a path that resolves into the developer API, with this token.
+  const target = pluginTarget(publicEnv().IDP_URL ?? '', input.plugin, input.method, input.path);
+  if (!target) throw new ApiRefusal('invalid_plugin_call', {}, 400);
+  const response = await fetch(target, {
     method: input.method,
     headers: input.body === undefined ? {} : { 'content-type': 'application/json' },
     body: input.body === undefined ? undefined : JSON.stringify(input.body),

@@ -59,6 +59,28 @@ export const definePlugin = (plugin: IdpUiPlugin): IdpUiPlugin => plugin;
 
 export type PluginMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
+const PLUGIN_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
+const METHODS: readonly string[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+
+/**
+ * The provider address a plugin call goes to, or null when the call would leave that plugin's own
+ * API: an id that is not a plugin id, a method outside the five, or a path that resolves anywhere
+ * but under `/api/plugins/<id>/` (`..`, encoded dots, another host). The relays that make these
+ * calls on the server, with the person's token, check every call with it.
+ */
+export function pluginTarget(provider: string, plugin: string, method: string, path: string): string | null {
+  if (!PLUGIN_ID.test(plugin) || !METHODS.includes(method) || !path.startsWith('/')) return null;
+  let base: URL;
+  let target: URL;
+  try {
+    base = new URL(`${provider.replace(/\/$/, '')}/api/plugins/${plugin}/`);
+    target = new URL(`.${path}`, base);
+  } catch {
+    return null;
+  }
+  return target.origin === base.origin && target.pathname.startsWith(base.pathname) ? target.toString() : null;
+}
+
 /**
  * A plugin's own API on the provider (`/api/plugins/<id>/...`), called as the signed-in person.
  * Refusals throw an Error whose message is the provider's code.
