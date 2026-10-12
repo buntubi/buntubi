@@ -25,7 +25,9 @@ def unb64(text: str) -> bytes:
 
 
 class SoftAuthenticator:
-    def __init__(self, issuer: str) -> None:
+    def __init__(self, issuer: str, synced: bool = False) -> None:
+        # A synced passkey (iCloud, Google) usually reports a sign count of 0, always.
+        self.synced = synced
         self.origin = f"{urlsplit(issuer).scheme}://{urlsplit(issuer).netloc}"
         self.rp_id = urlsplit(issuer).hostname or ""
         self.key = ec.generate_private_key(ec.SECP256R1())
@@ -39,7 +41,8 @@ class SoftAuthenticator:
         ).encode()
 
     def _auth_data(self, flags: int, attested: bytes = b"") -> bytes:
-        self.count += 1
+        if not self.synced:
+            self.count += 1
         return (
             hashlib.sha256(self.rp_id.encode()).digest()
             + bytes([flags])

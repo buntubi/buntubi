@@ -107,6 +107,18 @@ class BackupCode(IdMixin, Base):
     used_at: Mapped[datetime | None]
 
 
+class UsedChallenge(Base):
+    """
+    A passkey challenge already answered, by hash. The challenge itself rides in the session
+    cookie, which can be replayed; this row is what makes an answer work once.
+    """
+
+    __tablename__ = "used_challenges"
+
+    challenge_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    used_at: Mapped[datetime] = mapped_column(default=utcnow, index=True)
+
+
 class UserPicture(Base):
     """A person's photo, made small in the browser before it is sent; served at /avatars/<id>."""
 

@@ -49,20 +49,34 @@ def logout_token(client: Client, subject: str, session_id: str) -> str:
     return jwt.encode({"alg": ALGORITHM, "typ": LOGOUT_TOKEN_TYPE, "kid": key.kid}, claims, key.key)
 
 
+# Seconds to wait before each attempt: the app restarting or a network hiccup does not lose the
+# logout. The token lives _TTL seconds, so the last attempt still carries a valid one.
+RETRY_DELAYS = (0, 5, 30)
+
+
 def deliver(uri: str, token: str) -> None:
-    """One POST, as the specification says: the token in a form, no redirect followed."""
-    try:
-        response = requests.post(
-            uri,
-            data={"logout_token": token},
-            headers={"Cache-Control": "no-store"},
-            timeout=_TIMEOUT,
-            allow_redirects=False,
-        )
-        if response.status_code >= 400:
-            log.warning("back-channel logout to %s answered %s", uri, response.status_code)
-    except requests.RequestException as error:
-        log.warning("back-channel logout to %s failed: %s", uri, error)
+    """
+    The token in a form POST, no redirect followed, as the specification says. Tried again when
+    the app does not answer or answers 5xx; an answer below 500 (taken, or refused) is final.
+    """
+    for attempt, delay in enumerate(RETRY_DELAYS, start=1):
+        time.sleep(delay)
+        try:
+            response = requests.post(
+                uri,
+                data={"logout_token": token},
+                headers={"Cache-Control": "no-store"},
+                timeout=_TIMEOUT,
+                allow_redirects=False,
+            )
+        except requests.RequestException as error:
+            log.warning("back-channel logout to %s failed (attempt %s): %s", uri, attempt, error)
+            continue
+        if response.status_code < 500:
+            if response.status_code >= 400:
+                log.warning("back-channel logout to %s answered %s", uri, response.status_code)
+            return
+        log.warning("back-channel logout to %s answered %s (attempt %s)", uri, response.status_code, attempt)
 
 
 def notify(session_ids: Iterable[uuid.UUID]) -> None:

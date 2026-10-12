@@ -7,11 +7,13 @@ The challenge of a ceremony lives in the session cookie and is used once.
 import json
 import time
 import uuid
+from datetime import timedelta
 from typing import Any
 from urllib.parse import urlsplit
 
 from flask import session
-from sqlalchemy import select
+from sqlalchemy import delete, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from webauthn import (
     generate_authentication_options,
     generate_registration_options,
@@ -31,7 +33,8 @@ from webauthn.helpers.structs import (
 
 from idp.config import get_settings
 from idp.db import db, utcnow
-from idp.models import Passkey, User
+from idp.models import Passkey, UsedChallenge, User
+from idp.security.tokens import hash_token
 from idp.services.accounts import AccountError
 
 # What the sign-in methods record for a passkey: a key proven, and two steps (RFC 8176).
@@ -67,10 +70,29 @@ def _keep_challenge(key: str, challenge: bytes) -> None:
 
 
 def _take_challenge(key: str) -> bytes:
+    """
+    The ceremony's challenge, once. Taken out of the session, and recorded as used in the
+    database, so an old cookie that still holds it cannot be answered again.
+    """
     kept = session.pop(key, None)
     if not isinstance(kept, dict) or int(time.time()) - int(kept.get("at", 0)) > _CHALLENGE_TTL:
         raise AccountError("passkey_expired")
-    return base64url_to_bytes(kept["challenge"])
+    challenge = base64url_to_bytes(kept["challenge"])
+    now = utcnow()
+    db().execute(delete(UsedChallenge).where(UsedChallenge.used_at < now - timedelta(seconds=_CHALLENGE_TTL)))
+    first = (
+        db()
+        .execute(
+            pg_insert(UsedChallenge)
+            .values(challenge_hash=hash_token(kept["challenge"]), used_at=now)
+            .on_conflict_do_nothing()
+            .returning(UsedChallenge.challenge_hash)
+        )
+        .first()
+    )
+    if first is None:
+        raise AccountError("passkey_expired")
+    return challenge
 
 
 def _transports(values: list[str]) -> list[AuthenticatorTransport]:

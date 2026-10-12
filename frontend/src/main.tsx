@@ -31,7 +31,7 @@ import { forgotPasswordSchema, resetPasswordSchema, signInSchema, signUpSchema }
 
 const config = readConfig();
 const t = text[config.locale] ?? text.fr;
-const api = createApi(config.csrf);
+const api = createApi(config.csrf, config.session);
 const props = config.props;
 const str = (key: string) => (typeof props[key] === 'string' ? (props[key] as string) : '');
 
@@ -296,6 +296,36 @@ const screens: Record<string, () => Screen> = {
       />
     ),
   }),
+
+  'idp-logout-confirm': () => {
+    const app = str('app');
+    const busy = signal(false);
+    return {
+      key: 'logoutConfirm',
+      body: () => (
+        <div class="idp-done">
+          <p>{app ? t.notes.logoutAskApp.replace('{app}', app) : t.notes.logoutAsk}</p>
+          <div class="idp-actions">
+            <Button
+              variant="solid"
+              disabled={busy()}
+              onPress={() => {
+                busy.set(true);
+                void api<Redirect>('POST', window.location.pathname + window.location.search, {})
+                  .then((answer) => go(answer.redirect))
+                  .catch(() => busy.set(false));
+              }}
+            >
+              {t.notes.logoutAction}
+            </Button>
+            <Button variant="outline" tone="neutral" onPress={() => go('/account')}>
+              {t.notes.logoutCancel}
+            </Button>
+          </div>
+        </div>
+      ),
+    };
+  },
 
   'idp-signed-out': () => ({
     key: 'signedOut',

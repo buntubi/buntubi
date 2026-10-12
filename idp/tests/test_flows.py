@@ -170,11 +170,7 @@ def test_logout_returns_only_to_a_registered_address(
     app: Flask, browser: FlaskClient, outbox: list[mail.Message]
 ) -> None:
     tokens = signed_in_tokens(app, browser, outbox)
-    stray = browser.get("/oauth/logout?" + urlencode({"post_logout_redirect_uri": "https://evil.example/"}))
-    assert urlparse(stray.location).path == "/signed-out"
-    assert browser.get("/account").status_code == 302, "signed out"
-
-    sign_in(browser)
+    # From the app itself (a hint naming this session): straight back to its registered address.
     query = {
         "post_logout_redirect_uri": "http://localhost:9000/bye",
         "id_token_hint": tokens["id_token"],
@@ -182,6 +178,16 @@ def test_logout_returns_only_to_a_registered_address(
     }
     back = browser.get("/oauth/logout?" + urlencode(query))
     assert back.location == "http://localhost:9000/bye?state=x"
+    assert browser.get("/account").status_code == 302, "signed out"
+
+    # Without a hint: asked first, and an unregistered address is never followed.
+    sign_in(browser)
+    stray_query = urlencode({"post_logout_redirect_uri": "https://evil.example/"})
+    page = page_config(browser, "/oauth/logout?" + stray_query)
+    assert page["element"] == "idp-logout-confirm"
+    confirmed = api(browser, "POST", "/oauth/logout?" + stray_query, {}, page["csrf"])
+    assert urlparse(confirmed.json["redirect"]).path == "/signed-out"
+    assert browser.get("/account").status_code == 302, "signed out"
 
 
 def test_device_flow(app: Flask, browser: FlaskClient, outbox: list[mail.Message]) -> None:

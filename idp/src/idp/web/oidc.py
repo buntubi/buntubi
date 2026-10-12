@@ -19,6 +19,7 @@ from idp.oauth.claims import SCOPES, user_claims
 from idp.oauth.grants import GRANT_TYPES_SUPPORTED
 from idp.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
 from idp.security import csrf
+from idp.security.keys import ALGORITHM
 from idp.services import audit, consent, mfa, platform, session_check, sessions
 from idp.web import pages
 
@@ -155,6 +156,8 @@ def authorize() -> Any:
 def authorize_decision() -> Any:
     """The consent screen's answer, as JSON: {"approve": true|false}. Replies with where to go."""
     csrf.protect()
+    if sessions.acting_for_another():
+        return jsonify(error="account_changed"), 409
     login = sessions.current()
     if login is None:
         abort(401)
@@ -221,20 +224,53 @@ def userinfo() -> Response:
 
 @bp.get("/oauth/logout")
 def logout() -> Any:
-    """RP-initiated logout: ends this browser's session, then returns to a registered address."""
-    target = request.args.get("post_logout_redirect_uri")
-    client = _client_from_id_token_hint(request.args.get("id_token_hint"))
+    """
+    RP-initiated logout. With an `id_token_hint` naming this browser's current session, it ends
+    at once; otherwise (no hint, an invalid one, someone else's) the person is asked first, so a
+    link from another site cannot sign them out. Then back to a registered address.
+    """
+    client, claims = _id_token_hint(request.args.get("id_token_hint"))
     login = sessions.current()
+    if login is not None and not _names_session(claims, login):
+        db().commit()
+        return pages.shell("idp-logout-confirm", app=client.name if client is not None else "")
+    _end(login, client)
+    return redirect(_after_logout(client))
+
+
+@bp.post("/oauth/logout")
+def logout_confirmed() -> Any:
+    """The confirmation page's answer, with the same query: ends the session, says where to go."""
+    csrf.protect()
+    if sessions.acting_for_another():
+        return jsonify(error="account_changed"), 409
+    client, _ = _id_token_hint(request.args.get("id_token_hint"))
+    _end(sessions.current(), client)
+    return jsonify(redirect=_after_logout(client))
+
+
+def _names_session(claims: dict[str, Any] | None, login: Any) -> bool:
+    """The hint is an ID token of this very sign-in (its sid), or of this account when it has none."""
+    if claims is None:
+        return False
+    if claims.get("sid"):
+        return bool(claims["sid"] == str(login.id))
+    return bool(claims.get("sub") == str(login.user_id))
+
+
+def _end(login: Any, client: Any) -> None:
     if login is not None:
         audit.record("logout", user=login.user, client=client)
         sessions.end(login)
         db().commit()
+
+
+def _after_logout(client: Any) -> str:
+    target = request.args.get("post_logout_redirect_uri")
     if target and client is not None and target in client.post_logout_redirect_uris:
         state = request.args.get("state")
-        return redirect(
-            target + (("&" if "?" in target else "?") + urlencode({"state": state}) if state else "")
-        )
-    return redirect(url_for("pages.signed_out"))
+        return target + (("&" if "?" in target else "?") + urlencode({"state": state}) if state else "")
+    return str(url_for("pages.signed_out"))
 
 
 # Scopes whose tokens are only issued to a sign-in that used the second factor.
@@ -314,19 +350,23 @@ def check_session_script() -> Response:
     return response
 
 
-def _client_from_id_token_hint(hint: str | None) -> Any:
-    """The client an ID token we issued was for. Expired is fine here; a bad signature is not."""
+def _id_token_hint(hint: str | None) -> tuple[Any, dict[str, Any] | None]:
+    """
+    The client an ID token we issued was for, and its claims. Expired is fine here (a logout may
+    come long after the sign-in); a bad signature, another algorithm or another issuer is not.
+    """
     if not hint:
-        return None
+        return None, None
     try:
-        token = jose_jwt.decode(hint, lambda obj: _key_for(obj.headers().get("kid")))
+        token = jose_jwt.decode(hint, lambda obj: _key_for(obj.headers().get("kid")), algorithms=[ALGORITHM])
     except (JoseError, ValueError):
-        return None
+        return None, None
     if token.claims.get("iss") != get_settings().issuer:
-        return None
+        return None, None
     audience = token.claims.get("aud")
     client_id = audience[0] if isinstance(audience, list) else audience
-    return query_client(client_id) if isinstance(client_id, str) else None
+    client = query_client(client_id) if isinstance(client_id, str) else None
+    return client, (dict(token.claims) if client is not None else None)
 
 
 def _key_for(kid: str | None) -> Any:

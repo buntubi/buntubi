@@ -16,6 +16,8 @@ export interface PageConfig {
   element: string;
   locale: Locale;
   csrf: string;
+  /** The session the page was opened for; requests declare it (X-IDP-Session). */
+  session?: string | null;
   brand: Brand;
   /** The platform's own policies. */
   links?: { privacy_url?: string; terms_url?: string };

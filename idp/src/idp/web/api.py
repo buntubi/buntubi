@@ -39,8 +39,11 @@ bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 @bp.before_request
-def _csrf() -> None:
+def _csrf() -> Response | None:
     csrf.protect()
+    if request.method not in ("GET", "HEAD", "OPTIONS") and sessions.acting_for_another():
+        return jsonify(error="account_changed"), 409  # type: ignore[return-value]
+    return None
 
 
 @bp.errorhandler(AccountError)

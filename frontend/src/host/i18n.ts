@@ -26,6 +26,7 @@ export interface Text {
     deviceDone: string;
     deviceRefused: string;
     signedOut: string;
+    logoutConfirm: string;
     blocked: string;
     mfa: string;
     twoStep: string;
@@ -51,6 +52,10 @@ export interface Text {
     deviceDone: string;
     deviceRefused: string;
     signedOut: string;
+    logoutAsk: string;
+    logoutAskApp: string;
+    logoutAction: string;
+    logoutCancel: string;
     signedInAs: string;
     blocked: string;
     blockedContact: string;
@@ -88,6 +93,7 @@ const fr: Text = {
     deviceDone: 'Appareil connecté',
     deviceRefused: 'Connexion refusée',
     signedOut: 'Vous êtes déconnecté',
+    logoutConfirm: 'Se déconnecter ?',
     blocked: 'Accès bloqué',
     mfa: 'Validation en deux étapes',
     twoStep: 'Validation en deux étapes',
@@ -120,6 +126,10 @@ const fr: Text = {
     deviceDone: 'Vous pouvez fermer cette page et revenir sur votre appareil.',
     deviceRefused: 'L’appareil n’a pas été connecté.',
     signedOut: 'Votre session est terminée sur ce navigateur.',
+    logoutAsk: 'Voulez-vous vous déconnecter de ce navigateur ?',
+    logoutAskApp: '{app} demande à vous déconnecter de ce navigateur.',
+    logoutAction: 'Se déconnecter',
+    logoutCancel: 'Rester connecté',
     signedInAs: 'Connecté en tant que',
     blocked: 'Cette application est encore en développement : seules les personnes que son développeur a ajoutées peuvent s’y connecter.',
     blockedContact: 'Pour y accéder, écrivez à',
@@ -299,6 +309,7 @@ const en: Text = {
     deviceDone: 'Device connected',
     deviceRefused: 'Connection refused',
     signedOut: 'You are signed out',
+    logoutConfirm: 'Sign out?',
     blocked: 'Access blocked',
     mfa: 'Two-step sign-in',
     twoStep: 'Two-step sign-in',
@@ -331,6 +342,10 @@ const en: Text = {
     deviceDone: 'You can close this page and go back to your device.',
     deviceRefused: 'The device was not connected.',
     signedOut: 'Your session on this browser has ended.',
+    logoutAsk: 'Do you want to sign out of this browser?',
+    logoutAskApp: '{app} asks to sign you out of this browser.',
+    logoutAction: 'Sign out',
+    logoutCancel: 'Stay signed in',
     signedInAs: 'Signed in as',
     blocked: 'This app is still in development: only people its developer added can sign in.',
     blockedContact: 'To get access, write to',

@@ -74,6 +74,8 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         "account": account,
         "locale": _locale(),
         "csrf": csrf.token(),
+        # The session the page is opened for: requests declare it, and a switch since is refused.
+        "session": sessions.current_id(),
         "brand": _brand(),
         # The platform's own policies, linked under its pages.
         "links": {

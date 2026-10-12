@@ -684,10 +684,24 @@ def paths() -> dict[str, dict[str, Any]]:
                 {
                     "302": answer(
                         None, "To post_logout_redirect_uri when registered, else the signed-out page"
-                    )
+                    ),
+                    "200": answer(
+                        None,
+                        "A confirmation page, when id_token_hint does not name the current session",
+                    ),
                 },
                 query=["id_token_hint", "post_logout_redirect_uri", "state"],
-            )
+            ),
+            "post": op(
+                "The confirmation page's answer: end the session (same query as the GET)",
+                oidc,
+                None,
+                {
+                    "200": answer(obj({"redirect": STRING}), "Where to go next"),
+                    "409": answer(None, "The page was opened for another account than the current one"),
+                },
+                query=["id_token_hint", "post_logout_redirect_uri", "state"],
+            ),
         },
         # Developer API
         "/developer/api/me": {

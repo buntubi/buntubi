@@ -7,6 +7,7 @@ from idp.models.account import (
     EmailToken,
     Passkey,
     TotpCredential,
+    UsedChallenge,
     UserPicture,
 )
 from idp.models.clients import Client
@@ -42,6 +43,7 @@ __all__ = [
     "Consent",
     "DeviceCode",
     "EmailToken",
+    "UsedChallenge",
     "UserPicture",
     "Identity",
     "LoginSession",

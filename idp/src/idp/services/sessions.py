@@ -47,6 +47,22 @@ def start(user: User, methods: list[str]) -> LoginSession:
     return login
 
 
+def current_id() -> str | None:
+    """The current login's id as the cookie holds it, without loading it."""
+    value = session.get(_CURRENT)
+    return str(value) if value else None
+
+
+def acting_for_another() -> bool:
+    """
+    A request from a page opened for another account than the current one: the page declares its
+    session in X-IDP-Session (pages put it in their config); a switch elsewhere since changed it.
+    Pages opened while signed out declare none.
+    """
+    declared = request.headers.get("X-IDP-Session")
+    return bool(declared) and declared != current_id()
+
+
 def current() -> LoginSession | None:
     """The current login, if it is still valid; touching it keeps `last_seen_at` honest."""
     sid = session.get(_CURRENT)

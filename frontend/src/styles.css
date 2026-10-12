@@ -235,6 +235,11 @@ html[data-ui='idp'][data-theme='dark'] {
 .idp-done p {
   margin: 0;
 }
+.idp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .idp-section {
   display: flex;
   flex-direction: column;
