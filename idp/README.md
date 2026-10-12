@@ -83,10 +83,16 @@ the `IDP_` prefix or from `idp/.env` (see `.env.example`). The ones every deploy
 | `IDP_DATABASE_URL` | PostgreSQL |
 | `IDP_SECRET_KEY` | Signs the session cookie and CSRF tokens; 32 characters or more |
 | `IDP_SIGNING_KEYS_DIR` | The token signing keys |
-| `IDP_EMAIL_TEST_MODE`, `IDP_RESEND_API_KEY`, `IDP_EMAIL_FROM` | Email: logged in test mode, sent through Resend otherwise |
+| `IDP_EMAIL_TEST_MODE`, `IDP_RESEND_API_KEY`, `IDP_EMAIL_FROM` | Email: logged in test mode (development only), sent through Resend otherwise |
+| `IDP_TRUSTED_PROXIES` | How many proxies in front set `X-Forwarded-For` and `X-Forwarded-Proto`; 0 when none |
+| `IDP_RATE_LIMIT_STORAGE` | Where rate limits are counted: `redis://...` shared by every process, or `memory://` for one |
 | `IDP_BRAND_*` | The platform's name, colour, logo and links |
 | `IDP_CORS_ORIGINS` | Browser origins allowed on the token, revocation and userinfo endpoints |
 | `IDP_PLUGINS`, `IDP_PLUGINS_SYNC_ON_START` | The plugins, as a JSON list (`["acme"]`); whether to sync the catalogue at start |
+
+With an issuer that is not on this machine, the provider refuses to start when the issuer is
+not https, email test mode is on, cookies are not Secure, or `IDP_RATE_LIMIT_STORAGE` is not
+set. It then also sends `Strict-Transport-Security`.
 
 Lifetimes (`IDP_ACCESS_TOKEN_TTL`, `IDP_REFRESH_TOKEN_TTL`, `IDP_SESSION_TTL`, ...) are in
 seconds. What `prune` keeps is in days: `IDP_SESSION_RETENTION_DAYS` (30) for ended sign-ins,
