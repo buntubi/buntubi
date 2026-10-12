@@ -45,6 +45,12 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     review_note: Mapped[str] = mapped_column(String(1000), default="", server_default="")
     reviewed_at: Mapped[datetime | None]
     reviewed_by_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    # What this app's own review approved: its sensitive scopes, and the hosts its redirect
+    # addresses were on then. A new sensitive scope or a new host sends a live app back to review.
+    approved_scopes: Mapped[list[str]] = mapped_column(ARRAY(String(100)), default=list, server_default="{}")
+    approved_redirect_hosts: Mapped[list[str]] = mapped_column(
+        ARRAY(String(255)), default=list, server_default="{}"
+    )
     homepage_url: Mapped[str | None] = mapped_column(String(2048))
     privacy_url: Mapped[str | None] = mapped_column(String(2048))
     terms_url: Mapped[str | None] = mapped_column(String(2048))

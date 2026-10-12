@@ -10,6 +10,7 @@ as one that does not exist.
 import uuid
 from dataclasses import dataclass, field
 from datetime import timedelta
+from urllib.parse import urlsplit
 
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from sqlalchemy import delete, func, select, update
@@ -607,10 +608,29 @@ def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | 
 
 
 def set_redirect_uris(client: Client, uris: list[str]) -> None:
-    """The authorization code flow needs somewhere to send the code back to."""
+    """
+    The authorization code flow needs somewhere to send the code back to. A reviewed live app
+    that adds an address on a host its review did not see goes back to review: its sign-in
+    could otherwise be pointed at another site after approval. New paths on a reviewed host do
+    not; nor do the platform's own apps, which are never reviewed.
+    """
     if "authorization_code" in client.grant_types and not uris:
         raise PlatformError("redirect_uri_required", 422)
     client.redirect_uris = uris
+    new_hosts = redirect_hosts(uris) - set(client.approved_redirect_hosts)
+    if client.is_live and client.review_status == "approved" and not is_trusted(client) and new_hosts:
+        _back_to_review(client)
+
+
+def redirect_hosts(uris: list[str]) -> set[str]:
+    return {(urlsplit(uri).hostname or "").lower() for uri in uris} - {""}
+
+
+def _back_to_review(client: Client) -> None:
+    """A live app changed what its review approved: out of live use until reviewed again."""
+    client.environment = "sandbox"
+    client.review_status = "pending"
+    cut_sandbox_access(client)
 
 
 def set_app_scopes(client: Client, scopes: list[str]) -> None:
@@ -619,14 +639,10 @@ def set_app_scopes(client: Client, scopes: list[str]) -> None:
     if refusal:
         raise PlatformError("scope_refused", 422, reason=refusal)
     client.scope = list_to_scope(checked.granted)
-    # A live app that adds a sensitive scope its organization was not approved for goes back to review.
-    unapproved = set(checked.sensitive) - set(
-        client.organization.approved_scopes if client.organization else []
-    )
-    if client.is_live and unapproved:
-        client.environment = "sandbox"
-        client.review_status = "pending"
-        cut_sandbox_access(client)
+    # A live app that adds a sensitive scope its own review did not approve goes back to review.
+    unapproved = set(checked.sensitive) - set(client.approved_scopes)
+    if client.is_live and unapproved and not is_trusted(client):
+        _back_to_review(client)
 
 
 def missing_for_live(client: Client, organization: Organization) -> list[str]:
@@ -681,7 +697,7 @@ def overview(client: Client, organization: Organization) -> Overview:
     live_missing = missing_for_live(client, organization)
     scopes = scope_to_list(client.scope) or []
     sensitive = check_scopes(scopes, for_key=False, held=scopes).sensitive
-    waiting = sorted(set(sensitive) - set(organization.approved_scopes))
+    waiting = sorted(set(sensitive) - set(client.approved_scopes))
     checks = [
         _check(
             "basic_info",
@@ -751,7 +767,8 @@ def publish(
         raise PlatformError("plugin_checks", 422, checks=unmet)
     held = scope_to_list(client.scope) or []
     sensitive = check_scopes(held, for_key=False, held=held).sensitive
-    waiting = sorted(set(sensitive) - set(organization.approved_scopes))
+    # Each app is reviewed for its own sensitive scopes, whatever its organization's other apps got.
+    waiting = sorted(set(sensitive) - set(client.approved_scopes))
     if not waiting:
         client.environment = "live"
         return "live"
@@ -816,6 +833,9 @@ def review(client: Client, reviewer: User, approve: bool, note: str) -> None:
     if approve:
         held = scope_to_list(client.scope) or []
         sensitive = check_scopes(held, for_key=False, held=held).sensitive
+        client.approved_scopes = sorted(set(client.approved_scopes) | set(sensitive))
+        client.approved_redirect_hosts = sorted(redirect_hosts(client.redirect_uris))
+        # The organization's list is what its live API keys may carry: keys belong to it, not to an app.
         organization = client.organization
         organization.approved_scopes = sorted(set(organization.approved_scopes) | set(sensitive))
         client.environment = "live"
