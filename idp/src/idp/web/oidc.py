@@ -171,6 +171,7 @@ def authorize_decision() -> Any:
     if approve:
         consent.record(login.user, grant.client, grant.request.payload.scope or "")
         g.login = login
+        g.consented_now = True  # the person saw and approved this request's scopes, offline_access too
         response = authorization.create_authorization_response(grant_user=login.user, grant=grant)
     else:
         response = authorization.create_authorization_response(grant_user=None, grant=grant)

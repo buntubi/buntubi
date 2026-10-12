@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Any
 
-from authlib.oauth2.rfc6749 import grants
+from authlib.oauth2.rfc6749 import grants, list_to_scope, scope_to_list
 from authlib.oauth2.rfc7636 import CodeChallenge
 from authlib.oauth2.rfc8628 import DeviceCodeGrant as _DeviceCodeGrant
 from authlib.oidc.core import OpenIDCode as _OpenIDCode
@@ -72,6 +72,12 @@ class S256CodeChallenge(CodeChallenge):  # type: ignore[misc]
     SUPPORTED_CODE_CHALLENGE_METHOD = ["S256"]
 
 
+def _never_reviewed(client: Client) -> bool:
+    from idp.services.platform import never_reviewed
+
+    return never_reviewed(client)
+
+
 # How long a used or expired code is kept, so a late replay is still recognised.
 CODE_KEPT = timedelta(days=1)
 
@@ -97,6 +103,12 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[mis
     def save_authorization_code(self, code: str, request: Any) -> None:
         login = g.login  # set by the authorize view: the session that approved this request
         data = request.payload.data
+        scope = request.payload.scope or ""
+        # OIDC Core 11: offline access, for a third-party app, only with consent asked in this very
+        # request (the consent screen, which prompt=consent also reaches), never from a past one.
+        client = request.client
+        if not g.get("consented_now") and not _never_reviewed(client):
+            scope = list_to_scope([s for s in scope_to_list(scope) or [] if s != "offline_access"])
         db().execute(delete(AuthorizationCode).where(AuthorizationCode.expires_at < utcnow() - CODE_KEPT))
         db().add(
             AuthorizationCode(
@@ -105,7 +117,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[mis
                 user_id=request.user.id,
                 session_id=login.id,
                 redirect_uri=request.payload.redirect_uri,
-                scope=request.payload.scope or "",
+                scope=scope,
                 nonce=data.get("nonce"),
                 code_challenge=data["code_challenge"],
                 code_challenge_method=data.get("code_challenge_method", "S256"),
@@ -233,6 +245,17 @@ class RefreshTokenGrant(grants.RefreshTokenGrant):  # type: ignore[misc]
         # How the person signed in, from the session the token continues: a renewed token
         # still says a second factor was used, or the admin API refuses it as if it had not.
         login = db().get(LoginSession, refresh_token.session_id) if refresh_token.session_id else None
+        # Without offline_access, a refresh token lives as long as the sign-in it came from: signed
+        # out at the provider (or expired there), the app's access ends too, back-channel or not.
+        # A token with no sign-in behind it (the device flow) is not bound to one.
+        offline = "offline_access" in (scope_to_list(refresh_token.scope) or [])
+        if (
+            refresh_token.session_id
+            and not offline
+            and (login is None or login.revoked_at is not None or login.expires_at <= utcnow())
+        ):
+            revoke_family(refresh_token.family_id)
+            return None
         methods = list(login.auth_methods) if login else []
         return attach(
             user,

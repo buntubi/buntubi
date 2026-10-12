@@ -11,10 +11,11 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 from flask import request, session
+from sqlalchemy import update
 
 from idp.config import get_settings
 from idp.db import db, utcnow
-from idp.models import LoginSession, User
+from idp.models import AccessTokenRecord, AuthorizationCode, LoginSession, RefreshToken, User
 from idp.services import backchannel
 
 _SIDS = "sids"
@@ -27,7 +28,12 @@ _PENDING = "pending_user"
 _EXISTING_SIGN_UP = "existing_sign_up"
 
 
-def start(user: User, methods: list[str]) -> LoginSession:
+def start(user: User, methods: list[str], replaces: str | None = None) -> LoginSession:
+    """
+    A new login. One that `replaces` another of the same person (a step-up to a second factor)
+    takes over what was issued under it, so the apps signed in with the old one keep their
+    tokens; the old one then ends with nothing left under it.
+    """
     now = utcnow()
     login = LoginSession(
         user_id=user.id,
@@ -38,6 +44,11 @@ def start(user: User, methods: list[str]) -> LoginSession:
     )
     db().add(login)
     db().flush()
+    old = _load(replaces) if replaces else None
+    if old is not None and old.user_id == user.id:
+        for model in (RefreshToken, AccessTokenRecord, AuthorizationCode):
+            db().execute(update(model).where(model.session_id == old.id).values(session_id=login.id))
+        end(old)
     sids = [sid for sid in session.get(_SIDS, []) if sid != str(login.id)]
     session[_SIDS] = [str(login.id), *sids][:5]
     session[_CURRENT] = str(login.id)
@@ -96,13 +107,6 @@ def end(login: LoginSession) -> None:
     session[_SIDS] = [s for s in session.get(_SIDS, []) if s != sid]
     if session.get(_CURRENT) == sid:
         session.pop(_CURRENT, None)
-
-
-def end_replaced(pending: "Pending") -> None:
-    """Ends the login a finished step-up takes over, so the account is not listed twice."""
-    login = _load(pending.replaces) if pending.replaces else None
-    if login is not None and login.user_id == pending.user.id:
-        end(login)
 
 
 def sign_out_here(session_id: str) -> LoginSession | None:

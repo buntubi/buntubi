@@ -24,6 +24,7 @@ from idp.models import (
     ApiProduct,
     AppReview,
     Client,
+    Consent,
     Invitation,
     Organization,
     OrganizationMember,
@@ -639,6 +640,10 @@ def set_app_scopes(client: Client, scopes: list[str]) -> None:
     if refusal:
         raise PlatformError("scope_refused", 422, reason=refusal)
     client.scope = list_to_scope(checked.granted)
+    # Consent follows the app: a scope it no longer holds leaves its people's consent too, so
+    # holding it again asks them again.
+    for record in db().scalars(select(Consent).where(Consent.client_id == client.id)):
+        record.scopes = [s for s in record.scopes if s in checked.granted]
     # A live app that adds a sensitive scope its own review did not approve goes back to review.
     unapproved = set(checked.sensitive) - set(client.approved_scopes)
     if client.is_live and unapproved and not never_reviewed(client):

@@ -69,8 +69,8 @@ def _text(data: dict[str, Any], key: str, limit: int = 320) -> str:
     return value[:limit] if isinstance(value, str) else ""
 
 
-def _signed_in(user: User, methods: list[str], event: str) -> Response:
-    sessions.start(user, methods)
+def _signed_in(user: User, methods: list[str], event: str, replaces: str | None = None) -> Response:
+    sessions.start(user, methods, replaces=replaces)
     audit.record(event, user=user, methods=methods)
     # Organizations that invited this address before it had an account.
     for organization in platform.accept_invitations(user):
@@ -219,8 +219,7 @@ def mfa_verify() -> Any:
         raise
     if method == "backup":
         audit.record("mfa_backup_code_used", user=pending.user, left=mfa.remaining_backup_codes(pending.user))
-    sessions.end_replaced(pending)
-    return _signed_in(pending.user, [*pending.methods, method, "mfa"], "sign_in")
+    return _signed_in(pending.user, [*pending.methods, method, "mfa"], "sign_in", replaces=pending.replaces)
 
 
 @bp.get("/mfa")
@@ -553,13 +552,11 @@ def passkey_sign_in() -> Response:
             raise AccountError("no_pending_sign_in")
         if pending.user.id != user.id:
             raise AccountError("passkey_other_account")
-        sessions.end_replaced(pending)
         methods = [*dict.fromkeys([*pending.methods, *passkeys.METHODS])]
-        return _signed_in(user, methods, "sign_in")
+        return _signed_in(user, methods, "sign_in", replaces=pending.replaces)
     # A step-up in progress for this person ends with the passkey as well as with a code.
-    if pending is not None and pending.user.id == user.id:
-        sessions.end_replaced(pending)
-    return _signed_in(user, passkeys.METHODS, "sign_in")
+    replaces = pending.replaces if pending is not None and pending.user.id == user.id else None
+    return _signed_in(user, passkeys.METHODS, "sign_in", replaces=replaces)
 
 
 def _here() -> set[uuid.UUID]:
