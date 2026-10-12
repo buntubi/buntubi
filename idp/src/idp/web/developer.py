@@ -281,7 +281,7 @@ def accept_terms(me: User) -> Response:
 @developer()
 def list_plugins(me: User) -> Response:
     """The plugins this deployment runs, by id: the portal shows the pages of these only."""
-    return jsonify(items=[{"id": plugin.id, "ui": plugin.ui()} for plugin in plugins.active()])
+    return jsonify(items=[{"id": plugin.id, "ui": plugins.ui_of(plugin)} for plugin in plugins.active()])
 
 
 @bp.get("/products")

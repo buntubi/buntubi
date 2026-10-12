@@ -895,7 +895,7 @@ def list_plugins(admin: User) -> Response:
                 "version": plugin.version,
                 "products": [product.slug for product in catalogue.products],
                 "scopes": [scope.name for scope in catalogue.scopes],
-                "ui": plugin.ui(),
+                "ui": plugins.ui_of(plugin),
             }
         )
     return jsonify(items=items)

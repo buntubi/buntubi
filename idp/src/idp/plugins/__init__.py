@@ -151,6 +151,9 @@ def load(names: list[str]) -> list[Plugin]:
     found = {point.name: point for point in entry_points(group=ENTRY_POINT_GROUP)}
     plugins: list[Plugin] = []
     for name in names:
+        # It names the plugin's routes (/api/plugins/<id>/), its catalogue rows and audit events.
+        if not _SLUG.match(name):
+            raise RuntimeError(f"plugin name {name!r} is not a lowercase slug (letters, digits, hyphens)")
         point = found.get(name)
         if point is None:
             raise RuntimeError(f"plugin {name!r} is not installed (entry point group {ENTRY_POINT_GROUP!r})")
@@ -203,10 +206,19 @@ _SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,39}$")
 
 
 def page_brand(client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
-    """The brand after every plugin's changes, in order; keys outside BRAND_KEYS are dropped."""
+    """
+    The brand after every plugin's changes, in order; keys outside BRAND_KEYS are dropped. A
+    plugin whose hook fails is logged and skipped: a look is not worth a sign-in page that does
+    not load.
+    """
     result = dict(brand)
     for plugin in _active:
-        for key, value in plugin.page_brand(client, result).items():
+        try:
+            changes = plugin.page_brand(client, result)
+        except Exception:
+            log.exception("plugin %s failed in page_brand", plugin.id)
+            continue
+        for key, value in changes.items():
             if key not in BRAND_KEYS:
                 continue
             # A look names an attribute value and a CSS selector: a plain slug only.
@@ -215,6 +227,15 @@ def page_brand(client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
                 continue
             result[key] = value
     return result
+
+
+def ui_of(plugin: Plugin) -> dict[str, Any]:
+    """What the plugin's UI half is told; empty, and logged, when its hook fails."""
+    try:
+        return plugin.ui()
+    except Exception:
+        log.exception("plugin %s failed in ui", plugin.id)
+        return {}
 
 
 def emit(name: str, payload: dict[str, Any]) -> None:

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 from idp.db import db, utcnow
 from idp.models import ApiProduct, Scope
@@ -19,6 +19,8 @@ from idp.plugins import Plugin, Product, ScopeSpec
 from idp.services import audit
 
 SENSITIVITIES = frozenset({"public", "sensitive", "restricted"})
+# The advisory lock the catalogue sync holds; any constant no other code uses.
+SYNC_LOCK = 0x1D9_5C_A7
 
 
 @dataclass
@@ -40,6 +42,9 @@ class CatalogueError(ValueError):
 def sync(plugins: list[Plugin]) -> SyncReport:
     """Bring the rows in line with what `plugins` declare. Commits."""
     report = SyncReport()
+    # One sync at a time across every process (several workers starting at once): the others
+    # wait here, then find the rows already written and change nothing.
+    db().execute(text("select pg_advisory_xact_lock(:key)"), {"key": SYNC_LOCK})
     products: dict[str, tuple[str, Product]] = {}
     scopes: dict[str, tuple[str, ScopeSpec]] = {}
     for plugin in plugins:
