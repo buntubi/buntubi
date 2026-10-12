@@ -618,7 +618,7 @@ def set_redirect_uris(client: Client, uris: list[str]) -> None:
         raise PlatformError("redirect_uri_required", 422)
     client.redirect_uris = uris
     new_hosts = redirect_hosts(uris) - set(client.approved_redirect_hosts)
-    if client.is_live and client.review_status == "approved" and not is_trusted(client) and new_hosts:
+    if client.is_live and client.review_status == "approved" and not never_reviewed(client) and new_hosts:
         _back_to_review(client)
 
 
@@ -641,7 +641,7 @@ def set_app_scopes(client: Client, scopes: list[str]) -> None:
     client.scope = list_to_scope(checked.granted)
     # A live app that adds a sensitive scope its own review did not approve goes back to review.
     unapproved = set(checked.sensitive) - set(client.approved_scopes)
-    if client.is_live and unapproved and not is_trusted(client):
+    if client.is_live and unapproved and not never_reviewed(client):
         _back_to_review(client)
 
 
@@ -892,6 +892,27 @@ def add_test_user(organization: Organization, email: str) -> OrganizationTestUse
 
 def is_test_user(organization: Organization, user: User) -> bool:
     return any(row.email == user.email for row in organization.test_users)
+
+
+def never_reviewed(client: Client) -> bool:
+    """The platform's own apps (first-party, or of the platform organization): never reviewed,
+    so the review rules on scopes and redirect hosts do not apply to them."""
+    return is_trusted(client) or bool(client.organization and client.organization.is_platform)
+
+
+def scope_became_sensitive(name: str) -> list[Client]:
+    """
+    A scope that needed nothing now needs a review (an admin changed it, or a plugin's new
+    version did): live apps holding it without their own approval go back to review, as if they
+    had just asked for it.
+    """
+    sent = []
+    for client in db().scalars(select(Client).where(Client.environment == "live")):
+        held = scope_to_list(client.scope) or []
+        if name in held and name not in client.approved_scopes and not never_reviewed(client):
+            _back_to_review(client)
+            sent.append(client)
+    return sent
 
 
 def is_trusted(client: Client) -> bool:

@@ -768,7 +768,10 @@ def update_scope(name: str, admin: User) -> Response:
         refuse("managed_by_plugin", 409, plugin=scope.managed_by)
     patch = parse(ScopePatch)
     if patch.sensitivity is not None:
+        needed_nothing = scope.sensitivity == "public"
         scope.sensitivity = patch.sensitivity
+        if needed_nothing and patch.sensitivity != "public":
+            p.scope_became_sensitive(name)
     if patch.descriptions is not None:
         scope.descriptions = patch.descriptions.model_dump()
     if patch.resource is not None:

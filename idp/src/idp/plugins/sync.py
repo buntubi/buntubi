@@ -100,7 +100,15 @@ def sync(plugins: list[Plugin]) -> SyncReport:
             session.add(Scope(name=name, managed_by=owner, **scope_values))
             report.added.append(f"scope {name}")
             continue
+        needed_nothing = known_scope.sensitivity == "public"
         _follow(known_scope, f"scope {name}", owner, scope_values, report)
+        if needed_nothing and known_scope.sensitivity != "public":
+            from idp.services.platform import scope_became_sensitive
+
+            for client in scope_became_sensitive(name):
+                audit.record(
+                    "catalogue.app_back_to_review", source="plugins", scope=name, app=client.client_id
+                )
 
     # Rows a plugin managed and no longer declares: still there for the apps holding them.
     for old_product in existing_products.values():

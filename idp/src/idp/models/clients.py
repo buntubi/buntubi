@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Any, Literal
 
 from authlib.oauth2.rfc6749 import ClientMixin, list_to_scope, scope_to_list
-from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String, select
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -100,10 +100,33 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
         return self.redirect_uris[0] if len(self.redirect_uris) == 1 else None
 
     def get_allowed_scope(self, scope: str) -> str:
+        """
+        What a token for this app may carry: the scopes asked for that the app holds. A live app
+        of a developer organization also needs its own review for each sensitive one, checked
+        here at every issuance too, so a scope reclassified after the app went live is not
+        handed out unreviewed.
+        """
         if not scope:
             return ""
         allowed = set(scope_to_list(self.scope))
-        return list_to_scope([s for s in scope_to_list(scope) if s in allowed])
+        wanted = [s for s in scope_to_list(scope) if s in allowed]
+        organization = self.organization
+        if (
+            self.is_live
+            and not self.first_party
+            and organization is not None
+            and not organization.is_platform
+        ):
+            from idp.db import db
+            from idp.models.platform import Scope
+
+            sensitive = set(
+                db().scalars(
+                    select(Scope.name).where(Scope.name.in_(wanted), Scope.sensitivity == "sensitive")
+                )
+            )
+            wanted = [s for s in wanted if s not in sensitive or s in self.approved_scopes]
+        return list_to_scope(wanted)
 
     def check_redirect_uri(self, redirect_uri: str) -> bool:
         return redirect_uri in self.redirect_uris
