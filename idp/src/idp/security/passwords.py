@@ -1,5 +1,9 @@
 """Passwords: a slow one-way hash (scrypt), never anything reversible, never logged."""
 
+import gzip
+from functools import cache
+from importlib.resources import files
+
 from werkzeug.security import check_password_hash, generate_password_hash
 
 MIN_LENGTH = 10
@@ -20,5 +24,25 @@ def verify_password(stored_hash: str | None, candidate: str) -> bool:
     return check_password_hash(stored_hash, candidate)
 
 
+def problem(password: str) -> str | None:
+    """What is wrong with a new password, as an error code, or None."""
+    if not MIN_LENGTH <= len(password) <= MAX_LENGTH:
+        return "weak_password"
+    if is_breached(password):
+        return "breached_password"
+    return None
+
+
 def is_acceptable(password: str) -> bool:
-    return MIN_LENGTH <= len(password) <= MAX_LENGTH
+    return problem(password) is None
+
+
+def is_breached(password: str) -> bool:
+    return password.lower() in _breached()
+
+
+@cache
+def _breached() -> frozenset[str]:
+    """Loaded once, on the first password checked: about 120 000 entries (data/README.md)."""
+    data = files("idp.security").joinpath("data/breached.txt.gz").read_bytes()
+    return frozenset(gzip.decompress(data).decode().splitlines())

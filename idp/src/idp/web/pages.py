@@ -102,9 +102,10 @@ def signup() -> str:
 @bp.get("/verify-email")
 def verify_email() -> Any:
     pending = sessions.pending("verify_email")
-    if pending is None:
+    email = pending.user.email if pending else sessions.existing_sign_up()
+    if email is None:
         return redirect(url_for("pages.signin"))
-    return shell("idp-verify-email", email=pending.user.email)
+    return shell("idp-verify-email", email=email)
 
 
 @bp.get("/mfa")

@@ -40,6 +40,9 @@ class EmailText:
     change_action: str
     change_notice_subject: str
     change_notice_lines: list[str]
+    exists_subject: str
+    exists_lines: list[str]
+    exists_action: str
 
 
 # Draft wording, to be rewritten before launch.
@@ -72,6 +75,13 @@ TEXT = {
             "Elle ne changera que si le lien envoyé à cette adresse est ouvert. Si ce n'est pas vous, "
             "changez votre mot de passe.",
         ],
+        exists_subject="Vous avez déjà un compte",
+        exists_lines=[
+            "Quelqu'un a essayé de créer un compte avec cette adresse, qui en a déjà un.",
+            "Si c'était vous, connectez-vous, ou choisissez un nouveau mot de passe si vous l'avez oublié. "
+            "Sinon, ignorez ce message : rien n'a changé.",
+        ],
+        exists_action="Se connecter",
     ),
     "en": EmailText(
         verify_subject="Your verification code",
@@ -101,6 +111,13 @@ TEXT = {
             "It changes only if the link sent to that address is opened. "
             "If it wasn't you, change your password.",
         ],
+        exists_subject="You already have an account",
+        exists_lines=[
+            "Someone tried to create an account with this address, which already has one.",
+            "If it was you, sign in, or choose a new password if you forgot it. "
+            "Otherwise, ignore this message: nothing changed.",
+        ],
+        exists_action="Sign in",
     ),
 }
 
@@ -126,19 +143,39 @@ def normalize_email(email: str) -> str:
     return email.strip().lower()
 
 
-def register(data: NewAccount) -> User:
+@dataclass(frozen=True)
+class Registration:
+    """The account a sign-up made, or the one that already had the address (`new` False)."""
+
+    user: User
+    new: bool
+
+
+def register(data: NewAccount, sign_in_url: str) -> Registration:
+    """
+    Makes an account and sends its code. An address that already has an account gets the same
+    answer and takes the same time (the password is hashed all the same), and its owner is told
+    by email instead, so sign-up does not reveal which addresses have accounts.
+    """
     email = normalize_email(data.email)
     try:
         email = validate_email(email, check_deliverability=False).normalized.lower()
     except EmailNotValidError:
         raise AccountError("invalid_email") from None
-    if not passwords.is_acceptable(data.password):
-        raise AccountError("weak_password")
-    if db().scalar(select(User.id).where(User.email == email)) is not None:
-        raise AccountError("email_taken")
+    if wrong := passwords.problem(data.password):
+        raise AccountError(wrong)
+    password_hash = passwords.hash_password(data.password)
+    existing = db().scalar(select(User).where(User.email == email))
+    if existing is not None:
+        text = TEXT[existing.locale] if existing.locale in TEXT else TEXT["fr"]
+        body_text, body_html = mail.render(
+            text.exists_subject, text.exists_lines, link=(text.exists_action, sign_in_url)
+        )
+        mail.send(mail.Message(existing.email, text.exists_subject, body_text, body_html))
+        return Registration(existing, new=False)
     user = User(
         email=email,
-        password_hash=passwords.hash_password(data.password),
+        password_hash=password_hash,
         given_name=data.given_name.strip()[:100],
         family_name=data.family_name.strip()[:100],
         locale=data.locale if data.locale in TEXT else "fr",
@@ -147,7 +184,7 @@ def register(data: NewAccount) -> User:
     db().flush()
     send_verification_code(user)
     plugins.emit("account.created", {"user": str(user.id), "email": user.email})
-    return user
+    return Registration(user, new=True)
 
 
 # An invitation waits longer than a reset: the person did not ask for it and may read it late.
@@ -167,8 +204,8 @@ def create_by_admin(
     also proves the address. With one, the account is ready: the address counts as verified, no
     email is sent, and the person signs in with it.
     """
-    if password is not None and not passwords.is_acceptable(password):
-        raise AccountError("weak_password")
+    if password is not None and (wrong := passwords.problem(password)):
+        raise AccountError(wrong)
     try:
         address = validate_email(email, check_deliverability=False).normalized.lower()
     except EmailNotValidError:
@@ -215,12 +252,39 @@ def user_by_email(email: str) -> User | None:
     return db().scalar(select(User).where(User.email == normalize_email(email)))
 
 
+# Wrong passwords allowed in a row for one account; past them, its password sign-in pauses
+# until PASSWORD_PAUSE after the last one. Passkeys still sign in.
+MAX_PASSWORD_FAILURES = 10
+PASSWORD_PAUSE = timedelta(minutes=15)
+
+
 def authenticate(email: str, password: str) -> User | None:
-    """The user, or None: unknown address, wrong password and disabled account look alike."""
-    user = db().scalar(select(User).where(User.email == normalize_email(email)))
+    """
+    The user, or None: unknown address, wrong password, disabled account and a paused account
+    look alike. Wrong passwords are counted on the account (row locked, so guesses spread over
+    many addresses or sent at once are all counted); MAX_PASSWORD_FAILURES in a row pause its
+    password sign-in, even with the right password, until PASSWORD_PAUSE after the last one.
+    The caller commits the count.
+    """
+    user = db().scalar(
+        select(User)
+        .where(User.email == normalize_email(email))
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
     ok = passwords.verify_password(user.password_hash if user else None, password)
-    if not ok or user is None or user.disabled_at is not None:
+    if user is None or user.disabled_at is not None:
         return None
+    now = utcnow()
+    recent = user.password_failed_at is not None and now - user.password_failed_at < PASSWORD_PAUSE
+    if recent and user.password_failures >= MAX_PASSWORD_FAILURES:
+        return None
+    if not ok:
+        user.password_failures = (user.password_failures if recent else 0) + 1
+        user.password_failed_at = now
+        return None
+    user.password_failures = 0
+    user.password_failed_at = None
     return user
 
 
@@ -254,8 +318,8 @@ def request_password_reset(email: str, reset_url: str) -> None:
 
 
 def reset_password(token: str, new_password: str) -> User:
-    if not passwords.is_acceptable(new_password):
-        raise AccountError("weak_password")
+    if wrong := passwords.problem(new_password):
+        raise AccountError(wrong)
     row = db().scalar(
         select(EmailToken)
         .where(
@@ -276,6 +340,9 @@ def reset_password(token: str, new_password: str) -> User:
     row.used_at = utcnow()
     user.password_hash = passwords.hash_password(new_password)
     user.password_changed_at = utcnow()
+    # Proven by the email link: a pause on wrong passwords ends.
+    user.password_failures = 0
+    user.password_failed_at = None
     sign_out_everywhere(user)
     # Proving the inbox also proves the address.
     if user.email_verified_at is None:
@@ -290,8 +357,8 @@ def change_password(user: User, current: str, new_password: str, keep: LoginSess
     """
     if user.password_hash is None or not passwords.verify_password(user.password_hash, current):
         raise AccountError("wrong_password")
-    if not passwords.is_acceptable(new_password):
-        raise AccountError("weak_password")
+    if wrong := passwords.problem(new_password):
+        raise AccountError(wrong)
     if passwords.verify_password(user.password_hash, new_password):
         raise AccountError("same_password")
     user.password_hash = passwords.hash_password(new_password)

@@ -273,8 +273,12 @@ def register(app: Flask) -> None:
             raise click.ClickException(
                 f"{address} already has an account: use `flask users promote {address}`"
             )
-        if not passwords.is_acceptable(password):
-            raise click.ClickException("the password needs 10 to 256 characters")
+        if wrong := passwords.problem(password):
+            raise click.ClickException(
+                "the password is too well known: it appears in breached password lists"
+                if wrong == "breached_password"
+                else "the password needs 10 to 256 characters"
+            )
         user = User(
             email=address,
             password_hash=passwords.hash_password(password),

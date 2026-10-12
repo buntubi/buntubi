@@ -146,23 +146,36 @@ def sign_out() -> Response:
 @limiter.limit("5 per minute")
 def sign_up() -> Response:
     data = _body()
-    user = accounts.register(
+    made = accounts.register(
         NewAccount(
             email=_text(data, "email"),
             password=_text(data, "password", 256),
             given_name=_text(data, "given_name", 100),
             family_name=_text(data, "family_name", 100),
             locale=_text(data, "locale", 10) or "fr",
-        )
+        ),
+        sign_in_url=f"{get_settings().issuer}{url_for('pages.signin')}",
     )
-    audit.record("sign_up", user=user)
-    return _needs_verification(user, ["pwd"])
+    if not made.new:
+        # Answered as for a new address; the owner was told by email.
+        audit.record("sign_up_existing", user=made.user)
+        sessions.set_existing_sign_up(made.user.email)
+        db().commit()
+        return jsonify(next="verify_email", email=made.user.email)
+    audit.record("sign_up", user=made.user)
+    return _needs_verification(made.user, ["pwd"])
 
 
 @bp.post("/email/verify")
 @limiter.limit("10 per minute")
 def verify_email() -> Any:
     pending = sessions.pending("verify_email")
+    if pending is None and sessions.existing_sign_up():
+        # No code exists for it: refused as a wrong code, then as too many, like a real one.
+        tries = sessions.existing_sign_up_failure()
+        return jsonify(
+            error="too_many_attempts" if tries > accounts.MAX_CODE_ATTEMPTS else "invalid_code"
+        ), 400
     if pending is None:
         return jsonify(error="no_pending_sign_in"), 400
     try:
@@ -177,6 +190,8 @@ def verify_email() -> Any:
 @limiter.limit("3 per minute")
 def resend_code() -> Any:
     pending = sessions.pending("verify_email")
+    if pending is None and sessions.existing_sign_up():
+        return jsonify(sent=True)
     if pending is None:
         return jsonify(error="no_pending_sign_in"), 400
     accounts.send_verification_code(pending.user)

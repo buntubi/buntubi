@@ -20,6 +20,9 @@ class User(IdMixin, TimestampMixin, Base):
     password_hash: Mapped[str | None] = mapped_column(String(255))
     # None: unchanged since the account was made.
     password_changed_at: Mapped[datetime | None]
+    # Wrong passwords in a row, and when the last one came (services/accounts.py authenticate).
+    password_failures: Mapped[int] = mapped_column(default=0)
+    password_failed_at: Mapped[datetime | None]
     # Wrong second-factor codes in a row, and when the last one came (services/mfa.py verify).
     # Kept here, not in the browser's cookie, so replaying an old cookie does not reset them.
     second_factor_failures: Mapped[int] = mapped_column(default=0)

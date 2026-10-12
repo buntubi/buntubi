@@ -29,7 +29,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-idp = ["templates/*.html", "static/**/*"]
+idp = ["templates/*.html", "static/**/*", "security/data/*.gz"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

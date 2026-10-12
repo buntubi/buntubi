@@ -22,6 +22,9 @@ _CURRENT = "sid"
 _RETURN_TO = "return_to"
 # Sign-in steps not finished yet (email code, two-factor): the user is known, not signed in.
 _PENDING = "pending_user"
+# A sign-up for an address that already has an account: the code page behaves as usual, and no
+# code can succeed (services/accounts.py register).
+_EXISTING_SIGN_UP = "existing_sign_up"
 
 
 def start(user: User, methods: list[str]) -> LoginSession:
@@ -39,6 +42,7 @@ def start(user: User, methods: list[str]) -> LoginSession:
     session[_SIDS] = [str(login.id), *sids][:5]
     session[_CURRENT] = str(login.id)
     session.pop(_PENDING, None)
+    session.pop(_EXISTING_SIGN_UP, None)
     session.permanent = True
     return login
 
@@ -124,7 +128,27 @@ class Pending:
 
 
 def set_pending(user: User, methods: list[str], stage: str, replaces: str | None = None) -> None:
+    session.pop(_EXISTING_SIGN_UP, None)
     session[_PENDING] = {"user_id": str(user.id), "methods": methods, "stage": stage, "replaces": replaces}
+
+
+def set_existing_sign_up(email: str) -> None:
+    session.pop(_PENDING, None)
+    session[_EXISTING_SIGN_UP] = {"email": email, "failures": 0}
+
+
+def existing_sign_up() -> str | None:
+    """The address of a sign-up that met an existing account, while its code page is open."""
+    value = session.get(_EXISTING_SIGN_UP)
+    return str(value["email"]) if value else None
+
+
+def existing_sign_up_failure() -> int:
+    """Counts a code typed on that page, as a real one is counted; returns how many so far."""
+    value = dict(session.get(_EXISTING_SIGN_UP) or {})
+    value["failures"] = int(value.get("failures", 0)) + 1
+    session[_EXISTING_SIGN_UP] = value
+    return int(value["failures"])
 
 
 def pending(stage: str | None = None) -> Pending | None:
