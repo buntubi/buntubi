@@ -4,6 +4,7 @@ import os
 from datetime import timedelta
 
 from flask import Flask, Response, jsonify, request
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from idp import cli, plugins
 from idp.config import Settings, get_settings
@@ -20,10 +21,17 @@ _CORS_PATHS = ("/oauth/token", "/oauth/revoke", "/oauth/userinfo")
 
 def create_app(settings: Settings | None = None) -> Flask:
     settings = settings or get_settings()
+    problems = settings.production_problems()
+    if problems:
+        raise RuntimeError("refusing to start:\n- " + "\n- ".join(problems))
     # Authlib refuses plain HTTP; allowed only for an issuer on this machine (development, tests).
-    if settings.issuer.startswith(("http://localhost", "http://127.0.0.1")):
+    if settings.local:
         os.environ["AUTHLIB_INSECURE_TRANSPORT"] = "1"
     app = Flask(__name__)
+    if settings.trusted_proxies:
+        # The client's address and scheme as the proxies saw them, trusting only that many hops.
+        n = settings.trusted_proxies
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=n, x_proto=n)  # type: ignore[method-assign]
     app.config.update(
         SECRET_KEY=settings.secret_key.get_secret_value(),
         SESSION_COOKIE_NAME="idp_session",
@@ -74,6 +82,9 @@ def create_app(settings: Settings | None = None) -> Flask:
         session_check.sync_cookie(response)
         headers.setdefault("X-Content-Type-Options", "nosniff")
         headers.setdefault("Referrer-Policy", "no-referrer")
+        if settings.issuer.startswith("https://"):
+            # Not includeSubDomains: other services of the deployment's domain decide for themselves.
+            headers.setdefault("Strict-Transport-Security", "max-age=31536000")
         # Avatars are public and their address changes with them: cached like static files.
         if not request.path.startswith(("/static/", "/.well-known/", "/oauth/check-session.js", "/avatars/")):
             headers["Cache-Control"] = "no-store"

@@ -16,6 +16,9 @@ dependencies = [
   "segno>=1.6",
   "email-validator>=2.2",
   "webauthn>=3.0,<4",
+  # Imported directly (keys, token checks), not only through authlib and webauthn.
+  "cryptography>=44",
+  "joserfc>=1.7,<2",
 ]
 
 [project.optional-dependencies]

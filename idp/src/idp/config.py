@@ -3,6 +3,7 @@
 import re
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -41,10 +42,11 @@ class Settings(BaseSettings):
     session_retention_days: int = 30
     audit_retention_days: int = 365
 
-    # Email through Resend. Test mode logs the message instead of sending it.
+    # Email through Resend. Test mode logs the message, codes and links included, instead of
+    # sending it: for development only, refused with a public issuer.
     resend_api_key: SecretStr | None = None
     email_from: str = "no-reply@localhost"
-    email_test_mode: bool = True
+    email_test_mode: bool = False
 
     rate_limit_storage: str = "memory://"
     rate_limit_enabled: bool = True
@@ -52,6 +54,36 @@ class Settings(BaseSettings):
     cors_origins: list[str] = []
     # Secure cookies need HTTPS; browsers accept them on http://localhost too.
     secure_cookies: bool = True
+    # How many proxies in front set X-Forwarded-For and X-Forwarded-Proto (a load balancer, then
+    # a reverse proxy: 2). 0 when clients reach the provider directly. Too high lets a client
+    # choose the address the rate limits and the audit trail see.
+    trusted_proxies: int = 0
+
+    @property
+    def local(self) -> bool:
+        """An issuer on this machine: development and tests."""
+        return urlsplit(self.issuer).hostname in ("localhost", "127.0.0.1", "::1")
+
+    def production_problems(self) -> list[str]:
+        """What a provider with a public issuer must not run with."""
+        if self.local:
+            return []
+        problems = []
+        if not self.issuer.startswith("https://"):
+            problems.append("IDP_ISSUER must be https")
+        if self.email_test_mode:
+            problems.append("IDP_EMAIL_TEST_MODE logs sign-in codes and reset links instead of sending them")
+        if not self.secure_cookies:
+            problems.append("IDP_SECURE_COOKIES must be true")
+        if (
+            self.rate_limit_storage.startswith("memory://")
+            and "rate_limit_storage" not in self.model_fields_set
+        ):
+            problems.append(
+                "IDP_RATE_LIMIT_STORAGE: limits kept in memory are per process; "
+                "give a shared store (redis://...), or memory:// explicitly for a single process"
+            )
+        return problems
 
     # Plugins this deployment runs, by entry point name, in order (see idp.plugins).
     plugins: list[str] = []
