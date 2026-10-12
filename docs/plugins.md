@@ -81,8 +81,8 @@ cd idp && ../.venv/bin/flask --app idp.app:create_app plugins list
 
 `plugins list` prints each plugin with its version and the number of products and scopes it
 declares. The provider refuses to start when `IDP_PLUGINS` names a plugin that is not
-installed, when the entry point does not give a `Plugin`, or when its `id` differs from the
-entry point name.
+installed, when the name is not a lowercase slug (letters, digits and hyphens, at most 40), when
+the entry point does not give a `Plugin`, or when its `id` differs from the entry point name.
 
 ### Hooks
 
@@ -100,6 +100,12 @@ entry point name.
 | `page_brand(client, brand)` | When a sign-in page is drawn | Changes to that page's brand |
 
 Hooks run in the order `IDP_PLUGINS` lists the plugins.
+
+**When a hook raises.** `page_brand` and `ui` only shape how things look: a failure is logged
+and that plugin is skipped, so a broken plugin cannot take the sign-in pages down. The hooks
+that decide something (`token_claims`, `scope_refusal`, `live_checks`, `catalogue`) fail the
+request instead, and nothing it started is kept: no token is issued and the authorization code
+stays unused, no app is created. `on_event` failures are logged; the request goes on.
 
 **`token_claims`.** Each plugin's claims are merged in order, a later plugin overwriting an
 earlier one's. The claims the provider decides are dropped, with a warning in the log: `iss`,
@@ -168,6 +174,10 @@ development it also runs at start. Where several workers start at once, set
   Declared again, it is restored.
 - Two plugins declaring the same slug or scope, an unknown sensitivity, or a scope naming a
   product its plugin does not declare stop the sync with an error.
+- A sync holds a database lock, so several workers syncing at start run one after the other;
+  the later ones find nothing to change.
+- A scope that goes from public to sensitive or restricted sends the live apps holding it
+  without a review back to review.
 
 An entry a plugin manages carries its id in `managed_by`, and the admin API refuses to edit it
 with `409 managed_by_plugin`: change the plugin and sync instead.
@@ -286,7 +296,10 @@ const api = inject(PluginApi);
 const usage = await api.call<{ calls: number }>('acme', 'GET', `/organizations/${this.organization}/usage`);
 ```
 
-A refusal throws an `Error` whose message is the provider's error code.
+A refusal throws an `Error` whose message is the provider's error code. The console and the
+portal relay a call only to that plugin's own API: a path that resolves anywhere else (`..`,
+another host), an id that is not a plugin id or an unexpected method is refused with
+`invalid_plugin_call`.
 
 Write elements the way the provider's own are written (`packages/elements`): fluixi-ui
 components rather than native controls, `--idp-*` tokens rather than raw colours, French and
