@@ -2,13 +2,18 @@
 sends the browser, so only https, http on this machine, or a native app's own scheme. The same
 rule as the portal's form (isRedirectUri in @idp/sdk/schemas/apps)."""
 
+import json
 from typing import Any
+from urllib.parse import urlencode, urlparse
 
 import pytest
 from flask import Flask
+from flask.testing import FlaskClient
 from test_developer_api import call, developer_token, new_organization
 
 from idp.services import mail
+
+from conftest import add_client, authorize_query, page_config, pkce, sign_up
 
 REFUSED = [
     "javascript:alert(document.domain)//",
@@ -58,3 +63,22 @@ def test_https_this_machine_and_app_schemes_are_kept_exactly(developer: Any, uri
     made = developer(uri)
     assert made.status_code == 201, made.json
     assert made.json["app"]["redirect_uris"] == [uri], "compared exactly at sign-in, so stored exactly"
+
+
+def test_an_app_name_cannot_close_the_page_config(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    # The page reads its data from a JSON script element; a name holding </script> must stay text.
+    hostile = "</script><script>alert(1)</script><!--"
+    add_client(app, name=hostile)
+    sign_up(browser, outbox)
+    _, challenge = pkce()
+    query = authorize_query(challenge, prompt="consent")
+    consent = browser.get(
+        urlparse(browser.get("/oauth/authorize?" + urlencode(query)).location).path + "?" + urlencode(query)
+    )
+    html = consent.get_data(as_text=True)
+    assert "<script>alert(1)" not in html and "</script><script>" not in html
+    assert "\\u003c/script\\u003e" in html, "escaped inside the JSON"
+    config = json.dumps(page_config(browser, "/consent?" + urlencode(query)))
+    assert json.dumps(hostile)[1:-1] in config, "and read back as the name it is"
