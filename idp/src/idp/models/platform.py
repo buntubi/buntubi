@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import ForeignKey, Index, String, Text, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -35,6 +35,11 @@ class Organization(IdMixin, TimestampMixin, Base):
     """A team that builds on the platform: it holds the apps, API keys and test users, and its members."""
 
     __tablename__ = "organizations"
+    # One platform organization at most (migration b4e8c1f07a92): declared here too, so a migration
+    # generated from the models does not drop it.
+    __table_args__ = (
+        Index("uq_organizations_platform", "is_platform", unique=True, postgresql_where=text("is_platform")),
+    )
 
     name: Mapped[str] = mapped_column(String(80))
     description: Mapped[str] = mapped_column(String(500), default="")
