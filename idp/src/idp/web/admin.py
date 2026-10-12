@@ -28,7 +28,7 @@ from idp.services import platform as p
 from idp.services.accounts import AccountError, sign_out_everywhere
 from idp.services.credentials import issue_client_secret, rotate_client_secret
 from idp.services.platform import PlatformError
-from idp.web.validation import parse
+from idp.web.validation import RedirectUri, parse
 
 bp = Blueprint("admin", __name__, url_prefix="/admin/api")
 
@@ -80,8 +80,8 @@ class ClientIn(BaseModel):
     client_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{1,63}$")
     name: str = Field(min_length=1, max_length=120)
     client_type: Literal["public", "confidential"] = "public"
-    redirect_uris: list[HttpUrl] = []
-    post_logout_redirect_uris: list[HttpUrl] = []
+    redirect_uris: list[RedirectUri] = []
+    post_logout_redirect_uris: list[RedirectUri] = []
     grant_types: list[Literal[GRANT_TYPES]] = ["authorization_code", "refresh_token"]  # type: ignore[valid-type]
     scope: str = "openid profile email"
     first_party: bool = False
@@ -92,8 +92,8 @@ class ClientIn(BaseModel):
 
 class ClientPatch(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=120)
-    redirect_uris: list[HttpUrl] | None = None
-    post_logout_redirect_uris: list[HttpUrl] | None = None
+    redirect_uris: list[RedirectUri] | None = None
+    post_logout_redirect_uris: list[RedirectUri] | None = None
     scope: str | None = None
     first_party: bool | None = None
     brand: Brand | None = None

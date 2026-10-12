@@ -24,7 +24,7 @@ from idp.services import audit, mfa
 from idp.services import platform as p
 from idp.services.credentials import rotate_client_secret
 from idp.web.admin import Brand, review_json
-from idp.web.validation import parse
+from idp.web.validation import RedirectUri, parse
 
 bp = Blueprint("developer", __name__, url_prefix="/developer/api")
 
@@ -80,8 +80,8 @@ Platform = Literal["web", "ios", "android", "backend"]
 class AppIn(BaseModel):
     name: str = Name
     client_type: Literal["public", "confidential"] = "public"
-    redirect_uris: list[HttpUrl] = Field(default=[], max_length=10)
-    post_logout_redirect_uris: list[HttpUrl] = Field(default=[], max_length=10)
+    redirect_uris: list[RedirectUri] = Field(default=[], max_length=10)
+    post_logout_redirect_uris: list[RedirectUri] = Field(default=[], max_length=10)
     scopes: list[str] = ["profile", "email"]
     grant_types: list[str] = ["authorization_code", "refresh_token"]
     homepage_url: HttpUrl | None = None
@@ -97,8 +97,8 @@ class AppIn(BaseModel):
 
 class AppPatch(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=80)
-    redirect_uris: list[HttpUrl] | None = Field(default=None, max_length=10)
-    post_logout_redirect_uris: list[HttpUrl] | None = Field(default=None, max_length=10)
+    redirect_uris: list[RedirectUri] | None = Field(default=None, max_length=10)
+    post_logout_redirect_uris: list[RedirectUri] | None = Field(default=None, max_length=10)
     scopes: list[str] | None = None
     homepage_url: HttpUrl | None = None
     privacy_url: HttpUrl | None = None
