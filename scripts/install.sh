@@ -34,7 +34,7 @@ cd "$root"
   echo "The .venv runs Python older than 3.11: remove it and run again with a newer python3." >&2
   exit 1
 }
-.venv/bin/pip install --quiet -e "./idp[dev]"
+.venv/bin/pip install --quiet -c idp/requirements.lock -e "./idp[dev]"
 echo "$(.venv/bin/python --version) in .venv, provider installed."
 python="$root/.venv/bin/python"
 flask() { "$root/.venv/bin/flask" --app idp.app:create_app "$@"; }
