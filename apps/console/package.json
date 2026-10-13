@@ -28,11 +28,11 @@
     "@fluixi/server": "^1.0.0-alpha.97",
     "@fluixi/session": "^1.0.0-alpha.97",
     "@fluixi/start": "^0.1.0-alpha.87",
-    "@idp/elements": "link:../../packages/elements",
-    "@idp/sdk": "link:../../packages/sdk",
-    "@idp/shell": "link:../../packages/shell",
-    "@idp/skin": "link:../../packages/skin",
-    "@idp/theme": "link:../../packages/theme"
+    "@idp/elements": "workspace:*",
+    "@idp/sdk": "workspace:*",
+    "@idp/shell": "workspace:*",
+    "@idp/skin": "workspace:*",
+    "@idp/theme": "workspace:*"
   },
   "devDependencies": {
     "@fluixi-css/core": "1.0.0-next.5",

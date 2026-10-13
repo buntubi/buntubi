@@ -76,8 +76,6 @@ products and scopes as code; entries added in the console are edited there.
 - Python 3.11 or later
 - PostgreSQL (developed on 17)
 - Node 22 and pnpm
-- The Fluixi checkouts beside this one: the apps link `fluixi-core` and `fluixi-ui` from
-  `../../fluixi-core` and `../../fluixi-ui` relative to this repository
 
 ## First install on your machine
 

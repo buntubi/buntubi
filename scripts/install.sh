@@ -89,10 +89,8 @@ fi
 
 if [ "$web" = 1 ]; then
   step "Web packages"
-  for dir in packages/sdk packages/theme packages/skin packages/shell packages/elements frontend apps/portal apps/console; do
-    echo "$dir"
-    pnpm --dir "$root/$dir" install --silent
-  done
+  # One workspace (pnpm-workspace.yaml), one lockfile.
+  pnpm --dir "$root" install --silent
   pnpm --dir "$root/frontend" build >/dev/null
   echo "Built the sign-in pages."
 

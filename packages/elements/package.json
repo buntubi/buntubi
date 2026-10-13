@@ -342,7 +342,7 @@
     "@fluixi/reactive": "^1.0.0-alpha.97",
     "@fluixi/start": "^0.1.0-alpha.87",
     "@fluixi/web-components": "^1.0.0-alpha.97",
-    "@idp/sdk": "link:../sdk"
+    "@idp/sdk": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^7.0.2"

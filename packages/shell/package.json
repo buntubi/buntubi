@@ -25,8 +25,8 @@
     "@fluixi/dom": "^1.0.0-alpha.97",
     "@fluixi/jsx": "^1.0.0-alpha.97",
     "@fluixi/reactive": "^1.0.0-alpha.97",
-    "@idp/elements": "link:../elements",
-    "@idp/sdk": "link:../sdk"
+    "@idp/elements": "workspace:*",
+    "@idp/sdk": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^7.0.2"

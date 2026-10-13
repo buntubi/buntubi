@@ -27,11 +27,11 @@
     "@fluixi/reactive": "^1.0.0-alpha.97",
     "@fluixi/start": "^0.1.0-alpha.87",
     "@fluixi/web-components": "^1.0.0-alpha.97",
-    "@idp/elements": "link:../packages/elements",
-    "@idp/sdk": "link:../packages/sdk",
-    "@idp/shell": "link:../packages/shell",
-    "@idp/skin": "link:../packages/skin",
-    "@idp/theme": "link:../packages/theme",
+    "@idp/elements": "workspace:*",
+    "@idp/sdk": "workspace:*",
+    "@idp/shell": "workspace:*",
+    "@idp/skin": "workspace:*",
+    "@idp/theme": "workspace:*",
     "zod": "^4.1.0"
   },
   "devDependencies": {

@@ -1,0 +1,9 @@
+{
+  "name": "identity-provider",
+  "private": true,
+  "packageManager": "pnpm@10.10.0",
+  "scripts": {
+    "build": "pnpm -r --filter './packages/*' --filter ./frontend --filter './apps/*' run build",
+    "typecheck": "pnpm -r exec tsc --noEmit -p ."
+  }
+}
