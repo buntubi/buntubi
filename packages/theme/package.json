@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fluixi/core": "link:../../../../fluixi-core/packages/core"
+    "@fluixi/core": "^1.0.0-alpha.97"
   },
   "devDependencies": {
     "typescript": "^7.0.2"

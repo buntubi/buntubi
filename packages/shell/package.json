@@ -17,14 +17,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fluixi-ui/button": "link:../../../../fluixi-ui/packages/button",
-    "@fluixi-ui/dropdown-menu": "link:../../../../fluixi-ui/packages/dropdown-menu",
-    "@fluixi-ui/layout": "link:../../../../fluixi-ui/packages/layout",
-    "@fluixi-ui/primitives": "link:../../../../fluixi-ui/packages/primitives",
-    "@fluixi/core": "link:../../../../fluixi-core/packages/core",
-    "@fluixi/dom": "link:../../../../fluixi-core/packages/dom",
-    "@fluixi/jsx": "link:../../../../fluixi-core/packages/jsx",
-    "@fluixi/reactive": "link:../../../../fluixi-core/packages/reactive",
+    "@fluixi-ui/button": "^0.2.0-alpha.19",
+    "@fluixi-ui/dropdown-menu": "^0.2.0-alpha.19",
+    "@fluixi-ui/layout": "^0.1.0-alpha.11",
+    "@fluixi-ui/primitives": "^0.2.0-alpha.9",
+    "@fluixi/core": "^1.0.0-alpha.97",
+    "@fluixi/dom": "^1.0.0-alpha.97",
+    "@fluixi/jsx": "^1.0.0-alpha.97",
+    "@fluixi/reactive": "^1.0.0-alpha.97",
     "@idp/elements": "link:../elements",
     "@idp/sdk": "link:../sdk"
   },

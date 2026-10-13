@@ -27,7 +27,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fluixi/start": "link:../../../../fluixi-core/packages/start",
+    "@fluixi/start": "^0.1.0-alpha.87",
     "zod": "^4.6.5"
   },
   "devDependencies": {

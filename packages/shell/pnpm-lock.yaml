@@ -9,29 +9,29 @@ importers:
   .:
     dependencies:
       '@fluixi-ui/button':
-        specifier: link:../../../../fluixi-ui/packages/button
-        version: link:../../../../fluixi-ui/packages/button
+        specifier: ^0.2.0-alpha.19
+        version: 0.2.0-alpha.19(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
       '@fluixi-ui/dropdown-menu':
-        specifier: link:../../../../fluixi-ui/packages/dropdown-menu
-        version: link:../../../../fluixi-ui/packages/dropdown-menu
+        specifier: ^0.2.0-alpha.19
+        version: 0.2.0-alpha.19(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
       '@fluixi-ui/layout':
-        specifier: link:../../../../fluixi-ui/packages/layout
-        version: link:../../../../fluixi-ui/packages/layout
+        specifier: ^0.1.0-alpha.11
+        version: 0.1.0-alpha.11(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
       '@fluixi-ui/primitives':
-        specifier: link:../../../../fluixi-ui/packages/primitives
-        version: link:../../../../fluixi-ui/packages/primitives
+        specifier: ^0.2.0-alpha.9
+        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
       '@fluixi/core':
-        specifier: link:../../../../fluixi-core/packages/core
-        version: link:../../../../fluixi-core/packages/core
+        specifier: ^1.0.0-alpha.97
+        version: 1.0.0-alpha.97
       '@fluixi/dom':
-        specifier: link:../../../../fluixi-core/packages/dom
-        version: link:../../../../fluixi-core/packages/dom
+        specifier: ^1.0.0-alpha.97
+        version: 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
       '@fluixi/jsx':
-        specifier: link:../../../../fluixi-core/packages/jsx
-        version: link:../../../../fluixi-core/packages/jsx
+        specifier: ^1.0.0-alpha.97
+        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
       '@fluixi/reactive':
-        specifier: link:../../../../fluixi-core/packages/reactive
-        version: link:../../../../fluixi-core/packages/reactive
+        specifier: ^1.0.0-alpha.97
+        version: 1.0.0-alpha.97
       '@idp/elements':
         specifier: link:../elements
         version: link:../elements
@@ -44,6 +44,123 @@ importers:
         version: 7.0.2
 
 packages:
+
+  '@floating-ui/core@1.8.0':
+    resolution: {integrity: sha512-0CIZ5itps/8x7BG8dEIhs53BvCUH2PCoogtakwRTut+Arm58sJooJ0AuZhLw2HJYIR5cMLNPBSS728sPho2khQ==}
+
+  '@floating-ui/dom@1.8.0':
+    resolution: {integrity: sha512-yXSrzeHZBTZadLOlfyhCkJHNeLJnHRnRInwdZ40L7ZiaAtrBwoYlsDrX3v5zB1Utk7CLfzcOVnVVWoXEky7Ceg==}
+
+  '@floating-ui/utils@0.2.12':
+    resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@fluixi-ui/button@0.2.0-alpha.19':
+    resolution: {integrity: sha512-xWXF6dsZF91LAV5ecoZQMz6oo9ZoBvEf7zeJmklhqfPFp+wC4E0TRqUm08IWqusTYBIF6no8iJQrosgyMMFpQQ==}
+    peerDependencies:
+      '@fluixi/core': '>=1.0.0-alpha.41'
+      '@fluixi/dom': '>=1.0.0-alpha.41'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+
+  '@fluixi-ui/dropdown-menu@0.2.0-alpha.19':
+    resolution: {integrity: sha512-fvMbR9oNKLCPytArzCC8VG7oWMVfrhI4sOK3Lz29zNmlpeaRwzzPEgbMUvNN+kDIMHnb4iDF4ITIz5wrcbb7nw==}
+    peerDependencies:
+      '@fluixi/core': '>=1.0.0-alpha.41'
+      '@fluixi/dom': '>=1.0.0-alpha.41'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+
+  '@fluixi-ui/fx@0.1.0-alpha.8':
+    resolution: {integrity: sha512-JXQ6yQDhsW5jbGHUmaKIE+g2dRi033XX2r932L3O5a4luvGnjy2QMQHO7S0auC5WuOOGRhrZKUrFWearHcsvZg==}
+    peerDependencies:
+      '@babel/parser': '>=7.20.0'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+      vite: '>=5'
+    peerDependenciesMeta:
+      '@babel/parser':
+        optional: true
+      vite:
+        optional: true
+
+  '@fluixi-ui/kit@0.2.0-alpha.3':
+    resolution: {integrity: sha512-B0hFjnxfd0HeVW1bf9diNbc2zRLe6hf54D85Qi0TL61YPq8YyXgIV/b2/fqggnklw1FRXLJ0ZXmU2uM1EAywFw==}
+    peerDependencies:
+      '@fluixi/core': '>=1.0.0-alpha.41'
+      '@fluixi/dom': '>=1.0.0-alpha.83'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+
+  '@fluixi-ui/layout@0.1.0-alpha.11':
+    resolution: {integrity: sha512-MZU4+crqch5rgUUjwQWnecgpcgu14S0k/VJFausT0AOPtO2HefX8waouDSwiwV8pvSdceQlLRgmHtymje8n42g==}
+    peerDependencies:
+      '@fluixi/core': '>=1.0.0-alpha.41'
+      '@fluixi/dom': '>=1.0.0-alpha.41'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+
+  '@fluixi-ui/polymorphic@0.2.0-alpha.1':
+    resolution: {integrity: sha512-EulckjtGhl8fhCjNlMSbirJ05hfSdZ1oiwUoPlbvICn1Kczqoyk3leZNC9EgrYy/Xw9PsYdyNmNhMc1UZISHDg==}
+    peerDependencies:
+      '@fluixi/core': '>=1.0.0-alpha.41'
+      '@fluixi/dom': '>=1.0.0-alpha.41'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+
+  '@fluixi-ui/primitives@0.2.0-alpha.9':
+    resolution: {integrity: sha512-iOTcgGf/ZC3by80A98WmQypsiGPES5jawCFFFACZRaJsV9fdDTK0rPnxOX97feNUTWnf5/ferHCc7T5Z/izgTw==}
+    peerDependencies:
+      '@fluixi/core': '>=1.0.0-alpha.41'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+
+  '@fluixi-ui/tokens@0.4.0-alpha.18':
+    resolution: {integrity: sha512-swz324bAFJ0SwYZwROm/1BK+AZqAJpDmWDypeFWmRiUjRhVIos34q78NrBcYUBjxgM7GaJR/p1RuVCE6mc+esg==}
+    peerDependencies:
+      '@fluixi/core': '>=1.0.0-alpha.93'
+      '@fluixi/reactive': '>=1.0.0-alpha.41'
+
+  '@fluixi/core@1.0.0-alpha.97':
+    resolution: {integrity: sha512-rFRX8SMJUg2SYSsLTSF0bElWQx6zfbiGD4iPCW6ECQLA+oc4ZN8uaEiAPExPSbR7ABuhU/3rJ5om6eGj3hg/Iw==}
+    hasBin: true
+    peerDependencies:
+      '@fluixi/compiler': 1.0.0-alpha.97
+      '@fluixi/vite-plugin': 1.0.0-alpha.97
+      vite-plugin-node-polyfills: ^0.25.0
+    peerDependenciesMeta:
+      '@fluixi/compiler':
+        optional: true
+      '@fluixi/vite-plugin':
+        optional: true
+      vite-plugin-node-polyfills:
+        optional: true
+
+  '@fluixi/dom@1.0.0-alpha.97':
+    resolution: {integrity: sha512-xfC76CQnDMwq2QUXYl6FobMr6o2pO97aeeCCnhLvtX/haXL7u1BRQN9tcNEmU7ZqnywAm7dV1DxJPDEoR+7aag==}
+    peerDependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/head@1.0.0-alpha.64':
+    resolution: {integrity: sha512-M5fImlsO4wFw/rB7+OwNfXRoUKoBo0msPoUjLwQQIEWT/3MhhYqKzzhdtGYTOtPQu96vxfZrqbGlFTSZuJp0Pw==}
+    peerDependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/jsx@1.0.0-alpha.97':
+    resolution: {integrity: sha512-1L0x5iXB+YRzQg2WyT0YfF0y89OONPdb2PFhiwlUaBpb6gXBmK9RnHy+qvytkVe51zrAMPVcU7KLWTeaeHi2Vg==}
+    peerDependencies:
+      '@fluixi/dom': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/reactive@1.0.0-alpha.97':
+    resolution: {integrity: sha512-4FkMTQiwGQevUcnVDgPpFIvsnL+z3tg9Z7yboojru4qKwv9WoQsQ6ZkimbIuIH2Im904W2/r+dEw1MUuJd/n3g==}
+
+  '@fluixi/router@0.1.2-alpha.5':
+    resolution: {integrity: sha512-m73c+TESFz6gHSysvZgs6D1Gsl6ktbjAPZUOLqrFH44cjLUBhtNhjOURrlSKh+yhzl0SN2lWuveiOU2+RhRQ8A==}
+
+  '@fluixi/server@1.0.0-alpha.97':
+    resolution: {integrity: sha512-ItCy1zQHyF6ebMgojP0HmitPSYB7ixwH7qX6hd0JqKPse1tmCN3LgXzifS2l5wxUfG4lTotmPJQIRalVA7Ch3g==}
+    peerDependencies:
+      '@fluixi/dom': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/storage@0.1.0-alpha.4':
+    resolution: {integrity: sha512-joJF4IDjTwoY6yi/AfHzyN7pfLUbm8NnW/nS/YCUaG5YUdlxfBordqCXXSA8Iyqhwdw7S1JQHPbTEZYD9ZQQ/g==}
+
+  '@fluixi/utils@1.0.0-alpha.97':
+    resolution: {integrity: sha512-0ebx4D07GQKvDubLjDoZ+nQiAK6SucqUC7BYcQkyP8WJwv78rfiP5kyfDR6sHXKqw8InPw+6Xcj6wk/JCTd/gA==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -165,12 +282,150 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  component-emitter@2.0.0:
+    resolution: {integrity: sha512-4m5s3Me2xxlVKG9PkZpQqHQR7bgpnN7joDMJ4yvVkVXngjoITG76IaZmzmywSeRTeTpc6N6r3H3+KyUurV8OYw==}
+    engines: {node: '>=18'}
+
+  stream@0.0.3:
+    resolution: {integrity: sha512-aMsbn7VKrl4A2T7QAQQbzgN7NVc70vgF5INQrBXqn4dCXN1zy3L9HGgLO5s7PExmdrzTJ8uR/27aviW8or8/+A==}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
   typescript@7.0.2:
     resolution: {integrity: sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==}
     engines: {node: '>=16.20.0'}
     hasBin: true
 
 snapshots:
+
+  '@floating-ui/core@1.8.0':
+    dependencies:
+      '@floating-ui/utils': 0.2.12
+
+  '@floating-ui/dom@1.8.0':
+    dependencies:
+      '@floating-ui/core': 1.8.0
+      '@floating-ui/utils': 0.2.12
+
+  '@floating-ui/utils@0.2.12': {}
+
+  '@fluixi-ui/button@0.2.0-alpha.19(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/core': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+    transitivePeerDependencies:
+      - '@babel/parser'
+      - vite
+
+  '@fluixi-ui/dropdown-menu@0.2.0-alpha.19(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/core': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+    transitivePeerDependencies:
+      - '@babel/parser'
+      - vite
+
+  '@fluixi-ui/fx@0.1.0-alpha.8(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+    transitivePeerDependencies:
+      - '@fluixi/core'
+      - '@fluixi/dom'
+
+  '@fluixi-ui/kit@0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/core': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi-ui/layout@0.1.0-alpha.11(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/polymorphic': 0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/core': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+    transitivePeerDependencies:
+      - '@babel/parser'
+      - vite
+
+  '@fluixi-ui/polymorphic@0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/core': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+      tslib: 2.8.1
+
+  '@fluixi-ui/primitives@0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@floating-ui/dom': 1.8.0
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/core': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.97
+    transitivePeerDependencies:
+      - '@fluixi/dom'
+
+  '@fluixi-ui/tokens@0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97)(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/core': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.97
+    transitivePeerDependencies:
+      - '@fluixi/dom'
+
+  '@fluixi/core@1.0.0-alpha.97':
+    dependencies:
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/head': 1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/jsx': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/router': 0.1.2-alpha.5
+      '@fluixi/server': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/storage': 0.1.0-alpha.4
+      '@fluixi/utils': 1.0.0-alpha.97
+
+  '@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+      stream: 0.0.3
+
+  '@fluixi/head@1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/jsx@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/reactive@1.0.0-alpha.97': {}
+
+  '@fluixi/router@0.1.2-alpha.5': {}
+
+  '@fluixi/server@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/head': 1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/storage@0.1.0-alpha.4':
+    dependencies:
+      '@fluixi/utils': 1.0.0-alpha.97
+
+  '@fluixi/utils@1.0.0-alpha.97': {}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
@@ -231,6 +486,14 @@ snapshots:
 
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
+
+  component-emitter@2.0.0: {}
+
+  stream@0.0.3:
+    dependencies:
+      component-emitter: 2.0.0
+
+  tslib@2.8.1: {}
 
   typescript@7.0.2:
     optionalDependencies:

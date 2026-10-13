@@ -9,14 +9,63 @@ importers:
   .:
     dependencies:
       '@fluixi/core':
-        specifier: link:../../../../fluixi-core/packages/core
-        version: link:../../../../fluixi-core/packages/core
+        specifier: ^1.0.0-alpha.97
+        version: 1.0.0-alpha.97
     devDependencies:
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
 
 packages:
+
+  '@fluixi/core@1.0.0-alpha.97':
+    resolution: {integrity: sha512-rFRX8SMJUg2SYSsLTSF0bElWQx6zfbiGD4iPCW6ECQLA+oc4ZN8uaEiAPExPSbR7ABuhU/3rJ5om6eGj3hg/Iw==}
+    hasBin: true
+    peerDependencies:
+      '@fluixi/compiler': 1.0.0-alpha.97
+      '@fluixi/vite-plugin': 1.0.0-alpha.97
+      vite-plugin-node-polyfills: ^0.25.0
+    peerDependenciesMeta:
+      '@fluixi/compiler':
+        optional: true
+      '@fluixi/vite-plugin':
+        optional: true
+      vite-plugin-node-polyfills:
+        optional: true
+
+  '@fluixi/dom@1.0.0-alpha.97':
+    resolution: {integrity: sha512-xfC76CQnDMwq2QUXYl6FobMr6o2pO97aeeCCnhLvtX/haXL7u1BRQN9tcNEmU7ZqnywAm7dV1DxJPDEoR+7aag==}
+    peerDependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/head@1.0.0-alpha.64':
+    resolution: {integrity: sha512-M5fImlsO4wFw/rB7+OwNfXRoUKoBo0msPoUjLwQQIEWT/3MhhYqKzzhdtGYTOtPQu96vxfZrqbGlFTSZuJp0Pw==}
+    peerDependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/jsx@1.0.0-alpha.97':
+    resolution: {integrity: sha512-1L0x5iXB+YRzQg2WyT0YfF0y89OONPdb2PFhiwlUaBpb6gXBmK9RnHy+qvytkVe51zrAMPVcU7KLWTeaeHi2Vg==}
+    peerDependencies:
+      '@fluixi/dom': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/reactive@1.0.0-alpha.97':
+    resolution: {integrity: sha512-4FkMTQiwGQevUcnVDgPpFIvsnL+z3tg9Z7yboojru4qKwv9WoQsQ6ZkimbIuIH2Im904W2/r+dEw1MUuJd/n3g==}
+
+  '@fluixi/router@0.1.2-alpha.5':
+    resolution: {integrity: sha512-m73c+TESFz6gHSysvZgs6D1Gsl6ktbjAPZUOLqrFH44cjLUBhtNhjOURrlSKh+yhzl0SN2lWuveiOU2+RhRQ8A==}
+
+  '@fluixi/server@1.0.0-alpha.97':
+    resolution: {integrity: sha512-ItCy1zQHyF6ebMgojP0HmitPSYB7ixwH7qX6hd0JqKPse1tmCN3LgXzifS2l5wxUfG4lTotmPJQIRalVA7Ch3g==}
+    peerDependencies:
+      '@fluixi/dom': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/storage@0.1.0-alpha.4':
+    resolution: {integrity: sha512-joJF4IDjTwoY6yi/AfHzyN7pfLUbm8NnW/nS/YCUaG5YUdlxfBordqCXXSA8Iyqhwdw7S1JQHPbTEZYD9ZQQ/g==}
+
+  '@fluixi/utils@1.0.0-alpha.97':
+    resolution: {integrity: sha512-0ebx4D07GQKvDubLjDoZ+nQiAK6SucqUC7BYcQkyP8WJwv78rfiP5kyfDR6sHXKqw8InPw+6Xcj6wk/JCTd/gA==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -138,12 +187,60 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  component-emitter@2.0.0:
+    resolution: {integrity: sha512-4m5s3Me2xxlVKG9PkZpQqHQR7bgpnN7joDMJ4yvVkVXngjoITG76IaZmzmywSeRTeTpc6N6r3H3+KyUurV8OYw==}
+    engines: {node: '>=18'}
+
+  stream@0.0.3:
+    resolution: {integrity: sha512-aMsbn7VKrl4A2T7QAQQbzgN7NVc70vgF5INQrBXqn4dCXN1zy3L9HGgLO5s7PExmdrzTJ8uR/27aviW8or8/+A==}
+
   typescript@7.0.2:
     resolution: {integrity: sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==}
     engines: {node: '>=16.20.0'}
     hasBin: true
 
 snapshots:
+
+  '@fluixi/core@1.0.0-alpha.97':
+    dependencies:
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/head': 1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/jsx': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/router': 0.1.2-alpha.5
+      '@fluixi/server': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/storage': 0.1.0-alpha.4
+      '@fluixi/utils': 1.0.0-alpha.97
+
+  '@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+      stream: 0.0.3
+
+  '@fluixi/head@1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/jsx@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/reactive@1.0.0-alpha.97': {}
+
+  '@fluixi/router@0.1.2-alpha.5': {}
+
+  '@fluixi/server@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+    dependencies:
+      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/head': 1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/reactive': 1.0.0-alpha.97
+
+  '@fluixi/storage@0.1.0-alpha.4':
+    dependencies:
+      '@fluixi/utils': 1.0.0-alpha.97
+
+  '@fluixi/utils@1.0.0-alpha.97': {}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
@@ -204,6 +301,12 @@ snapshots:
 
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
+
+  component-emitter@2.0.0: {}
+
+  stream@0.0.3:
+    dependencies:
+      component-emitter: 2.0.0
 
   typescript@7.0.2:
     optionalDependencies:
