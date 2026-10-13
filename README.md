@@ -157,6 +157,32 @@ look through plugins:
 [docs/plugins.md](docs/plugins.md) covers both halves: every hook and when it runs, the
 catalogue and its sync, events, a plugin's own API, console and portal pages, and sign-in looks.
 
+## Docker images
+
+Built from the repository root:
+
+```bash
+docker build -f docker/provider.Dockerfile -t idp-provider .
+docker build -f docker/app.Dockerfile --build-arg APP=console -t idp-console .
+docker build -f docker/app.Dockerfile --build-arg APP=portal -t idp-portal .
+```
+
+- **provider**: gunicorn on port 8000, as a non-root user. Settings come from `IDP_*`
+  variables only. Mount the signing keys at `/keys`. `WEB_CONCURRENCY` sets the worker count.
+  `--build-arg PLUGINS="acme-idp==1.2.0"` installs a deployment's plugins. `GET /healthz`
+  answers `ok` or `unavailable`, nothing more.
+- **console** and **portal**: `fluixi start` on 3420 and 3410, with production dependencies
+  only. Settings come from the environment.
+
+Run the migrations and create the first key with the provider image:
+
+```bash
+docker run --rm --env-file idp.env -v ./keys:/keys idp-provider alembic upgrade head
+docker run --rm --env-file idp.env -v ./keys:/keys idp-provider flask keys generate
+```
+
+No image contains a `.env` file, `platform.toml` or signing keys (`.dockerignore`).
+
 ## Checks
 
 ```bash

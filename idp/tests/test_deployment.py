@@ -81,3 +81,8 @@ def test_https_is_kept_by_the_browser() -> None:
     assert app.test_client().get("/signin").headers["Strict-Transport-Security"] == "max-age=31536000"
     local = create_app(get_settings())
     assert "Strict-Transport-Security" not in local.test_client().get("/signin").headers
+
+
+def test_the_health_check_says_only_up_or_down(app: Any) -> None:
+    reply = app.test_client().get("/healthz")
+    assert (reply.status_code, reply.get_data(as_text=True)) == (200, "ok")

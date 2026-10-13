@@ -11,6 +11,7 @@ from authlib.oauth2.rfc6749 import scope_to_list
 from flask import Blueprint, Response, abort, g, jsonify, redirect, request, url_for
 from joserfc import jwt as jose_jwt
 from joserfc.errors import JoseError
+from sqlalchemy import text
 
 from idp.config import get_settings
 from idp.db import db, utcnow
@@ -24,6 +25,18 @@ from idp.services import audit, consent, mfa, platform, session_check, sessions
 from idp.web import pages
 
 bp = Blueprint("oidc", __name__)
+
+
+@bp.get("/healthz")
+@limiter.exempt
+def healthz() -> Response:
+    """For the container and the load balancer: up when the database answers. Says nothing else."""
+    try:
+        db().execute(text("select 1"))
+    except Exception:
+        db().rollback()
+        return Response("unavailable", status=503, mimetype="text/plain")
+    return Response("ok", mimetype="text/plain")
 
 
 @bp.get("/.well-known/openid-configuration")

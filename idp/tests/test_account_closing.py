@@ -76,7 +76,9 @@ def test_deleting_the_account(app: Flask, browser: FlaskClient, outbox: list[mai
     with app.app_context():
         trace = db().scalar(select(AuditEvent).where(AuditEvent.event == "account.deleted"))
         assert trace is not None and trace.user_id is None and trace.ip is None
-        assert trace.details["source"] == "self" and "email" not in trace.details, "recorded without who it was"
+        assert trace.details["source"] == "self" and "email" not in trace.details, (
+            "recorded without who it was"
+        )
 
 
 def test_the_last_admin_stays(app: Flask, browser: FlaskClient, outbox: list[mail.Message]) -> None:

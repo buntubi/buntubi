@@ -19,6 +19,8 @@ dependencies = [
   # Imported directly (keys, token checks), not only through authlib and webauthn.
   "cryptography>=44",
   "joserfc>=1.7,<2",
+  # The production server (the images run it).
+  "gunicorn>=23",
 ]
 
 [project.optional-dependencies]
