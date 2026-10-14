@@ -5,7 +5,8 @@ from flask.testing import FlaskClient
 from pydantic import ValidationError
 
 from idp.config import Settings, get_settings
-from tests.conftest import page_config
+
+from conftest import page_config
 
 
 @pytest.fixture
