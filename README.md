@@ -128,6 +128,9 @@ two-step sign-in. The console at http://localhost:3420 opens after that.
 
 ## Deploying
 
+With the Docker images: [docs/operations.md](docs/operations.md) (first deploy, upgrades, the
+daily prune, signing keys, backups). Without them:
+
 `./scripts/install.sh --no-web` runs these on a server, with the deployment's
 `idp/platform.toml` in place. By hand, in this order, before the platform takes traffic:
 
