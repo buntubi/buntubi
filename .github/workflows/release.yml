@@ -1,21 +1,62 @@
-# A version tag (v1.2.3) builds the three images and pushes them to the GitHub Container
-# Registry, tagged with the version and `latest`; publishes @buntu/sdk to npm (NPM_TOKEN) and the
-# provider to PyPI as `buntu` (trusted publishing, environment `pypi`); then opens a GitHub release
-# with the notes generated from the commits since the previous tag. The tag must match the
-# versions in packages/sdk/package.json and idp/pyproject.toml.
+# Releases come from changesets, never from a hand-made tag. On every push to main:
+#   - pending changesets: open or update the "Version packages" pull request, which bumps
+#     @buntu/sdk, writes its CHANGELOG and gives idp/pyproject.toml the same version;
+#   - that pull request just merged: publish @buntu/sdk to npm, then, in this same run (a tag
+#     pushed by a workflow starts no other workflow), push the three images to ghcr.io, publish
+#     the provider to PyPI as `buntu` (trusted publishing, environment `pypi`, this file), and
+#     create the vX.Y.Z tag with its GitHub release.
 name: Release
 
 on:
   push:
-    tags: ["v*.*.*"]
+    branches: [main]
 
 permissions:
   contents: write
-  packages: write
+  pull-requests: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  images:
+  changesets:
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # pnpm reads the token from the user .npmrc.
+      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - id: changesets
+        uses: changesets/action@v1
+        with:
+          version: pnpm run version
+          publish: pnpm run release
+          title: "chore: version packages"
+          commit: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - id: version
+        run: echo "version=$(node -p "require('./packages/sdk/package.json').version")" >> "$GITHUB_OUTPUT"
+
+  images:
+    needs: changesets
+    if: needs.changesets.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         include:
@@ -30,49 +71,25 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/idp-${{ matrix.name }}
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest
       - uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ matrix.file }}
           build-args: ${{ matrix.args }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/idp-${{ matrix.name }}:${{ needs.changesets.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/idp-${{ matrix.name }}:latest
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
 
-  sdk:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: corepack enable
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: The tag matches the package version
-        run: test "v$(node -p "require('./packages/sdk/package.json').version")" = "$GITHUB_REF_NAME"
-      - run: pnpm --filter @buntu/sdk build
-      # pnpm reads the token from the user .npmrc, not the one setup-node writes.
-      - run: |
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          pnpm --filter @buntu/sdk publish --no-git-checks --access public
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
   python:
+    needs: changesets
+    if: needs.changesets.outputs.published == 'true'
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v4
@@ -86,16 +103,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: The tag matches the package version
-        run: test "v$(python -c "import tomllib;print(tomllib.load(open('idp/pyproject.toml','rb'))['project']['version'])")" = "$GITHUB_REF_NAME"
       - run: pip install build && python -m build --outdir dist idp
       - uses: pypa/gh-action-pypi-publish@release/v1
 
-  release:
-    needs: [images, sdk, python]
+  github-release:
+    needs: [changesets, images, python]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+      - run: gh release create "v${VERSION}" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.changesets.outputs.version }}
