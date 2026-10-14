@@ -48,6 +48,8 @@ jobs:
           publish: pnpm run release
           title: "chore: version packages"
           commit: "chore: version packages"
+          # One release per version, vX.Y.Z, made below for the whole product.
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
