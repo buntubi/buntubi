@@ -18,4 +18,4 @@ export const welcomeView = (w: WelcomeLogic) => (
   </section>
 );
 
-export const WelcomeView = viewToken<WelcomeLogic>('WelcomeView', welcomeView);
+export const WelcomeView = viewToken<WelcomeLogic>('idp-welcome', welcomeView);

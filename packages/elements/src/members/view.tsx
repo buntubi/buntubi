@@ -134,4 +134,4 @@ export const membersView = (m: MembersLogic) => (
   </section>
 );
 
-export const MembersView = viewToken<MembersLogic>('MembersView', membersView);
+export const MembersView = viewToken<MembersLogic>('idp-members', membersView);

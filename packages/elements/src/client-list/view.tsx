@@ -31,4 +31,4 @@ export const clientListView = (l: ClientListLogic) => (
   </section>
 );
 
-export const ClientListView = viewToken<ClientListLogic>('ClientListView', clientListView);
+export const ClientListView = viewToken<ClientListLogic>('idp-client-list', clientListView);

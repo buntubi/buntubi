@@ -92,4 +92,4 @@ export const reviewSubmissionView = (s: ReviewSubmissionLogic) => (
   </div>
 );
 
-export const ReviewSubmissionView = viewToken<ReviewSubmissionLogic>('ReviewSubmissionView', reviewSubmissionView);
+export const ReviewSubmissionView = viewToken<ReviewSubmissionLogic>('idp-review-submission', reviewSubmissionView);

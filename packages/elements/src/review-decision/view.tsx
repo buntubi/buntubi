@@ -178,4 +178,4 @@ export const reviewDecisionView = (d: ReviewDecisionLogic) => (
   </div>
 );
 
-export const ReviewDecisionView = viewToken<ReviewDecisionLogic>('ReviewDecisionView', reviewDecisionView);
+export const ReviewDecisionView = viewToken<ReviewDecisionLogic>('idp-review-decision', reviewDecisionView);

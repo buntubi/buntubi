@@ -40,4 +40,4 @@ export const devicesView = (d: DevicesLogic) => (
   </div>
 );
 
-export const DevicesView = viewToken<DevicesLogic>('DevicesView', devicesView);
+export const DevicesView = viewToken<DevicesLogic>('idp-devices', devicesView);

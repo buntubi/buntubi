@@ -13,9 +13,25 @@ import { inject, injectionToken, type Token } from '@fluixi/start/di';
 
 export type View<Logic> = (logic: Logic) => unknown;
 
-/** A view token whose default is `view`, built only if no app provides another. */
+// Views a deployment put in place of the elements' own, by element tag (`overrideViews`).
+const overrides = new Map<string, View<never>>();
+
+/**
+ * A view token whose default is `view`, built only if no app provides another. `name` is the
+ * element's tag: a view given for that tag through `overrideViews` (a UI plugin's `views`) takes
+ * the place of `view`.
+ */
 export function viewToken<Logic>(name: string, view: View<Logic>): Token<View<Logic>> {
-  return injectionToken<View<Logic>>(name, { factory: () => view });
+  return injectionToken<View<Logic>>(name, { factory: () => (overrides.get(name) as View<Logic> | undefined) ?? view });
+}
+
+/**
+ * Views to use in place of the elements' own, by element tag: `{ 'idp-sidebar': mySidebar }`.
+ * Each receives the element's logic. Called by the console, the portal and the sign-in pages at
+ * start with every UI plugin's `views`, before any element renders.
+ */
+export function overrideViews(views: Readonly<Record<string, View<never>>>): void {
+  for (const [tag, view] of Object.entries(views)) overrides.set(tag, view);
 }
 
 /** The view the app provided for `token`, or the element's own. */

@@ -26,4 +26,4 @@ export const secretRowView = (s: SecretRowLogic) => (
   </div>
 );
 
-export const SecretRowView = viewToken<SecretRowLogic>('SecretRowView', secretRowView);
+export const SecretRowView = viewToken<SecretRowLogic>('idp-secret-row', secretRowView);

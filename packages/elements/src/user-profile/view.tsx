@@ -240,4 +240,4 @@ export const userProfileView = (p: UserProfileLogic) => (
   </div>
 );
 
-export const UserProfileView = viewToken<UserProfileLogic>('UserProfileView', userProfileView);
+export const UserProfileView = viewToken<UserProfileLogic>('idp-user-profile', userProfileView);

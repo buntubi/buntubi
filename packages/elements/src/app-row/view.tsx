@@ -38,4 +38,4 @@ export const appRowView = (r: AppRowLogic) => (
   </div>
 );
 
-export const AppRowView = viewToken<AppRowLogic>('AppRowView', appRowView);
+export const AppRowView = viewToken<AppRowLogic>('idp-app-row', appRowView);

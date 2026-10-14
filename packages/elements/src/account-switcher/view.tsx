@@ -102,4 +102,4 @@ export const accountSwitcherView = (a: AccountSwitcherLogic) => (
   </div>
 );
 
-export const AccountSwitcherView = viewToken<AccountSwitcherLogic>('AccountSwitcherView', accountSwitcherView);
+export const AccountSwitcherView = viewToken<AccountSwitcherLogic>('idp-account-switcher', accountSwitcherView);

@@ -34,4 +34,4 @@ export const appLauncherView = (l: AppLauncherLogic) => (
   </Show>
 );
 
-export const AppLauncherView = viewToken<AppLauncherLogic>('AppLauncherView', appLauncherView);
+export const AppLauncherView = viewToken<AppLauncherLogic>('idp-app-launcher', appLauncherView);

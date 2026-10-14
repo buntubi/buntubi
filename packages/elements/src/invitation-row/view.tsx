@@ -36,4 +36,4 @@ export const invitationRowView = (i: InvitationRowLogic) => (
   </div>
 );
 
-export const InvitationRowView = viewToken<InvitationRowLogic>('InvitationRowView', invitationRowView);
+export const InvitationRowView = viewToken<InvitationRowLogic>('idp-invitation-row', invitationRowView);

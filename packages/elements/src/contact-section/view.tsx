@@ -147,4 +147,4 @@ export const contactSectionView = (p: ContactSectionLogic) => (
   </section>
 );
 
-export const ContactSectionView = viewToken<ContactSectionLogic>('ContactSectionView', contactSectionView);
+export const ContactSectionView = viewToken<ContactSectionLogic>('idp-contact-section', contactSectionView);

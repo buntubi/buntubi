@@ -52,4 +52,4 @@ export const pathToLiveView = (p: PathToLiveLogic) => (
   </section>
 );
 
-export const PathToLiveView = viewToken<PathToLiveLogic>('PathToLiveView', pathToLiveView);
+export const PathToLiveView = viewToken<PathToLiveLogic>('idp-path-to-live', pathToLiveView);

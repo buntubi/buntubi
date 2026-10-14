@@ -34,4 +34,4 @@ export const kindPickerView = (p: KindPickerLogic) => (
   </section>
 );
 
-export const KindPickerView = viewToken<KindPickerLogic>('KindPickerView', kindPickerView);
+export const KindPickerView = viewToken<KindPickerLogic>('idp-kind-picker', kindPickerView);

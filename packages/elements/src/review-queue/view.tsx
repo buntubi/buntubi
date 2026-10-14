@@ -74,4 +74,4 @@ export const reviewQueueView = (q: ReviewQueueLogic) => (
   </section>
 );
 
-export const ReviewQueueView = viewToken<ReviewQueueLogic>('ReviewQueueView', reviewQueueView);
+export const ReviewQueueView = viewToken<ReviewQueueLogic>('idp-review-queue', reviewQueueView);

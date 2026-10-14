@@ -114,4 +114,4 @@ export const clientDetailView = (d: ClientDetailLogic) => (
   </div>
 );
 
-export const ClientDetailView = viewToken<ClientDetailLogic>('ClientDetailView', clientDetailView);
+export const ClientDetailView = viewToken<ClientDetailLogic>('idp-client-detail', clientDetailView);

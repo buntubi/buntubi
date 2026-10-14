@@ -20,7 +20,8 @@ import './elements/device-activate/device-activate.js';
 import './elements/mfa-verify/mfa-verify.js';
 import type { AccountItem } from './elements/account-select/account-select.js';
 import { createApi, type Redirect } from './host/api.js';
-import { lookOf } from '@buntu/sdk/plugins';
+import { lookOf, viewsOf } from '@buntu/sdk/plugins';
+import { overrideViews } from '@buntu/sdk/view';
 import { getPasskey } from '@buntu/sdk/webauthn';
 import uiPlugins from 'virtual:idp-ui-plugins';
 import { applyBrand } from './host/brand.js';
@@ -28,6 +29,9 @@ import { readConfig } from './host/config.js';
 import { text } from './host/i18n.js';
 import { FooterLink, Page } from './host/page.js';
 import { forgotPasswordSchema, resetPasswordSchema, signInSchema, signUpSchema } from './host/schemas.js';
+
+// A deployment's views in place of the elements' own, before anything renders.
+overrideViews(viewsOf(uiPlugins));
 
 const config = readConfig();
 const t = text[config.locale] ?? text.fr;

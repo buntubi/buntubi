@@ -20,4 +20,4 @@ export const oneTimeValueView = (o: OneTimeValueLogic) => (
   </div>
 );
 
-export const OneTimeValueView = viewToken<OneTimeValueLogic>('OneTimeValueView', oneTimeValueView);
+export const OneTimeValueView = viewToken<OneTimeValueLogic>('idp-one-time-value', oneTimeValueView);

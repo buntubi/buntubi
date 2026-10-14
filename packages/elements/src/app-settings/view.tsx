@@ -81,4 +81,4 @@ export const appSettingsView = (s: AppSettingsLogic) => (
   </Form>
 );
 
-export const AppSettingsView = viewToken<AppSettingsLogic>('AppSettingsView', appSettingsView);
+export const AppSettingsView = viewToken<AppSettingsLogic>('idp-app-settings', appSettingsView);

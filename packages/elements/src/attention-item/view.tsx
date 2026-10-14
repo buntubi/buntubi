@@ -34,4 +34,4 @@ export const attentionItemView = (a: AttentionItemLogic) => (
   </div>
 );
 
-export const AttentionItemView = viewToken<AttentionItemLogic>('AttentionItemView', attentionItemView);
+export const AttentionItemView = viewToken<AttentionItemLogic>('idp-attention-item', attentionItemView);

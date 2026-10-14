@@ -33,4 +33,4 @@ export const userListView = (l: UserListLogic) => (
   </section>
 );
 
-export const UserListView = viewToken<UserListLogic>('UserListView', userListView);
+export const UserListView = viewToken<UserListLogic>('idp-user-list', userListView);

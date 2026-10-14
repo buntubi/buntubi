@@ -105,4 +105,4 @@ export const createAppView = (c: CreateAppLogic) => (
   </Stack>
 );
 
-export const CreateAppView = viewToken<CreateAppLogic>('CreateAppView', createAppView);
+export const CreateAppView = viewToken<CreateAppLogic>('idp-create-app', createAppView);

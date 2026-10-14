@@ -31,4 +31,4 @@ export const historyEntryView = (h: HistoryEntryLogic) => (
   </div>
 );
 
-export const HistoryEntryView = viewToken<HistoryEntryLogic>('HistoryEntryView', historyEntryView);
+export const HistoryEntryView = viewToken<HistoryEntryLogic>('idp-history-entry', historyEntryView);

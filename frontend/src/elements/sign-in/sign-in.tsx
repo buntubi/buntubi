@@ -4,17 +4,17 @@
  * `passkeyAction` the email field also offers the browser's passkeys, and a button asks for one.
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import { onCleanup, onMount, Show } from '@fluixi/core';
+import { onCleanup, onMount } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
 import { passkeyAutofillSupported, passkeysSupported } from '@buntu/sdk/webauthn';
 import { createField, createForm } from '@fluixi/forms';
-import { Form, FormField } from '@fluixi-ui/form';
-import { Input } from '@fluixi-ui/input';
-import { Button } from '@fluixi-ui/button';
+import { useView } from '@buntu/sdk/view';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
 import '../shared/form.css';
+import type { SignInLogic } from './logic.js';
+import { SignInView } from './view.js';
 
 export interface SignIn {
   email: string;
@@ -110,42 +110,19 @@ export class IdpSignIn extends typedElement(props) {
       );
     };
 
-    return (
-      <Form form={form} onSubmit={submit} class="idp-form" novalidate>
-        {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
-        {() => (passkey.error() ? <p class="idp-alert" role="alert">{passkey.error()}</p> : null)}
-        <FormField control={form.get('email')} label={() => label().email}>
-          {(b) => (
-            <Input type="email" name="email" autocomplete="username webauthn" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />
-          )}
-        </FormField>
-        <FormField control={form.get('password')} label={() => label().password}>
-          {(b) => (
-            <Input
-              type="password"
-              name="password"
-              autocomplete="current-password"
-              value={b.value()}
-              onInput={b.onInput}
-              onBlur={b.onBlur}
-            />
-          )}
-        </FormField>
-        {() => (this.forgotHref ? <a class="idp-link" href={this.forgotHref}>{label().forgot}</a> : null)}
-        <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
-          {() => (pending() ? label().pending : label().submit)}
-        </Button>
-        <Show when={canPasskey()}>
-          <p class="idp-or">{() => label().or}</p>
-          <Button type="button" variant="outline" tone="neutral" data-part="passkey" disabled={passkey.pending()} onPress={askPasskey}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M8 11a4 4 0 1 1 3.9-4.9M12 7h9l-2 2 2 2-2 2M3 21v-2a4 4 0 0 1 4-4h3" />
-            </svg>
-            {() => (passkey.pending() ? label().passkeyPending : label().passkey)}
-          </Button>
-        </Show>
-      </Form>
-    );
+    const logic: SignInLogic = {
+      form,
+      labels: label,
+      error,
+      passkeyError: passkey.error,
+      pending,
+      passkeyPending: passkey.pending,
+      canPasskey,
+      forgotHref: () => this.forgotHref,
+      submit,
+      askPasskey,
+    };
+    return useView(SignInView)(logic);
   }
 }
 

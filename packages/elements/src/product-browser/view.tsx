@@ -67,4 +67,4 @@ export const productBrowserView = (b: ProductBrowserLogic) => (
   </div>
 );
 
-export const ProductBrowserView = viewToken<ProductBrowserLogic>('ProductBrowserView', productBrowserView);
+export const ProductBrowserView = viewToken<ProductBrowserLogic>('idp-product-browser', productBrowserView);

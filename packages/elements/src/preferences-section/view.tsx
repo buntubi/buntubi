@@ -58,4 +58,4 @@ export const preferencesSectionView = (p: PreferencesSectionLogic) => (
   </section>
 );
 
-export const PreferencesSectionView = viewToken<PreferencesSectionLogic>('PreferencesSectionView', preferencesSectionView);
+export const PreferencesSectionView = viewToken<PreferencesSectionLogic>('idp-preferences-section', preferencesSectionView);

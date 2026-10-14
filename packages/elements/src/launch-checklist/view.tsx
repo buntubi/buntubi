@@ -66,4 +66,4 @@ export const launchChecklistView = (c: LaunchChecklistLogic) => (
   </section>
 );
 
-export const LaunchChecklistView = viewToken<LaunchChecklistLogic>('LaunchChecklistView', launchChecklistView);
+export const LaunchChecklistView = viewToken<LaunchChecklistLogic>('idp-launch-checklist', launchChecklistView);

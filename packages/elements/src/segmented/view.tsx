@@ -34,4 +34,4 @@ export const segmentedView = (s: SegmentedLogic) => (
   </ToggleGroup>
 );
 
-export const SegmentedView = viewToken<SegmentedLogic>('SegmentedView', segmentedView);
+export const SegmentedView = viewToken<SegmentedLogic>('idp-segmented', segmentedView);

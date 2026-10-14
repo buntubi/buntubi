@@ -110,4 +110,4 @@ export const memberRowView = (m: MemberRowLogic) => (
   </div>
 );
 
-export const MemberRowView = viewToken<MemberRowLogic>('MemberRowView', memberRowView);
+export const MemberRowView = viewToken<MemberRowLogic>('idp-member-row', memberRowView);

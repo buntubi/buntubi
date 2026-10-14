@@ -31,4 +31,4 @@ export const reviewHistoryView = (h: ReviewHistoryLogic) => (
   </section>
 );
 
-export const ReviewHistoryView = viewToken<ReviewHistoryLogic>('ReviewHistoryView', reviewHistoryView);
+export const ReviewHistoryView = viewToken<ReviewHistoryLogic>('idp-review-history', reviewHistoryView);

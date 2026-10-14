@@ -32,4 +32,4 @@ export const dataExportView = (d: DataExportLogic) => (
   </section>
 );
 
-export const DataExportView = viewToken<DataExportLogic>('DataExportView', dataExportView);
+export const DataExportView = viewToken<DataExportLogic>('idp-data-export', dataExportView);

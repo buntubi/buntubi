@@ -99,4 +99,4 @@ export const oauthClientView = (c: OAuthClientLogic) => (
   </section>
 );
 
-export const OAuthClientView = viewToken<OAuthClientLogic>('OAuthClientView', oauthClientView);
+export const OAuthClientView = viewToken<OAuthClientLogic>('idp-oauth-client', oauthClientView);

@@ -59,4 +59,4 @@ export const scopeFormView = (f: ScopeFormLogic) => (
   </section>
 );
 
-export const ScopeFormView = viewToken<ScopeFormLogic>('ScopeFormView', scopeFormView);
+export const ScopeFormView = viewToken<ScopeFormLogic>('idp-scope-form', scopeFormView);

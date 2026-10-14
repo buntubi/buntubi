@@ -45,4 +45,4 @@ export const accountCheckView = (c: AccountCheckLogic) => (
   </section>
 );
 
-export const AccountCheckView = viewToken<AccountCheckLogic>('AccountCheckView', accountCheckView);
+export const AccountCheckView = viewToken<AccountCheckLogic>('idp-account-check', accountCheckView);

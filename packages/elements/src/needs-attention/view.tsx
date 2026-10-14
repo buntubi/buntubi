@@ -20,4 +20,4 @@ export const needsAttentionView = (n: NeedsAttentionLogic) => (
   </section>
 );
 
-export const NeedsAttentionView = viewToken<NeedsAttentionLogic>('NeedsAttentionView', needsAttentionView);
+export const NeedsAttentionView = viewToken<NeedsAttentionLogic>('idp-needs-attention', needsAttentionView);

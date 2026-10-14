@@ -53,4 +53,4 @@ export const permissionsView = (p: PermissionsLogic) => (
   </div>
 );
 
-export const PermissionsView = viewToken<PermissionsLogic>('PermissionsView', permissionsView);
+export const PermissionsView = viewToken<PermissionsLogic>('idp-permissions', permissionsView);

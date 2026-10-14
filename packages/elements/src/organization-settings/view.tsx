@@ -96,4 +96,4 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
   </div>
 );
 
-export const OrganizationSettingsView = viewToken<OrganizationSettingsLogic>('OrganizationSettingsView', organizationSettingsView);
+export const OrganizationSettingsView = viewToken<OrganizationSettingsLogic>('idp-organization-settings', organizationSettingsView);

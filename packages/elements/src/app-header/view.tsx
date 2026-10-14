@@ -74,4 +74,4 @@ export const appHeaderView = (a: AppHeaderLogic) => {
   );
 };
 
-export const AppHeaderView = viewToken<AppHeaderLogic>('AppHeaderView', appHeaderView);
+export const AppHeaderView = viewToken<AppHeaderLogic>('idp-app-header', appHeaderView);

@@ -45,4 +45,4 @@ export const productCardView = (p: ProductCardLogic) => (
   </Toggle>
 );
 
-export const ProductCardView = viewToken<ProductCardLogic>('ProductCardView', productCardView);
+export const ProductCardView = viewToken<ProductCardLogic>('idp-product-card', productCardView);

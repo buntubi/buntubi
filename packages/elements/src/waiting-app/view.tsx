@@ -20,4 +20,4 @@ export const waitingAppView = (w: WaitingAppLogic) => (
   </div>
 );
 
-export const WaitingAppView = viewToken<WaitingAppLogic>('WaitingAppView', waitingAppView);
+export const WaitingAppView = viewToken<WaitingAppLogic>('idp-waiting-app', waitingAppView);

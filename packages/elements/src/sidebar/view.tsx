@@ -191,4 +191,4 @@ export const sidebarView = (s: SidebarLogic) => {
   );
 };
 
-export const SidebarView = viewToken<SidebarLogic>('SidebarView', sidebarView);
+export const SidebarView = viewToken<SidebarLogic>('idp-sidebar', sidebarView);

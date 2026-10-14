@@ -2,10 +2,10 @@
  * The 6-digit code sent by email. Submits on its own once every cell is filled; `resend` asks
  * the host for a new code. `success` carries the action's result.
  */
+import { useView } from '@buntu/sdk/view';
+import { VerifyEmailView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { PinInput } from '@fluixi-ui/pin-input';
-import { Button } from '@fluixi-ui/button';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import '../shared/form.css';
@@ -38,7 +38,7 @@ export interface VerifyEmailEvents {
   resend: Record<string, never>;
 }
 
-const CODE_LENGTH = 6;
+export const CODE_LENGTH = 6;
 
 const props = {
   email: prop.string(''),
@@ -50,7 +50,8 @@ const props = {
 };
 
 export class IdpVerifyEmail extends typedElement(props) {
-  protected override render(): unknown {
+  /** What the view draws from; a deployment can give its own view (UI plugin `views`). */
+  logic() {
     const label = () => ({ ...verifyEmailLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const code = signal('');
@@ -86,39 +87,25 @@ export class IdpVerifyEmail extends typedElement(props) {
 
     const problem = () => (invalid() ? text('form.code') : (verify.error() ?? resend.error()));
 
-    return (
-      <form
-        class="idp-form"
-        novalidate
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          submit();
-        }}
-      >
-        <p class="idp-note">
-          {() => label().sentTo} <strong>{() => this.email}</strong>
-        </p>
-        {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
-        {() => (resent() ? <p class="idp-note" role="status">{label().resent}</p> : null)}
-        <PinInput
-          class="idp-code"
-          length={CODE_LENGTH}
-          otp
-          aria-label={() => label().code}
-          value={code()}
-          onValueChange={(value: string) => code.set(value)}
-          onComplete={submit}
-        />
-        <Button type="submit" variant="solid" data-part="submit" disabled={verify.pending()}>
-          {() => (verify.pending() ? label().pending : label().submit)}
-        </Button>
-        <Button type="button" variant="ghost" disabled={resend.pending()} onPress={askAgain}>
-          {() => label().resend}
-        </Button>
-      </form>
-    );
+    return {
+      askAgain,
+      code,
+      label,
+      problem,
+      resend,
+      resent,
+      submit,
+      verify,
+      email: () => this.email,
+    };
+  }
+
+  protected override render(): unknown {
+    return useView(VerifyEmailView)(this.logic());
   }
 }
+
+export type VerifyEmailLogic = ReturnType<IdpVerifyEmail['logic']>;
 
 defineCustomElement('idp-verify-email', IdpVerifyEmail);
 

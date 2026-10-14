@@ -13,7 +13,8 @@ import { BrandContext } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
 import { usePreferences } from '@idp/shell/preferences';
 import { Shell, type Crumb } from '@idp/shell/shell';
-import { sectionsOf } from '@buntu/sdk/plugins';
+import { sectionsOf, viewsOf } from '@buntu/sdk/plugins';
+import { overrideViews } from '@buntu/sdk/view';
 import type { Brand } from '@buntu/sdk/types';
 import uiPlugins from 'virtual:idp-ui-plugins';
 import type { Gate as GateCode } from '../lib/types.js';
@@ -24,6 +25,9 @@ import { accessGateLabels, pageErrorLabels, shellLabels, sidebarLabels } from '.
 import { auth, idpUrl } from '../services/auth.js';
 import { paths } from '../lib/paths.js';
 import { brand, enabledPlugins, overview } from '../data/admin.js';
+
+// A deployment's views in place of the elements' own, before anything renders.
+overrideViews(viewsOf(uiPlugins));
 
 
 interface ShellData {

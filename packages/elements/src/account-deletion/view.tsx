@@ -65,4 +65,4 @@ export const accountDeletionView = (d: AccountDeletionLogic) => (
   </section>
 );
 
-export const AccountDeletionView = viewToken<AccountDeletionLogic>('AccountDeletionView', accountDeletionView);
+export const AccountDeletionView = viewToken<AccountDeletionLogic>('idp-account-deletion', accountDeletionView);

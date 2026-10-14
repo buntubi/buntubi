@@ -79,4 +79,4 @@ export const redirectUrisView = (r: RedirectUrisLogic) => (
   </section>
 );
 
-export const RedirectUrisView = viewToken<RedirectUrisLogic>('RedirectUrisView', redirectUrisView);
+export const RedirectUrisView = viewToken<RedirectUrisLogic>('idp-redirect-uris', redirectUrisView);

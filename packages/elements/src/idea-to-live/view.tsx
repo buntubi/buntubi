@@ -30,4 +30,4 @@ export const ideaToLiveView = (i: IdeaToLiveLogic) => (
   </section>
 );
 
-export const IdeaToLiveView = viewToken<IdeaToLiveLogic>('IdeaToLiveView', ideaToLiveView);
+export const IdeaToLiveView = viewToken<IdeaToLiveLogic>('idp-idea-to-live', ideaToLiveView);

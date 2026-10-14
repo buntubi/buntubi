@@ -72,4 +72,4 @@ export const passwordSectionView = (p: PasswordSectionLogic) => (
   </section>
 );
 
-export const PasswordSectionView = viewToken<PasswordSectionLogic>('PasswordSectionView', passwordSectionView);
+export const PasswordSectionView = viewToken<PasswordSectionLogic>('idp-password-section', passwordSectionView);

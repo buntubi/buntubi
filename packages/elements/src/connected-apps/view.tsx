@@ -37,4 +37,4 @@ export const connectedAppsView = (c: ConnectedAppsLogic) => (
   </div>
 );
 
-export const ConnectedAppsView = viewToken<ConnectedAppsLogic>('ConnectedAppsView', connectedAppsView);
+export const ConnectedAppsView = viewToken<ConnectedAppsLogic>('idp-connected-apps', connectedAppsView);

@@ -61,4 +61,4 @@ export const credentialsView = (c: CredentialsLogic & CredentialsHost) => (
   </div>
 );
 
-export const CredentialsView = viewToken<CredentialsLogic & CredentialsHost>('CredentialsView', credentialsView);
+export const CredentialsView = viewToken<CredentialsLogic & CredentialsHost>('idp-credentials', credentialsView);

@@ -140,4 +140,4 @@ export const productCatalogView = (c: ProductCatalogLogic) => {
   );
 };
 
-export const ProductCatalogView = viewToken<ProductCatalogLogic>('ProductCatalogView', productCatalogView);
+export const ProductCatalogView = viewToken<ProductCatalogLogic>('idp-product-catalog', productCatalogView);

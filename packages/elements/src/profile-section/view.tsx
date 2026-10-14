@@ -81,4 +81,4 @@ export const profileSectionView = (p: ProfileSectionLogic) => (
   </section>
 );
 
-export const ProfileSectionView = viewToken<ProfileSectionLogic>('ProfileSectionView', profileSectionView);
+export const ProfileSectionView = viewToken<ProfileSectionLogic>('idp-profile-section', profileSectionView);

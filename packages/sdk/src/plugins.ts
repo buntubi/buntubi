@@ -42,6 +42,19 @@ export interface IdpUiPlugin {
   portal?: { organization?: PluginSection[]; app?: PluginSection[] };
   /** Looks for the sign-in pages, by name. */
   looks?: Record<string, PluginLook>;
+  /**
+   * Views in place of the provider's own, by element tag (`idp-sidebar`, `idp-sign-in`): each
+   * receives that element's logic and returns its markup. Applies in the console, the portal and
+   * the sign-in pages.
+   */
+  views?: Record<string, (logic: any) => unknown>;
+}
+
+/** Every plugin's views, the first plugin listed winning a tag two of them give. */
+export function viewsOf(plugins: IdpUiPlugin[]): Record<string, (logic: never) => unknown> {
+  const views: Record<string, (logic: never) => unknown> = {};
+  for (const plugin of [...plugins].reverse()) Object.assign(views, plugin.views ?? {});
+  return views;
 }
 
 /** The look of that name from any plugin, or null. */

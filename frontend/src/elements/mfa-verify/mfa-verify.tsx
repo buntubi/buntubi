@@ -2,13 +2,12 @@
  * The second step of a sign-in: the 6-digit code from the authenticator app, or a backup code
  * when the phone is not at hand. `success` carries the action's result.
  */
+import { useView } from '@buntu/sdk/view';
+import { MfaVerifyView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import { onMount, Show } from '@fluixi/core';
+import { onMount } from '@fluixi/core';
 import { passkeysSupported } from '@buntu/sdk/webauthn';
 import { signal } from '@fluixi/reactive/signal';
-import { PinInput } from '@fluixi-ui/pin-input';
-import { Input } from '@fluixi-ui/input';
-import { Button } from '@fluixi-ui/button';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import '../shared/form.css';
@@ -58,7 +57,8 @@ const props = {
 };
 
 export class IdpMfaVerify extends typedElement(props) {
-  protected override render(): unknown {
+  /** What the view draws from; a deployment can give its own view (UI plugin `views`). */
+  logic() {
     const label = () => ({ ...mfaVerifyLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const backup = signal(false);
@@ -97,57 +97,26 @@ export class IdpMfaVerify extends typedElement(props) {
 
     const problem = () => (invalid() ? text(backup() ? 'form.backupCode' : 'form.code') : error() ?? passkey.error());
 
-    return (
-      <form
-        class="idp-form"
-        novalidate
-        onSubmit={(event: SubmitEvent) => {
-          event.preventDefault();
-          submit();
-        }}
-      >
-        <p class="idp-note">{() => (backup() ? label().backupIntro : label().intro)}</p>
-        {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
-        <Show
-          when={backup()}
-          fallback={
-            <PinInput
-              class="idp-code"
-              length={6}
-              otp
-              aria-label={label().code}
-              value={code()}
-              onValueChange={(value: string) => code.set(value)}
-              onComplete={submit}
-            />
-          }
-        >
-          {() => (
-            <Input
-              name="backup_code"
-              autocomplete="off"
-              aria-label={label().backupCode}
-              placeholder="XXXX-XXXX"
-              value={code()}
-              onInput={(event: InputEvent) => code.set((event.currentTarget as HTMLInputElement).value)}
-            />
-          )}
-        </Show>
-        <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
-          {() => (pending() ? label().pending : label().submit)}
-        </Button>
-        <Show when={canPasskey()}>
-          <Button type="button" variant="outline" tone="neutral" data-part="passkey" disabled={passkey.pending()} onPress={askPasskey}>
-            {() => (passkey.pending() ? label().passkeyPending : label().usePasskey)}
-          </Button>
-        </Show>
-        <Button type="button" variant="ghost" onPress={toggle}>
-          {() => (backup() ? label().useApp : label().useBackup)}
-        </Button>
-      </form>
-    );
+    return {
+      askPasskey,
+      backup,
+      canPasskey,
+      code,
+      label,
+      passkey,
+      pending,
+      problem,
+      submit,
+      toggle,
+    };
+  }
+
+  protected override render(): unknown {
+    return useView(MfaVerifyView)(this.logic());
   }
 }
+
+export type MfaVerifyLogic = ReturnType<IdpMfaVerify['logic']>;
 
 defineCustomElement('idp-mfa-verify', IdpMfaVerify);
 

@@ -307,6 +307,35 @@ English text. Split each element into its logic and a view, and look the view up
 `viewToken` and `useView` from `@buntu/sdk/view`, so a deployment can restyle it by providing
 another view without touching the logic.
 
+### Views in place of the provider's own
+
+Every element of the console, the portal and the sign-in pages keeps its logic (state, actions,
+events) apart from its view, the function that turns that logic into markup. A plugin gives its
+own view for an element by the element's tag:
+
+```ts
+import { definePlugin } from '@buntu/sdk/plugins';
+import { signInView } from './sign-in-view.js';
+
+export const plugin = definePlugin({
+  id: 'acme',
+  views: {
+    'idp-sign-in': signInView,
+  },
+});
+```
+
+The view receives the element's logic, the same object its own view gets: for `idp-sign-in`, the
+form, the labels, the pending and error states, `submit` and `askPasskey`. The element's
+`logic.ts` (or the `logic()` method of the sign-in pages' elements) lists what each one offers.
+Events, validation and the calls to the provider stay the element's; only the markup changes.
+
+The console, the portal and the sign-in pages apply every plugin's views when they start, before
+anything renders. When two plugins give a view for the same tag, the one listed first in
+`IDP_UI_PLUGINS` wins. For lighter changes no view is needed: the `--idp-*` tokens and the
+elements' `part` attributes can be styled from a stylesheet, and the next section covers the
+sign-in pages' looks.
+
 ### Looks for the sign-in pages
 
 A look replaces the hero beside the sign-in form and restyles the page. The UI plugin defines it;

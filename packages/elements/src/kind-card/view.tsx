@@ -24,4 +24,4 @@ export const kindCardView = (k: KindCardLogic) => (
   </Toggle>
 );
 
-export const KindCardView = viewToken<KindCardLogic>('KindCardView', kindCardView);
+export const KindCardView = viewToken<KindCardLogic>('idp-kind-card', kindCardView);

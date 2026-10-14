@@ -95,4 +95,4 @@ export const appInfoFormView = (f: AppInfoFormLogic) => {
   );
 };
 
-export const AppInfoFormView = viewToken<AppInfoFormLogic>('AppInfoFormView', appInfoFormView);
+export const AppInfoFormView = viewToken<AppInfoFormLogic>('idp-app-info-form', appInfoFormView);

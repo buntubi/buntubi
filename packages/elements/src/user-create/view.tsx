@@ -83,4 +83,4 @@ export const userCreateView = (f: UserCreateLogic) => (
   </section>
 );
 
-export const UserCreateView = viewToken<UserCreateLogic>('UserCreateView', userCreateView);
+export const UserCreateView = viewToken<UserCreateLogic>('idp-user-create', userCreateView);

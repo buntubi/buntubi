@@ -1,9 +1,8 @@
 /** Choosing a new password from a reset link. The token is the host's; the element asks for the password twice. */
+import { useView } from '@buntu/sdk/view';
+import { ResetPasswordView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
-import { Form, FormField } from '@fluixi-ui/form';
-import { Input } from '@fluixi-ui/input';
-import { Button } from '@fluixi-ui/button';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
@@ -45,7 +44,8 @@ const props = {
 };
 
 export class IdpResetPassword extends typedElement(props) {
-  protected override render(): unknown {
+  /** What the view draws from; a deployment can give its own view (UI plugin `views`). */
+  logic() {
     const label = () => ({ ...resetPasswordLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const password = createField('', {
@@ -71,26 +71,22 @@ export class IdpResetPassword extends typedElement(props) {
       );
     };
 
-    return (
-      <Form form={form} onSubmit={submit} class="idp-form" novalidate>
-        {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
-        <FormField control={form.get('password')} label={() => label().password} description={() => label().passwordHint}>
-          {(b) => (
-            <Input type="password" name="password" autocomplete="new-password" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />
-          )}
-        </FormField>
-        <FormField control={form.get('confirm')} label={() => label().confirm}>
-          {(b) => (
-            <Input type="password" name="confirm" autocomplete="new-password" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />
-          )}
-        </FormField>
-        <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
-          {() => (pending() ? label().pending : label().submit)}
-        </Button>
-      </Form>
-    );
+    return {
+      error,
+      form,
+      label,
+      password,
+      pending,
+      submit,
+    };
+  }
+
+  protected override render(): unknown {
+    return useView(ResetPasswordView)(this.logic());
   }
 }
+
+export type ResetPasswordLogic = ReturnType<IdpResetPassword['logic']>;
 
 defineCustomElement('idp-reset-password', IdpResetPassword);
 

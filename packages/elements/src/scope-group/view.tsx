@@ -39,4 +39,4 @@ export const scopeGroupView = (g: ScopeGroupLogic) => (
   </section>
 );
 
-export const ScopeGroupView = viewToken<ScopeGroupLogic>('ScopeGroupView', scopeGroupView);
+export const ScopeGroupView = viewToken<ScopeGroupLogic>('idp-scope-group', scopeGroupView);

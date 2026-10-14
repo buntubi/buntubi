@@ -38,4 +38,4 @@ export const productPickerView = (p: ProductPickerLogic) => (
   </section>
 );
 
-export const ProductPickerView = viewToken<ProductPickerLogic>('ProductPickerView', productPickerView);
+export const ProductPickerView = viewToken<ProductPickerLogic>('idp-product-picker', productPickerView);

@@ -36,4 +36,4 @@ export const accountCheckItemView = (c: AccountCheckItemLogic) => (
   </div>
 );
 
-export const AccountCheckItemView = viewToken<AccountCheckItemLogic>('AccountCheckItemView', accountCheckItemView);
+export const AccountCheckItemView = viewToken<AccountCheckItemLogic>('idp-account-check-item', accountCheckItemView);

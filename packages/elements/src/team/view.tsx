@@ -59,4 +59,4 @@ export const teamView = (t: TeamLogic) => (
   </div>
 );
 
-export const TeamView = viewToken<TeamLogic>('TeamView', teamView);
+export const TeamView = viewToken<TeamLogic>('idp-team', teamView);

@@ -47,4 +47,4 @@ export const appListView = (l: AppListLogic) => (
   </section>
 );
 
-export const AppListView = viewToken<AppListLogic>('AppListView', appListView);
+export const AppListView = viewToken<AppListLogic>('idp-app-list', appListView);

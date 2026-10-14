@@ -30,4 +30,4 @@ export const secureOptionView = (o: SecureOptionLogic) => (
   </div>
 );
 
-export const SecureOptionView = viewToken<SecureOptionLogic>('SecureOptionView', secureOptionView);
+export const SecureOptionView = viewToken<SecureOptionLogic>('idp-secure-option', secureOptionView);

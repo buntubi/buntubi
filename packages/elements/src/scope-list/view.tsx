@@ -36,4 +36,4 @@ export const scopeListView = (l: ScopeListLogic) => (
   </section>
 );
 
-export const ScopeListView = viewToken<ScopeListLogic>('ScopeListView', scopeListView);
+export const ScopeListView = viewToken<ScopeListLogic>('idp-scope-list', scopeListView);

@@ -2,11 +2,10 @@
  * Account creation: first and last name, email, password. Validates, emits `submit`, runs the
  * host's `action`: `success` with its result, or the refusal it threw.
  */
+import { useView } from '@buntu/sdk/view';
+import { SignUpView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
-import { Form, FormField } from '@fluixi-ui/form';
-import { Input } from '@fluixi-ui/input';
-import { Button } from '@fluixi-ui/button';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
@@ -52,7 +51,8 @@ const props = {
 };
 
 export class IdpSignUp extends typedElement(props) {
-  protected override render(): unknown {
+  /** What the view draws from; a deployment can give its own view (UI plugin `views`). */
+  logic() {
     const label = () => ({ ...signUpLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const validate = <K extends keyof SignUp & string>(key: K) => [
@@ -75,45 +75,21 @@ export class IdpSignUp extends typedElement(props) {
       );
     };
 
-    return (
-      <Form form={form} onSubmit={submit} class="idp-form" novalidate>
-        {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
-        <div class="idp-row">
-          <FormField control={form.get('givenName')} label={() => label().givenName}>
-            {(b) => (
-              <Input name="given_name" autocomplete="given-name" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />
-            )}
-          </FormField>
-          <FormField control={form.get('familyName')} label={() => label().familyName}>
-            {(b) => (
-              <Input name="family_name" autocomplete="family-name" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />
-            )}
-          </FormField>
-        </div>
-        <FormField control={form.get('email')} label={() => label().email}>
-          {(b) => (
-            <Input type="email" name="email" autocomplete="email" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />
-          )}
-        </FormField>
-        <FormField control={form.get('password')} label={() => label().password} description={() => label().passwordHint}>
-          {(b) => (
-            <Input
-              type="password"
-              name="password"
-              autocomplete="new-password"
-              value={b.value()}
-              onInput={b.onInput}
-              onBlur={b.onBlur}
-            />
-          )}
-        </FormField>
-        <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
-          {() => (pending() ? label().pending : label().submit)}
-        </Button>
-      </Form>
-    );
+    return {
+      error,
+      form,
+      label,
+      pending,
+      submit,
+    };
+  }
+
+  protected override render(): unknown {
+    return useView(SignUpView)(this.logic());
   }
 }
+
+export type SignUpLogic = ReturnType<IdpSignUp['logic']>;
 
 defineCustomElement('idp-sign-up', IdpSignUp);
 

@@ -32,4 +32,4 @@ export const reviewStagesView = (r: ReviewStagesLogic) => (
   </ol>
 );
 
-export const ReviewStagesView = viewToken<ReviewStagesLogic>('ReviewStagesView', reviewStagesView);
+export const ReviewStagesView = viewToken<ReviewStagesLogic>('idp-review-stages', reviewStagesView);

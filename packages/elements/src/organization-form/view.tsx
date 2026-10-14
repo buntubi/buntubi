@@ -42,4 +42,4 @@ export const organizationFormView = (o: OrganizationFormLogic) => (
   </section>
 );
 
-export const OrganizationFormView = viewToken<OrganizationFormLogic>('OrganizationFormView', organizationFormView);
+export const OrganizationFormView = viewToken<OrganizationFormLogic>('idp-organization-form', organizationFormView);

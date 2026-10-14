@@ -25,4 +25,4 @@ export const organizationTileView = (o: OrganizationTileLogic) => (
   </div>
 );
 
-export const OrganizationTileView = viewToken<OrganizationTileLogic>('OrganizationTileView', organizationTileView);
+export const OrganizationTileView = viewToken<OrganizationTileLogic>('idp-organization-tile', organizationTileView);

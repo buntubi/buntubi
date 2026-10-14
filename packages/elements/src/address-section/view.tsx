@@ -103,4 +103,4 @@ export const addressSectionView = (a: AddressSectionLogic) => (
   </section>
 );
 
-export const AddressSectionView = viewToken<AddressSectionLogic>('AddressSectionView', addressSectionView);
+export const AddressSectionView = viewToken<AddressSectionLogic>('idp-address-section', addressSectionView);

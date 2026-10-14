@@ -28,4 +28,4 @@ export const scopeRowView = (r: ScopeRowLogic) => (
   </div>
 );
 
-export const ScopeRowView = viewToken<ScopeRowLogic>('ScopeRowView', scopeRowView);
+export const ScopeRowView = viewToken<ScopeRowLogic>('idp-scope-row', scopeRowView);

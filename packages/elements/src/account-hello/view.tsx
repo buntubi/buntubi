@@ -36,4 +36,4 @@ export const accountHelloView = (h: AccountHelloLogic) => (
   </section>
 );
 
-export const AccountHelloView = viewToken<AccountHelloLogic>('AccountHelloView', accountHelloView);
+export const AccountHelloView = viewToken<AccountHelloLogic>('idp-account-hello', accountHelloView);

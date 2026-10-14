@@ -33,4 +33,4 @@ export const scopeJustificationView = (j: ScopeJustificationLogic) => (
   </div>
 );
 
-export const ScopeJustificationView = viewToken<ScopeJustificationLogic>('ScopeJustificationView', scopeJustificationView);
+export const ScopeJustificationView = viewToken<ScopeJustificationLogic>('idp-scope-justification', scopeJustificationView);

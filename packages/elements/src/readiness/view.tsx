@@ -67,4 +67,4 @@ export const readinessView = (r: ReadinessLogic) => {
   );
 };
 
-export const ReadinessView = viewToken<ReadinessLogic>('ReadinessView', readinessView);
+export const ReadinessView = viewToken<ReadinessLogic>('idp-readiness', readinessView);

@@ -41,4 +41,4 @@ export const statCardView = (s: StatCardLogic) => (
   </div>
 );
 
-export const StatCardView = viewToken<StatCardLogic>('StatCardView', statCardView);
+export const StatCardView = viewToken<StatCardLogic>('idp-stat-card', statCardView);

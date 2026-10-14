@@ -38,4 +38,4 @@ export const userMenuView = (u: UserMenuLogic) => (
   </DropdownMenu>
 );
 
-export const UserMenuView = viewToken<UserMenuLogic>('UserMenuView', userMenuView);
+export const UserMenuView = viewToken<UserMenuLogic>('idp-user-menu', userMenuView);

@@ -20,4 +20,4 @@ export const pageErrorView = (e: PageErrorLogic) => (
   </section>
 );
 
-export const PageErrorView = viewToken<PageErrorLogic>('PageErrorView', pageErrorView);
+export const PageErrorView = viewToken<PageErrorLogic>('idp-page-error', pageErrorView);

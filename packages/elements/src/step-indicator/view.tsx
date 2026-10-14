@@ -34,4 +34,4 @@ export const stepIndicatorView = (s: StepIndicatorLogic) => (
   </ol>
 );
 
-export const StepIndicatorView = viewToken<StepIndicatorLogic>('StepIndicatorView', stepIndicatorView);
+export const StepIndicatorView = viewToken<StepIndicatorLogic>('idp-step-indicator', stepIndicatorView);

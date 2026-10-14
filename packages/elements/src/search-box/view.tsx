@@ -34,4 +34,4 @@ export const searchBoxView = (s: SearchBoxLogic) => (
   </form>
 );
 
-export const SearchBoxView = viewToken<SearchBoxLogic>('SearchBoxView', searchBoxView);
+export const SearchBoxView = viewToken<SearchBoxLogic>('idp-search-box', searchBoxView);

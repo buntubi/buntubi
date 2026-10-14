@@ -31,4 +31,4 @@ export const reviewWaitingView = (r: ReviewWaitingLogic) => (
   </section>
 );
 
-export const ReviewWaitingView = viewToken<ReviewWaitingLogic>('ReviewWaitingView', reviewWaitingView);
+export const ReviewWaitingView = viewToken<ReviewWaitingLogic>('idp-review-waiting', reviewWaitingView);

@@ -148,4 +148,4 @@ export const twoStepSectionView = (t: TwoStepSectionLogic) => (
   </section>
 );
 
-export const TwoStepSectionView = viewToken<TwoStepSectionLogic>('TwoStepSectionView', twoStepSectionView);
+export const TwoStepSectionView = viewToken<TwoStepSectionLogic>('idp-two-step-section', twoStepSectionView);

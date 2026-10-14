@@ -102,4 +102,4 @@ export const userRowView = (r: UserRowLogic) => (
   </div>
 );
 
-export const UserRowView = viewToken<UserRowLogic>('UserRowView', userRowView);
+export const UserRowView = viewToken<UserRowLogic>('idp-user-row', userRowView);

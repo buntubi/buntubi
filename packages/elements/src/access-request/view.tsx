@@ -71,4 +71,4 @@ export const accessRequestView = (r: AccessRequestLogic) => {
   );
 };
 
-export const AccessRequestView = viewToken<AccessRequestLogic>('AccessRequestView', accessRequestView);
+export const AccessRequestView = viewToken<AccessRequestLogic>('idp-access-request', accessRequestView);

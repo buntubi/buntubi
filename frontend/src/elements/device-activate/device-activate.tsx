@@ -2,10 +2,10 @@
  * Connecting a device (a TV, a terminal) with the code it shows. The user types or confirms the
  * code, then allows or refuses; `success` carries the answer and the action's result.
  */
+import { useView } from '@buntu/sdk/view';
+import { DeviceActivateView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { PinInput } from '@fluixi-ui/pin-input';
-import { Button } from '@fluixi-ui/button';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import '../shared/form.css';
@@ -36,7 +36,7 @@ export interface DeviceActivateEvents {
   success: { approve: boolean; result: unknown };
 }
 
-const CODE_LENGTH = 8;
+export const CODE_LENGTH = 8;
 
 const props = {
   /** A code already known (from the link the device showed); the user still confirms it. */
@@ -46,10 +46,11 @@ const props = {
   messages: prop.object<Messages>({}),
 };
 
-const clean = (value: string) => value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, CODE_LENGTH);
+export const clean = (value: string) => value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, CODE_LENGTH);
 
 export class IdpDeviceActivate extends typedElement(props) {
-  protected override render(): unknown {
+  /** What the view draws from; a deployment can give its own view (UI plugin `views`). */
+  logic() {
     const label = () => ({ ...deviceActivateLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const code = signal(clean(this.userCode));
@@ -73,30 +74,21 @@ export class IdpDeviceActivate extends typedElement(props) {
 
     const problem = () => (invalid() ? text('form.userCode') : error());
 
-    return (
-      <div class="idp-form">
-        <p class="idp-note">{() => label().intro}</p>
-        {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
-        <PinInput
-          class="idp-code"
-          type="alphanumeric"
-          length={CODE_LENGTH}
-          aria-label={() => label().code}
-          value={code()}
-          onValueChange={(value: string) => code.set(clean(value))}
-        />
-        <div class="idp-actions">
-          <Button type="button" variant="outline" disabled={pending()} onPress={() => decide(false)}>
-            {() => label().deny}
-          </Button>
-          <Button type="button" variant="solid" disabled={pending()} onPress={() => decide(true)}>
-            {() => (pending() ? label().pending : label().approve)}
-          </Button>
-        </div>
-      </div>
-    );
+    return {
+      code,
+      decide,
+      label,
+      pending,
+      problem,
+    };
+  }
+
+  protected override render(): unknown {
+    return useView(DeviceActivateView)(this.logic());
   }
 }
+
+export type DeviceActivateLogic = ReturnType<IdpDeviceActivate['logic']>;
 
 defineCustomElement('idp-device-activate', IdpDeviceActivate);
 

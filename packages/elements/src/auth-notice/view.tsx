@@ -25,4 +25,4 @@ export const authNoticeView = (n: AuthNoticeLogic) => (
   </Show>
 );
 
-export const AuthNoticeView = viewToken<AuthNoticeLogic>('AuthNoticeView', authNoticeView);
+export const AuthNoticeView = viewToken<AuthNoticeLogic>('idp-auth-notice', authNoticeView);

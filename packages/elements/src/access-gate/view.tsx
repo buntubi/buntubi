@@ -40,4 +40,4 @@ export const accessGateView = (g: AccessGateLogic) => (
   </main>
 );
 
-export const AccessGateView = viewToken<AccessGateLogic>('AccessGateView', accessGateView);
+export const AccessGateView = viewToken<AccessGateLogic>('idp-access-gate', accessGateView);

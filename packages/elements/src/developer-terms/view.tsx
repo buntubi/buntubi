@@ -25,4 +25,4 @@ export const developerTermsView = (d: DeveloperTermsLogic) => (
   </section>
 );
 
-export const DeveloperTermsView = viewToken<DeveloperTermsLogic>('DeveloperTermsView', developerTermsView);
+export const DeveloperTermsView = viewToken<DeveloperTermsLogic>('idp-developer-terms', developerTermsView);

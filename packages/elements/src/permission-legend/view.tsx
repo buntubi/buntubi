@@ -16,4 +16,4 @@ export const permissionLegendView = (l: PermissionLegendLogic) => (
   </ul>
 );
 
-export const PermissionLegendView = viewToken<PermissionLegendLogic>('PermissionLegendView', permissionLegendView);
+export const PermissionLegendView = viewToken<PermissionLegendLogic>('idp-permission-legend', permissionLegendView);

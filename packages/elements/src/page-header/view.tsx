@@ -48,4 +48,4 @@ export const pageHeaderView = (p: PageHeaderLogic) => {
   );
 };
 
-export const PageHeaderView = viewToken<PageHeaderLogic>('PageHeaderView', pageHeaderView);
+export const PageHeaderView = viewToken<PageHeaderLogic>('idp-page-header', pageHeaderView);

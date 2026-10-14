@@ -71,4 +71,4 @@ export const testUsersView = (t: TestUsersLogic) => (
   </section>
 );
 
-export const TestUsersView = viewToken<TestUsersLogic>('TestUsersView', testUsersView);
+export const TestUsersView = viewToken<TestUsersLogic>('idp-test-users', testUsersView);

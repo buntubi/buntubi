@@ -53,4 +53,4 @@ export const productTileView = (p: ProductTileLogic) => (
   </article>
 );
 
-export const ProductTileView = viewToken<ProductTileLogic>('ProductTileView', productTileView);
+export const ProductTileView = viewToken<ProductTileLogic>('idp-product-tile', productTileView);

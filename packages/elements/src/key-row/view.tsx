@@ -26,4 +26,4 @@ export const keyRowView = (k: KeyRowLogic) => (
   </div>
 );
 
-export const KeyRowView = viewToken<KeyRowLogic>('KeyRowView', keyRowView);
+export const KeyRowView = viewToken<KeyRowLogic>('idp-key-row', keyRowView);

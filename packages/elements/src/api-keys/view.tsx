@@ -76,4 +76,4 @@ export const apiKeysView = (k: ApiKeysLogic) => (
   </section>
 );
 
-export const ApiKeysView = viewToken<ApiKeysLogic>('ApiKeysView', apiKeysView);
+export const ApiKeysView = viewToken<ApiKeysLogic>('idp-api-keys', apiKeysView);

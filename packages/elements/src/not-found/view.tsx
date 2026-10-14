@@ -19,4 +19,4 @@ export const notFoundView = (n: NotFoundLogic) => (
   </main>
 );
 
-export const NotFoundView = viewToken<NotFoundLogic>('NotFoundView', notFoundView);
+export const NotFoundView = viewToken<NotFoundLogic>('idp-not-found', notFoundView);

@@ -45,4 +45,4 @@ export const appScopesView = (a: AppScopesLogic) => (
   </section>
 );
 
-export const AppScopesView = viewToken<AppScopesLogic>('AppScopesView', appScopesView);
+export const AppScopesView = viewToken<AppScopesLogic>('idp-app-scopes', appScopesView);

@@ -20,4 +20,4 @@ export const wizardFooterView = (w: WizardFooterLogic) => (
   </div>
 );
 
-export const WizardFooterView = viewToken<WizardFooterLogic>('WizardFooterView', wizardFooterView);
+export const WizardFooterView = viewToken<WizardFooterLogic>('idp-wizard-footer', wizardFooterView);

@@ -145,4 +145,4 @@ export const passkeysSectionView = (k: PasskeysSectionLogic) => (
   </section>
 );
 
-export const PasskeysSectionView = viewToken<PasskeysSectionLogic>('PasskeysSectionView', passkeysSectionView);
+export const PasskeysSectionView = viewToken<PasskeysSectionLogic>('idp-passkeys-section', passkeysSectionView);

@@ -14,4 +14,4 @@ export const roleCardView = (r: RoleCardLogic) => (
   </div>
 );
 
-export const RoleCardView = viewToken<RoleCardLogic>('RoleCardView', roleCardView);
+export const RoleCardView = viewToken<RoleCardLogic>('idp-role-card', roleCardView);

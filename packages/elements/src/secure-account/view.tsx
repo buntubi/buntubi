@@ -87,4 +87,4 @@ export const secureAccountView = (s: SecureAccountLogic) => (
   </div>
 );
 
-export const SecureAccountView = viewToken<SecureAccountLogic>('SecureAccountView', secureAccountView);
+export const SecureAccountView = viewToken<SecureAccountLogic>('idp-secure-account', secureAccountView);

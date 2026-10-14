@@ -16,4 +16,4 @@ export const signingKeysView = (s: SigningKeysLogic) => (
   </section>
 );
 
-export const SigningKeysView = viewToken<SigningKeysLogic>('SigningKeysView', signingKeysView);
+export const SigningKeysView = viewToken<SigningKeysLogic>('idp-signing-keys', signingKeysView);

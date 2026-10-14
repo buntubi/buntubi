@@ -33,4 +33,4 @@ export const organizationListView = (l: OrganizationListLogic) => (
   </section>
 );
 
-export const OrganizationListView = viewToken<OrganizationListLogic>('OrganizationListView', organizationListView);
+export const OrganizationListView = viewToken<OrganizationListLogic>('idp-organization-list', organizationListView);

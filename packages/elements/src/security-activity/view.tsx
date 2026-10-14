@@ -63,4 +63,4 @@ export const securityActivityView = (a: SecurityActivityLogic) => (
   </section>
 );
 
-export const SecurityActivityView = viewToken<SecurityActivityLogic>('SecurityActivityView', securityActivityView);
+export const SecurityActivityView = viewToken<SecurityActivityLogic>('idp-security-activity', securityActivityView);

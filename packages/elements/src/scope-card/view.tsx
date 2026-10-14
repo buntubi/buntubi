@@ -33,4 +33,4 @@ export const scopeCardView = (c: ScopeCardLogic) => (
   </Toggle>
 );
 
-export const ScopeCardView = viewToken<ScopeCardLogic>('ScopeCardView', scopeCardView);
+export const ScopeCardView = viewToken<ScopeCardLogic>('idp-scope-card', scopeCardView);

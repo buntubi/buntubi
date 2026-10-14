@@ -107,4 +107,4 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
   </div>
 );
 
-export const OrganizationRowView = viewToken<OrganizationRowLogic>('OrganizationRowView', organizationRowView);
+export const OrganizationRowView = viewToken<OrganizationRowLogic>('idp-organization-row', organizationRowView);

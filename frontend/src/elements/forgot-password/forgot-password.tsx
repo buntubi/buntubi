@@ -2,12 +2,11 @@
  * Asks for a reset link. Once the host's `action` resolves the form gives way to a note: the
  * same note whether or not the address has an account.
  */
+import { useView } from '@buntu/sdk/view';
+import { ForgotPasswordView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
-import { Form, FormField } from '@fluixi-ui/form';
-import { Input } from '@fluixi-ui/input';
-import { Button } from '@fluixi-ui/button';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
@@ -46,7 +45,8 @@ const props = {
 };
 
 export class IdpForgotPassword extends typedElement(props) {
-  protected override render(): unknown {
+  /** What the view draws from; a deployment can give its own view (UI plugin `views`). */
+  logic() {
     const label = () => ({ ...forgotPasswordLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const sent = signal(false);
@@ -69,27 +69,22 @@ export class IdpForgotPassword extends typedElement(props) {
       );
     };
 
-    return () =>
-      sent() ? (
-        <div class="idp-form">
-          <p class="idp-note" role="status">{label().sent}</p>
-        </div>
-      ) : (
-        <Form form={form} onSubmit={submit} class="idp-form" novalidate>
-          <p class="idp-note">{() => label().intro}</p>
-          {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
-          <FormField control={form.get('email')} label={() => label().email}>
-            {(b) => (
-              <Input type="email" name="email" autocomplete="email" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />
-            )}
-          </FormField>
-          <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
-            {() => (pending() ? label().pending : label().submit)}
-          </Button>
-        </Form>
-      );
+    return {
+      error,
+      form,
+      label,
+      pending,
+      sent,
+      submit,
+    };
+  }
+
+  protected override render(): unknown {
+    return useView(ForgotPasswordView)(this.logic());
   }
 }
+
+export type ForgotPasswordLogic = ReturnType<IdpForgotPassword['logic']>;
 
 defineCustomElement('idp-forgot-password', IdpForgotPassword);
 

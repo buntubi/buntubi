@@ -39,4 +39,4 @@ export const consentPreviewView = (c: ConsentPreviewLogic) => (
   </aside>
 );
 
-export const ConsentPreviewView = viewToken<ConsentPreviewLogic>('ConsentPreviewView', consentPreviewView);
+export const ConsentPreviewView = viewToken<ConsentPreviewLogic>('idp-consent-preview', consentPreviewView);

@@ -19,4 +19,4 @@ export const statGroupView = (g: StatGroupLogic) => (
   </div>
 );
 
-export const StatGroupView = viewToken<StatGroupLogic>('StatGroupView', statGroupView);
+export const StatGroupView = viewToken<StatGroupLogic>('idp-stat-group', statGroupView);

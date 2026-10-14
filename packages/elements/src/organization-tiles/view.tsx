@@ -32,4 +32,4 @@ export const organizationTilesView = (o: OrganizationTilesLogic) => (
   </section>
 );
 
-export const OrganizationTilesView = viewToken<OrganizationTilesLogic>('OrganizationTilesView', organizationTilesView);
+export const OrganizationTilesView = viewToken<OrganizationTilesLogic>('idp-organization-tiles', organizationTilesView);

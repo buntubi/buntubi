@@ -29,4 +29,4 @@ export const accountAreaView = (a: AccountAreaLogic) => (
   </div>
 );
 
-export const AccountAreaView = viewToken<AccountAreaLogic>('AccountAreaView', accountAreaView);
+export const AccountAreaView = viewToken<AccountAreaLogic>('idp-account-area', accountAreaView);

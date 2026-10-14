@@ -59,4 +59,4 @@ export const clientRowView = (r: ClientRowLogic) => (
   </div>
 );
 
-export const ClientRowView = viewToken<ClientRowLogic>('ClientRowView', clientRowView);
+export const ClientRowView = viewToken<ClientRowLogic>('idp-client-row', clientRowView);

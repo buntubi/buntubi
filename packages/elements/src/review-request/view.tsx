@@ -58,4 +58,4 @@ export const reviewRequestView = (r: ReviewRequestLogic) => {
   );
 };
 
-export const ReviewRequestView = viewToken<ReviewRequestLogic>('ReviewRequestView', reviewRequestView);
+export const ReviewRequestView = viewToken<ReviewRequestLogic>('idp-review-request', reviewRequestView);

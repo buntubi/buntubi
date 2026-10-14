@@ -2,14 +2,12 @@
  * What an application asks to see, and the user's answer. The host gives the application, the
  * signed-in user and the requested scopes already worded; `action` receives the answer.
  */
+import { useView } from '@buntu/sdk/view';
+import { ConsentView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import { For, Show } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
-import { Button } from '@fluixi-ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@fluixi-ui/avatar';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
-import { initials } from '../shared/initials.js';
 import '../shared/form.css';
 import './consent.css';
 
@@ -63,7 +61,8 @@ const props = {
 };
 
 export class IdpConsent extends typedElement(props) {
-  protected override render(): unknown {
+  /** What the view draws from; a deployment can give its own view (UI plugin `views`). */
+  logic() {
     const label = () => ({ ...consentLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const answering = signal<boolean | null>(null);
@@ -79,48 +78,27 @@ export class IdpConsent extends typedElement(props) {
       );
     };
 
-    return (
-      <div class="idp-form idp-consent">
-        <div class="idp-consent-app">
-          <Avatar class="idp-consent-logo" aria-hidden="true">
-            {() => (this.clientLogo ? <AvatarImage src={this.clientLogo} alt="" /> : null)}
-            <AvatarFallback>{() => initials(this.clientName)}</AvatarFallback>
-          </Avatar>
-          <p>
-            <strong>{() => this.clientName}</strong> {() => label().wants}
-          </p>
-        </div>
-        {() => (this.warning ? <p class="idp-consent-warning" role="note">{this.warning}</p> : null)}
-        <ul class="idp-consent-scopes">
-          <For each={this.scopes}>{(scope) => <li data-scope={scope.id}>{scope.text}</li>}</For>
-        </ul>
-        <Show when={this.links.length}>
-          <p class="idp-consent-links">
-            <For each={this.links}>
-              {(link) => (
-                <a href={link.href} target="_blank" rel="noopener noreferrer">
-                  {link.label}
-                </a>
-              )}
-            </For>
-          </p>
-        </Show>
-        <p class="idp-note">
-          {() => label().signedInAs} <strong>{() => this.userEmail}</strong>
-        </p>
-        {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
-        <div class="idp-actions">
-          <Button type="button" variant="outline" disabled={pending()} onPress={() => decide(false)}>
-            {() => (pending() && answering() === false ? label().pending : label().deny)}
-          </Button>
-          <Button type="button" variant="solid" disabled={pending()} onPress={() => decide(true)}>
-            {() => (pending() && answering() === true ? label().pending : label().approve)}
-          </Button>
-        </div>
-      </div>
-    );
+    return {
+      answering,
+      decide,
+      error,
+      label,
+      pending,
+      clientLogo: () => this.clientLogo,
+      clientName: () => this.clientName,
+      links: () => this.links,
+      scopes: () => this.scopes,
+      userEmail: () => this.userEmail,
+      warning: () => this.warning,
+    };
+  }
+
+  protected override render(): unknown {
+    return useView(ConsentView)(this.logic());
   }
 }
+
+export type ConsentLogic = ReturnType<IdpConsent['logic']>;
 
 defineCustomElement('idp-consent', IdpConsent);
 

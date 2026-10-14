@@ -4,6 +4,9 @@
  */
 import { provide } from '@fluixi/start/di';
 import { Navigation, type NavigationOptions } from '@buntu/sdk/navigation';
+import { viewsOf } from '@buntu/sdk/plugins';
+import { overrideViews } from '@buntu/sdk/view';
+import uiPlugins from 'virtual:idp-ui-plugins';
 import { useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/auth-notice';
 import { authNoticeLabels } from '../lib/auth-notice.js';
@@ -13,6 +16,9 @@ import type { Brand } from '../lib/types.js';
 import { auth } from '../services/auth.js';
 import { PageBoundary } from '../components/page-boundary.js';
 import { brand } from '../data/developer.js';
+
+// A deployment's views in place of the elements' own, before anything renders.
+overrideViews(viewsOf(uiPlugins));
 
 export const routeData = () => brand();
 
