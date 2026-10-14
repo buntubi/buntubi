@@ -94,6 +94,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/idp-${{ matrix.name }}:${{ needs.changesets.outputs.version }}
             ghcr.io/${{ github.repository_owner }}/idp-${{ matrix.name }}:latest
+          # Links the image to this repository's Packages.
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
 
