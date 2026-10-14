@@ -6,7 +6,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { onCleanup, onMount, Show } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
-import { passkeyAutofillSupported, passkeysSupported } from '@idp/sdk/webauthn';
+import { passkeyAutofillSupported, passkeysSupported } from '@buntu/sdk/webauthn';
 import { createField, createForm } from '@fluixi/forms';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';

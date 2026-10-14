@@ -1,5 +1,5 @@
 /** Where an app stands on its way to live, as eight steps; apart from the look. */
-import type { AppOverview } from '@idp/sdk/types';
+import type { AppOverview } from '@buntu/sdk/types';
 
 export type StepKey = 'create' | 'configure' | 'apis' | 'scopes' | 'verify' | 'submit' | 'approved' | 'live';
 export type StepState = 'done' | 'now' | 'warn' | 'todo';

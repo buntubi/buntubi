@@ -1,5 +1,5 @@
 /** The default look: title and environment on one row, the client card, then keys beside signing keys. */
-import type { ApiKey, App } from '@idp/sdk/types';
+import type { ApiKey, App } from '@buntu/sdk/types';
 import { viewToken } from '../view.js';
 import type { CredentialsLogic } from './logic.js';
 

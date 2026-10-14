@@ -21,7 +21,7 @@ import {
   type ConnectedApp,
   type Device,
   type Passkey,
-} from '@idp/sdk/account';
+} from '@buntu/sdk/account';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
 import '@idp/elements/account-deletion';

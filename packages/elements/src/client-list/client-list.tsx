@@ -1,6 +1,6 @@
 /** Every app as a table, one `idp-client-row` each, in a card. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AdminClient } from '@idp/sdk/types';
+import type { AdminClient } from '@buntu/sdk/types';
 import '../client-row/client-row.js';
 import type { ClientRowLabels } from '../client-row/logic.js';
 import { useView } from '../view.js';

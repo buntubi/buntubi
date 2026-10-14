@@ -1,8 +1,19 @@
 {
-  "name": "@idp/sdk",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@buntu/sdk",
+  "version": "0.1.0",
+  "description": "Types, API clients, form schemas and the plugin helpers for building on the identity provider",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bambiste/identity-provider.git",
+    "directory": "packages/sdk"
+  },
   "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     "./types": "./src/types.ts",
     "./developer": "./src/developer.ts",
@@ -33,5 +44,66 @@
   "devDependencies": {
     "@types/node": "^26.6.4",
     "typescript": "^7.0.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      "./types": {
+        "types": "./dist/types.d.ts",
+        "default": "./dist/types.js"
+      },
+      "./developer": {
+        "types": "./dist/developer.d.ts",
+        "default": "./dist/developer.js"
+      },
+      "./admin": {
+        "types": "./dist/admin.d.ts",
+        "default": "./dist/admin.js"
+      },
+      "./roles": {
+        "types": "./dist/roles.d.ts",
+        "default": "./dist/roles.js"
+      },
+      "./plugins": {
+        "types": "./dist/plugins.d.ts",
+        "default": "./dist/plugins.js"
+      },
+      "./vite": {
+        "types": "./dist/vite.d.ts",
+        "default": "./dist/vite.js"
+      },
+      "./schemas/users": {
+        "types": "./dist/schemas/users.d.ts",
+        "default": "./dist/schemas/users.js"
+      },
+      "./schemas/organizations": {
+        "types": "./dist/schemas/organizations.d.ts",
+        "default": "./dist/schemas/organizations.js"
+      },
+      "./schemas/catalogue": {
+        "types": "./dist/schemas/catalogue.d.ts",
+        "default": "./dist/schemas/catalogue.js"
+      },
+      "./schemas/team": {
+        "types": "./dist/schemas/team.d.ts",
+        "default": "./dist/schemas/team.js"
+      },
+      "./schemas/apps": {
+        "types": "./dist/schemas/apps.d.ts",
+        "default": "./dist/schemas/apps.js"
+      },
+      "./account": {
+        "types": "./dist/account.d.ts",
+        "default": "./dist/account.js"
+      },
+      "./schemas/account": {
+        "types": "./dist/schemas/account.d.ts",
+        "default": "./dist/schemas/account.js"
+      },
+      "./webauthn": {
+        "types": "./dist/webauthn.d.ts",
+        "default": "./dist/webauthn.js"
+      }
+    }
   }
 }

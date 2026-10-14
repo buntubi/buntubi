@@ -1,7 +1,7 @@
 /** The profile card: the photo and the name; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { NameInput } from '@idp/sdk/schemas/account';
+import type { NameInput } from '@buntu/sdk/schemas/account';
 
 export interface ProfileSectionLabels {
   title: string;

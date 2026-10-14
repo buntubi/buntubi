@@ -1,5 +1,5 @@
 /** One app's review from the reviewer's side: what to check, and the answer. */
-import type { AppReview, ReviewRequest } from '@idp/sdk/types';
+import type { AppReview, ReviewRequest } from '@buntu/sdk/types';
 
 export interface ReviewDecisionLabels {
   organization: string;

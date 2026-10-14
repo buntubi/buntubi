@@ -1,8 +1,8 @@
 /**
- * The developer API's answers come from @idp/sdk, shared with the elements; this file adds
+ * The developer API's answers come from @buntu/sdk, shared with the elements; this file adds
  * only the shapes the portal itself assembles.
  */
-import type { App, AppOverview, Me, Organization, OrganizationDetail, Product, Role } from '@idp/sdk/types';
+import type { App, AppOverview, Me, Organization, OrganizationDetail, Product, Role } from '@buntu/sdk/types';
 
 export type {
   ApiKey,
@@ -18,7 +18,7 @@ export type {
   Product,
   Role,
   Secret,
-} from '@idp/sdk/types';
+} from '@buntu/sdk/types';
 
 export interface Home {
   me: Me | null;

@@ -1,6 +1,6 @@
 /** The apps waiting for a review, one `idp-waiting-app` each, under a heading. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { ReviewRequest } from '@idp/sdk/types';
+import type { ReviewRequest } from '@buntu/sdk/types';
 import '../waiting-app/waiting-app.js';
 import { useView } from '../view.js';
 import { reviewWaitingLabels, type ReviewWaitingLabels, type ReviewWaitingLogic } from './logic.js';

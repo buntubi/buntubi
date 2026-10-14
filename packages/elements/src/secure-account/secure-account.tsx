@@ -7,8 +7,8 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { onMount } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Account } from '@idp/sdk/account';
-import { passkeysSupported } from '@idp/sdk/webauthn';
+import { Account } from '@buntu/sdk/account';
+import { passkeysSupported } from '@buntu/sdk/webauthn';
 import type { Messages } from '../messages.js';
 import type { TwoStepSectionLabels } from '../two-step-section/logic.js';
 import { useView } from '../view.js';

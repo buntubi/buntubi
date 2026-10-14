@@ -4,7 +4,7 @@ import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
-import type { Role } from '@idp/sdk/types';
+import type { Role } from '@buntu/sdk/types';
 import { ROLES } from '../team/logic.js';
 import { viewToken } from '../view.js';
 import type { MembersLogic } from './logic.js';

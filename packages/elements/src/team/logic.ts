@@ -1,5 +1,5 @@
 /** An organization's people: members with their roles and app access, and sandbox test users. */
-import type { Invitation, Member, Role } from '@idp/sdk/types';
+import type { Invitation, Member, Role } from '@buntu/sdk/types';
 
 export const ROLES: Role[] = ['owner', 'manager', 'developer', 'reviewer', 'viewer'];
 

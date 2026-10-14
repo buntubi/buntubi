@@ -1,6 +1,6 @@
 /** The apps waiting for the platform owner's answer, the longest waiting first. Read only. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { ReviewRequest } from '@idp/sdk/types';
+import type { ReviewRequest } from '@buntu/sdk/types';
 import { useView } from '../view.js';
 import { reviewQueueLabels, type ReviewQueueLabels, type ReviewQueueLogic } from './logic.js';
 import { ReviewQueueView } from './view.js';

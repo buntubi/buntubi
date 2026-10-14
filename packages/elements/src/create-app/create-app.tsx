@@ -8,8 +8,8 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Developer } from '@idp/sdk/developer';
-import type { AppKind, Localized, Platform, Product } from '@idp/sdk/types';
+import { Developer } from '@buntu/sdk/developer';
+import type { AppKind, Localized, Platform, Product } from '@buntu/sdk/types';
 import '../app-info-form/app-info-form.js';
 import type { InfoField } from '../app-info-form/logic.js';
 import '../consent-preview/consent-preview.js';

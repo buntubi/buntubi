@@ -3,8 +3,8 @@
  * the access token stays in the session cookie. Refusals the console words are returned as
  * values; anything else throws its code.
  */
-import { pluginTarget } from '@idp/sdk/plugins';
-import type { Brand } from '@idp/sdk/types';
+import { pluginTarget } from '@buntu/sdk/plugins';
+import type { Brand } from '@buntu/sdk/types';
 import type { ClientRow, Gate, Me, NewUser, UserEdit, UserPage, Overview, OrganizationRow, ProductRow, Review, ScopeRow, UserRow } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';

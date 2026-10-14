@@ -1,8 +1,8 @@
 /** An organization's API keys in one environment, and making one; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { ApiKeyInput } from '@idp/sdk/schemas/apps';
-import type { ApiKey } from '@idp/sdk/types';
+import type { ApiKeyInput } from '@buntu/sdk/schemas/apps';
+import type { ApiKey } from '@buntu/sdk/types';
 
 export interface ApiKeysLabels {
   title: string;

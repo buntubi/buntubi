@@ -4,7 +4,7 @@
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { onMount, Show } from '@fluixi/core';
-import { passkeysSupported } from '@idp/sdk/webauthn';
+import { passkeysSupported } from '@buntu/sdk/webauthn';
 import { signal } from '@fluixi/reactive/signal';
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Input } from '@fluixi-ui/input';

@@ -1,5 +1,5 @@
 /** Creating an app in three steps (kind, information, API products), apart from how it looks. */
-import type { AppKind, Platform, Product } from '@idp/sdk/types';
+import type { AppKind, Platform, Product } from '@buntu/sdk/types';
 import type { AppInfoFormLabels, InfoField } from '../app-info-form/logic.js';
 import type { Approval } from '../product-card/logic.js';
 

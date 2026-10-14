@@ -4,7 +4,7 @@
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import type { Invitation, Member } from '@idp/sdk/types';
+import type { Invitation, Member } from '@buntu/sdk/types';
 import '../members/members.js';
 import '../segmented/segmented.js';
 import '../test-users/test-users.js';

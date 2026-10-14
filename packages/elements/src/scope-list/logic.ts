@@ -1,5 +1,5 @@
 /** The catalogue as a table, one row per scope, filtered by sensitivity; apart from the look. */
-import type { ScopeEntry, Sensitivity } from '@idp/sdk/types';
+import type { ScopeEntry, Sensitivity } from '@buntu/sdk/types';
 import type { SegmentedOption } from '../segmented/logic.js';
 import type { ScopeRowLabels } from '../scope-row/logic.js';
 

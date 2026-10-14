@@ -1,7 +1,7 @@
 /** Recent security activity, read from the account's audit trail; the host loads the entries. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { memo } from '@fluixi/reactive/signal';
-import type { ActivityEntry, ActivityKind } from '@idp/sdk/account';
+import type { ActivityEntry, ActivityKind } from '@buntu/sdk/account';
 import { dateTime } from '../dates.js';
 import { useView } from '../view.js';
 import {

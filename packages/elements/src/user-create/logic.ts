@@ -1,7 +1,7 @@
 /** Creating an account from the console: invited by email, or ready with a first password. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { NewUserInput } from '@idp/sdk/schemas/users';
+import type { NewUserInput } from '@buntu/sdk/schemas/users';
 
 export type CreateMode = 'invite' | 'password';
 

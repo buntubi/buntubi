@@ -65,6 +65,6 @@ sign-out at the provider ends the portal's session too.
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:3410; builds @idp/sdk first
+pnpm dev          # http://localhost:3410; builds @buntu/sdk first
 pnpm typecheck
 ```

@@ -1,7 +1,7 @@
 /** The organization's settings, and its deletion for an owner. */
 import { Stack } from '@fluixi-ui/layout';
 import { useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
-import { can } from '@idp/sdk/roles';
+import { can } from '@buntu/sdk/roles';
 import '@idp/elements/organization-settings';
 import { errorText, t } from '../../../lib/i18n.js';
 import { organizationSettingsLabels, formMessages } from '../../../lib/labels.js';

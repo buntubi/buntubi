@@ -1,5 +1,5 @@
 /** An app's credentials page, apart from how it looks: which environment, and the blocks' words. */
-import type { Environment } from '@idp/sdk/types';
+import type { Environment } from '@buntu/sdk/types';
 import type { ApiKeysLabels } from '../api-keys/logic.js';
 import type { OAuthClientLabels } from '../oauth-client/logic.js';
 import type { SigningKeysLabels } from '../signing-keys/logic.js';

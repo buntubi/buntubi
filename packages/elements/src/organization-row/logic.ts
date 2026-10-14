@@ -1,8 +1,8 @@
 /** One organization for the platform owner: what it is, and suspending or restoring it. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { SuspendInput } from '@idp/sdk/schemas/organizations';
-import type { AdminOrganization } from '@idp/sdk/types';
+import type { SuspendInput } from '@buntu/sdk/schemas/organizations';
+import type { AdminOrganization } from '@buntu/sdk/types';
 
 export interface OrganizationRowLabels {
   platform: string;

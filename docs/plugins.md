@@ -239,7 +239,7 @@ acme's billing service with a token only the provider holds.
 
 ```ts
 // acme-idp-ui/src/index.ts
-import { definePlugin } from '@idp/sdk/plugins';
+import { definePlugin } from '@buntu/sdk/plugins';
 
 export const plugin = definePlugin({
   id: 'acme',
@@ -290,7 +290,7 @@ endpoints, as the signed-in person:
 
 ```ts
 import { inject } from '@fluixi/start/di';
-import { PluginApi } from '@idp/sdk/plugins';
+import { PluginApi } from '@buntu/sdk/plugins';
 
 const api = inject(PluginApi);
 const usage = await api.call<{ calls: number }>('acme', 'GET', `/organizations/${this.organization}/usage`);
@@ -349,7 +349,7 @@ A package name must be installed in the app. A path is served from outside the r
 its package folder is allowed for the dev server.
 
 The list is composed at build time into `virtual:idp-ui-plugins` (the `idpUiPlugins()` Vite
-plugin from `@idp/sdk/vite`): no code arrives at run time. After changing it, restart the
+plugin from `@buntu/sdk/vite`): no code arrives at run time. After changing it, restart the
 console and the portal, and run `pnpm build` in `frontend`.
 
 ## Checklist for a new plugin

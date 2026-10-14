@@ -1,7 +1,7 @@
 /** The scope catalogue as a table, one `idp-scope-row` each, filtered by sensitivity, in a card. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import type { ScopeEntry, Sensitivity } from '@idp/sdk/types';
+import type { ScopeEntry, Sensitivity } from '@buntu/sdk/types';
 import '../scope-row/scope-row.js';
 import '../segmented/segmented.js';
 import type { ScopeRowLabels } from '../scope-row/logic.js';

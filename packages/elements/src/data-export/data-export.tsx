@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Account } from '@idp/sdk/account';
+import { Account } from '@buntu/sdk/account';
 import { shortDate } from '../dates.js';
 import { useView } from '../view.js';
 import { dataExportLabels, type DataExportLabels, type DataExportLogic } from './logic.js';

@@ -1,5 +1,5 @@
 /** An app's name, where it stands, and the step it can take next; apart from the look. */
-import type { AppKind, Environment, Stage } from '@idp/sdk/types';
+import type { AppKind, Environment, Stage } from '@buntu/sdk/types';
 
 export interface AppHeaderLabels {
   firstParty: string;

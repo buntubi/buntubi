@@ -10,6 +10,9 @@ importers:
 
   apps/console:
     dependencies:
+      '@buntu/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       '@fluixi-ui/badge':
         specifier: ^0.2.0-alpha.19
         version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7))
@@ -67,9 +70,6 @@ importers:
       '@idp/elements':
         specifier: workspace:*
         version: link:../../packages/elements
-      '@idp/sdk':
-        specifier: workspace:*
-        version: link:../../packages/sdk
       '@idp/shell':
         specifier: workspace:*
         version: link:../../packages/shell
@@ -98,6 +98,9 @@ importers:
 
   apps/portal:
     dependencies:
+      '@buntu/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       '@fluixi-ui/badge':
         specifier: ^0.2.0-alpha.19
         version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7))
@@ -155,9 +158,6 @@ importers:
       '@idp/elements':
         specifier: workspace:*
         version: link:../../packages/elements
-      '@idp/sdk':
-        specifier: workspace:*
-        version: link:../../packages/sdk
       '@idp/shell':
         specifier: workspace:*
         version: link:../../packages/shell
@@ -186,6 +186,9 @@ importers:
 
   frontend:
     dependencies:
+      '@buntu/sdk':
+        specifier: workspace:*
+        version: link:../packages/sdk
       '@fluixi-ui/avatar':
         specifier: ^0.2.0-alpha.19
         version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7))
@@ -243,9 +246,6 @@ importers:
       '@idp/elements':
         specifier: workspace:*
         version: link:../packages/elements
-      '@idp/sdk':
-        specifier: workspace:*
-        version: link:../packages/sdk
       '@idp/shell':
         specifier: workspace:*
         version: link:../packages/shell
@@ -280,6 +280,9 @@ importers:
       '@bambiste/countries':
         specifier: ^0.2.1
         version: 0.2.2
+      '@buntu/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@fluixi-ui/badge':
         specifier: ^0.2.0-alpha.19
         version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7))
@@ -340,9 +343,6 @@ importers:
       '@fluixi/web-components':
         specifier: ^1.0.0-alpha.97
         version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@idp/sdk':
-        specifier: workspace:*
-        version: link:../sdk
     devDependencies:
       typescript:
         specifier: ^7.0.2
@@ -366,6 +366,9 @@ importers:
 
   packages/shell:
     dependencies:
+      '@buntu/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@fluixi-ui/button':
         specifier: ^0.2.0-alpha.19
         version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.27.7))
@@ -393,9 +396,6 @@ importers:
       '@idp/elements':
         specifier: workspace:*
         version: link:../elements
-      '@idp/sdk':
-        specifier: workspace:*
-        version: link:../sdk
     devDependencies:
       typescript:
         specifier: ^7.0.2

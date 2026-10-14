@@ -1,7 +1,7 @@
 /** Who may sign in to an organization's sandbox apps besides its members; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { TestUserInput } from '@idp/sdk/schemas/team';
+import type { TestUserInput } from '@buntu/sdk/schemas/team';
 import type { TeamLabels } from '../team/logic.js';
 
 /** The form engine's root, typed per field. */

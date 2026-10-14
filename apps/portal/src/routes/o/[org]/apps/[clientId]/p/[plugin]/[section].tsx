@@ -1,7 +1,7 @@
 /** A page a plugin adds to an app: its element, given the organization, the app and the locale. */
 import { useParams, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { Dynamic, onMount } from '@fluixi/core';
-import { sectionOf } from '@idp/sdk/plugins';
+import { sectionOf } from '@buntu/sdk/plugins';
 import '@idp/elements/not-found';
 import plugins from 'virtual:idp-ui-plugins';
 import { locale } from '../../../../../../../lib/i18n.js';

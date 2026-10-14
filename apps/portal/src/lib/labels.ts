@@ -490,7 +490,7 @@ export const ideaToLiveLabels = (): IdeaToLiveLabels => ({ title: t('home.path')
 
 export const publicFrameLabels = (): PublicFrameLabels => ({ ...shellLabels(), product: t('shell.developers') });
 
-/** Validation keys the schemas in @idp/sdk/schemas use. */
+/** Validation keys the schemas in @buntu/sdk/schemas use. */
 export const formMessages = (): Messages => ({
   'form.required': t('form.required'),
   'form.email': t('form.email'),

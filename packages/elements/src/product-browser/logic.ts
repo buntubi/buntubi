@@ -1,5 +1,5 @@
 /** The API products a developer can build on, searchable and by category, apart from the look. */
-import type { Product } from '@idp/sdk/types';
+import type { Product } from '@buntu/sdk/types';
 
 export type ProductAuth = Product['auth'][number];
 

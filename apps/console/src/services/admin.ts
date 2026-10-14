@@ -4,7 +4,7 @@
  */
 import { defineModule } from '@fluixi/start/app';
 import { action } from '@fluixi/start/router';
-import { Admin, type AdminService } from '@idp/sdk/admin';
+import { Admin, type AdminService } from '@buntu/sdk/admin';
 import {
   createProduct,
   createUser,

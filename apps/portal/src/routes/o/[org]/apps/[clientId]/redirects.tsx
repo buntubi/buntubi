@@ -1,7 +1,7 @@
 /** Where an app may send people back after sign-in: its redirect addresses. */
 import { Stack } from '@fluixi-ui/layout';
 import { useRouteData } from '@fluixi/start/router';
-import { can } from '@idp/sdk/roles';
+import { can } from '@buntu/sdk/roles';
 import '@idp/elements/page-header';
 import '@idp/elements/redirect-uris';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';

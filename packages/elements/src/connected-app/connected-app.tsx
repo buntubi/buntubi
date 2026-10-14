@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Account, type ConnectedApp } from '@idp/sdk/account';
+import { Account, type ConnectedApp } from '@buntu/sdk/account';
 import { shortDate } from '../dates.js';
 import { useView } from '../view.js';
 import { connectedAppLabels, type ConnectedAppLabels, type ConnectedAppLogic } from './logic.js';

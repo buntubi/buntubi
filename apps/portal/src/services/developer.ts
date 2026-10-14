@@ -4,7 +4,7 @@
  */
 import { defineModule } from '@fluixi/start/app';
 import { action } from '@fluixi/start/router';
-import { Developer, type DeveloperService } from '@idp/sdk/developer';
+import { Developer, type DeveloperService } from '@buntu/sdk/developer';
 import {
   acceptTerms,
   addMember,

@@ -3,9 +3,9 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Admin } from '@idp/sdk/admin';
-import { scopeSchema, type ScopeInput } from '@idp/sdk/schemas/catalogue';
-import type { Sensitivity } from '@idp/sdk/types';
+import { Admin } from '@buntu/sdk/admin';
+import { scopeSchema, type ScopeInput } from '@buntu/sdk/schemas/catalogue';
+import type { Sensitivity } from '@buntu/sdk/types';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
 import { useView } from '../view.js';

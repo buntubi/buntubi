@@ -1,6 +1,6 @@
 /** The organization's members and its sandbox test users. */
 import { useRouteData, type RouteDataArgs } from '@fluixi/start/router';
-import { can } from '@idp/sdk/roles';
+import { can } from '@buntu/sdk/roles';
 import '@idp/elements/team';
 import { errorText, locale, t } from '../../../lib/i18n.js';
 import { teamLabels, formMessages } from '../../../lib/labels.js';

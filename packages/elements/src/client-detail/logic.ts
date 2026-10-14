@@ -1,5 +1,5 @@
 /** One app for the platform owner: whose it is, how it signs people in, and what the console decides for it. */
-import type { AdminClient } from '@idp/sdk/types';
+import type { AdminClient } from '@buntu/sdk/types';
 
 export interface ClientDetailLabels {
   overview: string;

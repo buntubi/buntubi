@@ -5,8 +5,8 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { memo, signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Developer } from '@idp/sdk/developer';
-import type { App, AppOverview, Localized, Product } from '@idp/sdk/types';
+import { Developer } from '@buntu/sdk/developer';
+import type { App, AppOverview, Localized, Product } from '@buntu/sdk/types';
 import { freshest } from '../fresh.js';
 import '../access-request/access-request.js';
 import '../page-header/page-header.js';

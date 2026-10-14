@@ -7,8 +7,8 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Admin } from '@idp/sdk/admin';
-import { productSchema, type ProductInput } from '@idp/sdk/schemas/catalogue';
+import { Admin } from '@buntu/sdk/admin';
+import { productSchema, type ProductInput } from '@buntu/sdk/schemas/catalogue';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
 import { useView } from '../view.js';

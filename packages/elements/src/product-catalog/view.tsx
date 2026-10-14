@@ -5,9 +5,9 @@ import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
 import { For, Show } from '@fluixi/core';
-import type { Availability } from '@idp/sdk/admin';
+import type { Availability } from '@buntu/sdk/admin';
 import { viewToken } from '../view.js';
-import type { ProductInput } from '@idp/sdk/schemas/catalogue';
+import type { ProductInput } from '@buntu/sdk/schemas/catalogue';
 import type { CatalogProduct, ProductCatalogLogic } from './logic.js';
 
 const AVAILABILITIES: Availability[] = ['ga', 'beta', 'sandbox'];

@@ -1,7 +1,7 @@
 /** An app's basic information, apart from how the form looks. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { AppSettingsInput } from '@idp/sdk/schemas/apps';
+import type { AppSettingsInput } from '@buntu/sdk/schemas/apps';
 
 export type SettingsField = 'name' | 'description' | 'homepage_url' | 'privacy_url' | 'terms_url' | 'logo';
 

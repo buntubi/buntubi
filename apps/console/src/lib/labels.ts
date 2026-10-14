@@ -16,7 +16,7 @@ import type { UserListLabels } from '@idp/elements/user-list/logic';
 import type { UserProfileLabels } from '@idp/elements/user-profile/logic';
 import type { Messages } from '@idp/elements/messages';
 import type { UserRowLabels } from '@idp/elements/user-row/logic';
-import type { AdminOverview } from '@idp/sdk/types';
+import type { AdminOverview } from '@buntu/sdk/types';
 import type { PageErrorLabels } from '@idp/elements/page-error/logic';
 import type { ReviewDecisionLabels } from '@idp/elements/review-decision/logic';
 import type { ReviewQueueLabels } from '@idp/elements/review-queue/logic';
@@ -234,7 +234,7 @@ export const clientDetailLabels = (): ClientDetailLabels => ({
   error: t('error.generic'),
 });
 
-/** Validation keys the schemas in @idp/sdk/schemas use. */
+/** Validation keys the schemas in @buntu/sdk/schemas use. */
 export const formMessages = (): Messages => ({
   'form.required': t('form.required'),
   'form.email': t('form.email'),

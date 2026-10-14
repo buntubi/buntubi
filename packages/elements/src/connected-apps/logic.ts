@@ -1,5 +1,5 @@
 /** The connected apps page's list: a row each, and a word on the platform's own apps. */
-import type { ConnectedApp } from '@idp/sdk/account';
+import type { ConnectedApp } from '@buntu/sdk/account';
 import type { ConnectedAppLabels } from '../connected-app/logic.js';
 
 export interface ConnectedAppsLabels {

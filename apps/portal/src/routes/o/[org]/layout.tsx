@@ -4,7 +4,7 @@
  */
 import { useLocation, useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import type { SidebarContext, SidebarGroup, SidebarSwitcher } from '@idp/elements/sidebar/logic';
-import { sectionOf, sectionsOf } from '@idp/sdk/plugins';
+import { sectionOf, sectionsOf } from '@buntu/sdk/plugins';
 import uiPlugins from 'virtual:idp-ui-plugins';
 import { markOf, useBrand } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';

@@ -1,5 +1,5 @@
 /** The app list's data, words and behaviour, apart from how it looks. */
-import type { Environment, ReviewStatus } from '@idp/sdk/types';
+import type { Environment, ReviewStatus } from '@buntu/sdk/types';
 
 export interface AppRow {
   client_id: string;

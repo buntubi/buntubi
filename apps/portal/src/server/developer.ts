@@ -4,8 +4,8 @@
  * browser. A refusal throws its code (`missing_for_live`, `restricted_scope`...), which the
  * page words.
  */
-import type { AppPatch, NewApp } from '@idp/sdk/developer';
-import { pluginTarget } from '@idp/sdk/plugins';
+import type { AppPatch, NewApp } from '@buntu/sdk/developer';
+import { pluginTarget } from '@buntu/sdk/plugins';
 import type { ApiKey, App, AppOverview, AppReview, AppWorkspace, Brand, Home, Invitation, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';

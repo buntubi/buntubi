@@ -1,7 +1,7 @@
 /** The passkeys card: the list, adding one, renaming and removing; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
-import type { Passkey } from '@idp/sdk/account';
-import type { PasskeyNameInput, ReauthInput } from '@idp/sdk/schemas/account';
+import type { Passkey } from '@buntu/sdk/account';
+import type { PasskeyNameInput, ReauthInput } from '@buntu/sdk/schemas/account';
 import type { FieldControl } from '../field.js';
 
 export interface PasskeysSectionLabels {

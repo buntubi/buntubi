@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Account, type Device } from '@idp/sdk/account';
+import { Account, type Device } from '@buntu/sdk/account';
 import { useView } from '../view.js';
 import { devicesLabels, type DevicesLabels, type DevicesLogic } from './logic.js';
 import { DevicesView } from './view.js';

@@ -29,7 +29,7 @@
     "@fluixi/session": "^1.0.0-alpha.97",
     "@fluixi/start": "^0.1.0-alpha.87",
     "@idp/elements": "workspace:*",
-    "@idp/sdk": "workspace:*",
+    "@buntu/sdk": "workspace:*",
     "@idp/shell": "workspace:*",
     "@idp/skin": "workspace:*",
     "@idp/theme": "workspace:*"

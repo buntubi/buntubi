@@ -20,8 +20,8 @@ import './elements/device-activate/device-activate.js';
 import './elements/mfa-verify/mfa-verify.js';
 import type { AccountItem } from './elements/account-select/account-select.js';
 import { createApi, type Redirect } from './host/api.js';
-import { lookOf } from '@idp/sdk/plugins';
-import { getPasskey } from '@idp/sdk/webauthn';
+import { lookOf } from '@buntu/sdk/plugins';
+import { getPasskey } from '@buntu/sdk/webauthn';
 import uiPlugins from 'virtual:idp-ui-plugins';
 import { applyBrand } from './host/brand.js';
 import { readConfig } from './host/config.js';
@@ -49,7 +49,7 @@ const secure =
           import('./account/service.js'),
           import('./account/i18n.js'),
           import('@fluixi/start/di'),
-          import('@idp/sdk/account'),
+          import('@buntu/sdk/account'),
           import('@idp/elements/secure-account'),
         ]);
         provideRoot([{ provide: Account, useValue: accountService(api) }]);

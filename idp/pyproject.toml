@@ -2,6 +2,10 @@
 name = "idp"
 version = "0.1.0"
 description = "OAuth 2.1 and OpenID Connect provider"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Ibrahima Touré" }]
 requires-python = ">=3.11"
 dependencies = [
   "flask>=3.1",
@@ -26,8 +30,11 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "ruff>=0.8", "mypy>=1.13", "openapi-spec-validator>=0.7", "jsonschema>=4.23"]
 
+[project.urls]
+Source = "https://github.com/bambiste/identity-provider"
+
 [build-system]
-requires = ["setuptools>=75"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]

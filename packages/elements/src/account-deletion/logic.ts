@@ -1,6 +1,6 @@
 /** The account deletion card: what stops it, the confirmation, the deletion; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
-import type { DeleteAccountInput } from '@idp/sdk/schemas/account';
+import type { DeleteAccountInput } from '@buntu/sdk/schemas/account';
 import type { FieldControl } from '../field.js';
 
 export interface AccountDeletionLabels {

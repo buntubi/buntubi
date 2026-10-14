@@ -6,8 +6,8 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Developer } from '@idp/sdk/developer';
-import type { App, AppOverview } from '@idp/sdk/types';
+import { Developer } from '@buntu/sdk/developer';
+import type { App, AppOverview } from '@buntu/sdk/types';
 import { useView } from '../view.js';
 import { appHeaderLabels, type AppHeaderLabels, type AppHeaderLogic } from './logic.js';
 import { AppHeaderView } from './view.js';

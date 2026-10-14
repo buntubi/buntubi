@@ -1,5 +1,5 @@
 /** The review's current state as a card: the last answer, what it concerns, the next step; apart from the look. */
-import type { Stage } from '@idp/sdk/types';
+import type { Stage } from '@buntu/sdk/types';
 
 export interface ReviewRequestLabels {
   titles: Record<Stage, string>;

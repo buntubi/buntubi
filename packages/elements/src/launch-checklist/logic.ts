@@ -1,5 +1,5 @@
 /** What an app still needs before it can go live, with the reviewer's last word; apart from the look. */
-import type { Check } from '@idp/sdk/types';
+import type { Check } from '@buntu/sdk/types';
 
 export type CheckKey = Check['key'];
 

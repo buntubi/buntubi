@@ -1,5 +1,5 @@
 /** One invitation waiting for its account; apart from the look. */
-import type { Invitation } from '@idp/sdk/types';
+import type { Invitation } from '@buntu/sdk/types';
 import type { TeamLabels } from '../team/logic.js';
 
 export interface InvitationRowEvents {

@@ -1,7 +1,7 @@
 /** One member: who, their role, the apps they work on, whether they use two-step sign-in. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import type { Role } from '@idp/sdk/types';
+import type { Role } from '@buntu/sdk/types';
 import { teamLabels, type MemberRow, type TeamLabels } from '../team/logic.js';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';

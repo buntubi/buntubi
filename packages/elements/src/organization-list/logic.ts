@@ -1,5 +1,5 @@
 /** The organizations as a table, one row each; apart from the look. */
-import type { AdminOrganization } from '@idp/sdk/types';
+import type { AdminOrganization } from '@buntu/sdk/types';
 import type { OrganizationRowLabels } from '../organization-row/logic.js';
 
 export interface OrganizationListLabels {

@@ -1,5 +1,5 @@
 /** The devices page's list: a summary, signing out every other one, then a row each. */
-import type { Device } from '@idp/sdk/account';
+import type { Device } from '@buntu/sdk/account';
 import type { DeviceLabels } from '../device/logic.js';
 
 export interface DevicesLabels {

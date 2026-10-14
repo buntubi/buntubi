@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/start/di';
-import { Account, type BrowserAccount } from '@idp/sdk/account';
+import { Account, type BrowserAccount } from '@buntu/sdk/account';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';
 import {

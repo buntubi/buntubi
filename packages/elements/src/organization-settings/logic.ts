@@ -1,7 +1,7 @@
 /** An organization's settings and its deletion, apart from how they look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { OrganizationInput } from '@idp/sdk/schemas/organizations';
+import type { OrganizationInput } from '@buntu/sdk/schemas/organizations';
 
 export type OrganizationField = 'name' | 'description' | 'support_email';
 export const ORGANIZATION_FIELDS: OrganizationField[] = ['name', 'support_email', 'description'];
