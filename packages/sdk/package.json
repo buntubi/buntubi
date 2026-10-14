@@ -39,13 +39,15 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@fluixi/start": "^0.1.0-alpha.87",
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@types/node": "^26.6.4",
-    "typescript": "^7.0.2"
+    "@fluixi/start": "^0.1.0-alpha.87",
+    "@types/node": "^22.0.0",
+    "typescript": "^7.0.2",
+    "zod": "^4.6.5"
   },
   "publishConfig": {
     "access": "public",

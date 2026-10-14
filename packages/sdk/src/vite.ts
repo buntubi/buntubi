@@ -9,6 +9,20 @@ import { existsSync } from 'node:fs';
 import { dirname, isAbsolute, join } from 'node:path';
 
 const ID = 'virtual:idp-ui-plugins';
+
+/**
+ * What a plugin must share with the app it runs in: one copy each, the app's. A plugin installed
+ * from npm, or given as a path, would otherwise resolve its own copies, and DI tokens, the
+ * navigation and the views the app sets up would be different objects in the plugin's code.
+ */
+export const SHARED_WITH_PLUGINS = [
+  '@buntu/sdk',
+  '@fluixi/start',
+  '@fluixi/core',
+  '@fluixi/dom',
+  '@fluixi/reactive',
+  '@fluixi/web-components',
+];
 const RESOLVED = `\0${ID}`;
 
 /**
@@ -17,7 +31,7 @@ const RESOLVED = `\0${ID}`;
  */
 export interface IdpUiPluginsPlugin {
   name: string;
-  config: () => { server: { fs: { allow: string[] } } };
+  config: () => { server: { fs: { allow: string[] } }; resolve: { dedupe: string[] } };
   resolveId: (id: string) => string | undefined;
   load: (id: string) => string | undefined;
 }
@@ -30,7 +44,10 @@ export function idpUiPlugins(list = process.env.IDP_UI_PLUGINS ?? ''): IdpUiPlug
   return {
     name: 'idp-ui-plugins',
     // A plugin given as a path lives outside this repo: its package may be served.
-    config: () => ({ server: { fs: { allow: specifiers.filter((s) => isAbsolute(s)).map(packageRoot) } } }),
+    config: () => ({
+      server: { fs: { allow: specifiers.filter((s) => isAbsolute(s)).map(packageRoot) } },
+      resolve: { dedupe: SHARED_WITH_PLUGINS },
+    }),
     resolveId: (id) => (id === ID ? RESOLVED : undefined),
     load(id) {
       if (id !== RESOLVED) return undefined;
