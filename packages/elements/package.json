@@ -320,8 +320,9 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@bambiste/countries": "^0.2.1",
+    "@buntu/sdk": "workspace:*",
     "@fluixi-ui/badge": "^0.2.0-alpha.19",
     "@fluixi-ui/button": "^0.2.0-alpha.19",
     "@fluixi-ui/checkbox": "^0.2.0-alpha.19",
@@ -337,14 +338,35 @@
     "@fluixi-ui/toggle-group": "^0.2.0-alpha.19",
     "@fluixi/core": "^1.0.0-alpha.97",
     "@fluixi/dom": "^1.0.0-alpha.97",
-    "@fluixi/forms": "alpha",
+    "@fluixi/forms": "^0.2.1-alpha.2",
+    "@fluixi/jsx": "^1.0.0-alpha.97",
+    "@fluixi/reactive": "^1.0.0-alpha.97",
+    "@fluixi/start": "^0.1.0-alpha.87",
+    "@fluixi/web-components": "^1.0.0-alpha.97"
+  },
+  "devDependencies": {
+    "@bambiste/countries": "^0.2.1",
+    "@buntu/sdk": "workspace:*",
+    "@fluixi-ui/badge": "^0.2.0-alpha.19",
+    "@fluixi-ui/button": "^0.2.0-alpha.19",
+    "@fluixi-ui/checkbox": "^0.2.0-alpha.19",
+    "@fluixi-ui/dropdown-menu": "^0.2.0-alpha.19",
+    "@fluixi-ui/field": "^0.2.0-alpha.19",
+    "@fluixi-ui/form": "^0.2.0-alpha.19",
+    "@fluixi-ui/input": "^0.2.0-alpha.19",
+    "@fluixi-ui/layout": "^0.1.0-alpha.11",
+    "@fluixi-ui/popover": "^0.2.0-alpha.19",
+    "@fluixi-ui/select": "^0.2.0-alpha.21",
+    "@fluixi-ui/switch": "^0.2.0-alpha.19",
+    "@fluixi-ui/toggle": "^0.2.0-alpha.19",
+    "@fluixi-ui/toggle-group": "^0.2.0-alpha.19",
+    "@fluixi/core": "^1.0.0-alpha.97",
+    "@fluixi/dom": "^1.0.0-alpha.97",
+    "@fluixi/forms": "^0.2.1-alpha.2",
     "@fluixi/jsx": "^1.0.0-alpha.97",
     "@fluixi/reactive": "^1.0.0-alpha.97",
     "@fluixi/start": "^0.1.0-alpha.87",
     "@fluixi/web-components": "^1.0.0-alpha.97",
-    "@buntu/sdk": "workspace:*"
-  },
-  "devDependencies": {
     "typescript": "^7.0.2"
   }
 }

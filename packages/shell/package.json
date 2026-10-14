@@ -17,6 +17,21 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@idp/elements": "workspace:*"
+  },
+  "peerDependencies": {
+    "@buntu/sdk": "workspace:*",
+    "@fluixi-ui/button": "^0.2.0-alpha.19",
+    "@fluixi-ui/dropdown-menu": "^0.2.0-alpha.19",
+    "@fluixi-ui/layout": "^0.1.0-alpha.11",
+    "@fluixi-ui/primitives": "^0.2.0-alpha.9",
+    "@fluixi/core": "^1.0.0-alpha.97",
+    "@fluixi/dom": "^1.0.0-alpha.97",
+    "@fluixi/jsx": "^1.0.0-alpha.97",
+    "@fluixi/reactive": "^1.0.0-alpha.97"
+  },
+  "devDependencies": {
+    "@buntu/sdk": "workspace:*",
     "@fluixi-ui/button": "^0.2.0-alpha.19",
     "@fluixi-ui/dropdown-menu": "^0.2.0-alpha.19",
     "@fluixi-ui/layout": "^0.1.0-alpha.11",
@@ -25,10 +40,6 @@
     "@fluixi/dom": "^1.0.0-alpha.97",
     "@fluixi/jsx": "^1.0.0-alpha.97",
     "@fluixi/reactive": "^1.0.0-alpha.97",
-    "@idp/elements": "workspace:*",
-    "@buntu/sdk": "workspace:*"
-  },
-  "devDependencies": {
     "typescript": "^7.0.2"
   }
 }
