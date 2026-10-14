@@ -1,6 +1,8 @@
 # A version tag (v1.2.3) builds the three images and pushes them to the GitHub Container
-# Registry, tagged with the version and `latest`, then opens a GitHub release with the notes
-# generated from the commits since the previous tag.
+# Registry, tagged with the version and `latest`; publishes @buntu/sdk to npm (NPM_TOKEN) and the
+# provider to PyPI as `idp` (trusted publishing, environment `pypi`); then opens a GitHub release
+# with the notes generated from the commits since the previous tag. The tag must match the
+# versions in packages/sdk/package.json and idp/pyproject.toml.
 name: Release
 
 on:
@@ -47,8 +49,50 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
 
+  sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: The tag matches the package version
+        run: test "v$(node -p "require('./packages/sdk/package.json').version")" = "$GITHUB_REF_NAME"
+      - run: pnpm --filter @buntu/sdk build
+      # pnpm reads the token from the user .npmrc, not the one setup-node writes.
+      - run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          pnpm --filter @buntu/sdk publish --no-git-checks --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  python:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      # The package carries the built sign-in pages.
+      - run: pnpm install --frozen-lockfile && pnpm --filter idp-frontend build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: The tag matches the package version
+        run: test "v$(python -c "import tomllib;print(tomllib.load(open('idp/pyproject.toml','rb'))['project']['version'])")" = "$GITHUB_REF_NAME"
+      - run: pip install build && python -m build --outdir dist idp
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
   release:
-    needs: images
+    needs: [images, sdk, python]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
