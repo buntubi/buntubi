@@ -23,7 +23,7 @@ jobs:
   changesets:
     runs-on: ubuntu-latest
     outputs:
-      published: ${{ steps.changesets.outputs.published }}
+      release: ${{ steps.version.outputs.release }}
       version: ${{ steps.version.outputs.version }}
     steps:
       # RELEASE_TOKEN, a personal token: what it pushes and the pull request it opens run CI
@@ -51,12 +51,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Release when no changeset is pending and this version has no tag yet, whatever the action
+      # reported: a run that published the SDK but stopped before the rest finishes on the next push.
       - id: version
-        run: echo "version=$(node -p "require('./packages/sdk/package.json').version")" >> "$GITHUB_OUTPUT"
+        env:
+          PENDING: ${{ steps.changesets.outputs.hasChangesets }}
+        run: |
+          version=$(node -p "require('./packages/sdk/package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "$PENDING" = "false" ] && [ "$version" != "0.0.0" ] \
+            && [ -z "$(git ls-remote --tags origin "refs/tags/v$version")" ]; then
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
 
   images:
     needs: changesets
-    if: needs.changesets.outputs.published == 'true'
+    if: needs.changesets.outputs.release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -89,7 +99,7 @@ jobs:
 
   python:
     needs: changesets
-    if: needs.changesets.outputs.published == 'true'
+    if: needs.changesets.outputs.release == 'true'
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
@@ -109,6 +119,9 @@ jobs:
           python-version: "3.12"
       - run: pip install build && python -m build --outdir dist idp
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # A retried release does not fail on files already uploaded.
+          skip-existing: true
 
   github-release:
     needs: [changesets, images, python]

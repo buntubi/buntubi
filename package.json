@@ -9,6 +9,6 @@
     "release": "pnpm --filter @buntu/sdk build && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^3.0.3"
+    "@changesets/cli": "^2.31.1"
   }
 }
