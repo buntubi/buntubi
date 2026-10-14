@@ -19,6 +19,7 @@ export const SHARED_WITH_PLUGINS = [
   '@buntu/sdk',
   '@fluixi/start',
   '@fluixi/core',
+  '@fluixi/di',
   '@fluixi/dom',
   '@fluixi/reactive',
   '@fluixi/web-components',

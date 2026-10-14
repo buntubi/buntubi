@@ -6,7 +6,7 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { onMount } from '@fluixi/core';
 import { createField, createForm } from '@fluixi/forms';
 import { memo, signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account, type Passkey } from '@buntu/sdk/account';
 import { passkeyNameSchema, reauthSchema, type PasskeyNameInput, type ReauthInput } from '@buntu/sdk/schemas/account';
 import { passkeysSupported } from '@buntu/sdk/webauthn';

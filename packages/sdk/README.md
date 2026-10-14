@@ -20,7 +20,7 @@ so a form can say no before a round trip.
 | `@buntu/sdk/plugins` | The UI plugin interface: `definePlugin`, `PluginSection`, `PluginLook`, `PluginApi`, `sectionsOf`, `sectionOf`, `lookOf` |
 | `@buntu/sdk/vite` | `idpUiPlugins()`, the Vite plugin that composes `IDP_UI_PLUGINS` into `virtual:idp-ui-plugins` |
 
-Services are injection tokens from `@fluixi/start/di`. An element calls `inject(Account)`; the
+Services are injection tokens from `@fluixi/di`. An element calls `inject(Account)`; the
 app decides what that means by providing an implementation in its module. That is what keeps
 elements free of any app: the same element works in the account area, a test, or another host.
 

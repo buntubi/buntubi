@@ -5,7 +5,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Admin } from '@buntu/sdk/admin';
 import { userEditSchema, type UserEditInput } from '@buntu/sdk/schemas/users';
 import type { AdminUserPage } from '@buntu/sdk/types';

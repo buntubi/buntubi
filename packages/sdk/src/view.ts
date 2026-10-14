@@ -9,7 +9,7 @@
  * Lighter changes need no view at all: every element reads the --idp-* tokens, and marks its
  * parts with `part` attributes a stylesheet can select (`idp-sidebar [part~='item']`).
  */
-import { inject, injectionToken, type Token } from '@fluixi/start/di';
+import { inject, injectionToken, type Token } from '@fluixi/di';
 
 export type View<Logic> = (logic: Logic) => unknown;
 

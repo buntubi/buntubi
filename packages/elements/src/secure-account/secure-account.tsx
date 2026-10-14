@@ -6,7 +6,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { onMount } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account } from '@buntu/sdk/account';
 import { passkeysSupported } from '@buntu/sdk/webauthn';
 import type { Messages } from '../messages.js';

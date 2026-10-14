@@ -1,7 +1,7 @@
 /** The developer terms and their acceptance, through the injected `Developer` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Developer } from '@buntu/sdk/developer';
 import { useView } from '../view.js';
 import { developerTermsLabels, type DeveloperTermsEvents, type DeveloperTermsLabels, type DeveloperTermsLogic } from './logic.js';

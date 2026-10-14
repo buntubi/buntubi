@@ -5,7 +5,7 @@
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Developer } from '@buntu/sdk/developer';
 import type { AppOverview, AppReview, Localized, Product } from '@buntu/sdk/types';
 import '../scope-justification/scope-justification.js';

@@ -1,7 +1,7 @@
 /** The preferences card. Each pick is saved at once; a new language is announced with `language`. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account } from '@buntu/sdk/account';
 import { useView } from '../view.js';
 import {

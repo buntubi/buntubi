@@ -7,7 +7,7 @@
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Developer } from '@buntu/sdk/developer';
 import type { AppKind, Localized, Platform, Product } from '@buntu/sdk/types';
 import '../app-info-form/app-info-form.js';

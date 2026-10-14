@@ -3,7 +3,7 @@
  * implementation in its module (the portal maps it to its server functions), so an element
  * never knows where the calls go.
  */
-import { injectionToken } from '@fluixi/start/di';
+import { injectionToken } from '@fluixi/di';
 import type { ApiKey, App, AppKind, Invitation, Member, Organization, Platform, Role } from './types.js';
 
 export interface NewApp {

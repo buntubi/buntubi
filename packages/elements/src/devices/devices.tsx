@@ -1,7 +1,7 @@
 /** Where the person is signed in, one `idp-device` each. Signs out the others through `Account`. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account, type Device } from '@buntu/sdk/account';
 import { useView } from '../view.js';
 import { devicesLabels, type DevicesLabels, type DevicesLogic } from './logic.js';

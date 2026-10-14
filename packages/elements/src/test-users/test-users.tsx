@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Developer } from '@buntu/sdk/developer';
 import { testUserSchema, type TestUserInput } from '@buntu/sdk/schemas/team';
 import { messageReader, type Messages } from '../messages.js';

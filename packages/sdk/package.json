@@ -40,11 +40,11 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@fluixi/start": "^0.1.0-alpha.87",
+    "@fluixi/di": "^1.0.0-alpha.99",
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@fluixi/start": "0.1.0-alpha.88",
+    "@fluixi/di": "^1.0.0-alpha.99",
     "@types/node": "^22.0.0",
     "typescript": "^7.0.2",
     "zod": "^4.6.5"

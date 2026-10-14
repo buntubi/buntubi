@@ -1,7 +1,7 @@
 /** The header's account menu: switch, add, sign out of one or all, through the injected `Account` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account, type BrowserAccount } from '@buntu/sdk/account';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';

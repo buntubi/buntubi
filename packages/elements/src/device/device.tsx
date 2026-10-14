@@ -1,7 +1,7 @@
 /** One signed-in browser or phone. Signing it out goes through the injected `Account` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account, type Device } from '@buntu/sdk/account';
 import { shortDate } from '../dates.js';
 import { useView } from '../view.js';

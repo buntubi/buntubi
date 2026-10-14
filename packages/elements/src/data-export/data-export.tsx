@@ -1,7 +1,7 @@
 /** The data copy card: saves the account as JSON through the injected `Account` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account } from '@buntu/sdk/account';
 import { shortDate } from '../dates.js';
 import { useView } from '../view.js';

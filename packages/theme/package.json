@@ -11,10 +11,10 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@fluixi/core": "^1.0.0-alpha.97"
+    "@fluixi/core": "^1.0.0-alpha.99"
   },
   "devDependencies": {
-    "@fluixi/core": "1.0.0-alpha.98",
+    "@fluixi/core": "^1.0.0-alpha.99",
     "typescript": "^7.0.2"
   }
 }

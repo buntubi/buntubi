@@ -4,7 +4,7 @@
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Admin } from '@buntu/sdk/admin';
 import type { Localized, ReviewRequest } from '@buntu/sdk/types';
 import { useView } from '../view.js';

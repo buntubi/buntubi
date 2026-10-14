@@ -5,7 +5,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { formatPhone } from '@bambiste/countries';
 import { Account } from '@buntu/sdk/account';
 import { emailChangeSchema, phoneSchema, type EmailChangeInput, type PhoneInput } from '@buntu/sdk/schemas/account';

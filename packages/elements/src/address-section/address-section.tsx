@@ -5,7 +5,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { countryName } from '@bambiste/countries';
 import { Account, type PostalAddress } from '@buntu/sdk/account';
 import { addressSchema, type AddressInput } from '@buntu/sdk/schemas/account';

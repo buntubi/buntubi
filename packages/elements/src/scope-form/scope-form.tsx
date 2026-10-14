@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Admin } from '@buntu/sdk/admin';
 import { scopeSchema, type ScopeInput } from '@buntu/sdk/schemas/catalogue';
 import type { Sensitivity } from '@buntu/sdk/types';

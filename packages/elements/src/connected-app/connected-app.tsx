@@ -1,7 +1,7 @@
 /** One app that uses the account. Removing its access goes through the injected `Account` service. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account, type ConnectedApp } from '@buntu/sdk/account';
 import { shortDate } from '../dates.js';
 import { useView } from '../view.js';

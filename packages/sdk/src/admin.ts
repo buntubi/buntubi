@@ -2,7 +2,7 @@
  * What console elements may ask of the admin API. No default: the console provides it in its
  * module, mapped to its server functions.
  */
-import { injectionToken } from '@fluixi/start/di';
+import { injectionToken } from '@fluixi/di';
 import type { NewUser, ScopeEntry, UserEdit } from './types.js';
 
 export type Availability = 'ga' | 'beta' | 'sandbox';

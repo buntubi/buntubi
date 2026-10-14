@@ -7,7 +7,7 @@
  *
  * Without one, `go` loads the page in full: it works anywhere, with or without a router.
  */
-import { inject, injectionToken } from '@fluixi/start/di';
+import { inject, injectionToken } from '@fluixi/di';
 
 export interface NavigationOptions {
   replace?: boolean;

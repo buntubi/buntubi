@@ -2,7 +2,7 @@
  * What the account area's elements may ask of the provider, for the signed-in person. No default:
  * the account app provides it, mapped to the provider's /api endpoints.
  */
-import { injectionToken } from '@fluixi/start/di';
+import { injectionToken } from '@fluixi/di';
 
 /** An account signed in on this browser. */
 export interface BrowserAccount {

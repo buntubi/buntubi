@@ -10,7 +10,7 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { onMount } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
-import { inject } from '@fluixi/start/di';
+import { inject } from '@fluixi/di';
 import { Account, type TwoStepEnrolment } from '@buntu/sdk/account';
 import { twoStepCodeSchema, type TwoStepCodeInput } from '@buntu/sdk/schemas/account';
 import { shortDate } from '../dates.js';

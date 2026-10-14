@@ -3,7 +3,7 @@
  * the plugin's package defines. A deployment lists its UI plugins in `IDP_UI_PLUGINS`; the apps
  * compose them at build time (see `./vite`), so no code arrives at run time.
  */
-import { injectionToken } from '@fluixi/start/di';
+import { injectionToken } from '@fluixi/di';
 
 /** A page a plugin adds: a sidebar entry and the element that fills the page. */
 export interface PluginSection {
