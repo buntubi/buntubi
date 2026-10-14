@@ -28,85 +28,85 @@ importers:
         version: link:../../packages/sdk
       '@fluixi-ui/badge':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/button':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/card':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/checkbox':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/dropdown-menu':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/field':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/form':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/input':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/layout':
         specifier: ^0.1.0-alpha.11
-        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/popover':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/primitives':
         specifier: ^0.2.0-alpha.9
-        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi-ui/select':
         specifier: ^0.2.0-alpha.21
-        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/switch':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle-group':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/tokens':
         specifier: ^0.4.0-alpha.18
-        version: 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        version: 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/cli':
-        specifier: ^0.1.0-alpha.88
-        version: 0.1.0-alpha.88(typescript@7.0.2)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 0.1.0-alpha.89
+        version: 0.1.0-alpha.89(typescript@7.0.2)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/core':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
       '@fluixi/dom':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/forms':
-        specifier: ^0.2.1-alpha.2
-        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 0.2.1-alpha.2
+        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/jsx':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/oauth2':
-        specifier: ^1.0.0-alpha.13
-        version: 1.0.0-alpha.13(174e9002f9a858378279731ceb51e921)
+        specifier: 1.0.0-alpha.14
+        version: 1.0.0-alpha.14(36b0d3b46b3c4933557c31212352ef7e)
       '@fluixi/reactive':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98
       '@fluixi/server':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/session':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.97)(@fluixi/storage@0.1.0-alpha.4)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.98)(@fluixi/storage@0.1.0-alpha.5)
       '@fluixi/start':
-        specifier: ^0.1.0-alpha.87
-        version: 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 0.1.0-alpha.88
+        version: 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/web-components':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.97
+        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@idp/elements':
         specifier: workspace:*
         version: link:../../packages/elements
@@ -146,85 +146,85 @@ importers:
         version: link:../../packages/sdk
       '@fluixi-ui/badge':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/button':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/card':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/checkbox':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/dropdown-menu':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/field':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/form':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/input':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/layout':
         specifier: ^0.1.0-alpha.11
-        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/popover':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/primitives':
         specifier: ^0.2.0-alpha.9
-        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi-ui/select':
         specifier: ^0.2.0-alpha.21
-        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/switch':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle-group':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/tokens':
         specifier: ^0.4.0-alpha.18
-        version: 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        version: 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/cli':
-        specifier: ^0.1.0-alpha.88
-        version: 0.1.0-alpha.88(typescript@7.0.2)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 0.1.0-alpha.89
+        version: 0.1.0-alpha.89(typescript@7.0.2)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/core':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
       '@fluixi/dom':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/forms':
-        specifier: ^0.2.1-alpha.2
-        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 0.2.1-alpha.2
+        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/jsx':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/oauth2':
-        specifier: ^1.0.0-alpha.13
-        version: 1.0.0-alpha.13(174e9002f9a858378279731ceb51e921)
+        specifier: 1.0.0-alpha.14
+        version: 1.0.0-alpha.14(36b0d3b46b3c4933557c31212352ef7e)
       '@fluixi/reactive':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98
       '@fluixi/server':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/session':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.97)(@fluixi/storage@0.1.0-alpha.4)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.98)(@fluixi/storage@0.1.0-alpha.5)
       '@fluixi/start':
-        specifier: ^0.1.0-alpha.87
-        version: 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 0.1.0-alpha.88
+        version: 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/web-components':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.97
+        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@idp/elements':
         specifier: workspace:*
         version: link:../../packages/elements
@@ -264,43 +264,43 @@ importers:
         version: link:../packages/sdk
       '@fluixi-ui/avatar':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/badge':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/button':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/checkbox':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/dropdown-menu':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/field':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/form':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/input':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/layout':
         specifier: ^0.1.0-alpha.11
-        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/pin-input':
         specifier: ^0.1.0-alpha.11
-        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/popover':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/primitives':
         specifier: ^0.2.0-alpha.9
-        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi-ui/select':
         specifier: ^0.2.0-alpha.21
-        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/skin-material':
         specifier: ^0.3.0-alpha.11
         version: 0.3.0-alpha.11
@@ -312,37 +312,37 @@ importers:
         version: 0.1.0-alpha.9
       '@fluixi-ui/switch':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle-group':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/tokens':
         specifier: ^0.4.0-alpha.18
-        version: 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        version: 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/core':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
       '@fluixi/dom':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/forms':
-        specifier: ^0.2.1-alpha.2
-        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 0.2.1-alpha.2
+        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/jsx':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/reactive':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98
       '@fluixi/start':
-        specifier: ^0.1.0-alpha.87
-        version: 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 0.1.0-alpha.88
+        version: 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/web-components':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.97
+        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@idp/elements':
         specifier: workspace:*
         version: link:../packages/elements
@@ -366,8 +366,8 @@ importers:
         specifier: 1.0.0-next.5
         version: 1.0.0-next.5(@fluixi-css/core@1.0.0-next.5)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/vite-plugin':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -385,64 +385,64 @@ importers:
         version: link:../sdk
       '@fluixi-ui/badge':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/button':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/checkbox':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/dropdown-menu':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/field':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/form':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/input':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/layout':
         specifier: ^0.1.0-alpha.11
-        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/popover':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/select':
         specifier: ^0.2.0-alpha.21
-        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/switch':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/toggle-group':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/core':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
       '@fluixi/dom':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/forms':
-        specifier: ^0.2.1-alpha.2
-        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 0.2.1-alpha.2
+        version: 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/jsx':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/reactive':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98
       '@fluixi/start':
-        specifier: ^0.1.0-alpha.87
-        version: 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 0.1.0-alpha.88
+        version: 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi/web-components':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.97
+        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -450,8 +450,8 @@ importers:
   packages/sdk:
     devDependencies:
       '@fluixi/start':
-        specifier: ^0.1.0-alpha.87
-        version: 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        specifier: 0.1.0-alpha.88
+        version: 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.5
@@ -473,28 +473,28 @@ importers:
         version: link:../sdk
       '@fluixi-ui/button':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/dropdown-menu':
         specifier: ^0.2.0-alpha.19
-        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/layout':
         specifier: ^0.1.0-alpha.11
-        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+        version: 0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       '@fluixi-ui/primitives':
         specifier: ^0.2.0-alpha.9
-        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        version: 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/core':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
       '@fluixi/dom':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/jsx':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
       '@fluixi/reactive':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -511,8 +511,8 @@ importers:
   packages/theme:
     devDependencies:
       '@fluixi/core':
-        specifier: ^1.0.0-alpha.97
-        version: 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+        specifier: 1.0.0-alpha.98
+        version: 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -959,8 +959,8 @@ packages:
       better-auth:
         optional: true
 
-  '@fluixi/cli@0.1.0-alpha.88':
-    resolution: {integrity: sha512-2JJ6ZiT6T+f/OK33h5t5kXmb7k/GTXi8R3K8KYgJ8X7SWVqTDe2Q0y78GHWizpS4RXJLYgsWqRWZkspCXsJnjQ==}
+  '@fluixi/cli@0.1.0-alpha.89':
+    resolution: {integrity: sha512-heD12jxKpY2EDJ/nUqcyaOlAeZ9Pli1GjYuOjji0XSGiA77Ex4uU9uIaX4EY080PVg7B5NuWE7dwg/UCV1C+8A==}
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
@@ -968,8 +968,8 @@ packages:
       typescript:
         optional: true
 
-  '@fluixi/compiler@1.0.0-alpha.97':
-    resolution: {integrity: sha512-w58Fb3fNb1aXTxaAGJovvJ1JVVNLke725NcRHegiyMiymLCNuiauATc+knd296TF5oYF+J5BhEpif2kZ2RZ7rQ==}
+  '@fluixi/compiler@1.0.0-alpha.98':
+    resolution: {integrity: sha512-lKlGMFEF9fyfHdUmiLJNwzVhgYAjRtskriSJtLBYItonu7P6b9Rm2ztZpyuYk46xaqs1MZurQPlPOxZAxOhRXQ==}
     peerDependencies:
       '@babel/core': ^7.28.5
       '@babel/generator': ^7.29.1
@@ -985,12 +985,12 @@ packages:
       '@babel/preset-typescript':
         optional: true
 
-  '@fluixi/core@1.0.0-alpha.97':
-    resolution: {integrity: sha512-rFRX8SMJUg2SYSsLTSF0bElWQx6zfbiGD4iPCW6ECQLA+oc4ZN8uaEiAPExPSbR7ABuhU/3rJ5om6eGj3hg/Iw==}
+  '@fluixi/core@1.0.0-alpha.98':
+    resolution: {integrity: sha512-u24ggopF0bGh7GvtVAN2mXSoofxFVF86EhG/j4Be29NYJxpvyGdtMc8tSnCQowLIpuD8GUQ1WdxL9OzO65uYOQ==}
     hasBin: true
     peerDependencies:
-      '@fluixi/compiler': 1.0.0-alpha.97
-      '@fluixi/vite-plugin': 1.0.0-alpha.97
+      '@fluixi/compiler': 1.0.0-alpha.98
+      '@fluixi/vite-plugin': 1.0.0-alpha.98
       vite-plugin-node-polyfills: ^0.25.0
     peerDependenciesMeta:
       '@fluixi/compiler':
@@ -1003,10 +1003,10 @@ packages:
   '@fluixi/devtools@0.2.0-alpha.7':
     resolution: {integrity: sha512-654TVP8cWcvibjeMeqW9i93AB4zC6PLTNWv1gPd7MAroUlhdUxgLPqWG+NmTvDVl7kAztNPcGybjTghr61bcnA==}
 
-  '@fluixi/dom@1.0.0-alpha.97':
-    resolution: {integrity: sha512-xfC76CQnDMwq2QUXYl6FobMr6o2pO97aeeCCnhLvtX/haXL7u1BRQN9tcNEmU7ZqnywAm7dV1DxJPDEoR+7aag==}
+  '@fluixi/dom@1.0.0-alpha.98':
+    resolution: {integrity: sha512-JM7MZ7RVNR9rvNF/jQwvQ22H7QF7ArWTyFQpa7zZ2DrSA0v0XzHdTL+fgJGIg4zBzpeOWG+JJs6jKRsbeXxvfg==}
     peerDependencies:
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.98
 
   '@fluixi/forms-core@0.2.1-alpha.2':
     resolution: {integrity: sha512-Uxsi981p6j5QsgoQ5ubrhfl/QOGq0tWyjxyR30N3zyhJeGeItAkT3CdNgD16SmBAmHHSYAF2/+tLZPB2jRy0+g==}
@@ -1030,26 +1030,26 @@ packages:
   '@fluixi/forms@0.2.1-alpha.2':
     resolution: {integrity: sha512-KN1wTndkmCUqEZPqQmHJECI3jF0cWaSJkDwcpv45CsvoDdXtVk334uLhJEyt71G8C6r9vmqnncrFBnN8pRRZWQ==}
 
-  '@fluixi/head@1.0.0-alpha.64':
-    resolution: {integrity: sha512-M5fImlsO4wFw/rB7+OwNfXRoUKoBo0msPoUjLwQQIEWT/3MhhYqKzzhdtGYTOtPQu96vxfZrqbGlFTSZuJp0Pw==}
+  '@fluixi/head@1.0.0-alpha.65':
+    resolution: {integrity: sha512-OPeFF1mkPEksWmS0q+o6snuZ8mFSa1bPDkIQGttLdiwOrTSuylNaMn7ewPMhPzSywU6YE25iSVZXayaIASNIWQ==}
     peerDependencies:
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/jsx@1.0.0-alpha.97':
-    resolution: {integrity: sha512-1L0x5iXB+YRzQg2WyT0YfF0y89OONPdb2PFhiwlUaBpb6gXBmK9RnHy+qvytkVe51zrAMPVcU7KLWTeaeHi2Vg==}
+  '@fluixi/jsx@1.0.0-alpha.98':
+    resolution: {integrity: sha512-XYocRhhs0MfSH1bcjM6qdhOEfdsIfsVk1DSOWhRdPN75g7lL3P7+3GSEIWlOhR4D3hC/Kcpt8y+7bPkUrfq2HA==}
     peerDependencies:
-      '@fluixi/dom': 1.0.0-alpha.97
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.98
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/oauth2@1.0.0-alpha.13':
-    resolution: {integrity: sha512-7TQ9c4/35VpM7gBRZVn5nJjmYF8GyVICQOFHpv+Zpb2UPJlP4BzsFuyB0AlYDzvkZEIBfAHYGFgjFHB/0cIk1Q==}
+  '@fluixi/oauth2@1.0.0-alpha.14':
+    resolution: {integrity: sha512-uwiMK9LOmnsbWyAs1ZpZjL0XNUI+Kc923fjRhGg0plbxw9UIOmVr9e2brdDfzifD1vBmR+ajCEQHLM3DogxzDg==}
     peerDependencies:
-      '@fluixi/auth': 1.0.0-alpha.97
-      '@fluixi/core': 1.0.0-alpha.97
-      '@fluixi/reactive': 1.0.0-alpha.97
-      '@fluixi/server': 1.0.0-alpha.97
-      '@fluixi/session': 1.0.0-alpha.97
-      '@fluixi/start': 0.1.0-alpha.87
+      '@fluixi/auth': 1.0.0-alpha.98
+      '@fluixi/core': 1.0.0-alpha.98
+      '@fluixi/reactive': 1.0.0-alpha.98
+      '@fluixi/server': 1.0.0-alpha.98
+      '@fluixi/session': 1.0.0-alpha.98
+      '@fluixi/start': 0.1.0-alpha.88
       jose: '>=5'
     peerDependenciesMeta:
       '@fluixi/core':
@@ -1061,44 +1061,47 @@ packages:
       jose:
         optional: true
 
-  '@fluixi/reactive@1.0.0-alpha.97':
-    resolution: {integrity: sha512-4FkMTQiwGQevUcnVDgPpFIvsnL+z3tg9Z7yboojru4qKwv9WoQsQ6ZkimbIuIH2Im904W2/r+dEw1MUuJd/n3g==}
+  '@fluixi/reactive@1.0.0-alpha.98':
+    resolution: {integrity: sha512-hjil5MHY7lVeuRuwQ4LB+cH7rQNvbLCZYKPCswN9MhlHKXJsAMFsAu5V/44syjcv7LQPJbCBwwW4lAG/yy934A==}
 
   '@fluixi/router@0.1.2-alpha.5':
     resolution: {integrity: sha512-m73c+TESFz6gHSysvZgs6D1Gsl6ktbjAPZUOLqrFH44cjLUBhtNhjOURrlSKh+yhzl0SN2lWuveiOU2+RhRQ8A==}
 
-  '@fluixi/server@1.0.0-alpha.97':
-    resolution: {integrity: sha512-ItCy1zQHyF6ebMgojP0HmitPSYB7ixwH7qX6hd0JqKPse1tmCN3LgXzifS2l5wxUfG4lTotmPJQIRalVA7Ch3g==}
+  '@fluixi/server@1.0.0-alpha.98':
+    resolution: {integrity: sha512-RNU6SltTqX/533ByBFiX73htPJM6gUn2RCSbAXUvatf19/rpZjLMbC8Aeb2AGIqcMao7uuN45HuPQX51bgMSxA==}
     peerDependencies:
-      '@fluixi/dom': 1.0.0-alpha.97
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.98
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/session@1.0.0-alpha.97':
-    resolution: {integrity: sha512-I1+j+EsWM0kP2pfhvCPu05UL5SfxkmLT7L2OuHV7/eCbzo8XMe0jVcU7VGudYCHVDtcp+h6NcZjAbWqkIBkzUQ==}
+  '@fluixi/session@1.0.0-alpha.98':
+    resolution: {integrity: sha512-5LIQIi4edto4WjUGzFao4TLuVRXwzyATWufp42F7kYRezPiHbVxPkj5MGiqRtYfugp11dDWUFsm/aZSeteL4nQ==}
     peerDependencies:
-      '@fluixi/core': 1.0.0-alpha.97
-      '@fluixi/reactive': 1.0.0-alpha.97
-      '@fluixi/storage': 0.1.0-alpha.4
+      '@fluixi/core': 1.0.0-alpha.98
+      '@fluixi/reactive': 1.0.0-alpha.98
+      '@fluixi/storage': 0.1.0-alpha.5
 
-  '@fluixi/start@0.1.0-alpha.87':
-    resolution: {integrity: sha512-Ur5+/og2kBDz+tWvJOFLb14XOZD4NjpmPwKlq7cqey/yLRA/oKPWsA2mTtpxuizeQHSy9UVtbixNHtwz+s0h8w==}
+  '@fluixi/start@0.1.0-alpha.88':
+    resolution: {integrity: sha512-gZrSIjLVzUXKMN9JqqiucjON1UqnDy9x5hfpolUiuskyvSQaZPgh2+42ovKUuE8ao/L0NQTAqryKKvxrnv8BSw==}
     peerDependencies:
       vite: '>=5'
 
-  '@fluixi/storage@0.1.0-alpha.4':
-    resolution: {integrity: sha512-joJF4IDjTwoY6yi/AfHzyN7pfLUbm8NnW/nS/YCUaG5YUdlxfBordqCXXSA8Iyqhwdw7S1JQHPbTEZYD9ZQQ/g==}
+  '@fluixi/storage@0.1.0-alpha.5':
+    resolution: {integrity: sha512-J15xzDg5AijGShZJedYBNmrp6vy5YWV4uemDGYqp8PYcHv+DA80Xlx4qRxyb89VFoR8+R0Xgk5c6Lc5Ylw/3Mw==}
 
   '@fluixi/template-parser@0.1.0-alpha.4':
     resolution: {integrity: sha512-g18Vb12rTcGSNWCuIpnRGq/HDuTaBINy4PdmBO8TGrRNVXFXlyeLRidVLYNdPzcWuqx8DAzz+cTeCa/ycUVqHA==}
 
-  '@fluixi/ts-plugin@0.1.0-alpha.31':
-    resolution: {integrity: sha512-rXbHVha8vXYWM/IQxSGMTUSagylkKAXQjN1HXu7folodAV87eaUiGUtBgtklFCWYgYQQWeY9pWmZ5ZnP3xhuLg==}
+  '@fluixi/ts-plugin@0.1.0-alpha.32':
+    resolution: {integrity: sha512-6VT6xBqq/ku9HB5BpZfQlMzqfl7XIAJ1xNh4Wyf/Pbm41KLFAgJeZqnF2YjSDWc49mRwK2Hm7WPSNbILd7qAhw==}
 
   '@fluixi/utils@1.0.0-alpha.97':
     resolution: {integrity: sha512-0ebx4D07GQKvDubLjDoZ+nQiAK6SucqUC7BYcQkyP8WJwv78rfiP5kyfDR6sHXKqw8InPw+6Xcj6wk/JCTd/gA==}
 
-  '@fluixi/vite-plugin@1.0.0-alpha.97':
-    resolution: {integrity: sha512-HGNLaeB0I0q23sotHBDWsvN3qW31IujqyQ7F9qptYuEeYrwLUelJ86d1a3pEUKcIEaoLQV/9P5xpiJmPJdRSng==}
+  '@fluixi/utils@1.0.0-alpha.98':
+    resolution: {integrity: sha512-tJm5TbaU6xF+180wlw0K9ucs/OdGZHslJY20a80UukQ1CJP6aB3h5goj+1TTwB1zRyvWHWph3fQC06uA138C9g==}
+
+  '@fluixi/vite-plugin@1.0.0-alpha.98':
+    resolution: {integrity: sha512-PBsGCGKBK3SqrJlT1Z8v+PdzSekf7hVHPmskIwj3iC5BAPGXl5L4CWHcJUQa2x4MI4ESIhDs1gaEOTS/efRFSQ==}
     peerDependencies:
       vite: '>=4'
     peerDependenciesMeta:
@@ -2612,110 +2615,110 @@ snapshots:
       '@fluixi-css/core': 1.0.0-next.5
       vite: 8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)
 
-  '@fluixi-ui/avatar@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/avatar@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/badge@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/badge@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/polymorphic': 0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/polymorphic': 0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/button@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/button@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/card@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/card@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/checkbox@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/checkbox@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/dropdown-menu@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/dropdown-menu@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/field@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/field@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/form@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/form@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/field': 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/input': 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/field': 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/input': 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/fx@0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/fx@0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     optionalDependencies:
       '@babel/parser': 7.29.9
       vite: 8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)
@@ -2723,101 +2726,101 @@ snapshots:
       - '@fluixi/core'
       - '@fluixi/dom'
 
-  '@fluixi-ui/input@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/input@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/kit@0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi-ui/kit@0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi-ui/layout@0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/layout@0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/polymorphic': 0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/polymorphic': 0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/listbox@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/listbox@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/pin-input@0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/pin-input@0.1.0-alpha.11(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/polymorphic@0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi-ui/polymorphic@0.2.0-alpha.1(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
       tslib: 2.8.1
 
-  '@fluixi-ui/popover@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/popover@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/primitives@0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi-ui/primitives@0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
       '@floating-ui/dom': 1.8.0
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@fluixi/dom'
 
-  '@fluixi-ui/select@0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/select@0.2.0-alpha.21(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/listbox': 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/listbox': 0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
@@ -2831,65 +2834,65 @@ snapshots:
 
   '@fluixi-ui/skin-soft@0.1.0-alpha.9': {}
 
-  '@fluixi-ui/switch@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/switch@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/toggle-group@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/toggle-group@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/primitives': 0.2.0-alpha.9(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/toggle@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi-ui/toggle@0.2.0-alpha.19(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/fx': 0.1.0-alpha.8(@babel/parser@7.29.9)(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi-ui/tokens': 0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@babel/parser'
       - vite
 
-  '@fluixi-ui/tokens@0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi-ui/tokens@0.4.0-alpha.18(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi-ui/kit': 0.2.0-alpha.3(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/reactive': 1.0.0-alpha.98
     transitivePeerDependencies:
       - '@fluixi/dom'
 
-  '@fluixi/auth@1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(@fluixi/server@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/start@0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))':
+  '@fluixi/auth@1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(@fluixi/server@1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/start@0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))':
     dependencies:
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
       '@fluixi/utils': 1.0.0-alpha.97
     optionalDependencies:
-      '@fluixi/server': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/start': 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi/server': 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/start': 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
 
-  '@fluixi/cli@0.1.0-alpha.88(typescript@7.0.2)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi/cli@0.1.0-alpha.89(typescript@7.0.2)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi/start': 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
-      '@fluixi/ts-plugin': 0.1.0-alpha.31
+      '@fluixi/start': 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi/ts-plugin': 0.1.0-alpha.32
       typescript-api: typescript@6.0.3
     optionalDependencies:
       typescript: 7.0.2
@@ -2901,116 +2904,116 @@ snapshots:
       - rollup
       - vite
 
-  '@fluixi/compiler@1.0.0-alpha.97':
+  '@fluixi/compiler@1.0.0-alpha.98':
     dependencies:
       '@babel/parser': 7.29.9
       '@fluixi/template-parser': 0.1.0-alpha.4
       '@jridgewell/sourcemap-codec': 1.6.0
       magic-string: 0.30.21
 
-  '@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))':
+  '@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))':
     dependencies:
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/head': 1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/jsx': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/head': 1.0.0-alpha.65(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/jsx': 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
       '@fluixi/router': 0.1.2-alpha.5
-      '@fluixi/server': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/storage': 0.1.0-alpha.4
-      '@fluixi/utils': 1.0.0-alpha.97
+      '@fluixi/server': 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/storage': 0.1.0-alpha.5
+      '@fluixi/utils': 1.0.0-alpha.98
     optionalDependencies:
-      '@fluixi/compiler': 1.0.0-alpha.97
-      '@fluixi/vite-plugin': 1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi/compiler': 1.0.0-alpha.98
+      '@fluixi/vite-plugin': 1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       vite-plugin-node-polyfills: 0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
 
   '@fluixi/devtools@0.2.0-alpha.7': {}
 
-  '@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.98
       stream: 0.0.3
 
-  '@fluixi/forms-core@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/forms-core@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/forms-devtools@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/forms-devtools@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/forms-framework@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/forms-framework@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
     transitivePeerDependencies:
       - '@fluixi/reactive'
 
-  '@fluixi/forms-valibot@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/forms-valibot@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
     transitivePeerDependencies:
       - '@fluixi/reactive'
 
-  '@fluixi/forms-zod@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/forms-zod@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
     transitivePeerDependencies:
       - '@fluixi/reactive'
 
-  '@fluixi/forms@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/forms@0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/forms-devtools': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/forms-framework': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/forms-valibot': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/forms-zod': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.97)
+      '@fluixi/forms-core': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/forms-devtools': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/forms-framework': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/forms-valibot': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/forms-zod': 0.2.1-alpha.2(@fluixi/reactive@1.0.0-alpha.98)
     transitivePeerDependencies:
       - '@fluixi/reactive'
 
-  '@fluixi/head@1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/head@1.0.0-alpha.65(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/jsx@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/jsx@1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/oauth2@1.0.0-alpha.13(174e9002f9a858378279731ceb51e921)':
+  '@fluixi/oauth2@1.0.0-alpha.14(36b0d3b46b3c4933557c31212352ef7e)':
     dependencies:
-      '@fluixi/auth': 1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)(@fluixi/server@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/start@0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/reactive': 1.0.0-alpha.97
-      '@fluixi/session': 1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.97)(@fluixi/storage@0.1.0-alpha.4)
+      '@fluixi/auth': 1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)(@fluixi/server@1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/start@0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/reactive': 1.0.0-alpha.98
+      '@fluixi/session': 1.0.0-alpha.98(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.98)(@fluixi/storage@0.1.0-alpha.5)
     optionalDependencies:
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/server': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/start': 0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/server': 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/start': 0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
 
-  '@fluixi/reactive@1.0.0-alpha.97': {}
+  '@fluixi/reactive@1.0.0-alpha.98': {}
 
   '@fluixi/router@0.1.2-alpha.5': {}
 
-  '@fluixi/server@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/server@1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/head': 1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/head': 1.0.0-alpha.65(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
 
-  '@fluixi/session@1.0.0-alpha.97(@fluixi/core@1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.97)(@fluixi/storage@0.1.0-alpha.4)':
+  '@fluixi/session@1.0.0-alpha.98(@fluixi/core@1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))))(@fluixi/reactive@1.0.0-alpha.98)(@fluixi/storage@0.1.0-alpha.5)':
     dependencies:
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/reactive': 1.0.0-alpha.97
-      '@fluixi/storage': 0.1.0-alpha.4
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/reactive': 1.0.0-alpha.98
+      '@fluixi/storage': 0.1.0-alpha.5
 
-  '@fluixi/start@0.1.0-alpha.87(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi/start@0.1.0-alpha.88(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi/compiler': 1.0.0-alpha.97
-      '@fluixi/core': 1.0.0-alpha.97(@fluixi/compiler@1.0.0-alpha.97)(@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/head': 1.0.0-alpha.64(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
-      '@fluixi/server': 1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/vite-plugin': 1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
+      '@fluixi/compiler': 1.0.0-alpha.98
+      '@fluixi/core': 1.0.0-alpha.98(@fluixi/compiler@1.0.0-alpha.98)(@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))(vite-plugin-node-polyfills@0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)))
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/head': 1.0.0-alpha.65(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
+      '@fluixi/server': 1.0.0-alpha.98(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/vite-plugin': 1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
       esbuild: 0.27.7
       vite: 8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)
       vite-plugin-node-polyfills: 0.25.0(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))
@@ -3021,15 +3024,15 @@ snapshots:
       - '@babel/preset-typescript'
       - rollup
 
-  '@fluixi/storage@0.1.0-alpha.4':
+  '@fluixi/storage@0.1.0-alpha.5':
     dependencies:
-      '@fluixi/utils': 1.0.0-alpha.97
+      '@fluixi/utils': 1.0.0-alpha.98
 
   '@fluixi/template-parser@0.1.0-alpha.4': {}
 
-  '@fluixi/ts-plugin@0.1.0-alpha.31':
+  '@fluixi/ts-plugin@0.1.0-alpha.32':
     dependencies:
-      '@fluixi/compiler': 1.0.0-alpha.97
+      '@fluixi/compiler': 1.0.0-alpha.98
       '@fluixi/template-parser': 0.1.0-alpha.4
     transitivePeerDependencies:
       - '@babel/core'
@@ -3039,9 +3042,11 @@ snapshots:
 
   '@fluixi/utils@1.0.0-alpha.97': {}
 
-  '@fluixi/vite-plugin@1.0.0-alpha.97(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
+  '@fluixi/utils@1.0.0-alpha.98': {}
+
+  '@fluixi/vite-plugin@1.0.0-alpha.98(vite@8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
-      '@fluixi/compiler': 1.0.0-alpha.97
+      '@fluixi/compiler': 1.0.0-alpha.98
       '@fluixi/devtools': 0.2.0-alpha.7
     optionalDependencies:
       vite: 8.3.4(@types/node@22.20.5)(esbuild@0.27.7)(yaml@2.9.1)
@@ -3051,10 +3056,10 @@ snapshots:
       - '@babel/helper-plugin-utils'
       - '@babel/preset-typescript'
 
-  '@fluixi/web-components@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97))(@fluixi/reactive@1.0.0-alpha.97)':
+  '@fluixi/web-components@1.0.0-alpha.97(@fluixi/dom@1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98))(@fluixi/reactive@1.0.0-alpha.98)':
     dependencies:
-      '@fluixi/dom': 1.0.0-alpha.97(@fluixi/reactive@1.0.0-alpha.97)
-      '@fluixi/reactive': 1.0.0-alpha.97
+      '@fluixi/dom': 1.0.0-alpha.98(@fluixi/reactive@1.0.0-alpha.98)
+      '@fluixi/reactive': 1.0.0-alpha.98
 
   '@fontsource-variable/bricolage-grotesque@5.3.0': {}
 

@@ -14,7 +14,7 @@
     "@fluixi/core": "^1.0.0-alpha.97"
   },
   "devDependencies": {
-    "@fluixi/core": "^1.0.0-alpha.97",
+    "@fluixi/core": "1.0.0-alpha.98",
     "typescript": "^7.0.2"
   }
 }
