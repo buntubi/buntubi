@@ -26,7 +26,11 @@ jobs:
       published: ${{ steps.changesets.outputs.published }}
       version: ${{ steps.version.outputs.version }}
     steps:
+      # RELEASE_TOKEN, a personal token: what it pushes and the pull request it opens run CI
+      # like any other. With the built-in token GitHub holds those runs for approval.
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
       - run: corepack enable
       - uses: actions/setup-node@v4
         with:
@@ -45,7 +49,7 @@ jobs:
           title: "chore: version packages"
           commit: "chore: version packages"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - id: version
         run: echo "version=$(node -p "require('./packages/sdk/package.json').version")" >> "$GITHUB_OUTPUT"
