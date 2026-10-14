@@ -31,14 +31,18 @@ def test_a_code_works_once_and_only_inside_the_window() -> None:
     assert totp.matching_step(secret, old, None, now) is None
 
 
+def wrong_code(secret: str) -> str:
+    """A code no step around now produces, so a refusal never depends on chance or the clock."""
+    here = totp.current_step()
+    taken = {totp.code_at(secret, step) for step in range(here - 2, here + 3)}
+    return next(c for c in ("000000", "111111", "222222", "333333", "444444", "555555") if c not in taken)
+
+
 def enable(browser: FlaskClient, csrf: str) -> tuple[str, list[str]]:
     setup = api(browser, "POST", "/api/mfa/totp", {}, csrf).json
     assert setup["qr"].startswith("data:image/svg+xml") and setup["uri"].startswith("otpauth://totp/")
-    wrong = api(browser, "POST", "/api/mfa/totp/confirm", {"code": "000000"}, csrf)
-    assert (
-        wrong.json == {"error": "invalid_code"}
-        or totp.code_at(setup["secret"], totp.current_step()) == "000000"
-    )
+    wrong = api(browser, "POST", "/api/mfa/totp/confirm", {"code": wrong_code(setup["secret"])}, csrf)
+    assert wrong.json == {"error": "invalid_code"}
     code = totp.code_at(setup["secret"], totp.current_step())
     done = api(browser, "POST", "/api/mfa/totp/confirm", {"code": code}, csrf)
     assert done.status_code == 200, done.json
@@ -99,7 +103,7 @@ def test_five_wrong_codes_start_over(app: Flask, browser: FlaskClient, outbox: l
 def test_disabling_needs_a_code(app: Flask, browser: FlaskClient, outbox: list[mail.Message]) -> None:
     csrf = sign_up(browser, outbox)
     secret, _ = enable(browser, csrf)
-    assert api(browser, "POST", "/api/mfa/disable", {"code": "000001"}, csrf).status_code == 400
+    assert api(browser, "POST", "/api/mfa/disable", {"code": wrong_code(secret)}, csrf).status_code == 400
     code = totp.code_at(secret, totp.current_step() + 1)
     assert api(browser, "POST", "/api/mfa/disable", {"code": code}, csrf).json == {"enabled": False}
     _, _, reply = password_step(app)

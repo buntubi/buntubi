@@ -7,7 +7,7 @@ from typing import Any
 
 from flask import Flask
 from flask.testing import FlaskClient
-from test_mfa import enable, password_step
+from test_mfa import enable, password_step, wrong_code
 
 from idp.security import totp
 from idp.services import mail
@@ -34,7 +34,7 @@ def test_replaying_an_old_cookie_does_not_reset_the_two_step_limit(
     cookie = other.get_cookie(COOKIE)
     assert cookie is not None
     for _ in range(8):
-        api(_with_cookie(app, cookie.value), "POST", "/api/mfa/verify", {"code": "000000"}, csrf)
+        api(_with_cookie(app, cookie.value), "POST", "/api/mfa/verify", {"code": wrong_code(secret)}, csrf)
     good = totp.code_at(secret, totp.current_step() + 1)  # the setup used the current step
     last = api(_with_cookie(app, cookie.value), "POST", "/api/mfa/verify", {"code": good}, csrf)
     assert last.status_code == 400 and last.json["error"] == "too_many_attempts", last.json
@@ -47,7 +47,7 @@ def test_the_two_step_limit_also_holds_across_fresh_password_steps(
     for _ in range(2):
         other, csrf, _ = password_step(app)
         for _ in range(5):
-            api(other, "POST", "/api/mfa/verify", {"code": "000000"}, csrf)
+            api(other, "POST", "/api/mfa/verify", {"code": wrong_code(secret)}, csrf)
     other, csrf, _ = password_step(app)
     good = totp.code_at(secret, totp.current_step() + 1)
     late = api(other, "POST", "/api/mfa/verify", {"code": good}, csrf)
@@ -67,7 +67,7 @@ def test_the_account_owner_gets_in_again_after_the_pause(
     secret, _ = enable(browser, sign_up(browser, outbox))
     other, csrf, _ = password_step(app)
     for _ in range(5):
-        api(other, "POST", "/api/mfa/verify", {"code": "000000"}, csrf)
+        api(other, "POST", "/api/mfa/verify", {"code": wrong_code(secret)}, csrf)
     with app.app_context():
         db().execute(update(User).values(second_factor_failed_at=utcnow() - timedelta(minutes=16)))
         db().commit()
