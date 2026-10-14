@@ -1,6 +1,6 @@
 # A version tag (v1.2.3) builds the three images and pushes them to the GitHub Container
 # Registry, tagged with the version and `latest`; publishes @buntu/sdk to npm (NPM_TOKEN) and the
-# provider to PyPI as `idp` (trusted publishing, environment `pypi`); then opens a GitHub release
+# provider to PyPI as `buntu` (trusted publishing, environment `pypi`); then opens a GitHub release
 # with the notes generated from the commits since the previous tag. The tag must match the
 # versions in packages/sdk/package.json and idp/pyproject.toml.
 name: Release
