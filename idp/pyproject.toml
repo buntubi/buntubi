@@ -1,6 +1,6 @@
 [project]
 name = "buntu"
-version = "0.3.0"
+version = "0.4.0"
 description = "OAuth 2.1 and OpenID Connect provider"
 readme = "README.md"
 license = "MIT"

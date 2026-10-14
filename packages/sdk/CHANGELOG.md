@@ -1,5 +1,16 @@
 # @buntu/sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- 9f51a08: The SDK imports service tokens from `@fluixi/di`; peer dependency `@fluixi/di` version `^1.0.0-alpha.99` replaces `@fluixi/start`, and `SHARED_WITH_PLUGINS` includes `@fluixi/di`.
+- 0919e51: UI plugins give views in place of the provider's own by element tag, and each view receives the element's logic. The SDK adds `overrideViews` and `viewsOf`, with `viewToken` names matching the element tags.
+
+### Patch Changes
+
+- 1726351: `@fluixi/start` and `zod` are peer dependencies, so the SDK uses the app's copies, and `idpUiPlugins()` resolves `@buntu/sdk` and the Fluixi runtime to a single shared copy for UI plugins, which then use the same DI tokens and services as the app.
+
 ## 0.3.0
 
 ### Minor Changes
