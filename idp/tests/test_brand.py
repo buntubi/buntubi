@@ -4,7 +4,7 @@ import pytest
 from flask.testing import FlaskClient
 from pydantic import ValidationError
 
-from idp.config import Settings, get_settings
+from buntubi.config import Settings, get_settings
 
 from conftest import page_config
 

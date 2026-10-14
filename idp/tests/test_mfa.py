@@ -6,8 +6,8 @@ from typing import Any
 from flask import Flask
 from flask.testing import FlaskClient
 
-from idp.security import totp
-from idp.services import mail
+from buntubi.security import totp
+from buntubi.services import mail
 
 from conftest import PASSWORD, api, page_config, sign_up
 
@@ -119,9 +119,9 @@ def test_the_console_scope_asks_a_password_only_session_for_the_second_step(
     from test_platform_gates import authorize
     from test_plugins import claims_of
 
-    from idp.db import db
-    from idp.models import User
-    from idp.models.grants import LoginSession
+    from buntubi.db import db
+    from buntubi.models import User
+    from buntubi.models.grants import LoginSession
 
     from conftest import REDIRECT, add_client
 

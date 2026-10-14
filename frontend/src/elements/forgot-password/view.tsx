@@ -2,7 +2,7 @@
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Button } from '@fluixi-ui/button';
-import { viewToken } from '@buntu/sdk/view';
+import { viewToken } from '@buntubi/sdk/view';
 import type { ForgotPasswordLogic } from './forgot-password.js';
 
 export const forgotPasswordView = ({ error, form, label, pending, sent, submit }: ForgotPasswordLogic) =>

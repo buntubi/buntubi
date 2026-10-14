@@ -1,7 +1,7 @@
 /** An app's review: where it stands, the last answer, the history, and how ready the app is. */
 import { Grid, Row, Stack } from '@fluixi-ui/layout';
 import { useRouteData } from '@fluixi/start/router';
-import { can } from '@buntu/sdk/roles';
+import { can } from '@buntubi/sdk/roles';
 import '@idp/elements/page-header';
 import '@idp/elements/readiness';
 import '@idp/elements/review-history';

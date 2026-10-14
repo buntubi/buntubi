@@ -10,11 +10,11 @@ from flask import Flask
 from flask.testing import FlaskClient
 from sqlalchemy import select
 
-from idp.db import db
-from idp.models import Client, ClientSecret, User
-from idp.security import totp
-from idp.security.tokens import hash_token
-from idp.services import mail
+from buntubi.db import db
+from buntubi.models import Client, ClientSecret, User
+from buntubi.security import totp
+from buntubi.security.tokens import hash_token
+from buntubi.services import mail
 
 from conftest import (
     ISSUER,
@@ -214,7 +214,7 @@ def test_device_flow(app: Flask, browser: FlaskClient, outbox: list[mail.Message
     )
     assert approved.status_code == 200, approved.json
 
-    from idp.models import DeviceCode
+    from buntubi.models import DeviceCode
 
     with app.app_context():
         row = db().query(DeviceCode).one()

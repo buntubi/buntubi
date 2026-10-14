@@ -1,5 +1,5 @@
 /** Choosing a new password from a reset link. The token is the host's; the element asks for the password twice. */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { ResetPasswordView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';

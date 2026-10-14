@@ -1,7 +1,7 @@
 /** Submitting an app for review, with how ready it is beside the form. */
 import { Grid, Stack } from '@fluixi-ui/layout';
 import { useNavigate, useRouteData } from '@fluixi/start/router';
-import { can } from '@buntu/sdk/roles';
+import { can } from '@buntubi/sdk/roles';
 import '@idp/elements/page-header';
 import '@idp/elements/readiness';
 import '@idp/elements/review-submission';

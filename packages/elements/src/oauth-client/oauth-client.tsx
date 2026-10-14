@@ -5,8 +5,8 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Developer } from '@buntu/sdk/developer';
-import type { App } from '@buntu/sdk/types';
+import { Developer } from '@buntubi/sdk/developer';
+import type { App } from '@buntubi/sdk/types';
 import { copier } from '../copy.js';
 import { freshest } from '../fresh.js';
 import '../one-time-value/one-time-value.js';

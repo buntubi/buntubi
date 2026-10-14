@@ -6,7 +6,7 @@ from flask import Flask
 from test_console_api import admin_call, setup_people
 from test_developer_api import LIVE_FIELDS, call, new_organization
 
-from idp.services import mail
+from buntubi.services import mail
 
 
 def states(overview: dict[str, Any]) -> dict[str, str]:

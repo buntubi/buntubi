@@ -1,5 +1,5 @@
 /** Submitting an app for review: what is complete, why each sensitive scope, how to try it; apart from the look. */
-import type { Check } from '@buntu/sdk/types';
+import type { Check } from '@buntubi/sdk/types';
 
 export interface ReviewSubmissionLabels {
   checks: Record<Check['key'], string>;

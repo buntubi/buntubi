@@ -9,8 +9,8 @@ from flask import Flask
 from flask.testing import FlaskClient
 from test_mfa import enable, password_step, wrong_code
 
-from idp.security import totp
-from idp.services import mail
+from buntubi.security import totp
+from buntubi.services import mail
 
 from conftest import PASSWORD, api, page_config, sign_up
 
@@ -61,8 +61,8 @@ def test_the_account_owner_gets_in_again_after_the_pause(
 
     from sqlalchemy import update
 
-    from idp.db import db, utcnow
-    from idp.models import User
+    from buntubi.db import db, utcnow
+    from buntubi.models import User
 
     secret, _ = enable(browser, sign_up(browser, outbox))
     other, csrf, _ = password_step(app)
@@ -211,8 +211,8 @@ def test_wrong_passwords_from_many_addresses_pause_the_account(
 
     from sqlalchemy import update
 
-    from idp.db import db, utcnow
-    from idp.models import User
+    from buntubi.db import db, utcnow
+    from buntubi.models import User
 
     sign_up(app.test_client(), outbox)
     for n in range(10):

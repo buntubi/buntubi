@@ -3,7 +3,7 @@ import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@fluixi-ui/avatar';
 import { initials } from '../shared/initials.js';
-import { viewToken } from '@buntu/sdk/view';
+import { viewToken } from '@buntubi/sdk/view';
 import type { ConsentLogic } from './consent.js';
 
 export const consentView = ({ answering, decide, error, label, pending, clientLogo, clientName, links, scopes, userEmail, warning }: ConsentLogic) =>

@@ -1,9 +1,9 @@
 /**
  * The elements' link: a plain anchor that moves through the app's navigation (`Navigation` in
- * @buntu/sdk/navigation), so an element needs no router around it.
+ * @buntubi/sdk/navigation), so an element needs no router around it.
  */
 import { splitProps } from '@fluixi/core';
-import { followLink, useNavigation } from '@buntu/sdk/navigation';
+import { followLink, useNavigation } from '@buntubi/sdk/navigation';
 
 /** What the elements pass to a link; any other attribute goes to the anchor as it is. */
 interface Props {

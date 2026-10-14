@@ -1,8 +1,8 @@
 /** The product catalog's data, words and behaviour, apart from how it looks. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { ProductInput } from '@buntu/sdk/schemas/catalogue';
-import type { Availability } from '@buntu/sdk/admin';
+import type { ProductInput } from '@buntubi/sdk/schemas/catalogue';
+import type { Availability } from '@buntubi/sdk/admin';
 
 export interface CatalogProduct {
   slug: string;

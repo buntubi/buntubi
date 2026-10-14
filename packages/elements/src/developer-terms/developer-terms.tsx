@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Developer } from '@buntu/sdk/developer';
+import { Developer } from '@buntubi/sdk/developer';
 import { useView } from '../view.js';
 import { developerTermsLabels, type DeveloperTermsEvents, type DeveloperTermsLabels, type DeveloperTermsLogic } from './logic.js';
 import { DeveloperTermsView } from './view.js';

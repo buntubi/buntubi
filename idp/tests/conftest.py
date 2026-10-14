@@ -40,16 +40,16 @@ import email_validator  # noqa: E402
 # Lets the reserved `.test` domain through, as the library documents for test suites.
 email_validator.TEST_ENVIRONMENT = True
 
-from idp.config import Settings  # noqa: E402
+from buntubi.config import Settings  # noqa: E402
 
 # The suite runs on the environment above only, never on a developer's local .env.
 Settings.model_config["env_file"] = None
 
-from idp.app import create_app  # noqa: E402
-from idp.db import db  # noqa: E402
-from idp.models import Client, Scope  # noqa: E402
-from idp.security.keys import generate_key  # noqa: E402
-from idp.services import mail  # noqa: E402
+from buntubi.app import create_app  # noqa: E402
+from buntubi.db import db  # noqa: E402
+from buntubi.models import Client, Scope  # noqa: E402
+from buntubi.security.keys import generate_key  # noqa: E402
+from buntubi.services import mail  # noqa: E402
 
 generate_key(Path(os.environ["IDP_SIGNING_KEYS_DIR"]))
 

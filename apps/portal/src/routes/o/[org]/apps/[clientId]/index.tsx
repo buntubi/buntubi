@@ -1,7 +1,7 @@
 /** An app's overview: who it is and its next step, its way to live, what it still needs, its access. */
 import { Grid, Stack } from '@fluixi-ui/layout';
 import { useRouteData } from '@fluixi/start/router';
-import { can } from '@buntu/sdk/roles';
+import { can } from '@buntubi/sdk/roles';
 import '@idp/elements/app-header';
 import '@idp/elements/app-scopes';
 import '@idp/elements/launch-checklist';

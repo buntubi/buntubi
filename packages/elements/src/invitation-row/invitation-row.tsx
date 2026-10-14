@@ -1,6 +1,6 @@
 /** One address asked to join before it had an account. Withdrawing it emits `withdraw`. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { Invitation } from '@buntu/sdk/types';
+import type { Invitation } from '@buntubi/sdk/types';
 import { shortDate } from '../dates.js';
 import { teamLabels, type TeamLabels } from '../team/logic.js';
 import { useView } from '../view.js';

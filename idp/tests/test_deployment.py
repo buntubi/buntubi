@@ -7,8 +7,8 @@ from typing import Any
 import pytest
 from flask import jsonify, request
 
-from idp.app import create_app
-from idp.config import Settings, get_settings
+from buntubi.app import create_app
+from buntubi.config import Settings, get_settings
 
 PUBLIC = {
     "issuer": "https://id.acme.example",

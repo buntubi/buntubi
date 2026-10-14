@@ -1,6 +1,6 @@
 /** The default look: a muted line, a 26px title and the intro, the actions at the end of the row. */
 import { For, Show } from '@fluixi/core';
-import { useNavigation } from '@buntu/sdk/navigation';
+import { useNavigation } from '@buntubi/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { PageHeaderLogic } from './logic.js';

@@ -7,8 +7,8 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from idp.db import db
-from idp.services import mail
+from buntubi.db import db
+from buntubi.services import mail
 
 from conftest import REDIRECT, add_client, authorize_query, pkce, sign_up
 
@@ -25,7 +25,7 @@ def developer_token(
 ) -> dict[str, str]:
     """Signs a new user up and returns bearer headers from the portal's own client."""
     with app.app_context():
-        from idp.models import Client
+        from buntubi.models import Client
 
         if db().query(Client).filter_by(client_id="portal").first() is None:
             add_client(app, client_id="portal", first_party=True, scope="openid profile email developer")

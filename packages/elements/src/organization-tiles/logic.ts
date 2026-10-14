@@ -1,5 +1,5 @@
 /** A developer's organizations, one tile each; apart from the look. */
-import type { Organization } from '@buntu/sdk/types';
+import type { Organization } from '@buntubi/sdk/types';
 
 export interface OrganizationTilesLogic {
   title: () => string;

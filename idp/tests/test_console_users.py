@@ -6,9 +6,9 @@ from flask import Flask
 from sqlalchemy import select
 from test_console_api import admin_call, setup_people
 
-from idp.db import db
-from idp.models import User
-from idp.services import mail
+from buntubi.db import db
+from buntubi.models import User
+from buntubi.services import mail
 
 from conftest import PASSWORD, api, page_config
 

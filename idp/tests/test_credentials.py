@@ -4,9 +4,14 @@ from datetime import timedelta
 
 from flask import Flask
 
-from idp.db import db, utcnow
-from idp.models import ApiKey, Client, Organization, OrganizationMember, Scope, User
-from idp.services.credentials import find_api_key, issue_api_key, issue_client_secret, rotate_client_secret
+from buntubi.db import db, utcnow
+from buntubi.models import ApiKey, Client, Organization, OrganizationMember, Scope, User
+from buntubi.services.credentials import (
+    find_api_key,
+    issue_api_key,
+    issue_client_secret,
+    rotate_client_secret,
+)
 
 
 def make_client(app: Flask) -> Client:

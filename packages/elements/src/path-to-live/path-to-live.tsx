@@ -1,6 +1,6 @@
 /** An app's eight steps to live, the one it is on marked. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AppOverview } from '@buntu/sdk/types';
+import type { AppOverview } from '@buntubi/sdk/types';
 import { useView } from '../view.js';
 import { pathToLiveLabels, stepsOf, type PathToLiveLabels, type PathToLiveLogic } from './logic.js';
 import { PathToLiveView } from './view.js';

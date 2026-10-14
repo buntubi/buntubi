@@ -1,7 +1,7 @@
 /** A page a plugin adds to the console: its element, given the locale. */
 import { useParams, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import { Dynamic, onMount } from '@fluixi/core';
-import { sectionOf } from '@buntu/sdk/plugins';
+import { sectionOf } from '@buntubi/sdk/plugins';
 import '@idp/elements/not-found';
 import plugins from 'virtual:idp-ui-plugins';
 import { locale } from '../../../lib/i18n.js';

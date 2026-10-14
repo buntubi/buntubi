@@ -1,5 +1,5 @@
 /** One member as a row: who, which role, which apps, two-step; apart from the look. */
-import type { Role } from '@buntu/sdk/types';
+import type { Role } from '@buntubi/sdk/types';
 import type { MemberRow, TeamLabels } from '../team/logic.js';
 
 export interface MemberRowLogic {

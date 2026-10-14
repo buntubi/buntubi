@@ -1,6 +1,6 @@
 """What a developer can make the provider's pages do: a redirect address is where the consent page
 sends the browser, so only https, http on this machine, or a native app's own scheme. The same
-rule as the portal's form (isRedirectUri in @buntu/sdk/schemas/apps)."""
+rule as the portal's form (isRedirectUri in @buntubi/sdk/schemas/apps)."""
 
 import json
 from typing import Any
@@ -11,7 +11,7 @@ from flask import Flask
 from flask.testing import FlaskClient
 from test_developer_api import call, developer_token, new_organization
 
-from idp.services import mail
+from buntubi.services import mail
 
 from conftest import add_client, authorize_query, page_config, pkce, sign_up
 

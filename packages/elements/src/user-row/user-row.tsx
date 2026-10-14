@@ -2,8 +2,8 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Admin } from '@buntu/sdk/admin';
-import type { AdminUser } from '@buntu/sdk/types';
+import { Admin } from '@buntubi/sdk/admin';
+import type { AdminUser } from '@buntubi/sdk/types';
 import { shortDate } from '../dates.js';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';

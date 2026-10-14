@@ -2,7 +2,7 @@
  * The 6-digit code sent by email. Submits on its own once every cell is filled; `resend` asks
  * the host for a new code. `success` carries the action's result.
  */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { VerifyEmailView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';

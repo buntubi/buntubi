@@ -3,7 +3,7 @@ import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { initials } from '../shared/initials.js';
 import { TONES } from './account-select.js';
-import { viewToken } from '@buntu/sdk/view';
+import { viewToken } from '@buntubi/sdk/view';
 import type { AccountSelectLogic } from './account-select.js';
 
 export const accountSelectView = ({ busy, choose, label, accounts, other }: AccountSelectLogic) =>

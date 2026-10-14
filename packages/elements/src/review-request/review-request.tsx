@@ -1,6 +1,6 @@
 /** Where the review stands now: the reviewer's last note and what it concerns, and what to do next. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AppReview, Stage } from '@buntu/sdk/types';
+import type { AppReview, Stage } from '@buntubi/sdk/types';
 import { useView } from '../view.js';
 import { reviewRequestLabels, type ReviewRequestLabels, type ReviewRequestLogic } from './logic.js';
 import { ReviewRequestView } from './view.js';

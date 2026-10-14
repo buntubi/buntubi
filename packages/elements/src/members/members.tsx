@@ -6,11 +6,11 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Developer } from '@buntu/sdk/developer';
-import { memberInviteSchema, type MemberInviteInput } from '@buntu/sdk/schemas/team';
+import { Developer } from '@buntubi/sdk/developer';
+import { memberInviteSchema, type MemberInviteInput } from '@buntubi/sdk/schemas/team';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
-import type { Invitation, Role } from '@buntu/sdk/types';
+import type { Invitation, Role } from '@buntubi/sdk/types';
 import '../member-row/member-row.js';
 import '../role-card/role-card.js';
 import { ROLES, teamLabels, type MemberRow, type TeamLabels } from '../team/logic.js';

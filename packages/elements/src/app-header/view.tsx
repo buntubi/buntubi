@@ -1,6 +1,6 @@
 /** The default look: a large tinted mark, the name with its stage, the meta line, the action at the end. */
 import { Show } from '@fluixi/core';
-import { useNavigation } from '@buntu/sdk/navigation';
+import { useNavigation } from '@buntubi/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { AppHeaderLogic } from './logic.js';

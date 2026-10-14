@@ -1,8 +1,8 @@
 /** One account for the console: its profile, the facts about it, and what an admin may do to it. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { UserEditInput } from '@buntu/sdk/schemas/users';
-import type { AdminUser, AdminUserPage, Role } from '@buntu/sdk/types';
+import type { UserEditInput } from '@buntubi/sdk/schemas/users';
+import type { AdminUser, AdminUserPage, Role } from '@buntubi/sdk/types';
 
 export interface UserProfileLabels {
   profile: string;

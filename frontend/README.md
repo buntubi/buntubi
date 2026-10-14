@@ -3,7 +3,7 @@
 Every page the provider shows a person: signing in and up, the email code, the two-step code,
 password reset, consent, the account chooser, the device code, the offer of a passkey after
 signing up, and the account area under `/account`. Written with Fluixi and fluixi-ui, built by
-Vite into `idp/src/idp/static/idp/`, and served by the provider. There is no server of its own.
+Vite into `idp/src/buntubi/static/idp/`, and served by the provider. There is no server of its own.
 
 ## How a page comes together
 

@@ -9,10 +9,10 @@ from sqlalchemy import select
 from test_console_api import admin_call, setup_people
 from test_developer_api import LIVE_FIELDS, call
 
-from idp.db import db
-from idp.models import Client, Organization, User
-from idp.services import mail
-from idp.services import platform as p
+from buntubi.db import db
+from buntubi.models import Client, Organization, User
+from buntubi.services import mail
+from buntubi.services import platform as p
 
 from conftest import REDIRECT
 

@@ -1,8 +1,8 @@
 /** An organization's members and inviting one; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { MemberInviteInput } from '@buntu/sdk/schemas/team';
-import type { Invitation, Role } from '@buntu/sdk/types';
+import type { MemberInviteInput } from '@buntubi/sdk/schemas/team';
+import type { Invitation, Role } from '@buntubi/sdk/types';
 import type { MemberRow, TeamLabels } from '../team/logic.js';
 
 /** The invitation's values: the engine widens a field to `string`, so the role is narrowed at submit. */

@@ -6,7 +6,7 @@ from typing import Any
 from flask import Flask
 from flask.testing import FlaskClient
 
-from idp.services import mail
+from buntubi.services import mail
 
 from conftest import PASSWORD, api, sign_up
 
@@ -127,9 +127,9 @@ def test_the_postal_address_is_kept_by_parts_and_given_as_the_address_claim(
 ) -> None:
     from sqlalchemy import select
 
-    from idp.db import db
-    from idp.models import User
-    from idp.oauth.claims import user_claims
+    from buntubi.db import db
+    from buntubi.models import User
+    from buntubi.oauth.claims import user_claims
 
     csrf = sign_up(browser, outbox)
     done = api(browser, "PATCH", "/api/account/profile", {"address": ADDRESS}, csrf)
@@ -162,9 +162,9 @@ def test_an_empty_address_gives_no_claim(
 ) -> None:
     from sqlalchemy import select
 
-    from idp.db import db
-    from idp.models import User
-    from idp.oauth.claims import user_claims
+    from buntubi.db import db
+    from buntubi.models import User
+    from buntubi.oauth.claims import user_claims
 
     sign_up(browser, outbox)
     with app.app_context():

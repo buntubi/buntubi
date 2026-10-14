@@ -1,5 +1,5 @@
 /** Recent security activity: one row per event, what, from where, when; apart from the look. */
-import type { ActivityEntry, ActivityKind } from '@buntu/sdk/account';
+import type { ActivityEntry, ActivityKind } from '@buntubi/sdk/account';
 
 export interface SecurityActivityLabels {
   title: string;

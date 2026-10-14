@@ -2,8 +2,8 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Admin } from '@buntu/sdk/admin';
-import type { AdminClient } from '@buntu/sdk/types';
+import { Admin } from '@buntubi/sdk/admin';
+import type { AdminClient } from '@buntubi/sdk/types';
 import { useView } from '../view.js';
 import { clientRowLabels, type ClientRowLabels, type ClientRowLogic } from './logic.js';
 import { ClientRowView } from './view.js';

@@ -1,5 +1,5 @@
 /** One app for the platform owner: whose it is, where it runs, and whether it skips consent. */
-import type { AdminClient } from '@buntu/sdk/types';
+import type { AdminClient } from '@buntubi/sdk/types';
 
 export interface ClientRowLabels {
   platform: string;

@@ -11,11 +11,11 @@ from flask.testing import FlaskClient
 from sqlalchemy import Text, cast, select, update
 from test_offline_access import _renew, _sign_out, _tokens
 
-from idp import plugins
-from idp.db import db, utcnow
-from idp.models import AuditEvent, Identity, LoginSession, RefreshToken, User
-from idp.plugins import Plugin
-from idp.services import audit, mail, retention
+from buntubi import plugins
+from buntubi.db import db, utcnow
+from buntubi.models import AuditEvent, Identity, LoginSession, RefreshToken, User
+from buntubi.plugins import Plugin
+from buntubi.services import audit, mail, retention
 
 from conftest import add_client, api, sign_up
 

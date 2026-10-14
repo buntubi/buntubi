@@ -1,8 +1,8 @@
 /** The two-step card: on or off, the authenticator, the backup codes, and each change's steps. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { TwoStepEnrolment } from '@buntu/sdk/account';
-import type { TwoStepCodeInput } from '@buntu/sdk/schemas/account';
+import type { TwoStepEnrolment } from '@buntubi/sdk/account';
+import type { TwoStepCodeInput } from '@buntubi/sdk/schemas/account';
 
 export interface TwoStepSectionLabels {
   title: string;

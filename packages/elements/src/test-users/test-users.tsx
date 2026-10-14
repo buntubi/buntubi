@@ -3,8 +3,8 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Developer } from '@buntu/sdk/developer';
-import { testUserSchema, type TestUserInput } from '@buntu/sdk/schemas/team';
+import { Developer } from '@buntubi/sdk/developer';
+import { testUserSchema, type TestUserInput } from '@buntubi/sdk/schemas/team';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
 import { teamLabels, type TeamLabels } from '../team/logic.js';

@@ -1,5 +1,5 @@
 /** Where an app's review stands, as a strip of stages; apart from the look. */
-import type { Stage } from '@buntu/sdk/types';
+import type { Stage } from '@buntubi/sdk/types';
 
 export type StripStage = 'draft' | 'submitted' | 'in_review' | 'changes_requested' | 'approved' | 'live';
 export type StripState = 'passed' | 'current' | 'ahead';

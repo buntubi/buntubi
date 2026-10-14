@@ -9,7 +9,7 @@ from joserfc import jwt
 from joserfc.jwk import KeySet
 from test_authorization_code import exchange, get_code
 
-from idp.services import backchannel, mail
+from buntubi.services import backchannel, mail
 
 from conftest import ISSUER, add_client, api, pkce, sign_up
 

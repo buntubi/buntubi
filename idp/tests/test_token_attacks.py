@@ -19,9 +19,9 @@ from joserfc import jwt
 from joserfc.jwk import KeySet, RSAKey
 from test_flows import SECRET, add_service, basic, secret_of, signed_in_tokens
 
-from idp.oauth.server import key_ring
-from idp.security.keys import generate_key
-from idp.services import mail
+from buntubi.oauth.server import key_ring
+from buntubi.security.keys import generate_key
+from buntubi.services import mail
 
 from conftest import ISSUER, REDIRECT, add_client, authorize_query, pkce, sign_up
 
@@ -145,7 +145,7 @@ def test_a_new_key_signs_and_old_tokens_still_verify_until_it_is_removed(
     time.sleep(1.1)  # keys are ordered by their creation second
     new_path = generate_key(keys_dir)
     try:
-        app.extensions.pop("idp.keys", None)  # what a restart does
+        app.extensions.pop("buntubi.keys", None)  # what a restart does
         jwks = browser.get("/.well-known/jwks.json").json
         kids = [k["kid"] for k in jwks["keys"]]
         assert old_kid in kids and new_path.stem in kids
@@ -159,7 +159,7 @@ def test_a_new_key_signs_and_old_tokens_still_verify_until_it_is_removed(
         ).json
         assert jwt.decode(renewed["access_token"], KeySet.import_key_set(jwks)).header["kid"] == new_path.stem
         (keys_dir / f"{old_kid}.json").rename(keys_dir / f"{old_kid}.retired")
-        app.extensions.pop("idp.keys", None)
+        app.extensions.pop("buntubi.keys", None)
         assert _userinfo(browser, old["access_token"]) == 401, "the removed key no longer verifies"
         assert _userinfo(browser, renewed["access_token"]) == 200
     finally:
@@ -167,7 +167,7 @@ def test_a_new_key_signs_and_old_tokens_still_verify_until_it_is_removed(
         if retired.exists():
             retired.rename(keys_dir / f"{old_kid}.json")
         new_path.unlink()
-        app.extensions.pop("idp.keys", None)
+        app.extensions.pop("buntubi.keys", None)
 
 
 # Discovery

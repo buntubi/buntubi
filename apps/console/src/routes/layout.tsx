@@ -3,7 +3,7 @@
  * progress bar, a refused sign-in's notice, and the matched route.
  */
 import { provide } from '@fluixi/start/di';
-import { Navigation, type NavigationOptions } from '@buntu/sdk/navigation';
+import { Navigation, type NavigationOptions } from '@buntubi/sdk/navigation';
 import { revalidate, useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/page-error';
 import '@idp/elements/access-gate';
@@ -13,9 +13,9 @@ import { BrandContext } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
 import { usePreferences } from '@idp/shell/preferences';
 import { Shell, type Crumb } from '@idp/shell/shell';
-import { sectionsOf, viewsOf } from '@buntu/sdk/plugins';
-import { overrideViews } from '@buntu/sdk/view';
-import type { Brand } from '@buntu/sdk/types';
+import { sectionsOf, viewsOf } from '@buntubi/sdk/plugins';
+import { overrideViews } from '@buntubi/sdk/view';
+import type { Brand } from '@buntubi/sdk/types';
 import uiPlugins from 'virtual:idp-ui-plugins';
 import type { Gate as GateCode } from '../lib/types.js';
 import { PageBoundary } from '../components/page-boundary.js';
@@ -71,7 +71,7 @@ export default function RootLayout() {
   const routing = useIsRouting({ delay: 120 });
   const location = useLocation();
   const navigate = useNavigate();
-  // Elements move through the router: Navigation from @buntu/sdk/navigation.
+  // Elements move through the router: Navigation from @buntubi/sdk/navigation.
   provide([{ provide: Navigation, useValue: { go: (href: string, options?: NavigationOptions) => navigate(href, options) } }]);
   // Resolved on the server from the session cookie, so the shell renders right the first time.
   const user = auth.useUser();

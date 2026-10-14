@@ -1,6 +1,6 @@
 /** The API plugin elements call: their own endpoints on the provider, as the signed-in owner. */
 import { defineModule } from '@fluixi/start/app';
-import { PluginApi, type PluginApiService } from '@buntu/sdk/plugins';
+import { PluginApi, type PluginApiService } from '@buntubi/sdk/plugins';
 import { pluginCall } from '../server/admin.js';
 
 const service: PluginApiService = {

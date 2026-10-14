@@ -1,7 +1,7 @@
 /** The contact card: the address, its change by link, and the phone; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { EmailChangeInput, PhoneInput } from '@buntu/sdk/schemas/account';
+import type { EmailChangeInput, PhoneInput } from '@buntubi/sdk/schemas/account';
 
 export interface ContactSectionLabels {
   title: string;

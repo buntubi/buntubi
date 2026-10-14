@@ -1,5 +1,5 @@
 /** An app's OAuth client: its ID, its secrets and where it may send people back; apart from the look. */
-import type { Secret } from '@buntu/sdk/types';
+import type { Secret } from '@buntubi/sdk/types';
 
 export interface OAuthClientLabels {
   title: string;

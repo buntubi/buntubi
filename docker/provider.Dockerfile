@@ -12,14 +12,14 @@ RUN pnpm install --frozen-lockfile --filter idp-frontend... \
 
 FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
-    FLASK_APP=idp.app:create_app \
+    FLASK_APP=buntubi.app:create_app \
     IDP_SIGNING_KEYS_DIR=/keys
 RUN useradd --system --uid 10001 --home-dir /app idp
 WORKDIR /app
 COPY idp/pyproject.toml idp/requirements.lock idp/alembic.ini ./
 COPY idp/migrations migrations
 COPY idp/src src
-COPY --from=pages /src/idp/src/idp/static/idp src/idp/static/idp
+COPY --from=pages /src/idp/src/buntubi/static/idp src/buntubi/static/idp
 # Extra pip requirements for a deployment's plugins, e.g. --build-arg PLUGINS="acme-idp==1.2.0".
 ARG PLUGINS=""
 RUN pip install --no-cache-dir -c requirements.lock . $PLUGINS \
@@ -31,4 +31,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD python -c "import urllib.request,sys; sys.exit(urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=4).status != 200)"
 # WEB_CONCURRENCY sets the worker count (gunicorn reads it). Several workers need a shared
 # IDP_RATE_LIMIT_STORAGE and IDP_PLUGINS_SYNC_ON_START=false.
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "idp.app:create_app()"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "buntubi.app:create_app()"]

@@ -8,7 +8,7 @@ from flask import Flask
 from test_console_api import admin_call, app_waiting_for_review, setup_people
 from test_developer_api import LIVE_FIELDS, call
 
-from idp.services import mail
+from buntubi.services import mail
 
 
 def _approved(app: Flask, outbox: list[mail.Message]) -> tuple[Any, ...]:

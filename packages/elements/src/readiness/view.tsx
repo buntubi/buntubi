@@ -1,6 +1,6 @@
 /** The default look: a tinted card, the ring beside its label, the items, the button and its note. */
 import { For, Show } from '@fluixi/core';
-import { useNavigation } from '@buntu/sdk/navigation';
+import { useNavigation } from '@buntubi/sdk/navigation';
 import { Link } from '../link.js';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';

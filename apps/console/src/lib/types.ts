@@ -1,16 +1,16 @@
 /** What the provider's admin API answers with. */
-export type { AdminOverview as Overview } from '@buntu/sdk/types';
+export type { AdminOverview as Overview } from '@buntubi/sdk/types';
 
 /** An app as a reviewer sees it: the SDK's shape, shared with the console's elements. */
-export type { ReviewRequest as Review } from '@buntu/sdk/types';
+export type { ReviewRequest as Review } from '@buntubi/sdk/types';
 
-export type { AdminOrganization as OrganizationRow } from '@buntu/sdk/types';
+export type { AdminOrganization as OrganizationRow } from '@buntubi/sdk/types';
 
-export type { AdminUser as UserRow, AdminUserPage as UserPage, NewUser, UserEdit } from '@buntu/sdk/types';
+export type { AdminUser as UserRow, AdminUserPage as UserPage, NewUser, UserEdit } from '@buntubi/sdk/types';
 
-export type { AdminClient as ClientRow, AdminMe as Me } from '@buntu/sdk/types';
+export type { AdminClient as ClientRow, AdminMe as Me } from '@buntubi/sdk/types';
 
-export type { ScopeEntry as ScopeRow } from '@buntu/sdk/types';
+export type { ScopeEntry as ScopeRow } from '@buntubi/sdk/types';
 
 export interface ProductRow {
   slug: string;

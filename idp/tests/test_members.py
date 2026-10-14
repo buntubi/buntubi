@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 from test_developer_api import LIVE_FIELDS, call, developer_token
 from test_platform_gates import authorize, sandbox_app
 
-from idp.services import mail
+from buntubi.services import mail
 
 from conftest import REDIRECT, sign_up
 

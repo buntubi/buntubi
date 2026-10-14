@@ -1,5 +1,5 @@
 /** The accounts as a table, one row each; apart from the look. */
-import type { AdminUser } from '@buntu/sdk/types';
+import type { AdminUser } from '@buntubi/sdk/types';
 import type { UserRowLabels } from '../user-row/logic.js';
 
 export interface UserListLabels {

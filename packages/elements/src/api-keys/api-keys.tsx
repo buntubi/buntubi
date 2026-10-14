@@ -6,9 +6,9 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Developer } from '@buntu/sdk/developer';
-import { apiKeySchema, type ApiKeyInput } from '@buntu/sdk/schemas/apps';
-import type { ApiKey, Environment } from '@buntu/sdk/types';
+import { Developer } from '@buntubi/sdk/developer';
+import { apiKeySchema, type ApiKeyInput } from '@buntubi/sdk/schemas/apps';
+import type { ApiKey, Environment } from '@buntubi/sdk/types';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
 import '../key-row/key-row.js';

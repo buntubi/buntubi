@@ -1,11 +1,11 @@
 {
-  "name": "@buntu/sdk",
+  "name": "@buntubi/sdk",
   "version": "0.4.0",
   "description": "Types, API clients, form schemas and the plugin helpers for building on the identity provider",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/buntubi/buntu.git",
+    "url": "https://github.com/buntubi/buntubi.git",
     "directory": "packages/sdk"
   },
   "type": "module",

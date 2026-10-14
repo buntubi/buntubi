@@ -3,9 +3,9 @@
  * and the matched route. Frames (public pages, the workspace shell) draw their own chrome.
  */
 import { provide } from '@fluixi/start/di';
-import { Navigation, type NavigationOptions } from '@buntu/sdk/navigation';
-import { viewsOf } from '@buntu/sdk/plugins';
-import { overrideViews } from '@buntu/sdk/view';
+import { Navigation, type NavigationOptions } from '@buntubi/sdk/navigation';
+import { viewsOf } from '@buntubi/sdk/plugins';
+import { overrideViews } from '@buntubi/sdk/view';
 import uiPlugins from 'virtual:idp-ui-plugins';
 import { useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/auth-notice';
@@ -27,7 +27,7 @@ export default function RootLayout() {
   const routing = useIsRouting({ delay: 120 });
   const location = useLocation();
   const navigate = useNavigate();
-  // Elements move through the router: Navigation from @buntu/sdk/navigation.
+  // Elements move through the router: Navigation from @buntubi/sdk/navigation.
   provide([{ provide: Navigation, useValue: { go: (href: string, options?: NavigationOptions) => navigate(href, options) } }]);
   // Drops the error from the address once read; the rest of the query stays.
   const dismissAuthError = () => {

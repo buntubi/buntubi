@@ -1,4 +1,4 @@
-# @buntu/sdk
+# @buntubi/sdk
 
 ## 0.4.0
 
@@ -9,19 +9,19 @@
 
 ### Patch Changes
 
-- 1726351: `@fluixi/start` and `zod` are peer dependencies, so the SDK uses the app's copies, and `idpUiPlugins()` resolves `@buntu/sdk` and the Fluixi runtime to a single shared copy for UI plugins, which then use the same DI tokens and services as the app.
+- 1726351: `@fluixi/start` and `zod` are peer dependencies, so the SDK uses the app's copies, and `idpUiPlugins()` resolves `@buntubi/sdk` and the Fluixi runtime to a single shared copy for UI plugins, which then use the same DI tokens and services as the app.
 
 ## 0.3.0
 
 ### Minor Changes
 
-- 9284bb0: `@buntu/sdk/navigation` offers a Navigation DI token with `go(href, options)`, `useNavigation()`, and `followLink(event, navigator)` for handling `<a href>` clicks, and if no provider is supplied `go` loads the page in full.
+- 9284bb0: `@buntubi/sdk/navigation` offers a Navigation DI token with `go(href, options)`, `useNavigation()`, and `followLink(event, navigator)` for handling `<a href>` clicks, and if no provider is supplied `go` loads the page in full.
 
 ## 0.2.0
 
 ### Minor Changes
 
-- 5f735a2: `@buntu/sdk/view` exports `viewToken` and `useView`, a view token and hook that retrieve an element's view via DI, defaulting to the element's own, so apps restyle it by providing a different view.
+- 5f735a2: `@buntubi/sdk/view` exports `viewToken` and `useView`, a view token and hook that retrieve an element's view via DI, defaulting to the element's own, so apps restyle it by providing a different view.
 
 ## 0.1.0
 

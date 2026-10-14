@@ -1,5 +1,5 @@
 /** The accounts signed in on this browser, as the header's menu; apart from the look. */
-import type { BrowserAccount } from '@buntu/sdk/account';
+import type { BrowserAccount } from '@buntubi/sdk/account';
 
 export interface AccountSwitcherLabels {
   /** The menu button, for assistive technology: "Accounts". */

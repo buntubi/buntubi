@@ -6,9 +6,9 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { onCleanup, onMount } from '@fluixi/core';
 import { signal } from '@fluixi/reactive/signal';
-import { passkeyAutofillSupported, passkeysSupported } from '@buntu/sdk/webauthn';
+import { passkeyAutofillSupported, passkeysSupported } from '@buntubi/sdk/webauthn';
 import { createField, createForm } from '@fluixi/forms';
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';

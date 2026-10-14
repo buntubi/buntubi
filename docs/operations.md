@@ -12,7 +12,7 @@ repository README.
   runs more than one worker or container. With a single worker, `memory://` set explicitly.
 - A reverse proxy terminating TLS in front of all three. Set `IDP_TRUSTED_PROXIES` to the number
   of proxies that append to `X-Forwarded-For`; never more.
-- The settings, as environment variables. Every `IDP_*` setting is in `idp/src/idp/config.py`.
+- The settings, as environment variables. Every `IDP_*` setting is in `idp/src/buntubi/config.py`.
 
 With an issuer that is not on the machine itself, the provider refuses to start when the issuer
 is not https, `IDP_EMAIL_TEST_MODE` is on, `IDP_SECURE_COOKIES` is off or

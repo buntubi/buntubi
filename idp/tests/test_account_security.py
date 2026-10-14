@@ -3,7 +3,7 @@
 from flask import Flask
 from flask.testing import FlaskClient
 
-from idp.services import mail
+from buntubi.services import mail
 
 from conftest import PASSWORD, api, page_config, sign_up
 

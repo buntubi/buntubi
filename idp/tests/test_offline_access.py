@@ -14,10 +14,10 @@ from test_mfa import enable
 from test_platform_gates import authorize
 from test_scope_rules import _dev_app
 
-from idp.db import db
-from idp.models import Client, Consent, User
-from idp.security import totp
-from idp.services import mail
+from buntubi.db import db
+from buntubi.models import Client, Consent, User
+from buntubi.security import totp
+from buntubi.services import mail
 
 from conftest import REDIRECT, add_client, api, authorize_query, page_config, pkce, sign_up
 
@@ -138,7 +138,7 @@ def test_consent_shrinks_with_the_app(app: Flask, outbox: list[mail.Message]) ->
 
 
 def test_a_device_needs_no_browser_sign_in_to_keep_access(app: Flask, outbox: list[mail.Message]) -> None:
-    from idp.models import DeviceCode
+    from buntubi.models import DeviceCode
 
     add_client(
         app, client_id="tv", grant_types=["urn:ietf:params:oauth:grant-type:device_code", "refresh_token"]

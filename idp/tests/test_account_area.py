@@ -5,7 +5,7 @@ from urllib.parse import quote
 from flask import Flask
 from flask.testing import FlaskClient
 
-from idp.services import mail
+from buntubi.services import mail
 
 from conftest import page_config, sign_up
 

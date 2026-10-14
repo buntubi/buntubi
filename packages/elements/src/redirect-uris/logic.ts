@@ -1,7 +1,7 @@
 /** The addresses an app may send people back to, as a list to edit; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { RedirectUriInput } from '@buntu/sdk/schemas/apps';
+import type { RedirectUriInput } from '@buntubi/sdk/schemas/apps';
 
 /** The form engine's root, typed per field. */
 export interface RedirectUriForm extends ReactiveForm<RedirectUriInput> {

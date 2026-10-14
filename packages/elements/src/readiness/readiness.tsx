@@ -1,6 +1,6 @@
 /** How far an app is from a review: a ring with the percentage, the required items, the way to submit. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AppOverview } from '@buntu/sdk/types';
+import type { AppOverview } from '@buntubi/sdk/types';
 import { useView } from '../view.js';
 import { readinessLabels, type ReadinessLabels, type ReadinessLogic } from './logic.js';
 import { ReadinessView } from './view.js';

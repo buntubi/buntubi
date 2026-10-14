@@ -1,8 +1,8 @@
 /** Adding a scope to the catalogue; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { ScopeInput } from '@buntu/sdk/schemas/catalogue';
-import type { Sensitivity } from '@buntu/sdk/types';
+import type { ScopeInput } from '@buntubi/sdk/schemas/catalogue';
+import type { Sensitivity } from '@buntubi/sdk/types';
 
 export interface ScopeFormLabels {
   title: string;

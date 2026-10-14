@@ -1,6 +1,6 @@
 /** The review's stages in a strip: the ones passed ticked, the current one marked. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { Stage } from '@buntu/sdk/types';
+import type { Stage } from '@buntubi/sdk/types';
 import { useView } from '../view.js';
 import { reviewStagesLabels, stripOf, type ReviewStagesLabels, type ReviewStagesLogic } from './logic.js';
 import { ReviewStagesView } from './view.js';

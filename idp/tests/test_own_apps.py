@@ -6,9 +6,9 @@ from sqlalchemy import select
 from test_cli import run
 from test_console_api import admin_call, setup_people
 
-from idp.db import db, utcnow
-from idp.models import Client, User
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import Client, User
+from buntubi.services import mail
 
 from conftest import add_client, sign_up
 

@@ -1,6 +1,6 @@
 /** Every organization as a table, one `idp-organization-row` each, in a card. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AdminOrganization } from '@buntu/sdk/types';
+import type { AdminOrganization } from '@buntubi/sdk/types';
 import '../organization-row/organization-row.js';
 import type { OrganizationRowLabels } from '../organization-row/logic.js';
 import { useView } from '../view.js';

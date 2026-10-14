@@ -10,9 +10,9 @@ from flask.testing import FlaskClient
 from test_developer_api import call, developer_token
 from test_flows import add_service, basic, secret_of
 
-from idp.db import db, utcnow
-from idp.models import ApiKey, Organization
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import ApiKey, Organization
+from buntubi.services import mail
 
 from conftest import REDIRECT, api, authorize_query, page_config, pkce, sign_up
 
@@ -193,7 +193,7 @@ def refresh(browser: FlaskClient, client_id: str, token: str) -> Any:
 def signed_in_tester(app: Flask, outbox: list[mail.Message]) -> tuple[Any, ...]:
     dev_browser, dev, organization_id, client_id = sandbox_app(app, outbox)
     with app.app_context():
-        from idp.models import Client
+        from buntubi.models import Client
 
         db().query(Client).filter_by(client_id=client_id).one().scope = "openid profile email offline_access"
         db().commit()
@@ -232,7 +232,7 @@ def test_refresh_checks_the_sandbox_rule_by_itself(app: Flask, outbox: list[mail
     _, _, organization_id, client_id, tester, tokens = signed_in_tester(app, outbox)
     # Taken off without the revocation that normally comes with it: the refresh must still refuse.
     with app.app_context():
-        from idp.models import OrganizationTestUser
+        from buntubi.models import OrganizationTestUser
 
         db().query(OrganizationTestUser).filter_by(email="tester@example.test").delete()
         db().commit()
@@ -244,7 +244,7 @@ def test_suspending_an_organization_revokes_the_tokens_its_apps_hold(
 ) -> None:
     _, _, organization_id, _, tester, tokens = signed_in_tester(app, outbox)
     with app.app_context():
-        from idp.services import platform
+        from buntubi.services import platform
 
         organization = db().get(Organization, organization_id)
         assert organization is not None

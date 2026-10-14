@@ -8,7 +8,7 @@ import pytest
 from flask import Flask
 from test_developer_api import call, developer_token, new_organization
 
-from idp.services import mail
+from buntubi.services import mail
 
 ROLES = ("owner", "manager", "developer", "reviewer", "viewer")
 

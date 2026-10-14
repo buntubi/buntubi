@@ -11,7 +11,7 @@ Each part has its own README with its layout, settings and commands.
 | Path | What it is |
 |---|---|
 | `idp/` | The provider (Flask): OAuth and OIDC endpoints, accounts, the developer and admin APIs, the command line |
-| `frontend/` | The sign-in, consent and account pages, built into `idp/src/idp/static/idp/` |
+| `frontend/` | The sign-in, consent and account pages, built into `idp/src/buntubi/static/idp/` |
 | `apps/portal/` | The developer portal, port 3410 |
 | `apps/console/` | The owner console, port 3420 |
 | `packages/elements/` | The custom elements the portal and console are built from |
@@ -108,7 +108,7 @@ to run when the issuer in `idp/.env` is not a localhost address.
 The same steps by hand, from `idp/`:
 
 ```bash
-alias idp='../.venv/bin/flask --app idp.app:create_app'
+alias idp='../.venv/bin/flask --app buntubi.app:create_app'
 ../.venv/bin/alembic upgrade head      # with IDP_DATABASE_URL set
 idp keys generate
 idp admin create
@@ -118,7 +118,7 @@ idp platform setup
 **Start the servers**, one terminal each:
 
 ```bash
-cd idp && ../.venv/bin/flask --app idp.app:create_app run --port 5010
+cd idp && ../.venv/bin/flask --app buntubi.app:create_app run --port 5010
 cd apps/portal && pnpm dev
 cd apps/console && pnpm dev
 ```
@@ -145,14 +145,14 @@ catalogue.
 
 Set `IDP_EMAIL_TEST_MODE=false` with `IDP_RESEND_API_KEY` and `IDP_EMAIL_FROM` to send email,
 and the `IDP_BRAND_*` settings for the deployment's name, colour and links. Every setting is in
-`idp/src/idp/config.py`.
+`idp/src/buntubi/config.py`.
 
 ## Plugins
 
 A deployment adds its own products, scopes, token claims, console and portal pages, and sign-in
 look through plugins:
 
-- Python plugins are packages with an entry point in the `idp.plugins` group, installed in the
+- Python plugins are packages with an entry point in the `buntubi.plugins` group, installed in the
   provider's environment and named in `IDP_PLUGINS`.
 - UI plugins are named in `IDP_UI_PLUGINS` in `apps/console/.env`, `apps/portal/.env` and
   `frontend/.env`. Restart the apps, and rebuild `frontend`, after changing it.

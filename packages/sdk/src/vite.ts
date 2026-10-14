@@ -16,7 +16,7 @@ const ID = 'virtual:idp-ui-plugins';
  * navigation and the views the app sets up would be different objects in the plugin's code.
  */
 export const SHARED_WITH_PLUGINS = [
-  '@buntu/sdk',
+  '@buntubi/sdk',
   '@fluixi/start',
   '@fluixi/core',
   '@fluixi/di',

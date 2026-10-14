@@ -2,9 +2,9 @@
 
 from flask import Flask
 
-from idp.db import db
-from idp.models import AuditEvent, User
-from idp.services import mail
+from buntubi.db import db
+from buntubi.models import AuditEvent, User
+from buntubi.services import mail
 
 from conftest import sign_up
 
@@ -118,7 +118,7 @@ def test_listing_promoting_and_demoting(app: Flask, outbox: list[mail.Message]) 
 def test_users_delete_removes_accounts_and_the_organizations_they_alone_ran(app: Flask, outbox: list) -> None:
     from test_platform_gates import sandbox_app
 
-    from idp.models import Client, Organization
+    from buntubi.models import Client, Organization
 
     sandbox_app(app, outbox)
     browser = app.test_client()

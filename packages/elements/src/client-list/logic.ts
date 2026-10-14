@@ -1,5 +1,5 @@
 /** Every app as a table, one row each; apart from the look. */
-import type { AdminClient } from '@buntu/sdk/types';
+import type { AdminClient } from '@buntubi/sdk/types';
 import type { ClientRowLabels } from '../client-row/logic.js';
 
 export interface ClientListLabels {

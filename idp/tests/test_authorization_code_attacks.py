@@ -13,9 +13,9 @@ from flask.testing import FlaskClient
 from sqlalchemy import select, update
 from test_authorization_code import exchange, get_code
 
-from idp.db import db, utcnow
-from idp.models import AuthorizationCode
-from idp.services import mail, sessions
+from buntubi.db import db, utcnow
+from buntubi.models import AuthorizationCode
+from buntubi.services import mail, sessions
 
 from conftest import ISSUER, REDIRECT, add_client, api, authorize_query, pkce, sign_up
 

@@ -6,9 +6,9 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Admin } from '@buntu/sdk/admin';
-import { userEditSchema, type UserEditInput } from '@buntu/sdk/schemas/users';
-import type { AdminUserPage } from '@buntu/sdk/types';
+import { Admin } from '@buntubi/sdk/admin';
+import { userEditSchema, type UserEditInput } from '@buntubi/sdk/schemas/users';
+import type { AdminUserPage } from '@buntubi/sdk/types';
 import { shortDate } from '../dates.js';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';

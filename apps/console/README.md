@@ -66,7 +66,7 @@ ends; register it as the client's `backchannel_logout_uri` in `platform.toml`.
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:3420; builds @buntu/sdk first
+pnpm dev          # http://localhost:3420; builds @buntubi/sdk first
 pnpm typecheck
 ```
 

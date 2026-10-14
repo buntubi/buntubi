@@ -4,8 +4,8 @@ import os
 from alembic import context
 from sqlalchemy import create_engine
 
-from idp import models  # noqa: F401  (registers every table)
-from idp.db import Base
+from buntubi import models  # noqa: F401  (registers every table)
+from buntubi.db import Base
 
 config = context.config
 

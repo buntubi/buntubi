@@ -1,5 +1,5 @@
 /** One account for the platform owner: what it is, and whether it may sign in. */
-import type { AdminUser } from '@buntu/sdk/types';
+import type { AdminUser } from '@buntubi/sdk/types';
 
 export interface UserRowLabels {
   admin: string;

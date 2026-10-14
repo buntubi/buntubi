@@ -6,9 +6,9 @@ from flask import Flask
 from flask.testing import FlaskClient
 from sqlalchemy import select
 
-from idp.db import db, utcnow
-from idp.models import AccessTokenRecord, Client, Consent, RefreshToken, User
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import AccessTokenRecord, Client, Consent, RefreshToken, User
+from buntubi.services import mail
 
 from conftest import PASSWORD, add_client, api, page_config, sign_up
 

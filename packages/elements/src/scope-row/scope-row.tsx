@@ -1,6 +1,6 @@
 /** One scope: its name, what consent says for it, its API and how sensitive it is. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { ScopeEntry } from '@buntu/sdk/types';
+import type { ScopeEntry } from '@buntubi/sdk/types';
 import { useView } from '../view.js';
 import { scopeRowLabels, type ScopeRowLabels, type ScopeRowLogic } from './logic.js';
 import { ScopeRowView } from './view.js';

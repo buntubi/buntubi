@@ -1,6 +1,6 @@
 /** What an app asks of the people who sign in, by API product. */
 import { useRouteData } from '@fluixi/start/router';
-import { can } from '@buntu/sdk/roles';
+import { can } from '@buntubi/sdk/roles';
 import '@idp/elements/permissions';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { paths } from '../../../../../lib/paths.js';

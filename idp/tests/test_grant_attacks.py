@@ -13,10 +13,10 @@ from flask.testing import FlaskClient
 from sqlalchemy import update
 from test_flows import SECRET, add_service, basic, signed_in_tokens
 
-from idp.db import db, utcnow
-from idp.models import Client, ClientSecret, DeviceCode, RefreshToken
-from idp.security.tokens import hash_token
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import Client, ClientSecret, DeviceCode, RefreshToken
+from buntubi.security.tokens import hash_token
+from buntubi.services import mail
 
 from conftest import REDIRECT, add_client, api, authorize_query, pkce, sign_up
 

@@ -3,7 +3,7 @@ import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
 import { Toggle } from '@fluixi-ui/toggle';
-import type { Role } from '@buntu/sdk/types';
+import type { Role } from '@buntubi/sdk/types';
 import { ROLES } from '../team/logic.js';
 import { viewToken } from '../view.js';
 import type { MemberRowLogic } from './logic.js';

@@ -1,5 +1,5 @@
 /** The apps waiting for a review, oldest first, apart from how the list looks. */
-import type { ReviewRequest } from '@buntu/sdk/types';
+import type { ReviewRequest } from '@buntubi/sdk/types';
 
 export interface ReviewQueueLabels {
   app: string;

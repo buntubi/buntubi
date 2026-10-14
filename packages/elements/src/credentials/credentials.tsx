@@ -5,7 +5,7 @@
  */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import type { ApiKey, App, Environment } from '@buntu/sdk/types';
+import type { ApiKey, App, Environment } from '@buntubi/sdk/types';
 import '../api-keys/api-keys.js';
 import '../oauth-client/oauth-client.js';
 import '../page-header/page-header.js';

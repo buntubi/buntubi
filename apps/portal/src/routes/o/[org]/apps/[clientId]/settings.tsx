@@ -1,7 +1,7 @@
 /** An app's basic information. */
 import { Stack } from '@fluixi-ui/layout';
 import { useRouteData } from '@fluixi/start/router';
-import { can } from '@buntu/sdk/roles';
+import { can } from '@buntubi/sdk/roles';
 import '@idp/elements/app-settings';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { errorText, t } from '../../../../../lib/i18n.js';

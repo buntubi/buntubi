@@ -21,7 +21,7 @@ const fullPageLoad: Navigator = {
   go: (href, options) => (options?.replace ? window.location.replace(href) : window.location.assign(href)),
 };
 
-export const Navigation = injectionToken<Navigator>('buntu.navigation', { factory: () => fullPageLoad });
+export const Navigation = injectionToken<Navigator>('buntubi.navigation', { factory: () => fullPageLoad });
 
 /** The app's navigation, or a full page load when it provides none. */
 export function useNavigation(): Navigator {

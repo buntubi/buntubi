@@ -2,7 +2,7 @@
  * Connecting a device (a TV, a terminal) with the code it shows. The user types or confirms the
  * code, then allows or refuses; `success` carries the answer and the action's result.
  */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { DeviceActivateView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';

@@ -1,6 +1,6 @@
 /** An app's credentials: client and secrets, redirect URIs, API keys, signing keys. */
 import { useRouteData } from '@fluixi/start/router';
-import { can } from '@buntu/sdk/roles';
+import { can } from '@buntubi/sdk/roles';
 import '@idp/elements/credentials';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { errorText, locale, t } from '../../../../../lib/i18n.js';

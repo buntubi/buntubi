@@ -1,7 +1,7 @@
 /** The platform's API products, for a developer choosing what to build on. Read only. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { memo, signal } from '@fluixi/reactive/signal';
-import type { Localized, Product } from '@buntu/sdk/types';
+import type { Localized, Product } from '@buntubi/sdk/types';
 import '../product-tile/product-tile.js';
 import '../segmented/segmented.js';
 import { useView } from '../view.js';

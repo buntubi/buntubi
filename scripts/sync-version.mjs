@@ -1,4 +1,4 @@
-// One version for the product: after `changeset version` bumps @buntu/sdk, the provider's
+// One version for the product: after `changeset version` bumps @buntubi/sdk, the provider's
 // Python package takes the same version.
 import { readFileSync, writeFileSync } from 'node:fs';
 

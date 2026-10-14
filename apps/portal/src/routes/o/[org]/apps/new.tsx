@@ -1,6 +1,6 @@
 /** Creating an app: a focused flow, without the sidebar, that lands on the new app's credentials. */
 import { useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
-import { can } from '@buntu/sdk/roles';
+import { can } from '@buntubi/sdk/roles';
 import '@idp/elements/create-app';
 import { useBrand } from '@idp/shell/brand';
 import { errorText, locale, t } from '../../../../lib/i18n.js';

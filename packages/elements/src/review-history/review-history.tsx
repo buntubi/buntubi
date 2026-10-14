@@ -1,6 +1,6 @@
 /** Every submission and every answer, newest first, one `idp-history-entry` each. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AppReview } from '@buntu/sdk/types';
+import type { AppReview } from '@buntubi/sdk/types';
 import '../history-entry/history-entry.js';
 import { useView } from '../view.js';
 import { reviewHistoryLabels, type ReviewHistoryLabels, type ReviewHistoryLogic, type TimelineEntry } from './logic.js';

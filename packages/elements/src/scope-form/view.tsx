@@ -3,7 +3,7 @@ import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
-import type { Sensitivity } from '@buntu/sdk/types';
+import type { Sensitivity } from '@buntubi/sdk/types';
 import { viewToken } from '../view.js';
 import { SENSITIVITIES, type ScopeFormLogic } from './logic.js';
 import '../segmented/segmented.js';

@@ -3,11 +3,11 @@ import { defineCustomElement, prop, typedElement, type ElementAttributes } from 
 import { createField, createForm } from '@fluixi/forms';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Admin } from '@buntu/sdk/admin';
-import { suspendSchema, type SuspendInput } from '@buntu/sdk/schemas/organizations';
+import { Admin } from '@buntubi/sdk/admin';
+import { suspendSchema, type SuspendInput } from '@buntubi/sdk/schemas/organizations';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
-import type { AdminOrganization } from '@buntu/sdk/types';
+import type { AdminOrganization } from '@buntubi/sdk/types';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';
 import { organizationRowLabels, type OrganizationRowLabels, type OrganizationRowLogic, type SuspendForm } from './logic.js';

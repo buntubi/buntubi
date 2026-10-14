@@ -2,7 +2,7 @@
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Button } from '@fluixi-ui/button';
 import { CODE_LENGTH } from './verify-email.js';
-import { viewToken } from '@buntu/sdk/view';
+import { viewToken } from '@buntubi/sdk/view';
 import type { VerifyEmailLogic } from './verify-email.js';
 
 export const verifyEmailView = ({ askAgain, code, label, problem, resend, resent, submit, verify, email }: VerifyEmailLogic) =>

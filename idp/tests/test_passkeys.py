@@ -8,9 +8,9 @@ from soft_authenticator import SoftAuthenticator
 from sqlalchemy import select, update
 from test_mfa import enable, password_step
 
-from idp.db import db, utcnow
-from idp.models import LoginSession
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import LoginSession
+from buntubi.services import mail
 
 from conftest import ISSUER, PASSWORD, api, page_config, sign_up
 

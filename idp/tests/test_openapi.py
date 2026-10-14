@@ -15,8 +15,8 @@ from test_console_api import admin_call, app_waiting_for_review, setup_people
 from test_developer_api import LIVE_FIELDS, call
 from test_flows import add_service, basic, secret_of
 
-from idp.services import mail
-from idp.web.openapi import DESCRIBED_PREFIXES, INTERNAL
+from buntubi.services import mail
+from buntubi.web.openapi import DESCRIBED_PREFIXES, INTERNAL
 
 from conftest import REDIRECT, add_client, authorize_query, pkce, sign_up
 

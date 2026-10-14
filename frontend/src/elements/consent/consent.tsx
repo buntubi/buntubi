@@ -2,7 +2,7 @@
  * What an application asks to see, and the user's answer. The host gives the application, the
  * signed-in user and the requested scopes already worded; `action` receives the answer.
  */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { ConsentView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';

@@ -41,13 +41,13 @@ name = "acme-idp"
 version = "0.1.0"
 requires-python = ">=3.11"
 
-[project.entry-points."idp.plugins"]
+[project.entry-points."buntubi.plugins"]
 acme = "acme_idp:AcmePlugin"
 ```
 
 ```python
 # acme_idp/__init__.py
-from idp.plugins import Catalogue, Localized, Plugin, Product, ScopeSpec
+from buntubi.plugins import Catalogue, Localized, Plugin, Product, ScopeSpec
 
 
 class AcmePlugin(Plugin):
@@ -76,7 +76,7 @@ Install it into the provider's environment and turn it on:
 ```bash
 .venv/bin/pip install -e ../acme-idp      # from the repository root
 echo 'IDP_PLUGINS=["acme"]' >> idp/.env   # several: ["acme","other"], run in that order
-cd idp && ../.venv/bin/flask --app idp.app:create_app plugins list
+cd idp && ../.venv/bin/flask --app buntubi.app:create_app plugins list
 ```
 
 `plugins list` prints each plugin with its version and the number of products and scopes it
@@ -204,7 +204,7 @@ that takes time belongs in a queue the listener writes to.
 
 `blueprint()` returns a Flask blueprint, mounted at `/api/plugins/<id>/`. The console and the
 portal call it with the signed-in person's access token, so its views check that token with the
-helpers in `idp.plugins`:
+helpers in `buntubi.plugins`:
 
 | Helper | Lets through | The view gets |
 |---|---|---|
@@ -214,7 +214,7 @@ helpers in `idp.plugins`:
 
 ```python
 from flask import Blueprint, jsonify
-from idp.plugins import member_of, require_developer
+from buntubi.plugins import member_of, require_developer
 
 
 def blueprint() -> Blueprint:
@@ -239,7 +239,7 @@ acme's billing service with a token only the provider holds.
 
 ```ts
 // acme-idp-ui/src/index.ts
-import { definePlugin } from '@buntu/sdk/plugins';
+import { definePlugin } from '@buntubi/sdk/plugins';
 
 export const plugin = definePlugin({
   id: 'acme',
@@ -290,7 +290,7 @@ endpoints, as the signed-in person:
 
 ```ts
 import { inject } from '@fluixi/start/di';
-import { PluginApi } from '@buntu/sdk/plugins';
+import { PluginApi } from '@buntubi/sdk/plugins';
 
 const api = inject(PluginApi);
 const usage = await api.call<{ calls: number }>('acme', 'GET', `/organizations/${this.organization}/usage`);
@@ -304,7 +304,7 @@ another host), an id that is not a plugin id or an unexpected method is refused 
 Write elements the way the provider's own are written (`packages/elements`): fluixi-ui
 components rather than native controls, `--idp-*` tokens rather than raw colours, French and
 English text. Split each element into its logic and a view, and look the view up through
-`viewToken` and `useView` from `@buntu/sdk/view`, so a deployment can restyle it by providing
+`viewToken` and `useView` from `@buntubi/sdk/view`, so a deployment can restyle it by providing
 another view without touching the logic.
 
 ### Views in place of the provider's own
@@ -314,7 +314,7 @@ events) apart from its view, the function that turns that logic into markup. A p
 own view for an element by the element's tag:
 
 ```ts
-import { definePlugin } from '@buntu/sdk/plugins';
+import { definePlugin } from '@buntubi/sdk/plugins';
 import { signInView } from './sign-in-view.js';
 
 export const plugin = definePlugin({
@@ -380,18 +380,18 @@ A package name must be installed in the app. A path is served from outside the r
 its package folder is allowed for the dev server.
 
 The list is composed at build time into `virtual:idp-ui-plugins` (the `idpUiPlugins()` Vite
-plugin from `@buntu/sdk/vite`): no code arrives at run time. After changing it, restart the
+plugin from `@buntubi/sdk/vite`): no code arrives at run time. After changing it, restart the
 console and the portal, and run `pnpm build` in `frontend`.
 
 ## Checklist for a new plugin
 
 1. Pick an id: short, lowercase, stable. Rows the plugin manages and its API address carry it.
-2. Write the provider half: a `Plugin` subclass, the `idp.plugins` entry point, `version`.
+2. Write the provider half: a `Plugin` subclass, the `buntubi.plugins` entry point, `version`.
 3. Install it in the provider's environment, add it to `IDP_PLUGINS`, run `flask plugins sync`.
 4. Write the UI half, if it has pages or looks, with the same id.
 5. Name it in `IDP_UI_PLUGINS` where it shows; restart the apps, rebuild `frontend`.
 6. On every deploy: the migrations, then `flask plugins sync`.
 
-The hooks' source, with their docstrings, is `idp/src/idp/plugins/__init__.py` and
-`idp/src/idp/plugins/sync.py`; the UI types are `packages/sdk/src/plugins.ts`. The provider's
+The hooks' source, with their docstrings, is `idp/src/buntubi/plugins/__init__.py` and
+`idp/src/buntubi/plugins/sync.py`; the UI types are `packages/sdk/src/plugins.ts`. The provider's
 own tests of the system are `idp/tests/test_plugins.py`.

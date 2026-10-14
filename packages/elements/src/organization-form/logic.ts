@@ -1,7 +1,7 @@
 /** Creating an organization; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { OrganizationInput } from '@buntu/sdk/schemas/organizations';
+import type { OrganizationInput } from '@buntubi/sdk/schemas/organizations';
 
 export interface OrganizationFormLabels {
   title: string;

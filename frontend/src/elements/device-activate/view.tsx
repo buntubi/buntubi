@@ -2,7 +2,7 @@
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Button } from '@fluixi-ui/button';
 import { clean, CODE_LENGTH } from './device-activate.js';
-import { viewToken } from '@buntu/sdk/view';
+import { viewToken } from '@buntubi/sdk/view';
 import type { DeviceActivateLogic } from './device-activate.js';
 
 export const deviceActivateView = ({ code, decide, label, pending, problem }: DeviceActivateLogic) =>

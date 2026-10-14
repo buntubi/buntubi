@@ -3,8 +3,8 @@
  * `changed` runs after each change: the account area loads its pages again, a page on its own
  * has nothing to reload.
  */
-import { type AccountService, type TwoStepEnrolment } from '@buntu/sdk/account';
-import { createPasskey } from '@buntu/sdk/webauthn';
+import { type AccountService, type TwoStepEnrolment } from '@buntubi/sdk/account';
+import { createPasskey } from '@buntubi/sdk/webauthn';
 import type { Api, Redirect } from '../host/api.js';
 
 export function accountService(api: Api, changed: () => void = () => {}): AccountService {

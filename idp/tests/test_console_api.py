@@ -7,9 +7,9 @@ from flask.testing import FlaskClient
 from test_developer_api import LIVE_FIELDS, call, developer_token
 from test_flows import admin_token
 
-from idp.db import db
-from idp.models import Scope
-from idp.services import mail
+from buntubi.db import db
+from buntubi.models import Scope
+from buntubi.services import mail
 
 
 def admin_call(browser: FlaskClient, bearer: dict[str, str], method: str, path: str, body: Any = None) -> Any:

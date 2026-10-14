@@ -1,6 +1,6 @@
 /** Every account as a table, one `idp-user-row` each, in a card. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AdminUser } from '@buntu/sdk/types';
+import type { AdminUser } from '@buntubi/sdk/types';
 import '../user-row/user-row.js';
 import type { UserRowLabels } from '../user-row/logic.js';
 import { useView } from '../view.js';

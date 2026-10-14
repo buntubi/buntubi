@@ -6,10 +6,10 @@ import pytest
 from flask import Flask
 from sqlalchemy import select
 
-from idp.db import db
-from idp.models import Client, Organization, User
-from idp.security import passwords
-from idp.services import setup
+from buntubi.db import db
+from buntubi.models import Client, Organization, User
+from buntubi.security import passwords
+from buntubi.services import setup
 
 FILE = """
 [[apps]]

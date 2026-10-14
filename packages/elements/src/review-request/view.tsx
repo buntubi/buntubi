@@ -1,6 +1,6 @@
 /** The default look: a card in the stage's tone, the note as a reviewer's message, the actions. */
 import { For, Show } from '@fluixi/core';
-import { useNavigation } from '@buntu/sdk/navigation';
+import { useNavigation } from '@buntubi/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { ReviewRequestLogic } from './logic.js';

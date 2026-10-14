@@ -3,7 +3,7 @@ import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
-import { viewToken } from '@buntu/sdk/view';
+import { viewToken } from '@buntubi/sdk/view';
 import type { SignInLogic } from './logic.js';
 
 export const signInView = (s: SignInLogic) => (

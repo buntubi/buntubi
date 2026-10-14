@@ -1,6 +1,6 @@
 /** The postal address card: shown by lines, edited by parts; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
-import type { AddressInput } from '@buntu/sdk/schemas/account';
+import type { AddressInput } from '@buntubi/sdk/schemas/account';
 import type { FieldControl } from '../field.js';
 
 export interface AddressSectionLabels {

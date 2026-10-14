@@ -2,11 +2,11 @@
  * The second step of a sign-in: the 6-digit code from the authenticator app, or a backup code
  * when the phone is not at hand. `success` carries the action's result.
  */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { MfaVerifyView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { onMount } from '@fluixi/core';
-import { passkeysSupported } from '@buntu/sdk/webauthn';
+import { passkeysSupported } from '@buntubi/sdk/webauthn';
 import { signal } from '@fluixi/reactive/signal';
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';

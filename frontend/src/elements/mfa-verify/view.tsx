@@ -3,7 +3,7 @@ import { Show } from '@fluixi/core';
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Input } from '@fluixi-ui/input';
 import { Button } from '@fluixi-ui/button';
-import { viewToken } from '@buntu/sdk/view';
+import { viewToken } from '@buntubi/sdk/view';
 import type { MfaVerifyLogic } from './mfa-verify.js';
 
 export const mfaVerifyView = ({ askPasskey, backup, canPasskey, code, label, passkey, pending, problem, submit, toggle }: MfaVerifyLogic) =>

@@ -13,14 +13,14 @@ from flask.testing import FlaskClient
 from sqlalchemy import func, select
 from test_developer_api import developer_token
 
-from idp import plugins
-from idp.app import create_app
-from idp.config import get_settings
-from idp.db import db
-from idp.models import AuthorizationCode, Client, Scope
-from idp.plugins import Catalogue, Localized, Plugin, Product, ScopeSpec, require_admin, require_developer
-from idp.plugins.sync import sync
-from idp.services import mail
+from buntubi import plugins
+from buntubi.app import create_app
+from buntubi.config import get_settings
+from buntubi.db import db
+from buntubi.models import AuthorizationCode, Client, Scope
+from buntubi.plugins import Catalogue, Localized, Plugin, Product, ScopeSpec, require_admin, require_developer
+from buntubi.plugins.sync import sync
+from buntubi.services import mail
 
 from conftest import REDIRECT, add_client, authorize_query, pkce, sign_up
 
@@ -186,7 +186,7 @@ def test_two_syncs_at_once_both_finish_and_write_each_row_once(app: Flask) -> No
         assert not sync([Catalogued()]), "a second sync changes nothing"
         db().query(Scope).filter(Scope.managed_by == "catalogued").delete()
         db().execute(Scope.__table__.delete().where(Scope.managed_by == "catalogued"))
-        from idp.models import ApiProduct
+        from buntubi.models import ApiProduct
 
         db().query(ApiProduct).filter(ApiProduct.managed_by == "catalogued").delete()
         db().commit()

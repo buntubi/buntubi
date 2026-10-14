@@ -1,5 +1,5 @@
 /** One scope of the catalogue as a line; apart from the look. */
-import type { Sensitivity } from '@buntu/sdk/types';
+import type { Sensitivity } from '@buntubi/sdk/types';
 
 export interface ScopeRowLabels {
   /** In place of an API: a scope of sign-in itself. */

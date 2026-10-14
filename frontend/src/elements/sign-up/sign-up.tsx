@@ -2,7 +2,7 @@
  * Account creation: first and last name, email, password. Validates, emits `submit`, runs the
  * host's `action`: `success` with its result, or the refusal it threw.
  */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { SignUpView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';

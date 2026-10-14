@@ -32,7 +32,7 @@ or a deleted account sends an OpenID back-channel logout token to every app with
 ## Layout
 
 ```
-src/idp/
+src/buntubi/
   app.py          create_app: settings, extensions, blueprints, plugins
   config.py       every setting, read from IDP_* variables and .env
   cli.py          the flask commands
@@ -56,7 +56,7 @@ service, never two copies in two views.
 
 ## Commands
 
-Run from `idp/` as `../.venv/bin/flask --app idp.app:create_app <command>`.
+Run from `idp/` as `../.venv/bin/flask --app buntubi.app:create_app <command>`.
 
 | Command | Does |
 |---|---|
@@ -74,7 +74,7 @@ goes in `migrations/versions/` and names its `down_revision`; there is one head.
 
 ## Settings
 
-All of them are in `src/idp/config.py`, each with a comment, and read from the environment with
+All of them are in `src/buntubi/config.py`, each with a comment, and read from the environment with
 the `IDP_` prefix or from `idp/.env` (see `.env.example`). The ones every deployment sets:
 
 | Setting | Meaning |

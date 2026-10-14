@@ -1,6 +1,6 @@
 /** A developer's organizations under a heading, one `idp-organization-tile` each. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { Organization } from '@buntu/sdk/types';
+import type { Organization } from '@buntubi/sdk/types';
 import '../organization-tile/organization-tile.js';
 import { useView } from '../view.js';
 import type { OrganizationTilesLogic } from './logic.js';

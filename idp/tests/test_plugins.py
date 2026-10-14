@@ -13,12 +13,12 @@ from test_console_api import admin_call, setup_people
 from test_developer_api import LIVE_FIELDS, call
 from test_platform_gates import authorize
 
-from idp import plugins
-from idp.db import db
-from idp.models import ApiProduct, AuditEvent, Client, Scope, User
-from idp.plugins import Catalogue, LiveCheck, Localized, Plugin, Product, ScopeSpec
-from idp.plugins.sync import CatalogueError, sync
-from idp.services import mail
+from buntubi import plugins
+from buntubi.db import db
+from buntubi.models import ApiProduct, AuditEvent, Client, Scope, User
+from buntubi.plugins import Catalogue, LiveCheck, Localized, Plugin, Product, ScopeSpec
+from buntubi.plugins.sync import CatalogueError, sync
+from buntubi.services import mail
 
 from conftest import REDIRECT, api, page_config
 

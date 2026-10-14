@@ -7,9 +7,9 @@ from flask import Flask
 from flask.testing import FlaskClient
 from sqlalchemy import select, update
 
-from idp.db import db, utcnow
-from idp.models import AuditEvent, LoginSession, Organization, OrganizationMember, User
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import AuditEvent, LoginSession, Organization, OrganizationMember, User
+from buntubi.services import mail
 
 from conftest import PASSWORD, api, sign_up
 

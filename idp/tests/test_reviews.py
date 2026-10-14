@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 from test_console_api import admin_call, setup_people
 from test_developer_api import LIVE_FIELDS, call
 
-from idp.services import mail
+from buntubi.services import mail
 
 
 def sensitive_app(dev_browser: FlaskClient, dev: dict[str, str]) -> str:

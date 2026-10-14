@@ -8,9 +8,9 @@ from test_developer_api import call
 from test_members import add
 from test_platform_gates import sandbox_app
 
-from idp.db import db, utcnow
-from idp.models import Invitation, OrganizationMember, User
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import Invitation, OrganizationMember, User
+from buntubi.services import mail
 
 from conftest import sign_up
 

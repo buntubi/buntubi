@@ -6,7 +6,7 @@
     "build": "pnpm -r run build",
     "typecheck": "pnpm -r --filter '!@idp/skin' exec tsc --noEmit -p .",
     "version": "changeset version && node scripts/sync-version.mjs && pnpm install --lockfile-only",
-    "release": "pnpm --filter @buntu/sdk build && changeset publish"
+    "release": "pnpm --filter @buntubi/sdk build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.1",

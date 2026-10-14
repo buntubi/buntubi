@@ -2,7 +2,7 @@
  * Asks for a reset link. Once the host's `action` resolves the form gives way to a note: the
  * same note whether or not the address has an account.
  */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { ForgotPasswordView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { createField, createForm } from '@fluixi/forms';

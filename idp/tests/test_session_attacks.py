@@ -16,9 +16,9 @@ from sqlalchemy import update
 from test_flows import signed_in_tokens
 from test_passkeys import _add
 
-from idp.db import db, utcnow
-from idp.models import LoginSession, User
-from idp.services import backchannel, mail, passkeys
+from buntubi.db import db, utcnow
+from buntubi.models import LoginSession, User
+from buntubi.services import backchannel, mail, passkeys
 
 from conftest import ISSUER, api, page_config, sign_up
 

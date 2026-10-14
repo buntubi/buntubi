@@ -10,9 +10,9 @@ from joserfc import jwt
 from joserfc.jwk import KeySet
 from sqlalchemy import update
 
-from idp.db import db, utcnow
-from idp.models import RefreshToken
-from idp.services import mail
+from buntubi.db import db, utcnow
+from buntubi.models import RefreshToken
+from buntubi.services import mail
 
 from conftest import (
     ISSUER,

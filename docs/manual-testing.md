@@ -26,7 +26,7 @@ One terminal each.
 ```bash
 # Provider: http://localhost:5010
 cd ~/Developer/libs/oauth/identity-provider/idp
-../.venv/bin/flask --app idp.app:create_app run --port 5010
+../.venv/bin/flask --app buntubi.app:create_app run --port 5010
 
 # Developer portal: http://localhost:3410
 cd ~/Developer/libs/oauth/identity-provider/apps/portal
@@ -41,7 +41,7 @@ In a fourth terminal, a shortcut for the provider's commands:
 
 ```bash
 cd ~/Developer/libs/oauth/identity-provider/idp
-alias idp='../.venv/bin/flask --app idp.app:create_app'
+alias idp='../.venv/bin/flask --app buntubi.app:create_app'
 ```
 
 ## 2. The superadmin

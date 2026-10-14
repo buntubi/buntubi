@@ -1,7 +1,7 @@
 /** The password card: when it last changed, and the form to change it; apart from the look. */
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
-import type { PasswordChangeInput } from '@buntu/sdk/schemas/account';
+import type { PasswordChangeInput } from '@buntubi/sdk/schemas/account';
 
 export interface PasswordSectionLabels {
   title: string;

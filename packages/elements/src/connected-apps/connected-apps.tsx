@@ -1,6 +1,6 @@
 /** The apps that use the person's account, one `idp-connected-app` each. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { ConnectedApp } from '@buntu/sdk/account';
+import type { ConnectedApp } from '@buntubi/sdk/account';
 import { useView } from '../view.js';
 import { connectedAppsLabels, type ConnectedAppsLabels, type ConnectedAppsLogic } from './logic.js';
 import { ConnectedAppsView } from './view.js';

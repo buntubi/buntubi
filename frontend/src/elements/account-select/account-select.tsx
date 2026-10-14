@@ -2,7 +2,7 @@
  * The accounts signed in on this browser. Choosing one emits `select` after the host's `action`
  * resolves; "another account" emits `other`.
  */
-import { useView } from '@buntu/sdk/view';
+import { useView } from '@buntubi/sdk/view';
 import { AccountSelectView } from './view.js';
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';

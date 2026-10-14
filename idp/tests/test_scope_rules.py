@@ -10,11 +10,11 @@ from sqlalchemy import select, update
 from test_console_api import admin_call, setup_people
 from test_developer_api import call
 
-from idp.db import db
-from idp.models import Client
-from idp.plugins import Catalogue, Localized, Plugin, Product, ScopeSpec
-from idp.plugins.sync import sync
-from idp.services import mail
+from buntubi.db import db
+from buntubi.models import Client
+from buntubi.plugins import Catalogue, Localized, Plugin, Product, ScopeSpec
+from buntubi.plugins.sync import sync
+from buntubi.services import mail
 
 from conftest import REDIRECT, api, authorize_query, pkce, sign_up
 

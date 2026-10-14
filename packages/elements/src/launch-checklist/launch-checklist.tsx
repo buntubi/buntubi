@@ -1,6 +1,6 @@
 /** The checks an app must pass to go live, each with the way to fix it, under the reviewer's note. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
-import type { AppOverview } from '@buntu/sdk/types';
+import type { AppOverview } from '@buntubi/sdk/types';
 import { useView } from '../view.js';
 import { launchChecklistLabels, type CheckKey, type LaunchChecklistLabels, type LaunchChecklistLogic } from './logic.js';
 import { LaunchChecklistView } from './view.js';

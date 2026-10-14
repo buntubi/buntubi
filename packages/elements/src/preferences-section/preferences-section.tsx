@@ -2,7 +2,7 @@
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
 import { inject } from '@fluixi/di';
-import { Account } from '@buntu/sdk/account';
+import { Account } from '@buntubi/sdk/account';
 import { useView } from '../view.js';
 import {
   preferencesSectionLabels,

@@ -1,5 +1,5 @@
 /**
- * Text for the validation keys the schemas in `@buntu/sdk/schemas` use. A host passes its own
+ * Text for the validation keys the schemas in `@buntubi/sdk/schemas` use. A host passes its own
  * translations through an element's `messages` prop; these English defaults fill any gap, and a
  * key nobody knows is shown as is.
  */

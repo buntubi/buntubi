@@ -6,8 +6,8 @@ from urllib.parse import parse_qs, urlencode, urlparse
 from flask import Flask
 from flask.testing import FlaskClient
 
-from idp.services import mail
-from idp.services.session_check import COOKIE
+from buntubi.services import mail
+from buntubi.services.session_check import COOKIE
 
 from conftest import REDIRECT, add_client, api, authorize_query, page_config, pkce, sign_up
 

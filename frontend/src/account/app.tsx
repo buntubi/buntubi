@@ -11,7 +11,7 @@ import { Link, Outlet, revalidate, Router, useLocation, useNavigate, useRouteDat
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
 import { provide, provideRoot } from '@fluixi/start/di';
-import { Navigation, type NavigationOptions } from '@buntu/sdk/navigation';
+import { Navigation, type NavigationOptions } from '@buntubi/sdk/navigation';
 import { Grid, Stack } from '@fluixi-ui/layout';
 import {
   Account,
@@ -22,7 +22,7 @@ import {
   type ConnectedApp,
   type Device,
   type Passkey,
-} from '@buntu/sdk/account';
+} from '@buntubi/sdk/account';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
 import '@idp/elements/account-deletion';
@@ -120,7 +120,7 @@ export function mountAccount(root: HTMLElement, context: Context): void {
 
   function Layout(): ComponentChild {
     const location = useLocation();
-    // Elements move through this router: Navigation from @buntu/sdk/navigation.
+    // Elements move through this router: Navigation from @buntubi/sdk/navigation.
     const navigate = useNavigate();
     provide([{ provide: Navigation, useValue: { go: (href: string, options?: NavigationOptions) => navigate(href, options) } }]);
     const data = useRouteData<AccountSummary>();
