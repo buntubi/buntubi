@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bambiste/identity-provider.git",
+    "url": "https://github.com/buntubi/buntu.git",
     "directory": "packages/sdk"
   },
   "type": "module",
