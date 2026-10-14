@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --dir ../../packages/sdk build && fluixi dev",
-    "build": "pnpm --dir ../../packages/sdk build && fluixi build",
+    "build": "fluixi build",
     "start": "fluixi start",
     "typecheck": "tsc --noEmit"
   },

@@ -12,7 +12,7 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 ARG APP
 RUN test -n "$APP" \
- && pnpm --filter "./apps/${APP}" build \
+ && pnpm --filter "${APP}..." build \
  && pnpm --filter "./apps/${APP}" deploy --prod --legacy /out \
  && cp -r "apps/${APP}/dist" /out/dist
 

@@ -8,7 +8,7 @@ RUN corepack enable
 WORKDIR /src
 COPY . .
 RUN pnpm install --frozen-lockfile --filter idp-frontend... \
- && pnpm --filter idp-frontend build
+ && pnpm --filter "idp-frontend..." build
 
 FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \

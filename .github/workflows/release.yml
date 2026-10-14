@@ -99,7 +99,7 @@ jobs:
           node-version: 22
           cache: pnpm
       # The package carries the built sign-in pages.
-      - run: pnpm install --frozen-lockfile && pnpm --filter idp-frontend build
+      - run: pnpm install --frozen-lockfile && pnpm --filter "idp-frontend..." build
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
