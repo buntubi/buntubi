@@ -1,6 +1,6 @@
 /** The default look: a table row; the app, its organization, where it runs, first-party. */
 import { Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { Switch } from '@fluixi-ui/switch';
 import { viewToken } from '../view.js';
 import type { ClientRowLogic } from './logic.js';

@@ -1,6 +1,6 @@
 /** The default look: a card, one line per stage with its scopes. */
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { AppScopesLogic } from './logic.js';
 

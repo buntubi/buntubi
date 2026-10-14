@@ -1,6 +1,6 @@
 /** The default look: the dot, then the title over a muted line, the whole a link. */
 import { Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { AttentionItemLogic } from './logic.js';
 

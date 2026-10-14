@@ -1,6 +1,6 @@
 /** The review queue's default look: one row per app, its scopes, its wait, and the way in. */
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { ReviewQueueLogic } from './logic.js';
 

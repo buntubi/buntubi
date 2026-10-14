@@ -1,12 +1,12 @@
 /** The default look: a muted line, a 26px title and the intro, the actions at the end of the row. */
 import { For, Show } from '@fluixi/core';
-import { useNavigate } from '@fluixi/core/router';
+import { useNavigation } from '@buntu/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { PageHeaderLogic } from './logic.js';
 
 export const pageHeaderView = (p: PageHeaderLogic) => {
-  const navigate = useNavigate();
+  const navigate = useNavigation().go;
   // An action may lead to another app (the console to the portal): the router only moves within this one.
   const go = (href: string) => (/^https?:\/\//.test(href) ? window.location.assign(href) : navigate(href));
   return (

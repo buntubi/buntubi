@@ -1,12 +1,13 @@
 /** The default look: a tinted card, the ring beside its label, the items, the button and its note. */
 import { For, Show } from '@fluixi/core';
-import { Link, useNavigate } from '@fluixi/core/router';
+import { useNavigation } from '@buntu/sdk/navigation';
+import { Link } from '../link.js';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { ReadinessLogic } from './logic.js';
 
 export const readinessView = (r: ReadinessLogic) => {
-  const navigate = useNavigate();
+  const navigate = useNavigation().go;
   return (
     <section part="readiness" class="card">
       <style scoped>{`

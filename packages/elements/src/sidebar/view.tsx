@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@fluixi-ui/dropdown-menu';
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { SidebarContext, SidebarItem, SidebarLogic, SidebarSwitcher } from './logic.js';
 

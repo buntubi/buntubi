@@ -1,6 +1,6 @@
 /** The default look: one line, the link at its end. */
 import { For } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { WaitingAppLogic } from './logic.js';
 

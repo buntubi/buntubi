@@ -1,6 +1,6 @@
 /** The default look: a card, the title and Rotate, the ID row, the secrets table, the redirect list. */
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { OAuthClientLogic } from './logic.js';

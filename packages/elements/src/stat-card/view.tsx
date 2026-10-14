@@ -1,6 +1,6 @@
 /** The default look: the label, the number large, a toned note; a link when it leads somewhere. */
 import { Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { StatCardLogic } from './logic.js';
 

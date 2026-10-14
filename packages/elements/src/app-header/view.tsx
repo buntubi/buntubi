@@ -1,6 +1,6 @@
 /** The default look: a large tinted mark, the name with its stage, the meta line, the action at the end. */
 import { Show } from '@fluixi/core';
-import { useNavigate } from '@fluixi/core/router';
+import { useNavigation } from '@buntu/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { AppHeaderLogic } from './logic.js';
@@ -8,7 +8,7 @@ import type { AppHeaderLogic } from './logic.js';
 const TONE = { live: 'var(--idp-ok)', in_review: 'var(--idp-info)', changes_requested: 'var(--idp-warn)', draft: 'var(--idp-muted)' } as const;
 
 export const appHeaderView = (a: AppHeaderLogic) => {
-  const navigate = useNavigate();
+  const navigate = useNavigation().go;
   return (
     <header part="app-header" class="head">
       <style scoped>{`

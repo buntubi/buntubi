@@ -1,5 +1,5 @@
 /** The default look: a card that is one link, the mark and title, the note, the way in. */
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { AccountAreaLogic } from './logic.js';
 

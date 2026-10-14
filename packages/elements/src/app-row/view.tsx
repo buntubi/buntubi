@@ -1,5 +1,5 @@
 /** The default look: a grid row matching the list's columns. */
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { AppRowLogic } from './logic.js';
 

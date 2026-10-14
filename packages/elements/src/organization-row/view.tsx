@@ -1,6 +1,6 @@
 /** The default look: a table row; the organization, owner, counts, scopes, status, then the action. */
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';

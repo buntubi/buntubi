@@ -7,10 +7,11 @@ import '@idp/skin/fonts.css';
 import '@idp/skin/styles.css';
 import './account.css';
 import { render, Show, ThemeProvider } from '@fluixi/core';
-import { Link, Outlet, revalidate, Router, useLocation, useRouteData } from '@fluixi/core/router';
+import { Link, Outlet, revalidate, Router, useLocation, useNavigate, useRouteData } from '@fluixi/core/router';
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
-import { provideRoot } from '@fluixi/start/di';
+import { provide, provideRoot } from '@fluixi/start/di';
+import { Navigation, type NavigationOptions } from '@buntu/sdk/navigation';
 import { Grid, Stack } from '@fluixi-ui/layout';
 import {
   Account,
@@ -119,6 +120,9 @@ export function mountAccount(root: HTMLElement, context: Context): void {
 
   function Layout(): ComponentChild {
     const location = useLocation();
+    // Elements move through this router: Navigation from @buntu/sdk/navigation.
+    const navigate = useNavigate();
+    provide([{ provide: Navigation, useValue: { go: (href: string, options?: NavigationOptions) => navigate(href, options) } }]);
     const data = useRouteData<AccountSummary>();
     const collapsed = signal(false);
     const item = (label: string, href: string, icon: string) => ({ label, href, icon, current: location.pathname === href });

@@ -1,6 +1,6 @@
 /** The default look: a card, the note as a warm callout, then one ruled row per check. */
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { LaunchChecklistLogic } from './logic.js';
 

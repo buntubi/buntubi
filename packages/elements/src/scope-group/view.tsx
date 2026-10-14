@@ -1,6 +1,6 @@
 /** The default look: the product's name and link on one line, two scope cards to a row. */
 import { For, Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { ScopeGroupLogic } from './logic.js';
 

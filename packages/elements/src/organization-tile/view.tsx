@@ -1,6 +1,6 @@
 /** The default look: a card with the name and a muted second line. */
 import { Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { OrganizationTileLogic } from './logic.js';
 

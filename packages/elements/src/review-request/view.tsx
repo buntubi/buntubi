@@ -1,6 +1,6 @@
 /** The default look: a card in the stage's tone, the note as a reviewer's message, the actions. */
 import { For, Show } from '@fluixi/core';
-import { useNavigate } from '@fluixi/core/router';
+import { useNavigation } from '@buntu/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { ReviewRequestLogic } from './logic.js';
@@ -8,7 +8,7 @@ import type { ReviewRequestLogic } from './logic.js';
 const TONE = { draft: 'var(--idp-border-2)', in_review: 'var(--idp-info)', changes_requested: 'var(--idp-warn)', live: 'var(--idp-ok)' } as const;
 
 export const reviewRequestView = (r: ReviewRequestLogic) => {
-  const navigate = useNavigate();
+  const navigate = useNavigation().go;
   return (
     <section part="review-request" class="card" style={() => `--tone: ${TONE[r.stage()]}`} aria-labelledby="idp-review-request-title">
       <style scoped>{`

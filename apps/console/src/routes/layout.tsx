@@ -2,6 +2,8 @@
  * Every console page: the workspace shell the portal uses, with the console's sections, the
  * progress bar, a refused sign-in's notice, and the matched route.
  */
+import { provide } from '@fluixi/start/di';
+import { Navigation, type NavigationOptions } from '@buntu/sdk/navigation';
 import { revalidate, useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/page-error';
 import '@idp/elements/access-gate';
@@ -65,6 +67,8 @@ export default function RootLayout() {
   const routing = useIsRouting({ delay: 120 });
   const location = useLocation();
   const navigate = useNavigate();
+  // Elements move through the router: Navigation from @buntu/sdk/navigation.
+  provide([{ provide: Navigation, useValue: { go: (href: string, options?: NavigationOptions) => navigate(href, options) } }]);
   // Resolved on the server from the session cookie, so the shell renders right the first time.
   const user = auth.useUser();
   const { switchLanguage, sidebarFolded: collapsed } = usePreferences('console', { locale, setLocale });

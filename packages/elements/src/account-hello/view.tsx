@@ -1,6 +1,6 @@
 /** The default look: a card, the avatar, the greeting over the address, the way to edit. */
 import { Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { AccountHelloLogic } from './logic.js';
 

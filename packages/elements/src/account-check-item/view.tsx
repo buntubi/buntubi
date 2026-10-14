@@ -1,6 +1,6 @@
 /** The default look: a round mark in the line's tone, the words, the fix at the end. */
 import { Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { AccountCheckItemLogic } from './logic.js';
 

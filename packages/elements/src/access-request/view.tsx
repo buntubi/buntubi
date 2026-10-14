@@ -1,12 +1,12 @@
 /** The default look: a card with the count, one tinted row per pending scope, the main action, notes. */
 import { For, Show } from '@fluixi/core';
-import { useNavigate } from '@fluixi/core/router';
+import { useNavigation } from '@buntu/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
 import type { AccessRequestLogic } from './logic.js';
 
 export const accessRequestView = (r: AccessRequestLogic) => {
-  const navigate = useNavigate();
+  const navigate = useNavigation().go;
   return (
     <section part="access-request" class="card" aria-labelledby="idp-access-request-title">
       <style scoped>{`

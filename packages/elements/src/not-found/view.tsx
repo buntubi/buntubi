@@ -1,5 +1,5 @@
 /** The default look: a heading, a line, the way back. */
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { NotFoundLogic } from './logic.js';
 

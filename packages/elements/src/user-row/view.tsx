@@ -1,6 +1,6 @@
 /** The default look: a table row; who, status, roles, two-step, then the action. */
 import { Show } from '@fluixi/core';
-import { Link } from '@fluixi/core/router';
+import { Link } from '../link.js';
 import {
   DropdownMenu,
   DropdownMenuContent,
