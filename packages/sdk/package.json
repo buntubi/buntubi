@@ -31,7 +31,8 @@
     "./schemas/apps": "./src/schemas/apps.ts",
     "./account": "./src/account.ts",
     "./schemas/account": "./src/schemas/account.ts",
-    "./webauthn": "./src/webauthn.ts"
+    "./webauthn": "./src/webauthn.ts",
+    "./view": "./src/view.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -103,6 +104,10 @@
       "./webauthn": {
         "types": "./dist/webauthn.d.ts",
         "default": "./dist/webauthn.js"
+      },
+      "./view": {
+        "types": "./dist/view.d.ts",
+        "default": "./dist/view.js"
       }
     }
   }

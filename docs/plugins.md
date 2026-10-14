@@ -303,7 +303,9 @@ another host), an id that is not a plugin id or an unexpected method is refused 
 
 Write elements the way the provider's own are written (`packages/elements`): fluixi-ui
 components rather than native controls, `--idp-*` tokens rather than raw colours, French and
-English text.
+English text. Split each element into its logic and a view, and look the view up through
+`viewToken` and `useView` from `@buntu/sdk/view`, so a deployment can restyle it by providing
+another view without touching the logic.
 
 ### Looks for the sign-in pages
 
