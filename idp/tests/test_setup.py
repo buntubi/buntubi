@@ -25,6 +25,7 @@ name = "Tool"
 type = "public"
 redirect_uris = ["https://tool.example/cb"]
 first_party = false
+organization_usage = "required"
 """
 
 
@@ -70,7 +71,10 @@ def test_setup_creates_the_platform_and_writes_secrets_to_files(app: Flask, tmp_
         tool = db().scalar(select(Client).where(Client.client_id == "tool"))
         assert console is not None and console.first_party and console.environment == "live"
         assert tool is not None and not tool.first_party and tool.organization_id == organization.id
+        assert (console.organization_usage, tool.organization_usage) == ("none", "required")
         console.name = "Renamed in the console"
+        console.organization_usage = "optional"
+        tool.organization_usage = "none"
         db().commit()
 
     again = runner.invoke(args=["platform", "setup", "--file", str(tmp_path / "platform.toml")])
@@ -80,6 +84,9 @@ def test_setup_creates_the_platform_and_writes_secrets_to_files(app: Flask, tmp_
         assert console is not None and console.name == "Renamed in the console", (
             "a change made in a screen stays"
         )
+        tool = db().scalar(select(Client).where(Client.client_id == "tool"))
+        assert console.organization_usage == "optional", "a setting the file leaves out stays"
+        assert tool is not None and tool.organization_usage == "required", "a setting the file says wins"
 
     rotated = runner.invoke(
         args=["platform", "setup", "--file", str(tmp_path / "platform.toml"), "--rotate-secrets"]
@@ -93,6 +100,9 @@ def test_a_bad_file_says_what_is_wrong(tmp_path: Path) -> None:
         '[[apps]]\nclient_id = "x"\nname = "X"\ntype = "public"\nsecret = { file = "a", key = "B" }\n'
     )
     with pytest.raises(setup.SetupError, match="a public app has no secret"):
+        setup.read(path)
+    path.write_text('[[apps]]\nclient_id = "x"\nname = "X"\norganization_usage = "always"\n')
+    with pytest.raises(setup.SetupError, match="organization_usage is none, optional or required"):
         setup.read(path)
 
 

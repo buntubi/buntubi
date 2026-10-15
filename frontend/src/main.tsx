@@ -16,9 +16,11 @@ import './elements/forgot-password/forgot-password.js';
 import './elements/reset-password/reset-password.js';
 import './elements/consent/consent.js';
 import './elements/account-select/account-select.js';
+import './elements/organization-select/organization-select.js';
 import './elements/device-activate/device-activate.js';
 import './elements/mfa-verify/mfa-verify.js';
 import type { AccountItem } from './elements/account-select/account-select.js';
+import type { OrganizationItem } from './elements/organization-select/organization-select.js';
 import { createApi, type Redirect } from './host/api.js';
 import { lookOf, viewsOf } from '@buntubi/sdk/plugins';
 import { overrideViews } from '@buntubi/sdk/view';
@@ -215,6 +217,7 @@ const screens: Record<string, () => Screen> = {
           clientName={client.name ?? ''}
           clientLogo={client.logo ?? ''}
           userEmail={str('email')}
+          organization={str('organization')}
           warning={client.verified === false ? t.notes.unverified : ''}
           links={links}
           scopes={scopes.map((id) => ({ id, text: t.scopes[id] ?? id }))}
@@ -240,6 +243,21 @@ const screens: Record<string, () => Screen> = {
         labels={t.accountSelect}
         onSelect={(event) => follow(event.detail.result)}
         onOther={() => go('/signin')}
+      />
+    ),
+  }),
+
+  'idp-organization-select': () => ({
+    key: 'organization',
+    layout: 'card',
+    subtitle: str('client') ? t.organizationSelect.continueTo.replace('{app}', str('client')) : undefined,
+    footer: () => (str('client') ? <p>{t.organizationSelect.sees.replace('{app}', str('client'))}</p> : null),
+    body: () => (
+      <idp-organization-select
+        organizations={(props.organizations as OrganizationItem[] | undefined) ?? []}
+        action={(input) => api('POST', `/api/organization/${encodeURIComponent(input.id)}`, {})}
+        labels={t.organizationSelect}
+        onSelect={(event) => follow(event.detail.result)}
       />
     ),
   }),

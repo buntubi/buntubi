@@ -50,11 +50,14 @@ class AuthContext:
         auth_time: datetime,
         methods: list[str],
         family_id: uuid.UUID | None = None,
+        organization_id: uuid.UUID | None = None,
     ):
         self.session_id = session_id
         self.auth_time = auth_time
         self.methods = methods
         self.family_id = family_id
+        # The organization the person acts in, which the tokens name.
+        self.organization_id = organization_id
 
 
 def attach(user: User, context: AuthContext) -> User:
@@ -70,6 +73,13 @@ class S256CodeChallenge(CodeChallenge):  # type: ignore[misc]
     """PKCE with S256 only: `plain` gives no protection if the code is intercepted."""
 
     SUPPORTED_CODE_CHALLENGE_METHOD = ["S256"]
+
+
+def _still_in(user: User, organization_id: uuid.UUID | None) -> bool:
+    """Whether a token naming the organization may still be issued: the person is in it, it runs."""
+    from buntubi.services.platform import acting_membership
+
+    return organization_id is None or acting_membership(user, organization_id) is not None
 
 
 def _never_reviewed(client: Client) -> bool:
@@ -123,6 +133,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[mis
                 code_challenge_method=data.get("code_challenge_method", "S256"),
                 auth_time=login.created_at,
                 auth_methods=login.auth_methods,
+                organization_id=g.get("organization_id"),
                 expires_at=utcnow() + timedelta(seconds=get_settings().authorization_code_ttl),
             )
         )
@@ -150,12 +161,15 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[mis
 
     def authenticate_user(self, authorization_code: AuthorizationCode) -> User | None:
         user = authorization_code.user
-        if user.disabled_at is not None:
+        if user.disabled_at is not None or not _still_in(user, authorization_code.organization_id):
             return None
         return attach(
             user,
             AuthContext(
-                authorization_code.session_id, authorization_code.auth_time, authorization_code.auth_methods
+                authorization_code.session_id,
+                authorization_code.auth_time,
+                authorization_code.auth_methods,
+                organization_id=authorization_code.organization_id,
             ),
         )
 
@@ -200,6 +214,7 @@ class OpenIDCode(_OpenIDCode):  # type: ignore[misc]
         # The sign-in the token came from, which a back-channel logout names.
         if authorization_code.session_id is not None:
             claims["sid"] = str(authorization_code.session_id)
+        claims.update(organization_claims(authorization_code.user, authorization_code.organization_id))
         return claims
 
     def generate_user_info(self, user: User, scope: str) -> UserInfo:
@@ -242,6 +257,10 @@ class RefreshTokenGrant(grants.RefreshTokenGrant):  # type: ignore[misc]
 
         if not may_sign_in(refresh_token.client, user):
             return None
+        # Out of the organization the tokens name, or the organization suspended: nothing more.
+        if not _still_in(user, refresh_token.organization_id):
+            revoke_family(refresh_token.family_id)
+            return None
         # How the person signed in, from the session the token continues: a renewed token
         # still says a second factor was used, or the admin API refuses it as if it had not.
         login = db().get(LoginSession, refresh_token.session_id) if refresh_token.session_id else None
@@ -260,7 +279,11 @@ class RefreshTokenGrant(grants.RefreshTokenGrant):  # type: ignore[misc]
         return attach(
             user,
             AuthContext(
-                refresh_token.session_id, refresh_token.auth_time, methods, family_id=refresh_token.family_id
+                refresh_token.session_id,
+                refresh_token.auth_time,
+                methods,
+                family_id=refresh_token.family_id,
+                organization_id=refresh_token.organization_id,
             ),
         )
 
@@ -304,6 +327,16 @@ class DeviceCodeGrant(_DeviceCodeGrant):  # type: ignore[misc]
         )
         credential.last_polled_at = now
         return too_soon
+
+
+def organization_claims(user: User | None, organization_id: uuid.UUID | None) -> dict[str, str]:
+    """`org_id` and `org_role` for a token naming an organization the person is in; none otherwise."""
+    from buntubi.services.platform import acting_membership
+
+    member = acting_membership(user, organization_id) if user is not None else None
+    if member is None:
+        return {}
+    return {"org_id": str(member.organization_id), "org_role": member.role}
 
 
 def revoke_family(family_id: uuid.UUID) -> None:

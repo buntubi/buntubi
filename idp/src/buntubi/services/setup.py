@@ -47,6 +47,9 @@ class AppSpec:
     first_party: bool = True
     homepage_url: str | None = None
     backchannel_logout_uri: str | None = None
+    # "none", "optional" or "required": whether its tokens name an organization (models/clients.py).
+    # Left out, the app keeps what it has.
+    organization_usage: str | None = None
     secret: SecretTarget | None = None
 
 
@@ -81,6 +84,9 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
     unknown = [grant for grant in grants if grant not in GRANT_TYPES]
     if unknown:
         raise SetupError(f"{where}: unknown grant types {unknown}")
+    usage = entry.get("organization_usage")
+    if usage not in (None, "none", "optional", "required"):
+        raise SetupError(f"{where}: organization_usage is none, optional or required")
     secret = entry.get("secret")
     target = None
     if secret is not None:
@@ -100,6 +106,7 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
         first_party=bool(entry.get("first_party", True)),
         homepage_url=entry.get("homepage_url"),
         backchannel_logout_uri=entry.get("backchannel_logout_uri"),
+        organization_usage=usage,
         secret=target,
     )
 
@@ -127,6 +134,7 @@ def apply(specs: list[AppSpec], *, rotate_secrets: bool = False) -> SetupReport:
                 first_party=spec.first_party,
                 homepage_url=spec.homepage_url,
                 backchannel_logout_uri=spec.backchannel_logout_uri,
+                organization_usage=spec.organization_usage or "none",
             )
             db().add(client)
             secret = issue_client_secret(client) if confidential else None
@@ -138,6 +146,8 @@ def apply(specs: list[AppSpec], *, rotate_secrets: bool = False) -> SetupReport:
             # Where the app hears of logouts is the deployment's to say, so the file wins.
             if spec.backchannel_logout_uri and client.backchannel_logout_uri != spec.backchannel_logout_uri:
                 client.backchannel_logout_uri = spec.backchannel_logout_uri
+            if spec.organization_usage is not None:
+                client.organization_usage = spec.organization_usage
             if rotate_secrets and spec.secret is not None:
                 secret = rotate_client_secret(client)
         if secret is not None and spec.secret is not None:

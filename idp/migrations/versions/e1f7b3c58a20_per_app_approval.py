@@ -27,7 +27,9 @@ def upgrade() -> None:
     )
     op.add_column(
         "clients",
-        sa.Column("approved_redirect_hosts", postgresql.ARRAY(sa.String(255)), nullable=False, server_default="{}"),
+        sa.Column(
+            "approved_redirect_hosts", postgresql.ARRAY(sa.String(255)), nullable=False, server_default="{}"
+        ),
     )
     op.execute(
         """

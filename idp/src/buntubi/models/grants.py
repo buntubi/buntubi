@@ -54,6 +54,10 @@ class AuthorizationCode(IdMixin, Base, AuthorizationCodeMixin):  # type: ignore[
     code_challenge_method: Mapped[str] = mapped_column(String(10))
     auth_time: Mapped[datetime]
     auth_methods: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list)
+    # The organization the person acts in, which the tokens name; none for person-only tokens.
+    organization_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE")
+    )
     expires_at: Mapped[datetime]
     # Kept once used, with what it gave, so a replay can take that back (RFC 9700 4.4.1).
     used_at: Mapped[datetime | None]
@@ -98,6 +102,9 @@ class RefreshToken(IdMixin, Base, TokenMixin):  # type: ignore[misc]
     session_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("login_sessions.id", ondelete="SET NULL"))
     scope: Mapped[str] = mapped_column(String(1000))
     auth_time: Mapped[datetime]
+    organization_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE"), index=True
+    )
     issued_at: Mapped[datetime] = mapped_column(default=utcnow)
     expires_at: Mapped[datetime]
     rotated_at: Mapped[datetime | None]
@@ -136,6 +143,9 @@ class AccessTokenRecord(Base):
     session_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("login_sessions.id", ondelete="SET NULL"), index=True
     )
+    organization_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE"), index=True
+    )
     scope: Mapped[str] = mapped_column(String(1000))
     issued_at: Mapped[datetime] = mapped_column(default=utcnow)
     expires_at: Mapped[datetime] = mapped_column(index=True)
@@ -146,12 +156,20 @@ class AccessTokenRecord(Base):
 
 
 class Consent(IdMixin, Base):
-    """The scopes a user agreed to give a client. A request asking for more asks again."""
+    """
+    The scopes a user agreed to give a client, in one organization or as a person. A request asking
+    for more, or for another organization, asks again.
+    """
 
     __tablename__ = "consents"
-    __table_args__ = (UniqueConstraint("user_id", "client_id"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "client_id", "organization_id", postgresql_nulls_not_distinct=True),
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     client_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"))
+    organization_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("organizations.id", ondelete="CASCADE")
+    )
     scopes: Mapped[list[str]] = mapped_column(ARRAY(String(64)), default=list)
     granted_at: Mapped[datetime] = mapped_column(default=utcnow)

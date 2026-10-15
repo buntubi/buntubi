@@ -29,6 +29,13 @@ Sessions end everywhere they reached: a sign-out, a device signed out from the a
 or a deleted account sends an OpenID back-channel logout token to every app with a
 `backchannel_logout_uri` that took part in that session.
 
+Tokens can name an organization. An app whose `organization_usage` is `optional` adds
+`organization=<id>` to the authorization request; with `required`, a request without it takes
+the person's only organization or asks them to pick one. The tokens then carry `org_id` and
+`org_role`, consent is given per organization, a refresh keeps it, and introspection answers
+inactive once the person is out of the organization or it is suspended, and otherwise gives the
+role held at that moment.
+
 ## Layout
 
 ```

@@ -32,7 +32,9 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("last_used_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id", name="pk_passkeys"),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], name="fk_passkeys_user_id_users", ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["user_id"], ["users.id"], name="fk_passkeys_user_id_users", ondelete="CASCADE"
+        ),
         sa.UniqueConstraint("credential_id", name="uq_passkeys_credential_id"),
     )
     op.create_index("ix_passkeys_user_id", "passkeys", ["user_id"])

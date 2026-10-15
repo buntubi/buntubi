@@ -73,6 +73,7 @@ products and scopes as code; entries added in the console are edited there.
 | Create the platform's apps | an admin | Portal, Platform organization, or Console, Applications, "New platform app" | `flask platform setup` |
 | Edit an app (redirects, permissions, brand, secrets) | the organization's members | Portal | |
 | Make an app first-party | an admin | Console, Applications, the app's page | `first_party` in `platform.toml` |
+| Make an app's tokens name an organization | the organization's members | Developer API, `organization_usage` | `organization_usage` in `platform.toml` |
 | Disable an app | an admin | Console, Applications, the app's page | |
 | Create an organization, invite members | any developer | Portal | |
 | Review an app, suspend an organization, disable an account | an admin | Console | |

@@ -6,7 +6,7 @@ import { initials } from '../shared/initials.js';
 import { viewToken } from '@buntubi/sdk/view';
 import type { ConsentLogic } from './consent.js';
 
-export const consentView = ({ answering, decide, error, label, pending, clientLogo, clientName, links, scopes, userEmail, warning }: ConsentLogic) =>
+export const consentView = ({ answering, decide, error, label, pending, clientLogo, clientName, links, organization, scopes, userEmail, warning }: ConsentLogic) =>
   (
       <div class="idp-form idp-consent">
         <div class="idp-consent-app">
@@ -22,6 +22,9 @@ export const consentView = ({ answering, decide, error, label, pending, clientLo
         <ul class="idp-consent-scopes">
           <For each={scopes()}>{(scope) => <li data-scope={scope.id}>{scope.text}</li>}</For>
         </ul>
+        <Show when={organization()}>
+          <p class="idp-note idp-consent-organization">{() => label().forOrganization.replace('{organization}', organization())}</p>
+        </Show>
         <Show when={links().length}>
           <p class="idp-consent-links">
             <For each={links()}>

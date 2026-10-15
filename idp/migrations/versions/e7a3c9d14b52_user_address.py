@@ -15,7 +15,12 @@ down_revision: str | None = "d4f1b8e2a693"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
-_TEXT = (("address_street", 300), ("address_locality", 100), ("address_region", 100), ("address_postal_code", 20))
+_TEXT = (
+    ("address_street", 300),
+    ("address_locality", 100),
+    ("address_region", 100),
+    ("address_postal_code", 20),
+)
 
 
 def upgrade() -> None:

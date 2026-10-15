@@ -79,6 +79,8 @@ PRODUCT_FIELDS: dict[str, Any] = {
     "approval": {"type": "string", "enum": ["none", "review", "restricted"]},
 }
 ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "admin", "billing", "member", "guest"]}
+# Whether the app's tokens name an organization the person acts in.
+ORGANIZATION_USAGE: dict[str, Any] = {"type": "string", "enum": ["none", "optional", "required"]}
 PORTAL_ROLE: dict[str, Any] = {"type": ["string", "null"], "enum": ["developer", "reviewer", "viewer", None]}
 
 
@@ -276,6 +278,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "category": STRING,
             "platforms": {"type": "array", "items": PLATFORM},
             "products": STRINGS,
+            "organization_usage": ORGANIZATION_USAGE,
             "disabled": BOOL,
             "secrets": {"type": "array", "items": ref("Secret")},
             "created_at": TIME,

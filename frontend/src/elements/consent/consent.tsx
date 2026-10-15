@@ -27,6 +27,8 @@ export interface ConsentDecision {
 
 export interface ConsentLabels {
   wants: string;
+  /** Under the scopes when the access is for one organization: {organization} is its name. */
+  forOrganization: string;
   signedInAs: string;
   approve: string;
   deny: string;
@@ -35,6 +37,7 @@ export interface ConsentLabels {
 
 export const consentLabels: ConsentLabels = {
   wants: 'would like to:',
+  forOrganization: 'In {organization} only.',
   signedInAs: 'Signed in as',
   approve: 'Allow',
   deny: 'Cancel',
@@ -50,6 +53,8 @@ const props = {
   clientName: prop.string(''),
   clientLogo: prop.string(''),
   userEmail: prop.string(''),
+  /** The organization the access is for; empty when it is for the person. */
+  organization: prop.string(''),
   /** Shown above the scopes when set: an app not yet reviewed, in the host's words. */
   warning: prop.string(''),
   /** The app's policies, shown under the scopes. */
@@ -87,6 +92,7 @@ export class IdpConsent extends typedElement(props) {
       clientLogo: () => this.clientLogo,
       clientName: () => this.clientName,
       links: () => this.links,
+      organization: () => this.organization,
       scopes: () => this.scopes,
       userEmail: () => this.userEmail,
       warning: () => this.warning,

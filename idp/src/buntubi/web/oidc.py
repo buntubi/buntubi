@@ -3,6 +3,7 @@ The OAuth 2.1 / OpenID Connect endpoints: discovery, keys, authorize, token, rev
 introspection, userinfo, device authorization and logout.
 """
 
+import uuid
 from typing import Any
 from urllib.parse import urlencode
 
@@ -150,12 +151,22 @@ def authorize() -> Any:
         db().commit()
         return pages.blocked(grant.client)
 
-    if "consent" in prompt or consent.is_needed(login.user, grant.client, grant.request.payload.scope or ""):
+    organization_id, answer = _organization_for(grant, login.user, prompt)
+    if answer is not None:
+        return answer
+
+    scope = grant.request.payload.scope or ""
+    if "consent" in prompt or consent.is_needed(login.user, grant.client, scope, organization_id):
         if "none" in prompt:
             return _error_redirect(grant, "consent_required")
-        return redirect(url_for("pages.consent") + "?" + urlencode(_query(drop_prompt=True)))
+        query = _query(drop_prompt=True)
+        if organization_id is not None:
+            # Picked here when there was a single one: the consent screen and its answer name it.
+            query["organization"] = str(organization_id)
+        return redirect(url_for("pages.consent") + "?" + urlencode(query))
 
     g.login = login
+    g.organization_id = organization_id
     response = _with_session_state(
         authorization.create_authorization_response(grant_user=login.user, grant=grant),
         grant.client.client_id,
@@ -181,9 +192,13 @@ def authorize_decision() -> Any:
         return jsonify(error=error.error), 400
     if not platform.may_sign_in(grant.client, login.user):
         return jsonify(error="app_in_sandbox"), 403
+    organization_id, answer = _organization_for(grant, login.user, {"none"})
+    if answer is not None:
+        return jsonify(error="organization_refused"), 403
     if approve:
-        consent.record(login.user, grant.client, grant.request.payload.scope or "")
+        consent.record(login.user, grant.client, grant.request.payload.scope or "", organization_id)
         g.login = login
+        g.organization_id = organization_id
         g.consented_now = True  # the person saw and approved this request's scopes, offline_access too
         response = authorization.create_authorization_response(grant_user=login.user, grant=grant)
     else:
@@ -299,6 +314,34 @@ def _needs_second_factor(login: Any, scope: str) -> bool:
         and "mfa" not in (login.auth_methods or [])
         and mfa.is_enabled(login.user)
     )
+
+
+def _organization_for(grant: Any, user: Any, prompt: set[str]) -> tuple[uuid.UUID | None, Any]:
+    """
+    The organization the tokens will name, or the answer to give instead. A request naming one
+    needs an app that works with organizations and a person in it; an app that requires one, and
+    a request naming none, takes the person's only one or asks them to pick.
+    """
+    asked = request.args.get("organization")
+    usage = grant.client.organization_usage
+    if asked is not None:
+        if usage == "none":
+            return None, _error_redirect(grant, "invalid_request")
+        member = platform.acting_membership(user, asked)
+        if member is None:
+            return None, _error_redirect(grant, "access_denied")
+        return member.organization_id, None
+    if usage != "required":
+        return None, None
+    choices = platform.organizations_to_act_in(user)
+    if not choices:
+        return None, _error_redirect(grant, "access_denied")
+    if len(choices) == 1:
+        return choices[0].organization_id, None
+    if "none" in prompt:
+        return None, _error_redirect(grant, "interaction_required")
+    sessions.remember_return_to(_authorize_path(drop_prompt=True))
+    return None, redirect(url_for("pages.organization"))
 
 
 def _too_old(login: Any) -> bool:

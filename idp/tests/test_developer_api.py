@@ -296,3 +296,22 @@ def test_a_developer_app_can_ask_for_the_phone_and_the_address(
         s["name"]: s for p in call(browser, dev, "GET", "/products").json["items"] for s in p["scopes"]
     }
     assert catalogue["address"]["sensitivity"] == "sensitive" == catalogue["phone"]["sensitivity"]
+
+
+def test_an_app_says_whether_its_tokens_name_an_organization(
+    app: Flask, browser: FlaskClient, dev: dict[str, str]
+) -> None:
+    organization_id = new_organization(browser, dev)
+    created = call(
+        browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {"name": "Web", "redirect_uris": ["https://shop.example/cb"], "organization_usage": "required"},
+    )
+    assert created.status_code == 201 and created.json["app"]["organization_usage"] == "required"
+    client_id = created.json["app"]["client_id"]
+    changed = call(browser, dev, "PATCH", f"/apps/{client_id}", {"organization_usage": "optional"})
+    assert changed.json["app"]["organization_usage"] == "optional"
+    refused = call(browser, dev, "PATCH", f"/apps/{client_id}", {"organization_usage": "always"})
+    assert refused.status_code == 422

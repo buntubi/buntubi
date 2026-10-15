@@ -6,6 +6,7 @@ import type { ForgotPasswordLabels } from '../elements/forgot-password/forgot-pa
 import type { ResetPasswordLabels } from '../elements/reset-password/reset-password.js';
 import type { ConsentLabels } from '../elements/consent/consent.js';
 import type { AccountSelectLabels } from '../elements/account-select/account-select.js';
+import type { OrganizationSelectLabels } from '../elements/organization-select/organization-select.js';
 import type { DeviceActivateLabels } from '../elements/device-activate/device-activate.js';
 import type { MfaVerifyLabels } from '../elements/mfa-verify/mfa-verify.js';
 import type { SecureAccountLabels } from '@idp/elements/secure-account/logic';
@@ -21,6 +22,7 @@ export interface Text {
     resetPassword: string;
     consent: string;
     accounts: string;
+    organization: string;
     account: string;
     device: string;
     deviceDone: string;
@@ -71,6 +73,7 @@ export interface Text {
   resetPassword: ResetPasswordLabels;
   consent: ConsentLabels;
   accountSelect: AccountSelectLabels;
+  organizationSelect: OrganizationSelectLabels;
   theme: { theme: string; schemes: { light: string; dark: string; system: string } };
   deviceActivate: DeviceActivateLabels;
   mfaVerify: MfaVerifyLabels;
@@ -88,6 +91,7 @@ const fr: Text = {
     resetPassword: 'Nouveau mot de passe',
     consent: 'Autoriser l’accès',
     accounts: 'Choisir un compte',
+    organization: 'Choisir une organisation',
     account: 'Votre compte',
     device: 'Connecter un appareil',
     deviceDone: 'Appareil connecté',
@@ -105,6 +109,7 @@ const fr: Text = {
     signUp: 'Quelques secondes suffisent.',
     resetPassword: 'Choisissez un mot de passe que vous n’utilisez nulle part ailleurs.',
     accounts: 'Avec quel compte voulez-vous continuer ?',
+    organization: 'Dans quelle organisation voulez-vous continuer ?',
   },
   hero: {
     title: 'Un seul compte pour toutes vos applications.',
@@ -182,6 +187,7 @@ const fr: Text = {
   },
   consent: {
     wants: 'souhaite :',
+    forOrganization: 'Dans {organization} seulement.',
     signedInAs: 'Connecté en tant que',
     approve: 'Autoriser',
     deny: 'Annuler',
@@ -193,6 +199,11 @@ const fr: Text = {
     signedIn: 'Connecté',
     continueTo: 'pour continuer vers {app}',
     sees: '{app} voit le compte que vous choisissez, et seulement ce que vous autorisez.',
+  },
+  organizationSelect: {
+    continueTo: 'pour continuer vers {app}',
+    sees: '{app} travaille dans l’organisation que vous choisissez, et seulement là.',
+    roles: { owner: 'Propriétaire', admin: 'Administrateur', billing: 'Facturation', member: 'Membre', guest: 'Invité' },
   },
   secureAccount: {
     intro: 'Un mot de passe seul peut être deviné ou volé. Ajoutez l’une de ces protections maintenant, ou plus tard depuis Sécurité dans votre compte.',
@@ -304,6 +315,7 @@ const en: Text = {
     resetPassword: 'New password',
     consent: 'Allow access',
     accounts: 'Choose an account',
+    organization: 'Choose an organization',
     account: 'Your account',
     device: 'Connect a device',
     deviceDone: 'Device connected',
@@ -321,6 +333,7 @@ const en: Text = {
     signUp: 'It only takes a few seconds.',
     resetPassword: 'Pick a password you do not use anywhere else.',
     accounts: 'Which account do you want to continue with?',
+    organization: 'Which organization do you want to continue in?',
   },
   hero: {
     title: 'One account for all your apps.',
@@ -398,6 +411,7 @@ const en: Text = {
   },
   consent: {
     wants: 'would like to:',
+    forOrganization: 'In {organization} only.',
     signedInAs: 'Signed in as',
     approve: 'Allow',
     deny: 'Cancel',
@@ -409,6 +423,11 @@ const en: Text = {
     signedIn: 'Signed in',
     continueTo: 'to continue to {app}',
     sees: '{app} sees the account you choose, and only what you allow.',
+  },
+  organizationSelect: {
+    continueTo: 'to continue to {app}',
+    sees: '{app} works in the organization you choose, and only there.',
+    roles: { owner: 'Owner', admin: 'Admin', billing: 'Billing', member: 'Member', guest: 'Guest' },
   },
   secureAccount: {
     intro: 'A password alone can be guessed or stolen. Add one of these now, or later from Security in your account.',

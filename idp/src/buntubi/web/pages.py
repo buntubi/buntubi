@@ -164,6 +164,10 @@ def consent() -> Any:
         },
         scopes=scope_to_list(grant.request.payload.scope or "") or [],
         email=login.user.email,
+        # The organization the access is for, when the request names one the person is in.
+        organization=acting.organization.name
+        if (acting := platform.acting_membership(login.user, request.args.get("organization")))
+        else None,
     )
 
 
@@ -177,6 +181,23 @@ def blocked(client: Any) -> tuple[str, int]:
             support_email=organization.support_email if organization is not None else None,
         ),
         403,
+    )
+
+
+@bp.get("/organization")
+def organization() -> Any:
+    """The organizations an app that requires one may act in; the choice resumes its request."""
+    login = sessions.current()
+    if login is None:
+        return redirect(url_for("pages.signin"))
+    client = _resumed_client()
+    return shell(
+        "idp-organization-select",
+        organizations=[
+            {"id": str(m.organization_id), "name": m.organization.name, "role": m.role}
+            for m in platform.organizations_to_act_in(login.user)
+        ],
+        client=client.name if client is not None else None,
     )
 
 

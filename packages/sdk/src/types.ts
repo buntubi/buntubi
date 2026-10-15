@@ -76,6 +76,8 @@ export interface App {
   category: string;
   platforms: Platform[];
   products: string[];
+  /** Whether its tokens name an organization the person acts in: never, when asked, or always. */
+  organization_usage: 'none' | 'optional' | 'required';
   disabled: boolean;
   secrets: Secret[];
   created_at: string;

@@ -86,6 +86,10 @@ Kind = Literal["consumer", "business", "web", "mobile", "backend", "internal"]
 Platform = Literal["web", "ios", "android", "backend"]
 
 
+# Whether the app's tokens name an organization the person acts in (models/clients.py).
+OrganizationUsage = Literal["none", "optional", "required"]
+
+
 class AppIn(BaseModel):
     name: str = Name
     client_type: Literal["public", "confidential"] = "public"
@@ -102,6 +106,7 @@ class AppIn(BaseModel):
     category: str = Field(default="", max_length=40)
     platforms: list[Platform] = Field(default=[], max_length=4)
     products: list[str] = Field(default=[], max_length=50)
+    organization_usage: OrganizationUsage = "none"
 
 
 class AppPatch(BaseModel):
@@ -118,6 +123,7 @@ class AppPatch(BaseModel):
     category: str | None = Field(default=None, max_length=40)
     platforms: list[Platform] | None = Field(default=None, max_length=4)
     products: list[str] | None = Field(default=None, max_length=50)
+    organization_usage: OrganizationUsage | None = None
 
 
 class TestUserIn(BaseModel):
@@ -232,6 +238,7 @@ def app_json(client: Client) -> dict[str, Any]:
         "category": client.category,
         "platforms": client.platforms,
         "products": client.products,
+        "organization_usage": client.organization_usage,
         "disabled": client.disabled_at is not None,
         "secrets": [secret_json(s) for s in client.secrets] if not client.is_public else [],
         "created_at": client.created_at.isoformat(),
@@ -480,6 +487,7 @@ def create_app(organization_id: str, me: User) -> tuple[Response, int]:
             category=data.category,
             platforms=list(data.platforms),
             products=data.products,
+            organization_usage=data.organization_usage,
         ),
     )
     audit.record("developer.app_created", user=me, client=client)
@@ -519,7 +527,7 @@ def update_app(client_id: str, me: User) -> Response:
             setattr(client, name, _url(getattr(patch, name)))
     if patch.brand is not None:
         client.brand = patch.brand.model_dump(mode="json", exclude_none=True)
-    for name in ("kind", "description", "category"):
+    for name in ("kind", "description", "category", "organization_usage"):
         if getattr(patch, name) is not None:
             setattr(client, name, getattr(patch, name))
     if patch.platforms is not None:

@@ -17,7 +17,9 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column("users", sa.Column("second_factor_failures", sa.Integer(), nullable=False, server_default="0"))
+    op.add_column(
+        "users", sa.Column("second_factor_failures", sa.Integer(), nullable=False, server_default="0")
+    )
     op.add_column("users", sa.Column("second_factor_failed_at", sa.DateTime(timezone=True), nullable=True))
 
 

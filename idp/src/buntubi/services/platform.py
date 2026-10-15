@@ -147,6 +147,32 @@ def memberships_of(user: User) -> list[OrganizationMember]:
     )
 
 
+def acting_membership(user: User, organization_id: uuid.UUID | str | None) -> OrganizationMember | None:
+    """
+    The person's place in an organization a token names: a membership in any role, a guest's too,
+    while the organization is not suspended. None for anything else, an id that is not one included.
+    """
+    if organization_id is None:
+        return None
+    try:
+        wanted = organization_id if isinstance(organization_id, uuid.UUID) else uuid.UUID(organization_id)
+    except ValueError:
+        return None
+    member = db().scalar(
+        select(OrganizationMember).where(
+            OrganizationMember.user_id == user.id, OrganizationMember.organization_id == wanted
+        )
+    )
+    if member is None or member.organization.is_suspended:
+        return None
+    return member
+
+
+def organizations_to_act_in(user: User) -> list[OrganizationMember]:
+    """The memberships a person may pick an organization from when an app requires one."""
+    return [m for m in memberships_of(user) if not m.organization.is_suspended]
+
+
 def membership(user: User, organization_id: str, ability: str = "read") -> OrganizationMember:
     """
     The caller's place in the organization. Someone outside it gets `not_found`, the same answer
@@ -579,6 +605,7 @@ class NewApp:
     category: str = ""
     platforms: list[str] = field(default_factory=list)
     products: list[str] = field(default_factory=list)
+    organization_usage: str = "none"
 
 
 def apps_of(organization: Organization, member: OrganizationMember | None = None) -> list[Client]:
@@ -647,6 +674,7 @@ def create_app(member: OrganizationMember, data: NewApp) -> tuple[Client, str | 
         category=data.category,
         platforms=sorted(set(data.platforms)),
         products=checked_products(data.products),
+        organization_usage=data.organization_usage,
     )
     refusal = plugins.scope_refusal(client, scopes.granted)
     if refusal:

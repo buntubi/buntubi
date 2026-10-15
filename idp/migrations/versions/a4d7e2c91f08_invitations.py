@@ -31,9 +31,14 @@ def upgrade() -> None:
         sa.Column("accepted_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id", name="pk_invitations"),
         sa.ForeignKeyConstraint(
-            ["organization_id"], ["organizations.id"], name="fk_invitations_organization_id_organizations", ondelete="CASCADE"
+            ["organization_id"],
+            ["organizations.id"],
+            name="fk_invitations_organization_id_organizations",
+            ondelete="CASCADE",
         ),
-        sa.ForeignKeyConstraint(["invited_by_id"], ["users.id"], name="fk_invitations_invited_by_id_users", ondelete="SET NULL"),
+        sa.ForeignKeyConstraint(
+            ["invited_by_id"], ["users.id"], name="fk_invitations_invited_by_id_users", ondelete="SET NULL"
+        ),
         sa.UniqueConstraint("organization_id", "email", name="uq_invitations_organization_id"),
     )
     op.create_index("ix_invitations_organization_id", "invitations", ["organization_id"])

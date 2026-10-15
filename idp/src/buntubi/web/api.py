@@ -7,6 +7,7 @@ import re
 import uuid
 from datetime import datetime, timedelta
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlparse
 
 from flask import Blueprint, Response, jsonify, request, url_for
 from sqlalchemy import func, select
@@ -706,6 +707,22 @@ def sign_out_all() -> Response:
     sessions.end_all_here()
     db().commit()
     return jsonify(redirect=url_for("pages.signin"))
+
+
+@bp.post("/organization/<organization_id>")
+def choose_organization(organization_id: str) -> Any:
+    """Resumes the authorization request waiting for an organization, with the one picked."""
+    login = sessions.current()
+    if login is None:
+        return jsonify(error="signed_out"), 401
+    member = platform.acting_membership(login.user, organization_id)
+    resumed = sessions.take_return_to("")
+    if member is None or not resumed.startswith(url_for("oidc.authorize") + "?"):
+        return jsonify(error="unknown_organization"), 404
+    target = urlparse(resumed)
+    query = [(k, v) for k, v in parse_qsl(target.query) if k != "organization"]
+    query.append(("organization", str(member.organization_id)))
+    return jsonify(redirect=f"{target.path}?{urlencode(query)}")
 
 
 @bp.post("/accounts/<session_id>")

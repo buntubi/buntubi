@@ -35,5 +35,7 @@ def downgrade() -> None:
     for table in _TABLES:
         op.execute(f"UPDATE {table} SET role = 'manager' WHERE role IN ('admin', 'billing')")
         # Without a portal role a member had no equivalent; viewer is the nearest, and a guest too.
-        op.execute(f"UPDATE {table} SET role = COALESCE(portal_role, 'viewer') WHERE role IN ('member', 'guest')")
+        op.execute(
+            f"UPDATE {table} SET role = COALESCE(portal_role, 'viewer') WHERE role IN ('member', 'guest')"
+        )
         op.drop_column(table, "portal_role")

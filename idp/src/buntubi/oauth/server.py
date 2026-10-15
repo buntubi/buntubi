@@ -32,6 +32,7 @@ from buntubi.oauth.grants import (
     RefreshTokenGrant,
     S256CodeChallenge,
     context_of,
+    organization_claims,
     revoke_family,
 )
 from buntubi.oauth.jwt import InvalidAccessToken, access_token_claims, sign_access_token, verify_access_token
@@ -66,6 +67,7 @@ def _access_token(client: Client, grant_type: str, user: User | None, scope: str
             "auth_time": int(context.auth_time.timestamp()),
             "amr": context.methods or None,
             "sid": str(context.session_id) if context.session_id else None,
+            **organization_claims(user, context.organization_id),
         }
     # A developer's app says which side it is on, so the platform APIs keep sandbox data apart.
     if client.organization_id is not None and not client.first_party:
@@ -111,6 +113,7 @@ def save_token(token: dict[str, Any], request: Any) -> None:
             user_id=user.id if user is not None else None,
             refresh_family_id=family_id,
             session_id=context.session_id if context else None,
+            organization_id=context.organization_id if context else None,
             scope=token.get("scope", ""),
             expires_at=datetime.fromtimestamp(claims["exp"], UTC),
         )
@@ -123,6 +126,7 @@ def save_token(token: dict[str, Any], request: Any) -> None:
                 client_id=client.id,
                 user_id=user.id,
                 session_id=context.session_id,
+                organization_id=context.organization_id,
                 scope=token.get("scope", ""),
                 auth_time=context.auth_time,
                 expires_at=utcnow() + timedelta(seconds=settings.refresh_token_ttl),
@@ -246,6 +250,9 @@ class IntrospectionEndpoint(_IntrospectionEndpoint):  # type: ignore[misc]
     def introspect_token(self, token: Any) -> dict[str, Any]:
         issuer = get_settings().issuer
         if isinstance(token, RefreshToken):
+            named = organization_claims(token.user, token.organization_id)
+            if token.organization_id is not None and not named:
+                return {"active": False}
             return {
                 "active": True,
                 "token_type": "refresh_token",
@@ -255,6 +262,7 @@ class IntrospectionEndpoint(_IntrospectionEndpoint):  # type: ignore[misc]
                 "exp": int(token.expires_at.timestamp()),
                 "iat": int(token.issued_at.timestamp()),
                 "iss": issuer,
+                **named,
             }
         if isinstance(token, ApiKeyView):
             key = token.key
@@ -273,7 +281,15 @@ class IntrospectionEndpoint(_IntrospectionEndpoint):  # type: ignore[misc]
                 payload["exp"] = int(key.expires_at.timestamp())
             return payload
         c = token.claims
+        # The organization as it is: a person taken out of it, or an organization suspended, makes
+        # the token inactive, and the role is the one held today, not at issue.
+        organization: dict[str, str] = {}
+        if "org_id" in c.claims:
+            organization = organization_claims(token.user, uuid.UUID(c.claims["org_id"]))
+            if not organization:
+                return {"active": False}
         return {
+            **organization,
             "active": True,
             "token_type": "access_token",
             "client_id": c.client_id,

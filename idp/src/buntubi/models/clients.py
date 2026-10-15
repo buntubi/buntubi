@@ -75,6 +75,9 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     token_endpoint_auth_method: Mapped[str] = mapped_column(String(32), default="none")
     # A first-party application skips the consent screen.
     first_party: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Whether its tokens name an organization the person acts in: "none", "optional" (when the
+    # request names one) or "required" (the person picks one when the request names none).
+    organization_usage: Mapped[str] = mapped_column(String(8), default="none", server_default="none")
     # How the sign-in screens look for this client: {"name", "logo", "accent", "skin"}.
     brand: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     disabled_at: Mapped[datetime | None]

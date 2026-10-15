@@ -17,7 +17,9 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column("users", sa.Column("security_prompt_answered_at", sa.DateTime(timezone=True), nullable=True))
+    op.add_column(
+        "users", sa.Column("security_prompt_answered_at", sa.DateTime(timezone=True), nullable=True)
+    )
     # Accounts made before the offer existed are not sent to it.
     op.execute("UPDATE users SET security_prompt_answered_at = now()")
 
