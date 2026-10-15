@@ -106,7 +106,7 @@ def test_only_admins_join_the_platform_organization(app: Flask, outbox: list[mai
         organization = p.platform_organization()
         actor = organization.members[0]
         with pytest.raises(p.PlatformError, match="platform_members_are_admins"):
-            p.add_member(actor, "dev@example.test", "manager", [])
+            p.add_member(actor, "dev@example.test", "admin", None, [])
         admin = db().scalar(select(User).where(User.roles.contains(["admin"])))
         assert admin is not None
         p.leave_platform(admin)

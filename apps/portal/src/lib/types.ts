@@ -2,7 +2,7 @@
  * The developer API's answers come from @buntubi/sdk, shared with the elements; this file adds
  * only the shapes the portal itself assembles.
  */
-import type { App, AppOverview, Me, Organization, OrganizationDetail, Product, Role } from '@buntubi/sdk/types';
+import type { App, AppOverview, Me, Organization, OrganizationDetail, PortalRole, Product, Role } from '@buntubi/sdk/types';
 
 export type {
   ApiKey,
@@ -16,6 +16,7 @@ export type {
   Organization,
   OrganizationDetail,
   Product,
+  PortalRole,
   Role,
   Secret,
 } from '@buntubi/sdk/types';
@@ -43,5 +44,6 @@ export interface AppWorkspace {
   issuer: string;
   app: App | null;
   role: Role | null;
+  portal_role: PortalRole | null;
   overview: AppOverview | null;
 }

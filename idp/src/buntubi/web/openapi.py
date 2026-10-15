@@ -78,7 +78,8 @@ PRODUCT_FIELDS: dict[str, Any] = {
     "docs_url": MAYBE_STRING,
     "approval": {"type": "string", "enum": ["none", "review", "restricted"]},
 }
-ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "manager", "developer", "reviewer", "viewer"]}
+ROLE: dict[str, Any] = {"type": "string", "enum": ["owner", "admin", "billing", "member", "guest"]}
+PORTAL_ROLE: dict[str, Any] = {"type": ["string", "null"], "enum": ["developer", "reviewer", "viewer", None]}
 
 
 def ref(name: str) -> dict[str, str]:
@@ -178,6 +179,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "suspended": BOOL,
             "platform": BOOL,
             "role": ROLE,
+            "portal_role": PORTAL_ROLE,
             "created_at": TIME,
         }
     ),
@@ -224,6 +226,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "email": STRING,
             "name": STRING,
             "role": ROLE,
+            "portal_role": PORTAL_ROLE,
             "apps": STRINGS,
             "added_at": TIME,
             "two_step": BOOL,
@@ -234,6 +237,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "id": STRING,
             "email": STRING,
             "role": ROLE,
+            "portal_role": PORTAL_ROLE,
             "apps": STRINGS,
             "invited_at": TIME,
             "expires_at": TIME,
@@ -836,7 +840,7 @@ def paths() -> dict[str, dict[str, Any]]:
                 "An app, with the caller's role in its organization",
                 d,
                 DEVELOPER,
-                {"200": answer(obj({"app": ref("App"), "role": ROLE}))},
+                {"200": answer(obj({"app": ref("App"), "role": ROLE, "portal_role": PORTAL_ROLE}))},
                 params=["client_id"],
             ),
             "patch": op(

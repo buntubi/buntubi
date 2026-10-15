@@ -22,8 +22,8 @@ export default function SettingsPage() {
       <idp-page-header title={t('page.settings')} />
       <idp-organization-settings
         organization={organization()}
-        canEdit={can(organization()?.role, 'settings')}
-        canDelete={can(organization()?.role, 'delete')}
+        canEdit={can(organization(), 'settings')}
+        canDelete={can(organization(), 'delete')}
         labels={organizationSettingsLabels()}
         messages={formMessages()}
         describe={errorText}

@@ -17,7 +17,7 @@ export default function RedirectsPage() {
       <idp-page-header title={t('appws.redirects')} />
       <idp-redirect-uris
         app={data()?.app.app ?? null}
-        canManage={can(data()?.app.role, 'edit_apps')}
+        canManage={can(data()?.app, 'edit_apps')}
         labels={redirectUrisLabels()}
         messages={formMessages()}
         describe={errorText}

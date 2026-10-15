@@ -130,7 +130,7 @@ def test_developer_and_admin_answers_match_the_description(
     member = dev_call(
         "POST",
         f"/organizations/{organization['id']}/members",
-        {"email": "member@example.test", "role": "viewer"},
+        {"email": "member@example.test", "role": "member", "portal_role": "viewer"},
     )["member"]
     dev_call("PATCH", f"/organizations/{organization['id']}/members/{member['id']}", {"apps": [client_id]})
     dev_call("DELETE", f"/organizations/{organization['id']}/members/{member['id']}")

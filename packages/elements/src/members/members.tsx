@@ -10,10 +10,11 @@ import { Developer } from '@buntubi/sdk/developer';
 import { memberInviteSchema, type MemberInviteInput } from '@buntubi/sdk/schemas/team';
 import { messageReader, type Messages } from '../messages.js';
 import { fieldValidator, type FormSchema } from '../validators.js';
-import type { Invitation, Role } from '@buntubi/sdk/types';
+import type { Position } from '@buntubi/sdk/roles';
+import type { Invitation } from '@buntubi/sdk/types';
 import '../member-row/member-row.js';
 import '../role-card/role-card.js';
-import { ROLES, teamLabels, type MemberRow, type TeamLabels } from '../team/logic.js';
+import { POSITIONS, rolesOf, teamLabels, type MemberRow, type TeamLabels } from '../team/logic.js';
 import { useView } from '../view.js';
 import type { InviteForm, MembersLogic } from './logic.js';
 import { MembersView } from './view.js';
@@ -74,10 +75,10 @@ export class IdpMembers extends typedElement(props) {
       openInvite: (open) => inviting.set(open),
       inviteForm,
       invite: async (values) => {
-        const role: Role = ROLES.includes(values.role as Role) ? (values.role as Role) : 'developer';
+        const position: Position = POSITIONS.includes(values.role as Position) ? (values.role as Position) : 'developer';
         let answer: unknown = null;
         const done = await run('invite', async () => {
-          answer = await developer.addMember({ organization: this.organization, email: values.email.trim(), role });
+          answer = await developer.addMember({ organization: this.organization, email: values.email.trim(), ...rolesOf(position) });
         });
         // No account yet: the person was sent an invitation rather than added.
         if (done && answer && typeof answer === 'object' && 'invited_at' in answer) {
@@ -88,8 +89,8 @@ export class IdpMembers extends typedElement(props) {
           inviting.set(false);
         }
       },
-      changeRole: async (member, role) => {
-        await run(member, () => developer.changeMember({ organization: this.organization, member, role }));
+      changeRole: async (member, position) => {
+        await run(member, () => developer.changeMember({ organization: this.organization, member, ...rolesOf(position) }));
       },
       changeAccess: async (member, apps) => {
         await run(member, () => developer.changeMember({ organization: this.organization, member, apps }));

@@ -17,7 +17,7 @@ export default function PermissionsPage() {
       app={app()}
       products={data()?.workspace.products ?? []}
       overview={data()?.app.overview ?? null}
-      canEdit={can(data()?.app.role, 'edit_apps')}
+      canEdit={can(data()?.app, 'edit_apps')}
       reviewHref={paths.app(app()?.organization_id ?? '', app()?.client_id ?? '', 'review')}
       productsHref={paths.organization(app()?.organization_id ?? '', 'products')}
       locale={locale()}

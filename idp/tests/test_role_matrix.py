@@ -1,6 +1,7 @@
-"""Every developer route, called by every organization role and by an outsider: what each role
-may do follows `ABILITIES`, whatever the portal shows, and another organization's things answer
-404 to someone who is not in it, the same as things that do not exist."""
+"""Every developer route, called by every position in an organization (its role there, and for a
+member or billing person their portal role) and by an outsider: what each may do follows the
+abilities of the role and the portal role, whatever the portal shows, and another organization's
+things answer 404 to someone who is not in it, the same as things that do not exist."""
 
 from typing import Any
 
@@ -10,7 +11,18 @@ from test_developer_api import call, developer_token, new_organization
 
 from buntubi.services import mail
 
-ROLES = ("owner", "manager", "developer", "reviewer", "viewer")
+# Each person's place in organization A: the organization role, then the portal role.
+POSITIONS: dict[str, tuple[str, str | None]] = {
+    "owner": ("owner", None),
+    "admin": ("admin", None),
+    "billing": ("billing", None),
+    "developer": ("member", "developer"),
+    "reviewer": ("member", "reviewer"),
+    "viewer": ("member", "viewer"),
+    "member": ("member", None),
+    "guest": ("guest", None),
+}
+ROLES = tuple(POSITIONS)
 
 
 class Person:
@@ -41,8 +53,11 @@ def world(app: Flask, outbox: list[mail.Message], platform_scopes: None) -> dict
     owner = people["owner"]
     org_a = new_organization(owner.browser, owner.bearer)
     for role in ROLES[1:]:
+        org_role, portal_role = POSITIONS[role]
         added = owner(
-            "POST", f"/organizations/{org_a}/members", {"email": f"{role}@example.test", "role": role}
+            "POST",
+            f"/organizations/{org_a}/members",
+            {"email": f"{role}@example.test", "role": org_role, "portal_role": portal_role},
         )
         assert added.status_code == 201, added.json
     stranger = Person(app, outbox, "stranger@example.test")
@@ -65,16 +80,17 @@ def world(app: Flask, outbox: list[mail.Message], platform_scopes: None) -> dict
     }
 
 
-# Who may do what inside their own organization, from ABILITIES.
+# Who may do what inside their own organization, from the role and portal role abilities. A guest
+# is let into part of the organization by a product, never into the developer portal.
 CAN = {
-    "read": set(ROLES),
-    "settings": {"owner", "manager"},
-    "members": {"owner", "manager"},
-    "edit_apps": {"owner", "manager", "developer"},
-    "test_users": {"owner", "manager", "developer"},
-    "sandbox_keys": {"owner", "manager", "developer"},
-    "live_keys": {"owner", "manager"},
-    "publish": {"owner", "manager"},
+    "read": set(ROLES) - {"guest"},
+    "settings": {"owner", "admin"},
+    "members": {"owner", "admin"},
+    "edit_apps": {"owner", "admin", "developer"},
+    "test_users": {"owner", "admin", "developer"},
+    "sandbox_keys": {"owner", "admin", "developer"},
+    "live_keys": {"owner", "admin"},
+    "publish": {"owner", "admin"},
 }
 
 
@@ -131,7 +147,7 @@ def test_another_organization_is_not_found(world: dict[str, Any], role: str) -> 
         ("PATCH", f"/organizations/{org_b}", {"description": "taken"}),
         ("DELETE", f"/organizations/{org_b}", None),
         ("POST", f"/organizations/{org_b}/members", {"email": "intruder@example.test"}),
-        ("PATCH", f"/organizations/{org_b}/members/{world['b_member']}", {"role": "viewer"}),
+        ("PATCH", f"/organizations/{org_b}/members/{world['b_member']}", {"role": "member"}),
         ("DELETE", f"/organizations/{org_b}/members/{world['b_member']}", None),
         ("POST", f"/organizations/{org_b}/apps", {"name": "Planted"}),
         ("POST", f"/organizations/{org_b}/keys", {"name": "stolen", "scopes": ["billing.read"]}),
@@ -168,7 +184,7 @@ def test_ids_from_one_organization_do_not_work_through_another(world: dict[str, 
         ("DELETE", f"/organizations/{org_a}/members/{world['b_member']}"),
         ("DELETE", f"/organizations/{org_a}/keys/{world['b_key_id']}"),
     ] + ([("DELETE", f"/apps/{a_app}/secrets/{world['b_secret_id']}")] if world["b_secret_id"] else []):
-        reply = owner(method, path, {"role": "viewer"} if method == "PATCH" else None)
+        reply = owner(method, path, {"role": "member"} if method == "PATCH" else None)
         assert reply.status_code == 404, (method, path, reply.json)
     stranger_view = world["people"]["owner"]("GET", f"/organizations/{org_a}").json
     assert all(m["id"] != world["b_member"] for m in stranger_view["members"])
@@ -200,7 +216,7 @@ def test_a_member_limited_to_some_apps_cannot_reach_the_others(world: dict[str, 
     assert dev("GET", f"/apps/{world['b_app']}").status_code == 404
 
 
-@pytest.mark.parametrize("role", ["manager", "developer", "reviewer", "viewer"])
+@pytest.mark.parametrize("role", ["admin", "billing", "developer", "reviewer", "viewer", "member", "guest"])
 def test_no_role_can_make_itself_or_anyone_owner_without_being_one(world: dict[str, Any], role: str) -> None:
     owner = world["people"]["owner"]
     person = world["people"][role]
@@ -224,12 +240,12 @@ def test_the_last_owner_cannot_leave_or_be_demoted(world: dict[str, Any]) -> Non
     )
     assert owner("DELETE", f"/organizations/{org}/members/{me['id']}").json["error"] == "last_owner"
     assert (
-        owner("PATCH", f"/organizations/{org}/members/{me['id']}", {"role": "viewer"}).json["error"]
+        owner("PATCH", f"/organizations/{org}/members/{me['id']}", {"role": "member"}).json["error"]
         == "last_owner"
     )
 
 
-@pytest.mark.parametrize("role", ["manager", "developer", "reviewer", "viewer"])
+@pytest.mark.parametrize("role", ["admin", "billing", "developer", "reviewer", "viewer", "member", "guest"])
 def test_only_the_owner_deletes_the_organization(world: dict[str, Any], role: str) -> None:
     person = world["people"][role]
     reply = person("DELETE", f"/organizations/{world['org_a']}")
@@ -263,3 +279,20 @@ def test_a_secret_is_shown_once_and_no_answer_carries_a_hash(world: dict[str, An
         assert not any(h in text for h in ("secret_hash", "key_hash", "token_hash", "password_hash")), text[
             :200
         ]
+
+
+@pytest.mark.parametrize("role", ["owner", "admin", "guest"])
+def test_a_portal_role_goes_only_with_member_or_billing(world: dict[str, Any], role: str) -> None:
+    owner = world["people"]["owner"]
+    reply = owner(
+        "POST",
+        f"/organizations/{world['org_a']}/members",
+        {"email": f"portal.{role}@example.test", "role": role, "portal_role": "developer"},
+    )
+    assert reply.status_code == 422, (role, reply.json)
+
+
+def test_the_organization_lists_each_members_role_and_portal_role(world: dict[str, Any]) -> None:
+    members = world["people"]["owner"]("GET", f"/organizations/{world['org_a']}").json["members"]
+    got = {m["email"].split("@")[0]: (m["role"], m.get("portal_role")) for m in members}
+    assert got == {name: POSITIONS[name] for name in ROLES}

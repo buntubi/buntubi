@@ -1,7 +1,10 @@
 /** What the provider's developer API answers with, as the portal and its elements see it. */
 import type { PostalAddress } from './account.js';
 
-export type Role = 'owner' | 'manager' | 'developer' | 'reviewer' | 'viewer';
+/** A person's role in an organization, shared by every product. */
+export type Role = 'owner' | 'admin' | 'billing' | 'member' | 'guest';
+/** The developer portal's own role, which a member or a billing person may also hold. */
+export type PortalRole = 'developer' | 'reviewer' | 'viewer';
 export type Environment = 'sandbox' | 'live';
 export type AppKind = 'consumer' | 'business' | 'web' | 'mobile' | 'backend' | 'internal';
 export type Platform = 'web' | 'ios' | 'android' | 'backend';
@@ -24,6 +27,7 @@ export interface Organization {
   /** The platform's own organization: its members are the admins. */
   platform: boolean;
   role: Role;
+  portal_role: PortalRole | null;
   created_at: string;
 }
 
@@ -32,6 +36,7 @@ export interface Member {
   email: string;
   name: string;
   role: Role;
+  portal_role: PortalRole | null;
   /** Client ids the member works on; empty for all. */
   apps: string[];
   added_at: string;
@@ -289,6 +294,7 @@ export interface Invitation {
   id: string;
   email: string;
   role: Role;
+  portal_role: PortalRole | null;
   apps: string[];
   invited_at: string;
   expires_at: string;

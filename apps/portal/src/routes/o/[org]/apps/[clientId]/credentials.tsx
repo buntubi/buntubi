@@ -22,7 +22,7 @@ export default function CredentialsPage() {
         organization={app()?.organization_id ?? ''}
         jwksUrl={`${data()?.app.issuer ?? ''}/.well-known/jwks.json`}
         redirectsHref={paths.app(app()?.organization_id ?? '', app()?.client_id ?? '', 'redirects')}
-        canManage={can(data()?.app.role, 'edit_apps')}
+        canManage={can(data()?.app, 'edit_apps')}
         secret={secret}
         locale={locale()}
         labels={credentialsLabels()}

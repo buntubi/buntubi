@@ -33,16 +33,19 @@ def test_the_creator_is_the_owner_and_others_are_added_or_invited(
     invited = add(dev_browser, dev, organization_id, email="nobody@example.test")
     assert invited.status_code == 202 and invited.json["invitation"]["email"] == "nobody@example.test"
     colleague(app, outbox, "ana@example.test")
-    added = add(dev_browser, dev, organization_id, email="ANA@example.test", role="developer")
+    added = add(
+        dev_browser, dev, organization_id, email="ANA@example.test", role="member", portal_role="developer"
+    )
     assert added.status_code == 201
-    assert added.json["member"]["email"] == "ana@example.test" and added.json["member"]["role"] == "developer"
+    assert added.json["member"]["email"] == "ana@example.test"
+    assert (added.json["member"]["role"], added.json["member"]["portal_role"]) == ("member", "developer")
     again = add(dev_browser, dev, organization_id, email="ana@example.test")
     assert again.status_code == 409 and again.json["error"] == "already_member"
 
     members = call(dev_browser, dev, "GET", f"/organizations/{organization_id}").json["members"]
-    assert sorted((m["email"], m["role"]) for m in members) == [
-        ("ana@example.test", "developer"),
-        ("dev@example.test", "owner"),
+    assert sorted((m["email"], m["role"], m["portal_role"]) for m in members) == [
+        ("ana@example.test", "member", "developer"),
+        ("dev@example.test", "owner", None),
     ]
 
 
@@ -50,12 +53,12 @@ def test_roles_decide_what_a_member_may_do(app: Flask, outbox: list[mail.Message
     dev_browser, dev, organization_id, client_id = sandbox_app(app, outbox)
     ana_browser, ana = colleague(app, outbox, "ana@example.test")
     vic_browser, vic = colleague(app, outbox, "vic@example.test")
-    add(dev_browser, dev, organization_id, email="ana@example.test", role="developer")
-    add(dev_browser, dev, organization_id, email="vic@example.test", role="viewer")
+    add(dev_browser, dev, organization_id, email="ana@example.test", role="member", portal_role="developer")
+    add(dev_browser, dev, organization_id, email="vic@example.test", role="member", portal_role="viewer")
     org = f"/organizations/{organization_id}"
 
     # A developer builds and tests, and stops short of members, publishing and live keys.
-    assert call(ana_browser, ana, "GET", org).json["organization"]["role"] == "developer"
+    assert call(ana_browser, ana, "GET", org).json["organization"]["portal_role"] == "developer"
     assert (
         call(
             ana_browser, ana, "POST", f"{org}/apps", {"name": "Ana's", "redirect_uris": [REDIRECT]}
@@ -73,13 +76,13 @@ def test_roles_decide_what_a_member_may_do(app: Flask, outbox: list[mail.Message
         ("DELETE", org, None),
     ):
         reply = call(ana_browser, ana, method, path, body)
-        assert reply.status_code == 403 and reply.json == {"error": "forbidden", "role": "developer"}, (
+        assert reply.status_code == 403 and reply.json == {"error": "forbidden", "role": "member"}, (
             method,
             path,
         )
 
     # A viewer reads.
-    assert call(vic_browser, vic, "GET", f"/apps/{client_id}").json["role"] == "viewer"
+    assert call(vic_browser, vic, "GET", f"/apps/{client_id}").json["portal_role"] == "viewer"
     assert call(vic_browser, vic, "PATCH", f"/apps/{client_id}", {"name": "x"}).status_code == 403
     assert call(vic_browser, vic, "POST", f"{org}/test-users", {"email": "t@example.test"}).status_code == 403
 
@@ -89,7 +92,7 @@ def test_roles_decide_what_a_member_may_do(app: Flask, outbox: list[mail.Message
         dev,
         "PATCH",
         f"{org}/members/{member_id(dev_browser, dev, org, 'ana')}",
-        {"role": "manager"},
+        {"role": "admin"},
     )
     assert call(ana_browser, ana, "POST", f"/apps/{client_id}/publish").status_code != 403
     promote = call(
@@ -115,7 +118,15 @@ def test_a_member_limited_to_some_apps_sees_only_those(app: Flask, outbox: list[
         dev_browser, dev, "POST", f"{org}/apps", {"name": "Other", "redirect_uris": [REDIRECT]}
     ).json["app"]["client_id"]
     ana_browser, ana = colleague(app, outbox, "ana@example.test")
-    added = add(dev_browser, dev, organization_id, email="ana@example.test", apps=[client_id])
+    added = add(
+        dev_browser,
+        dev,
+        organization_id,
+        email="ana@example.test",
+        role="member",
+        portal_role="developer",
+        apps=[client_id],
+    )
     assert added.json["member"]["apps"] == [client_id]
     sign_up(app.test_client(), outbox, email="bo@example.test")
     unknown = add(dev_browser, dev, organization_id, email="bo@example.test", apps=["app_nope"])
@@ -129,7 +140,7 @@ def test_a_member_limited_to_some_apps_sees_only_those(app: Flask, outbox: list[
     assert call(ana_browser, ana, "GET", f"/apps/{made['client_id']}").status_code == 200
 
     # Owners and managers see every app whatever the list says.
-    call(dev_browser, dev, "PATCH", f"{org}/members/{added.json['member']['id']}", {"role": "manager"})
+    call(dev_browser, dev, "PATCH", f"{org}/members/{added.json['member']['id']}", {"role": "admin"})
     assert len(call(ana_browser, ana, "GET", org).json["apps"]) == 3
 
 
@@ -138,7 +149,7 @@ def test_an_organization_always_keeps_an_owner(app: Flask, outbox: list[mail.Mes
     org = f"/organizations/{organization_id}"
     mine = member_id(dev_browser, dev, org, "dev")
     assert call(dev_browser, dev, "DELETE", f"{org}/members/{mine}").json == {"error": "last_owner"}
-    assert call(dev_browser, dev, "PATCH", f"{org}/members/{mine}", {"role": "manager"}).json == {
+    assert call(dev_browser, dev, "PATCH", f"{org}/members/{mine}", {"role": "admin"}).json == {
         "error": "last_owner"
     }
 
@@ -158,7 +169,7 @@ def test_members_try_sandbox_apps_and_lose_them_when_they_leave(
     sign_up(visitor, outbox, email="ana@example.test")
     assert authorize(visitor, client_id)[0].status_code == 403
 
-    add(dev_browser, dev, organization_id, email="ana@example.test", role="viewer")
+    add(dev_browser, dev, organization_id, email="ana@example.test", role="member", portal_role="viewer")
     allowed, _ = authorize(visitor, client_id)
     assert allowed.status_code == 302 and allowed.location.startswith("/consent")
 
@@ -179,7 +190,7 @@ def test_each_member_says_whether_two_step_sign_in_is_on(app: Flask, outbox: lis
     # The team list shows it: a member without a second factor is the weak point of an organization.
     dev_browser, dev, organization_id, _ = sandbox_app(app, outbox)
     colleague(app, outbox, "ana@example.test")
-    add(dev_browser, dev, organization_id, email="ana@example.test", role="developer")
+    add(dev_browser, dev, organization_id, email="ana@example.test", role="member", portal_role="developer")
     members = call(dev_browser, dev, "GET", f"/organizations/{organization_id}").json["members"]
     assert {m["email"]: m["two_step"] for m in members} == {
         "ana@example.test": False,

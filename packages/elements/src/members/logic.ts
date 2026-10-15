@@ -2,7 +2,8 @@
 import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
 import type { MemberInviteInput } from '@buntubi/sdk/schemas/team';
-import type { Invitation, Role } from '@buntubi/sdk/types';
+import type { Position } from '@buntubi/sdk/roles';
+import type { Invitation } from '@buntubi/sdk/types';
 import type { MemberRow, TeamLabels } from '../team/logic.js';
 
 /** The invitation's values: the engine widens a field to `string`, so the role is narrowed at submit. */
@@ -26,7 +27,7 @@ export interface MembersLogic {
   openInvite: (open: boolean) => void;
   inviteForm: InviteForm;
   invite: (values: InviteValues) => Promise<void>;
-  changeRole: (member: string, role: Role) => Promise<void>;
+  changeRole: (member: string, position: Position) => Promise<void>;
   changeAccess: (member: string, apps: string[]) => Promise<void>;
   remove: (member: string) => Promise<void>;
   busy: () => string | null;

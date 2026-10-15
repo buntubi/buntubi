@@ -1,7 +1,6 @@
 /** One member: who, their role, the apps they work on, whether they use two-step sign-in. */
 import { defineCustomElement, prop, typedElement, type ElementAttributes } from '@fluixi/web-components';
 import { signal } from '@fluixi/reactive/signal';
-import type { Role } from '@buntubi/sdk/types';
 import { teamLabels, type MemberRow, type TeamLabels } from '../team/logic.js';
 import { initials } from '../initials.js';
 import { useView } from '../view.js';
@@ -27,7 +26,7 @@ export class IdpMemberRow extends typedElement(props) {
       initials: () => initials(this.member?.name || this.member?.email),
       canManage: () => this.canManage && !this.member?.self,
       busy: () => this.busy,
-      changeRole: (role) => this.emit('role', { role }),
+      changeRole: (position) => this.emit('role', { position }),
       remove: () => this.emit('remove', {}),
       editing,
       edit: (open) => {

@@ -106,7 +106,7 @@ export const userProfileLabels: UserProfileLabels = {
   organizations: 'Organizations',
   noOrganization: 'Member of none.',
   platform: 'Platform',
-  roles: { owner: 'Owner', manager: 'Manager', developer: 'Developer', reviewer: 'Reviewer', viewer: 'Viewer' },
+  roles: { owner: 'Owner', admin: 'Admin', billing: 'Billing', member: 'Member', guest: 'Guest' },
   security: 'Access',
   sendReset: 'Send a password reset link',
   sendResetHelp: 'By email, valid one hour.',

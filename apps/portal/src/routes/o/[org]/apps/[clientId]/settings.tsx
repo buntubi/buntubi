@@ -17,7 +17,7 @@ export default function SettingsPage() {
       <idp-page-header title={t('appws.basicInfo')} intro={t('st.intro')} />
       <idp-app-settings
       app={data()?.app.app ?? null}
-      canEdit={can(data()?.app.role, 'edit_apps')}
+      canEdit={can(data()?.app, 'edit_apps')}
       labels={appSettingsLabels()}
       messages={formMessages()}
       describe={errorText}

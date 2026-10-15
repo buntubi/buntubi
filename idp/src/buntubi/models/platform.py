@@ -20,8 +20,12 @@ ENVIRONMENTS = ("sandbox", "live")
 # public: any app; sensitive: a live app needs the platform owner's review;
 # restricted: the platform's own apps only.
 SENSITIVITIES = ("public", "sensitive", "restricted")
-# Strongest first. What each may do is decided in services/platform.py.
-ROLES = ("owner", "manager", "developer", "reviewer", "viewer")
+# A person's role in an organization, shared by every product: strongest first. What each may do
+# in the developer portal is decided in services/platform.py; a product decides what its own
+# screens let each role do.
+ROLES = ("owner", "admin", "billing", "member", "guest")
+# The developer portal's own role, which a member or a billing person may also hold.
+PORTAL_ROLES = ("developer", "reviewer", "viewer")
 # ga: generally available; beta: live, may still change; sandbox: not live yet.
 AVAILABILITIES = ("ga", "beta", "sandbox")
 PRODUCT_AUTH = ("oauth2", "oidc", "api_key", "webhooks")
@@ -83,6 +87,7 @@ class Invitation(IdMixin, Base):
     )
     email: Mapped[str] = mapped_column(String(320), index=True)
     role: Mapped[str] = mapped_column(String(12))
+    portal_role: Mapped[str | None] = mapped_column(String(12))
     app_ids: Mapped[list[uuid.UUID]] = mapped_column(
         ARRAY(UUID(as_uuid=True)), default=list, server_default="{}"
     )
@@ -105,8 +110,9 @@ class OrganizationMember(IdMixin, Base):
     )
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     role: Mapped[str] = mapped_column(String(12))
-    # The apps a developer, reviewer or viewer works on; empty means all of them. Owners and
-    # admins always see every app.
+    portal_role: Mapped[str | None] = mapped_column(String(12))
+    # The apps someone with a portal role works on; empty means all of them. Owners and admins
+    # always see every app.
     app_ids: Mapped[list[uuid.UUID]] = mapped_column(
         ARRAY(UUID(as_uuid=True)), default=list, server_default="{}"
     )

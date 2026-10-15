@@ -77,34 +77,51 @@ def require_developer(user: User) -> None:
 
 # ── Organizations and members ─────────────────────────────────────────────────────────────────
 
-# What each role may do. Owners and managers act on every app of the organization; developers,
-# reviewers and viewers on the apps their membership lists, or all of them when it lists none.
-ABILITIES: dict[str, frozenset[str]] = {
-    "owner": frozenset(
-        {
-            "read",
-            "edit_apps",
-            "test_users",
-            "sandbox_keys",
-            "live_keys",
-            "publish",
-            "members",
-            "settings",
-            "delete",
-        }
-    ),
-    "manager": frozenset(
-        {"read", "edit_apps", "test_users", "sandbox_keys", "live_keys", "publish", "members", "settings"}
-    ),
+# What each organization role may do in the developer portal. Owners and admins act on every app
+# of the organization; a portal role acts on the apps its membership lists, or all of them when
+# it lists none. A guest is let into part of the organization by a product, never into the portal.
+_ADMIN = frozenset(
+    {
+        "read",
+        "edit_apps",
+        "test_users",
+        "sandbox_keys",
+        "live_keys",
+        "publish",
+        "members",
+        "settings",
+        "billing",
+    }
+)
+ROLE_ABILITIES: dict[str, frozenset[str]] = {
+    "owner": _ADMIN | {"delete"},
+    "admin": _ADMIN,
+    "billing": frozenset({"read", "billing"}),
+    "member": frozenset({"read"}),
+    "guest": frozenset(),
+}
+# What a portal role adds to the organization role of a member or a billing person.
+PORTAL_ABILITIES: dict[str, frozenset[str]] = {
     "developer": frozenset({"read", "edit_apps", "test_users", "sandbox_keys"}),
     "reviewer": frozenset({"read"}),
     "viewer": frozenset({"read"}),
 }
-ALL_APPS_ROLES = ("owner", "manager")
+PORTAL_ROLE_HOLDERS = ("member", "billing")
+ALL_APPS_ROLES = ("owner", "admin")
+
+
+def abilities(member: OrganizationMember) -> frozenset[str]:
+    return ROLE_ABILITIES[member.role] | PORTAL_ABILITIES.get(member.portal_role or "", frozenset())
 
 
 def can(member: OrganizationMember, ability: str) -> bool:
-    return ability in ABILITIES[member.role]
+    return ability in abilities(member)
+
+
+def _check_portal_role(role: str, portal_role: str | None) -> None:
+    """Owners and admins hold every portal ability already, and a guest has no place in the portal."""
+    if portal_role is not None and role not in PORTAL_ROLE_HOLDERS:
+        raise PlatformError("portal_role_not_allowed", 422, role=role)
 
 
 def sees_app(member: OrganizationMember, client: Client) -> bool:
@@ -204,10 +221,13 @@ def _check_role_change(actor: OrganizationMember, role: str) -> None:
         raise PlatformError("forbidden", 403, role=actor.role)
 
 
-def add_member(actor: OrganizationMember, email: str, role: str, client_ids: list[str]) -> OrganizationMember:
+def add_member(
+    actor: OrganizationMember, email: str, role: str, portal_role: str | None, client_ids: list[str]
+) -> OrganizationMember:
     """Adds someone who already has an account, by email."""
     organization = actor.organization
     _check_role_change(actor, role)
+    _check_portal_role(role, portal_role)
     if len(organization.members) >= MAX_MEMBERS:
         raise PlatformError("too_many_members", 409, limit=MAX_MEMBERS)
     user = db().scalar(select(User).where(User.email == normalize_email(email)))
@@ -218,7 +238,9 @@ def add_member(actor: OrganizationMember, email: str, role: str, client_ids: lis
         raise PlatformError("platform_members_are_admins", 422)
     if any(m.user_id == user.id for m in organization.members):
         raise PlatformError("already_member", 409)
-    member = OrganizationMember(user_id=user.id, role=role, app_ids=_app_ids(organization, client_ids))
+    member = OrganizationMember(
+        user_id=user.id, role=role, portal_role=portal_role, app_ids=_app_ids(organization, client_ids)
+    )
     organization.members.append(member)
     db().flush()
     return member
@@ -257,7 +279,12 @@ def pending_invitations(organization: Organization) -> list[Invitation]:
 
 
 def invite(
-    actor: OrganizationMember, email: str, role: str, client_ids: list[str], signup_url: str
+    actor: OrganizationMember,
+    email: str,
+    role: str,
+    portal_role: str | None,
+    client_ids: list[str],
+    signup_url: str,
 ) -> Invitation:
     """
     Asks someone without an account to join, by email. An earlier invitation to the same
@@ -265,6 +292,7 @@ def invite(
     """
     organization = actor.organization
     _check_role_change(actor, role)
+    _check_portal_role(role, portal_role)
     if organization.is_platform:
         raise PlatformError("platform_members_are_admins", 422)
     address = normalize_email(email)
@@ -276,6 +304,7 @@ def invite(
         invitation = Invitation(email=address)
         organization.invitations.append(invitation)
     invitation.role = role
+    invitation.portal_role = portal_role
     invitation.app_ids = _app_ids(organization, client_ids)
     invitation.invited_by_id = actor.user_id
     invitation.created_at = utcnow()
@@ -326,7 +355,12 @@ def accept_invitations(user: User) -> list[Organization]:
         if any(m.user_id == user.id for m in organization.members):
             continue
         organization.members.append(
-            OrganizationMember(user_id=user.id, role=invitation.role, app_ids=list(invitation.app_ids))
+            OrganizationMember(
+                user_id=user.id,
+                role=invitation.role,
+                portal_role=invitation.portal_role,
+                app_ids=list(invitation.app_ids),
+            )
         )
         joined.append(organization)
     db().flush()
@@ -341,16 +375,35 @@ def member_of(organization: Organization, member_id: str) -> OrganizationMember:
     return member
 
 
+class _Keep:
+    """Given for `portal_role` when a change leaves it as it is."""
+
+
+KEEP = _Keep()
+
+
 def change_member(
-    actor: OrganizationMember, member: OrganizationMember, role: str | None, client_ids: list[str] | None
+    actor: OrganizationMember,
+    member: OrganizationMember,
+    role: str | None,
+    client_ids: list[str] | None,
+    portal_role: str | None | _Keep = KEEP,
 ) -> None:
-    if role is not None and role != member.role:
-        _check_role_change(actor, role)
+    new_role = role if role is not None else member.role
+    if isinstance(portal_role, _Keep):
+        # A role that holds none drops the portal role it had: an admin has every ability anyway.
+        new_portal = member.portal_role if new_role in PORTAL_ROLE_HOLDERS else None
+    else:
+        new_portal = portal_role
+    _check_portal_role(new_role, new_portal)
+    if new_role != member.role:
+        _check_role_change(actor, new_role)
         if member.role == "owner":
             _check_role_change(actor, "owner")
             if len(owners_of(member.organization)) == 1:
                 raise PlatformError("last_owner", 409)
-        member.role = role
+        member.role = new_role
+    member.portal_role = new_portal
     if client_ids is not None:
         member.app_ids = _app_ids(member.organization, client_ids)
     db().flush()

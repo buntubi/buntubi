@@ -24,7 +24,7 @@ export default function AppOverviewPage() {
       <idp-app-header
         app={app()}
         overview={overview()}
-        canPublish={can(data()?.app.role, 'publish')}
+        canPublish={can(data()?.app, 'publish')}
         reviewHref={paths.app(organization(), clientId(), 'review')}
         fields={fieldNames()}
         labels={appHeaderLabels()}

@@ -10,7 +10,8 @@ export const testUserSchema = z.object({ email });
 
 export const memberInviteSchema = z.object({
   email,
-  role: z.enum(['owner', 'manager', 'developer', 'reviewer', 'viewer']),
+  // A position: a role, or a portal role standing for a member holding it (see ../roles).
+  role: z.enum(['owner', 'admin', 'billing', 'developer', 'reviewer', 'viewer', 'member', 'guest']),
 });
 
 export type TestUserInput = z.infer<typeof testUserSchema>;

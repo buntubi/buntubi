@@ -27,7 +27,7 @@ export default function ReviewSubmissionPage() {
           overview={data()?.app.overview ?? null}
           reviews={data()?.reviews ?? []}
           products={data()?.workspace.products ?? []}
-          canPublish={can(data()?.app.role, 'publish')}
+          canPublish={can(data()?.app, 'publish')}
           fields={fieldNames()}
           locale={locale()}
           labels={reviewSubmissionLabels()}

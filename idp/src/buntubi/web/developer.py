@@ -130,18 +130,23 @@ class KeyIn(BaseModel):
     scopes: list[str] = []
 
 
-Role = Literal["owner", "manager", "developer", "reviewer", "viewer"]
+Role = Literal["owner", "admin", "billing", "member", "guest"]
+PortalRole = Literal["developer", "reviewer", "viewer"]
 
 
 class MemberIn(BaseModel):
     email: EmailStr
-    role: Role = "developer"
-    # Public client ids of the apps a developer, reviewer or viewer works on; empty for all.
+    role: Role = "member"
+    # The developer portal's own role, for a member or a billing person.
+    portal_role: PortalRole | None = None
+    # Public client ids of the apps someone with a portal role works on; empty for all.
     apps: list[str] = Field(default=[], max_length=50)
 
 
 class MemberPatch(BaseModel):
     role: Role | None = None
+    # Left out: kept (dropped when the new role holds none). null: removed.
+    portal_role: PortalRole | None = None
     apps: list[str] | None = Field(default=None, max_length=50)
 
 
@@ -160,6 +165,7 @@ def organization_json(member: OrganizationMember) -> dict[str, Any]:
         "suspended": organization.is_suspended,
         "platform": organization.is_platform,
         "role": member.role,
+        "portal_role": member.portal_role,
         "created_at": organization.created_at.isoformat(),
     }
 
@@ -170,6 +176,7 @@ def invitation_json(invitation: Invitation) -> dict[str, Any]:
         "id": str(invitation.id),
         "email": invitation.email,
         "role": invitation.role,
+        "portal_role": invitation.portal_role,
         "apps": [by_id[a] for a in invitation.app_ids if a in by_id],
         "invited_at": invitation.created_at.isoformat(),
         "expires_at": invitation.expires_at.isoformat(),
@@ -183,6 +190,7 @@ def member_json(member: OrganizationMember) -> dict[str, Any]:
         "email": member.user.email,
         "name": member.user.name,
         "role": member.role,
+        "portal_role": member.portal_role,
         "apps": [by_id[a] for a in member.app_ids if a in by_id],
         "added_at": member.added_at.isoformat(),
         # Whether the account signs in with a second factor: the team list shows who does not.
@@ -374,13 +382,13 @@ def add_member(organization_id: str, me: User) -> tuple[Response, int]:
     p.writable(actor.organization)
     data = parse(MemberIn)
     try:
-        member = p.add_member(actor, str(data.email), data.role, data.apps)
+        member = p.add_member(actor, str(data.email), data.role, data.portal_role, data.apps)
     except p.PlatformError as refusal:
         if refusal.code != "no_such_account":
             raise
         # No account yet: an invitation, accepted once they sign in with this address.
         signup = f"{get_settings().issuer}/signup"
-        invitation = p.invite(actor, str(data.email), data.role, data.apps, signup)
+        invitation = p.invite(actor, str(data.email), data.role, data.portal_role, data.apps, signup)
         audit.record(
             "developer.member_invited",
             user=me,
@@ -408,7 +416,8 @@ def change_member(organization_id: str, member_id: str, me: User) -> Response:
     p.writable(actor.organization)
     member = p.member_of(actor.organization, member_id)
     patch = parse(MemberPatch)
-    p.change_member(actor, member, patch.role, patch.apps)
+    portal_role = patch.portal_role if "portal_role" in patch.model_fields_set else p.KEEP
+    p.change_member(actor, member, patch.role, patch.apps, portal_role)
     audit.record(
         "developer.member_changed",
         user=me,
@@ -482,7 +491,7 @@ def create_app(organization_id: str, me: User) -> tuple[Response, int]:
 @developer()
 def get_app(client_id: str, me: User) -> Response:
     client, member = p.app_of(me, client_id)
-    return jsonify(app=app_json(client), role=member.role)
+    return jsonify(app=app_json(client), role=member.role, portal_role=member.portal_role)
 
 
 @bp.get("/apps/<client_id>/overview")

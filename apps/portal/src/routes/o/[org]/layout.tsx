@@ -5,6 +5,7 @@
 import { useLocation, useNavigate, useRouteData, type RouteDataArgs } from '@fluixi/start/router';
 import type { SidebarContext, SidebarGroup, SidebarSwitcher } from '@idp/elements/sidebar/logic';
 import { sectionOf, sectionsOf } from '@buntubi/sdk/plugins';
+import { positionOf } from '@buntubi/sdk/roles';
 import { uiPlugins } from '../../../lib/ui-plugins.js';
 import { markOf, useBrand } from '@idp/shell/brand';
 import { icons } from '@idp/shell/icons';
@@ -43,7 +44,7 @@ export default function WorkspaceLayout() {
     items: (data()?.organizations ?? []).map((entry) => ({
       key: `organization:${entry.id}`,
       label: entry.name,
-      detail: entry.role ? t(`tm.role.${entry.role}`) : '',
+      detail: entry.role ? t(`tm.role.${positionOf(entry)}`) : '',
       mark: markOf(entry.name),
       href: paths.organization(entry.id),
       current: entry.id === id(),

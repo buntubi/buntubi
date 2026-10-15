@@ -13,7 +13,7 @@ export const routeData = (args: RouteDataArgs) => workspace(paramOf(args, 'org')
 export default function TeamPage() {
   const data = useRouteData<Workspace>();
   const current = () => data()?.current;
-  const role = () => current()?.organization.role;
+  const membership = () => current()?.organization;
   return (
     <idp-team
       organization={current()?.organization.id ?? ''}
@@ -23,8 +23,8 @@ export default function TeamPage() {
       testUsers={current()?.test_users ?? []}
       apps={(current()?.apps ?? []).map((app) => ({ client_id: app.client_id, name: app.name }))}
       me={data()?.me.email ?? ''}
-      canManage={can(role(), 'members')}
-      canManageTesters={can(role(), 'test_users')}
+      canManage={can(membership(), 'members')}
+      canManageTesters={can(membership(), 'test_users')}
       messages={formMessages()}
       locale={locale()}
       labels={teamLabels()}

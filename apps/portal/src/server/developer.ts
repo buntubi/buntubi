@@ -6,7 +6,7 @@
  */
 import type { AppPatch, NewApp } from '@buntubi/sdk/developer';
 import { pluginTarget } from '@buntubi/sdk/plugins';
-import type { ApiKey, App, AppOverview, AppReview, AppWorkspace, Brand, Home, Invitation, Me, Member, Organization, OrganizationDetail, Product, Role, Workspace } from '../lib/types.js';
+import type { ApiKey, App, AppOverview, AppReview, AppWorkspace, Brand, Home, Invitation, Me, Member, Organization, OrganizationDetail, PortalRole, Product, Role, Workspace } from '../lib/types.js';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -142,13 +142,13 @@ export const loadAppWorkspace = async (clientId: string): Promise<AppWorkspace> 
   const issuer = publicEnv().IDP_URL ?? '';
   const id = encodeURIComponent(clientId);
   try {
-    const [{ app, role }, overview] = await Promise.all([
-      call<{ app: App; role: Role }>('GET', `/apps/${id}`),
+    const [{ app, role, portal_role }, overview] = await Promise.all([
+      call<{ app: App; role: Role; portal_role: PortalRole | null }>('GET', `/apps/${id}`),
       call<AppOverview>('GET', `/apps/${id}/overview`),
     ]);
-    return { issuer, app, role, overview };
+    return { issuer, app, role, portal_role, overview };
   } catch (error) {
-    if (error instanceof ApiRefusal && error.code === 'not_found') return { issuer, app: null, role: null, overview: null };
+    if (error instanceof ApiRefusal && error.code === 'not_found') return { issuer, app: null, role: null, portal_role: null, overview: null };
     throw error;
   }
 };
@@ -218,7 +218,7 @@ export const removeTestUser = async (organizationId: string, email: string): Pro
 
 export const addMember = async (
   organizationId: string,
-  input: { email: string; role: Role; apps?: string[] },
+  input: { email: string; role: Role; portal_role?: PortalRole | null; apps?: string[] },
 ): Promise<Member | Invitation> => {
   'use server';
   const answer = await call<{ member?: Member; invitation?: Invitation }>(
@@ -241,7 +241,7 @@ export const withdrawInvitation = async (organizationId: string, invitationId: s
 export const changeMember = async (
   organizationId: string,
   memberId: string,
-  patch: { role?: Role; apps?: string[] },
+  patch: { role?: Role; portal_role?: PortalRole | null; apps?: string[] },
 ): Promise<Member> => {
   'use server';
   const path = `/organizations/${encodeURIComponent(organizationId)}/members/${encodeURIComponent(memberId)}`;

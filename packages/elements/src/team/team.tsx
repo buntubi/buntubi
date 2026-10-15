@@ -10,7 +10,7 @@ import '../segmented/segmented.js';
 import '../test-users/test-users.js';
 import type { Messages } from '../messages.js';
 import { useView } from '../view.js';
-import { LIMITABLE, teamLabels, type TeamLabels, type TeamLogic } from './logic.js';
+import { LIMITABLE, positionOf, teamLabels, type TeamLabels, type TeamLogic } from './logic.js';
 import { TeamView } from './view.js';
 
 const props = {
@@ -57,7 +57,7 @@ export class IdpTeam extends typedElement(props) {
           ...member,
           self: member.email === this.me,
           appNames: member.apps.map(appName),
-          limitable: LIMITABLE.includes(member.role),
+          limitable: LIMITABLE.includes(positionOf(member)),
         })),
       apps: () => this.apps,
       testUsers: () => this.testUsers,

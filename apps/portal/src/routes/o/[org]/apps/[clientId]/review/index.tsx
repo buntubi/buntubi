@@ -34,7 +34,7 @@ export default function ReviewPage() {
             locale={locale()}
             updateHref={paths.app(organization(), clientId(), 'permissions')}
             submitHref={paths.reviewSubmission(organization(), clientId())}
-            canPublish={can(data()?.app.role, 'publish')}
+            canPublish={can(data()?.app, 'publish')}
             waiting={data()?.app.overview?.scopes.waiting.length ?? 0}
             labels={reviewRequestLabels()}
           />
@@ -44,7 +44,7 @@ export default function ReviewPage() {
           overview={data()?.app.overview ?? null}
           checks={launchChecklistLabels().checks}
           links={checkLinks(organization(), clientId())}
-          submitHref={can(data()?.app.role, 'publish') ? paths.reviewSubmission(organization(), clientId()) : ''}
+          submitHref={can(data()?.app, 'publish') ? paths.reviewSubmission(organization(), clientId()) : ''}
           labels={readinessLabels()}
         />
       </Grid>

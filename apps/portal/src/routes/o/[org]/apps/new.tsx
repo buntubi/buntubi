@@ -24,7 +24,7 @@ export default function NewAppPage() {
     navigate(paths.app(organization()?.id ?? '', event.detail.client_id, 'credentials'));
   };
   return (
-    <Show when={can(organization()?.role, 'edit_apps')} fallback={<p class="page-intro">{() => t('error.forbidden')}</p>}>
+    <Show when={can(organization(), 'edit_apps')} fallback={<p class="page-intro">{() => t('error.forbidden')}</p>}>
       <idp-create-app
         organization={organization()?.id ?? ''}
         products={data()?.products ?? []}

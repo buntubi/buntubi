@@ -1,10 +1,8 @@
 /** An organization's people: members with their roles and app access, and sandbox test users. */
-import type { Invitation, Member, Role } from '@buntubi/sdk/types';
+import type { Position } from '@buntubi/sdk/roles';
+import type { Invitation, Member } from '@buntubi/sdk/types';
 
-export const ROLES: Role[] = ['owner', 'manager', 'developer', 'reviewer', 'viewer'];
-
-/** Roles whose access can be limited to some apps; owners and managers always see every app. */
-export const LIMITABLE: Role[] = ['developer', 'reviewer', 'viewer'];
+export { LIMITABLE, POSITIONS, positionOf, rolesOf } from '@buntubi/sdk/roles';
 
 export interface TeamLabels {
   /** The tab strip: members, test users. */
@@ -21,7 +19,8 @@ export interface TeamLabels {
   access: string;
   allApps: string;
   you: string;
-  roles: Record<Role, { name: string; text: string }>;
+  /** Each position: an organization role, or a portal role held by a member. */
+  roles: Record<Position, { name: string; text: string }>;
   invite: string;
   inviteEmail: string;
   inviteHint: string;
@@ -62,10 +61,13 @@ export const teamLabels: TeamLabels = {
   you: 'you',
   roles: {
     owner: { name: 'Owner', text: 'Everything, including deleting the organization.' },
-    manager: { name: 'Manager', text: 'Manages members, settings, live keys and publishing.' },
-    developer: { name: 'Developer', text: 'Builds and tests apps, sandbox keys and test users.' },
-    reviewer: { name: 'Reviewer', text: 'Reads apps and their review state.' },
-    viewer: { name: 'Viewer', text: 'Reads only.' },
+    admin: { name: 'Admin', text: 'Manages members, settings, live keys and publishing.' },
+    billing: { name: 'Billing', text: 'The plan, payment and invoices; reads apps.' },
+    developer: { name: 'Developer', text: 'A member who builds and tests apps, sandbox keys and test users.' },
+    reviewer: { name: 'Reviewer', text: 'A member who reads apps and their review state.' },
+    viewer: { name: 'Viewer', text: 'A member who reads apps.' },
+    member: { name: 'Member', text: 'Belongs to the organization; reads apps here.' },
+    guest: { name: 'Guest', text: 'An outside person a product lets into part of the organization; not this portal.' },
   },
   invite: 'Invite member',
   inviteEmail: 'Email address',

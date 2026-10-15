@@ -21,6 +21,7 @@ import type { CreateAppLabels } from '@idp/elements/create-app/logic';
 import type { OrganizationSettingsLabels } from '@idp/elements/organization-settings/logic';
 import type { ProductBrowserLabels } from '@idp/elements/product-browser/logic';
 import type { TeamLabels } from '@idp/elements/team/logic';
+import { POSITIONS, type Position } from '@buntubi/sdk/roles';
 import type { ShellLabels } from '@idp/shell/shell';
 import type { CredentialsLabels } from '@idp/elements/credentials/logic';
 import type { RedirectUrisLabels } from '@idp/elements/redirect-uris/logic';
@@ -274,7 +275,7 @@ export const createAppLabels = (): CreateAppLabels => ({
   error: t('error.generic'),
 });
 
-const role = (name: 'owner' | 'manager' | 'developer' | 'reviewer' | 'viewer') => ({
+const role = (name: Position) => ({
   name: t(`tm.role.${name}`),
   text: t(`tm.role.${name}Text`),
 });
@@ -292,7 +293,7 @@ export const teamLabels = (): TeamLabels => ({
   access: t('tm.access'),
   allApps: t('tm.allApps'),
   you: t('tm.you'),
-  roles: { owner: role('owner'), manager: role('manager'), developer: role('developer'), reviewer: role('reviewer'), viewer: role('viewer') },
+  roles: Object.fromEntries(POSITIONS.map((position) => [position, role(position)])) as TeamLabels['roles'],
   invite: t('tm.inviteMember'),
   inviteEmail: t('tm.inviteEmail'),
   inviteHint: t('tm.inviteHint'),

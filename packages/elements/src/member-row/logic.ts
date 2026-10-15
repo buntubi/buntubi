@@ -1,5 +1,5 @@
 /** One member as a row: who, which role, which apps, two-step; apart from the look. */
-import type { Role } from '@buntubi/sdk/types';
+import type { Position } from '@buntubi/sdk/roles';
 import type { MemberRow, TeamLabels } from '../team/logic.js';
 
 export interface MemberRowLogic {
@@ -8,7 +8,7 @@ export interface MemberRowLogic {
   initials: () => string;
   canManage: () => boolean;
   busy: () => boolean;
-  changeRole: (role: Role) => void;
+  changeRole: (position: Position) => void;
   remove: () => void;
   editing: () => boolean;
   edit: (open: boolean) => void;
@@ -18,7 +18,7 @@ export interface MemberRowLogic {
 }
 
 export interface MemberRowEvents {
-  role: { role: Role };
+  role: { position: Position };
   remove: Record<string, never>;
   access: { apps: string[] };
 }

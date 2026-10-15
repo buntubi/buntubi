@@ -3,8 +3,8 @@ import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
 import { Toggle } from '@fluixi-ui/toggle';
-import type { Role } from '@buntubi/sdk/types';
-import { ROLES } from '../team/logic.js';
+import type { Position } from '@buntubi/sdk/roles';
+import { POSITIONS, positionOf } from '../team/logic.js';
 import { viewToken } from '../view.js';
 import type { MemberRowLogic } from './logic.js';
 
@@ -43,18 +43,18 @@ export const memberRowView = (m: MemberRowLogic) => (
       </span>
     </span>
     <span role="cell">
-      <Show when={m.canManage()} fallback={<span>{() => m.labels().roles[m.member()?.role ?? 'viewer'].name}</span>}>
+      <Show when={m.canManage()} fallback={<span>{() => m.labels().roles[positionOf(m.member() ?? {})].name}</span>}>
         <Select
-          value={String(m.member()?.role ?? 'viewer')}
-          labels={(value: string) => m.labels().roles[value as Role].name}
-          onChange={(value: string) => m.changeRole(value as Role)}
+          value={String(positionOf(m.member() ?? {}))}
+          labels={(value: string) => m.labels().roles[value as Position].name}
+          onChange={(value: string) => m.changeRole(value as Position)}
         >
           <SelectTrigger aria-label={() => `${m.labels().role}: ${m.member()?.email ?? ''}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectPortal>
             <SelectContent>
-              <For each={ROLES}>{(role) => <SelectItem value={role}>{() => m.labels().roles[role].name}</SelectItem>}</For>
+              <For each={POSITIONS}>{(position) => <SelectItem value={position}>{() => m.labels().roles[position].name}</SelectItem>}</For>
             </SelectContent>
           </SelectPortal>
         </Select>

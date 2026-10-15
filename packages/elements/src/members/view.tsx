@@ -4,8 +4,8 @@ import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
-import type { Role } from '@buntubi/sdk/types';
-import { ROLES } from '../team/logic.js';
+import type { Position } from '@buntubi/sdk/roles';
+import { POSITIONS } from '../team/logic.js';
 import { viewToken } from '../view.js';
 import type { MembersLogic } from './logic.js';
 import '../invitation-row/invitation-row.js';
@@ -54,13 +54,13 @@ export const membersView = (m: MembersLogic) => (
           </FormField>
           <FormField control={m.inviteForm.get('role')}>
             {(b) => (
-              <Select value={b.value()} labels={(value: string) => m.labels().roles[value as Role].name} onChange={(value: string) => b.onChange(value)}>
+              <Select value={b.value()} labels={(value: string) => m.labels().roles[value as Position].name} onChange={(value: string) => b.onChange(value)}>
                 <SelectTrigger aria-label={() => m.labels().role}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectPortal>
                   <SelectContent>
-                    <For each={ROLES}>{(role) => <SelectItem value={role}>{() => m.labels().roles[role].name}</SelectItem>}</For>
+                    <For each={POSITIONS}>{(position) => <SelectItem value={position}>{() => m.labels().roles[position].name}</SelectItem>}</For>
                   </SelectContent>
                 </SelectPortal>
               </Select>
@@ -93,7 +93,7 @@ export const membersView = (m: MembersLogic) => (
               canManage={m.canManage()}
               busy={m.busy() === member().id}
               labels={m.labels()}
-              onRole={(event) => void m.changeRole(member().id, event.detail.role)}
+              onRole={(event) => void m.changeRole(member().id, event.detail.position)}
               onAccess={(event) => void m.changeAccess(member().id, event.detail.apps)}
               onRemove={() => void m.remove(member().id)}
             />
@@ -129,7 +129,9 @@ export const membersView = (m: MembersLogic) => (
       </p>
     </Show>
     <div class="roles">
-      <For each={ROLES}>{(role) => <idp-role-card name={m.labels().roles[role].name} text={m.labels().roles[role].text} />}</For>
+      <For each={POSITIONS}>
+        {(position) => <idp-role-card name={m.labels().roles[position].name} text={m.labels().roles[position].text} />}
+      </For>
     </div>
   </section>
 );
