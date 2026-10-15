@@ -161,7 +161,72 @@ curl -s -d client_id=tv -d grant_type=urn:ietf:params:oauth:grant-type:device_co
   -d device_code=PASTE_DEVICE_CODE localhost:5010/oauth/token | python3 -m json.tool
 ```
 
-## 7. Postman
+## 7. Organizations
+
+### Roles
+
+In the portal, open an organization, then **Équipe**.
+
+1. **Ajouter un membre** offers Propriétaire, Administrateur, Facturation, Développeur,
+   Relecteur, Lecteur, Membre and Invité, each explained by its card under the list. Développeur,
+   Relecteur and Lecteur are members who also hold that role in the portal.
+2. Add a second account as **Administrateur**: it manages members and settings, but cannot make
+   anyone an owner or delete the organization.
+3. Change it to **Membre**: it reads apps and changes nothing. Change it to **Invité**: the
+   portal refuses the organization to it (a guest belongs to it, but only a product decides what
+   a guest sees).
+
+### Tokens bound to an organization
+
+Use the Postman app, which the platform file creates in the platform organization (section 8).
+
+1. In the portal, open the platform organization (first in the list for an admin), the
+   Postman app, **Autorisations**: add
+   `organizations:read` and `organizations:manage`.
+2. **Informations générales**, card **Organisations**: choose **Quand l'application le
+   demande**. The choice saves at once.
+3. In Postman, set the collection's scope to
+   `openid profile email organizations:read organizations:manage`. Under **Advanced options**,
+   **Auth Request**, add `organization` with the id of one of your organizations (the part after
+   `/o/` in the portal's address). **Get New Access Token**: the consent screen ends with "Dans
+   *the organization* seulement."
+4. Read the token's claims, pasting the access token in place of `TOKEN`:
+
+   ```bash
+   python3 -c "import base64,json,sys; p=sys.argv[1].split('.')[1]; print(json.dumps(json.loads(base64.urlsafe_b64decode(p+'==')), indent=2))" TOKEN
+   ```
+
+   Expected: `org_id` is the organization asked for, `org_role` your role there.
+5. Back in the card, choose **Toujours** and remove the `organization` line in Postman. With
+   two organizations or more, **Get New Access Token** shows "Choisir une organisation"; with
+   one, it is taken without asking.
+6. Introspection gives the role as it is at that moment. With the `platform-api` client from
+   section 6:
+
+   ```bash
+   curl -s -u platform-api:$SECRET -d token=PASTE_ACCESS_TOKEN localhost:5010/oauth/introspect \
+     | python3 -m json.tool
+   ```
+
+   Change your role in **Équipe** and run it again: `org_role` follows. Remove the account from
+   the organization: `{"active": false}`, and the refresh token is refused.
+
+### The organizations API
+
+With the token from step 3, in the imported collection, folder **Organizations API**:
+
+1. `GET /v1/organizations`: only the organization the token names. A token taken without
+   `organization` (choose **Quand l'application le demande** and remove the line) lists them
+   all and may create one with `POST /v1/organizations`.
+2. `GET /v1/organizations/{organization_id}/members`: the members and pending invitations.
+   The same request with another organization's id answers 404.
+3. `POST .../members` with `{"email": "...", "role": "admin"}` adds an account (201) or
+   invites an address without one (202). An address the email provider refuses
+   (`example.com` with Resend) fails with `email_not_sent`.
+4. `POST .../transfer` with `{"member": "<member id>"}` hands ownership over: you stay on as an
+   administrator.
+
+## 8. Postman
 
 1. **Import**, then **Link**: `http://localhost:5010/openapi.json`.
 2. On the collection's **Authorization** tab, choose OAuth 2.0:
@@ -171,7 +236,7 @@ curl -s -d client_id=tv -d grant_type=urn:ietf:params:oauth:grant-type:device_co
    - Scope: `openid profile email offline_access developer admin`
 3. **Get New Access Token**, sign in with the admin account and its code, then **Use Token**.
 
-## 8. Automated tests
+## 9. Automated tests
 
 ```bash
 cd ~/Developer/libs/oauth/identity-provider/idp
