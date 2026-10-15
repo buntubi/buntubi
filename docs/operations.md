@@ -1,8 +1,8 @@
 # Operations
 
 Running the provider, the console and the portal from the images that a version tag publishes
-(`ghcr.io/<owner>/idp-provider`, `idp-console`, `idp-portal`). Building them is in the
-repository README.
+(`ghcr.io/<owner>/idp-provider`, `idp-console`, `idp-portal`), each for `linux/amd64` and
+`linux/arm64` under one tag. Building them is in the repository README.
 
 ## What a deployment provides
 

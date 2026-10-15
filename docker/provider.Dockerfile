@@ -3,7 +3,8 @@
 # environment variables only; signing keys are mounted at IDP_SIGNING_KEYS_DIR, never baked in.
 # Build from the repository root: docker build -f docker/provider.Dockerfile .
 
-FROM node:22-slim AS pages
+# Static files, the same for every architecture: built once, natively.
+FROM --platform=$BUILDPLATFORM node:22-slim AS pages
 RUN corepack enable
 WORKDIR /src
 COPY . .
