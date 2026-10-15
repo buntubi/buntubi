@@ -6,7 +6,7 @@ import { provide } from '@fluixi/start/di';
 import { Navigation, type NavigationOptions } from '@buntubi/sdk/navigation';
 import { viewsOf } from '@buntubi/sdk/plugins';
 import { overrideViews } from '@buntubi/sdk/view';
-import uiPlugins from 'virtual:idp-ui-plugins';
+import { useHead } from '@fluixi/head';
 import { useIsRouting, useLocation, useNavigate, useRouteData } from '@fluixi/start/router';
 import '@idp/elements/auth-notice';
 import { authNoticeLabels } from '../lib/auth-notice.js';
@@ -16,6 +16,7 @@ import type { Brand } from '../lib/types.js';
 import { auth } from '../services/auth.js';
 import { PageBoundary } from '../components/page-boundary.js';
 import { brand } from '../data/developer.js';
+import { uiPlugins, uiPluginIndexTag } from '../lib/ui-plugins.js';
 
 // A deployment's views in place of the elements' own, before anything renders.
 overrideViews(viewsOf(uiPlugins));
@@ -27,6 +28,8 @@ export default function RootLayout() {
   const routing = useIsRouting({ delay: 120 });
   const location = useLocation();
   const navigate = useNavigate();
+  // The mounted plugins, for the browser to load before it starts (see lib/ui-plugins).
+  useHead({ script: [uiPluginIndexTag] });
   // Elements move through the router: Navigation from @buntubi/sdk/navigation.
   provide([{ provide: Navigation, useValue: { go: (href: string, options?: NavigationOptions) => navigate(href, options) } }]);
   // Drops the error from the address once read; the rest of the query stays.

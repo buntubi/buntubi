@@ -20,8 +20,10 @@ FROM node:22-slim
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build --chown=node:node /out .
-# fluixi start compiles fluixi.config.ts next to itself.
-RUN chown node:node /app
+# fluixi start compiles fluixi.config.ts next to itself. A deployment's UI plugins are mounted
+# at /app/ui-plugins (one folder each, built with buntubi-ui-plugin): inside the app's folder, so
+# their imports of the shared modules resolve from its node_modules.
+RUN mkdir -p /app/ui-plugins && chown -R node:node /app
 USER node
 # console listens on 3420, portal on 3410 (fluixi.config.ts).
 EXPOSE 3410 3420

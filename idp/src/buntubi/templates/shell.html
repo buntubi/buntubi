@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="no-referrer">
     <title>{{ config.brand.name or "Sign in" }}</title>
+    {%- if import_map %}
+    {#- First, before any module: the mounted UI plugins import the modules this page shares through it. Allowed by its hash in the CSP. #}
+    <script type="importmap">{{ import_map | safe }}</script>
+    {%- endif %}
     <link rel="stylesheet" href="{{ url_for('static', filename='idp/idp.css') }}">
   </head>
   <body>
     <main id="idp-root"></main>
     <script type="application/json" id="idp-config">{{ config | tojson }}</script>
+    {%- if ui_plugin_index %}
+    <script type="application/json" id="idp-ui-plugins">{{ ui_plugin_index | tojson }}</script>
+    {%- endif %}
     <script type="module" src="{{ url_for('static', filename='idp/idp.js') }}"></script>
   </body>
 </html>

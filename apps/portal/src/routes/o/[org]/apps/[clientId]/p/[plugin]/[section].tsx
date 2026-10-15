@@ -3,7 +3,7 @@ import { useParams, useRouteData, type RouteDataArgs } from '@fluixi/start/route
 import { Dynamic, onMount } from '@fluixi/core';
 import { sectionOf } from '@buntubi/sdk/plugins';
 import '@idp/elements/not-found';
-import plugins from 'virtual:idp-ui-plugins';
+import { uiPlugins as plugins } from '../../../../../../../lib/ui-plugins.js';
 import { locale } from '../../../../../../../lib/i18n.js';
 import { pluginNotFoundLabels } from '../../../../../../../lib/labels.js';
 import { paramOf } from '../../../../../../../lib/params.js';

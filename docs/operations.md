@@ -40,6 +40,13 @@ Then start the three containers. The provider listens on 8000 and the console an
 3420 and 3410. The provider's health check is `GET /healthz`: `ok`, or `unavailable` with
 status 503 when the database does not answer.
 
+## UI plugins
+
+Built with `buntubi-ui-plugin` (see [plugins](plugins.md)), one folder per plugin, mounted
+read-only at `/app/ui-plugins` in the provider, the console and the portal. Their provider
+plugins go into the provider image as before. A plugin built against a newer SDK, needing a
+module this image does not share, stops the app at start: upgrade the image first.
+
 ## Upgrading
 
 In this order:

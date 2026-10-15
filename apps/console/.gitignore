@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .env
+
+# UI plugins mounted for a local run (see docs/plugins.md)
+/ui-plugins/

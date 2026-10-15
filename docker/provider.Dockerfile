@@ -14,7 +14,8 @@ RUN pnpm install --frozen-lockfile --filter idp-frontend... \
 FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     FLASK_APP=buntubi.app:create_app \
-    IDP_SIGNING_KEYS_DIR=/keys
+    IDP_SIGNING_KEYS_DIR=/keys \
+    IDP_UI_PLUGINS_DIR=/app/ui-plugins
 RUN useradd --system --uid 10001 --home-dir /app idp
 WORKDIR /app
 COPY idp/pyproject.toml idp/requirements.lock idp/alembic.ini ./

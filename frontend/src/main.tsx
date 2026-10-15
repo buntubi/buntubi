@@ -23,13 +23,16 @@ import { createApi, type Redirect } from './host/api.js';
 import { lookOf, viewsOf } from '@buntubi/sdk/plugins';
 import { overrideViews } from '@buntubi/sdk/view';
 import { getPasskey } from '@buntubi/sdk/webauthn';
-import uiPlugins from 'virtual:idp-ui-plugins';
+import builtUiPlugins from 'virtual:idp-ui-plugins';
+import { mountedUiPlugins } from '@buntubi/sdk/runtime';
 import { applyBrand } from './host/brand.js';
 import { readConfig } from './host/config.js';
 import { text } from './host/i18n.js';
 import { FooterLink, Page } from './host/page.js';
 import { forgotPasswordSchema, resetPasswordSchema, signInSchema, signUpSchema } from './host/schemas.js';
 
+// The deployment's UI plugins: built in (development), then mounted (loaded by ./boot first).
+const uiPlugins = [...builtUiPlugins, ...mountedUiPlugins().plugins];
 // A deployment's views in place of the elements' own, before anything renders.
 overrideViews(viewsOf(uiPlugins));
 

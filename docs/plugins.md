@@ -11,7 +11,7 @@ A plugin has two halves, and most need both:
 | Half | What it is | Where it runs | How a deployment turns it on |
 |---|---|---|---|
 | Provider plugin | A Python package with a `Plugin` subclass | Inside the provider process | Installed in the provider's environment, named in `IDP_PLUGINS` |
-| UI plugin | An npm package (or a module path) exporting `plugin` | Built into the console, the portal and the sign-in pages | Named in `IDP_UI_PLUGINS` in each app's `.env` |
+| UI plugin | An npm package (or a module path) exporting `plugin` | In the console, the portal and the sign-in pages | Built with `buntubi-ui-plugin` and mounted at `/app/ui-plugins`; in development, named in `IDP_UI_PLUGINS` |
 
 The two halves share an id. The console and the portal show a UI plugin's pages only when the
 provider runs the provider plugin of the same id.
@@ -360,7 +360,46 @@ export const plugin = definePlugin({
 - The stylesheet and the aside load before the page draws, so it does not change under the
   reader.
 
-### Turning it on
+### Turning it on in a deployment
+
+The published images load UI plugins at run time from a mounted folder: no rebuild, no source of
+this repository. Build the plugin from its own package:
+
+```bash
+npx buntubi-ui-plugin build src/ui/index.ts     # writes dist/ui-plugin
+```
+
+```
+dist/ui-plugin/manifest.json   id, version, entries, the shared modules it imports
+dist/ui-plugin/browser/        what the pages import: index.js, chunks, stylesheets
+dist/ui-plugin/server/         what the console and the portal load for their server render
+```
+
+A plugin imports the modules it shares with the apps (`SHARED_MODULES` in
+`@buntubi/sdk/shared`: `@fluixi/core`, `@fluixi/di`, `@buntubi/sdk/view` and the rest) and gets
+the apps' own copies, through an import map in the browser and the apps' `node_modules` on the
+server. Everything else it imports (fluixi-ui components, zod, its own code) is built into it.
+Importing a Fluixi or SDK module outside that list fails the build, since a second copy would
+not see the apps' state. A plugin that needs more Vite plugins calls `buildUiPlugin` from
+`@buntubi/sdk/plugin-build` in a script instead.
+
+Mount the folder, one subfolder per plugin, at `/app/ui-plugins` in the provider, the console
+and the portal:
+
+```yaml
+volumes:
+  - ./ui-plugins:/app/ui-plugins:ro      # ui-plugins/acme = the plugin's dist/ui-plugin
+```
+
+Plugins load in the order of their folder names (`10-acme` before `20-other`), which decides
+whose views win. A folder without a valid manifest, two plugins with one id, or a plugin needing
+a module the image does not share stops the app at start, with the reason. Mounted plugins are
+the operator's code, trusted like the provider plugins: nothing is fetched from elsewhere, and
+only each plugin's `browser/` files are served (at `/api/ui-plugins/...` by the console and the
+portal, `/ui-plugins/...` by the provider, whose policy allows the pages' import map by its
+hash).
+
+### Turning it on in development
 
 Name the UI plugins, comma-separated, in each place that should show them:
 
@@ -380,8 +419,9 @@ A package name must be installed in the app. A path is served from outside the r
 its package folder is allowed for the dev server.
 
 The list is composed at build time into `virtual:idp-ui-plugins` (the `idpUiPlugins()` Vite
-plugin from `@buntubi/sdk/vite`): no code arrives at run time. After changing it, restart the
-console and the portal, and run `pnpm build` in `frontend`.
+plugin from `@buntubi/sdk/vite`), so the plugin's source is live while you work on it. After
+changing it, restart the console and the portal, and run `pnpm build` in `frontend`. Plugins
+named here come before mounted ones.
 
 ## Checklist for a new plugin
 
@@ -389,7 +429,8 @@ console and the portal, and run `pnpm build` in `frontend`.
 2. Write the provider half: a `Plugin` subclass, the `buntubi.plugins` entry point, `version`.
 3. Install it in the provider's environment, add it to `IDP_PLUGINS`, run `flask plugins sync`.
 4. Write the UI half, if it has pages or looks, with the same id.
-5. Name it in `IDP_UI_PLUGINS` where it shows; restart the apps, rebuild `frontend`.
+5. In development, name it in `IDP_UI_PLUGINS`; for a deployment, build it with
+   `buntubi-ui-plugin` and mount it at `/app/ui-plugins`.
 6. On every deploy: the migrations, then `flask plugins sync`.
 
 The hooks' source, with their docstrings, is `idp/src/buntubi/plugins/__init__.py` and

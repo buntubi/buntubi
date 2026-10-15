@@ -19,3 +19,5 @@ docs
 # Dockerfiles are read separately; in the context they would only break the cache.
 docker
 idp/tests
+# UI plugins mounted for a local run; a deployment mounts its own.
+apps/*/ui-plugins

@@ -20,6 +20,7 @@ from buntubi.models import UserPicture
 from buntubi.oauth.server import authorization, query_client
 from buntubi.security import csrf
 from buntubi.services import passkeys, platform, security_prompt, sessions
+from buntubi.web import ui_plugins
 
 bp = Blueprint("pages", __name__)
 
@@ -83,7 +84,15 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         },
         "props": props,
     }
-    return render_template("shell.html", config=config, locale=config["locale"], scheme=_scheme())
+    plugins = ui_plugins.current()
+    return render_template(
+        "shell.html",
+        config=config,
+        locale=config["locale"],
+        scheme=_scheme(),
+        import_map=plugins.import_map,
+        ui_plugin_index=plugins.index() if plugins.plugins else None,
+    )
 
 
 @bp.get("/")

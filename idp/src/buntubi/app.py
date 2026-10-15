@@ -2,6 +2,7 @@
 
 import os
 from datetime import timedelta
+from pathlib import Path
 
 from flask import Flask, Response, jsonify, request
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -13,7 +14,7 @@ from buntubi.extensions import limiter
 from buntubi.oauth.server import init_oauth
 from buntubi.services import backchannel, session_check
 from buntubi.services.platform import PlatformError
-from buntubi.web import admin, api, developer, oidc, openapi, pages
+from buntubi.web import admin, api, developer, oidc, openapi, pages, ui_plugins
 
 # Endpoints a browser application (SPA) calls cross-origin.
 _CORS_PATHS = ("/oauth/token", "/oauth/revoke", "/oauth/userinfo")
@@ -50,6 +51,10 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.register_blueprint(oidc.bp)
     app.register_blueprint(api.bp)
     app.register_blueprint(pages.bp)
+    app.register_blueprint(ui_plugins.bp)
+    app.extensions["ui_plugins"] = ui_plugins.load(
+        settings.ui_plugins_dir, Path(app.static_folder or "", "idp", "share.json")
+    )
     app.register_blueprint(admin.bp)
     app.register_blueprint(developer.bp)
     app.register_blueprint(openapi.bp)
@@ -72,7 +77,7 @@ def create_app(settings: Settings | None = None) -> Flask:
         headers = response.headers
         headers.setdefault(
             "Content-Security-Policy",
-            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+            f"default-src 'self'; script-src {ui_plugins.script_src()}; style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; "
             "base-uri 'none'; form-action 'self'",
         )
@@ -86,7 +91,10 @@ def create_app(settings: Settings | None = None) -> Flask:
             # Not includeSubDomains: other services of the deployment's domain decide for themselves.
             headers.setdefault("Strict-Transport-Security", "max-age=31536000")
         # Avatars are public and their address changes with them: cached like static files.
-        if not request.path.startswith(("/static/", "/.well-known/", "/oauth/check-session.js", "/avatars/")):
+        # UI plugin files set their own: hashed ones kept for good, entries revalidated.
+        if not request.path.startswith(
+            ("/static/", "/.well-known/", "/oauth/check-session.js", "/avatars/", "/ui-plugins/")
+        ):
             headers["Cache-Control"] = "no-store"
         origin = request.headers.get("Origin")
         if origin and origin in settings.cors_origins and request.path in _CORS_PATHS:

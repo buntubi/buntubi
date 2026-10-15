@@ -90,6 +90,9 @@ class Settings(BaseSettings):
     # Bring the catalogue in line with the plugins when the app starts. Turn off where several
     # workers start at once, and run `flask plugins sync` on deploy instead.
     plugins_sync_on_start: bool = True
+    # Folder of UI plugins built with buntubi-ui-plugin (one subfolder each), whose browser halves
+    # the sign-in pages load at run time. Unset: none.
+    ui_plugins_dir: Path | None = None
 
     @field_validator("brand_accent")
     @classmethod

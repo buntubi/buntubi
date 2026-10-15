@@ -16,7 +16,8 @@ import { Shell, type Crumb } from '@idp/shell/shell';
 import { sectionsOf, viewsOf } from '@buntubi/sdk/plugins';
 import { overrideViews } from '@buntubi/sdk/view';
 import type { Brand } from '@buntubi/sdk/types';
-import uiPlugins from 'virtual:idp-ui-plugins';
+import { useHead } from '@fluixi/head';
+import { uiPlugins, uiPluginIndexTag } from '../lib/ui-plugins.js';
 import type { Gate as GateCode } from '../lib/types.js';
 import { PageBoundary } from '../components/page-boundary.js';
 import { authNoticeLabels } from '../lib/auth-notice.js';
@@ -110,6 +111,8 @@ export default function RootLayout() {
     navigate(`${location.pathname}${query.size ? `?${query}` : ''}`, { replace: true });
   };
   const platform = () => data()?.brand.name ?? '';
+  // The mounted plugins, for the browser to load before it starts (see lib/ui-plugins).
+  useHead({ script: [uiPluginIndexTag] });
   return (
     <Show
       when={!data()?.unreachable}
