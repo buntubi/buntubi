@@ -14,7 +14,7 @@ from buntubi.extensions import limiter
 from buntubi.oauth.server import init_oauth
 from buntubi.services import backchannel, session_check
 from buntubi.services.platform import PlatformError
-from buntubi.web import admin, api, developer, oidc, openapi, pages, ui_plugins
+from buntubi.web import admin, api, developer, oidc, openapi, organizations, pages, ui_plugins
 
 # Endpoints a browser application (SPA) calls cross-origin.
 _CORS_PATHS = ("/oauth/token", "/oauth/revoke", "/oauth/userinfo")
@@ -57,6 +57,7 @@ def create_app(settings: Settings | None = None) -> Flask:
     )
     app.register_blueprint(admin.bp)
     app.register_blueprint(developer.bp)
+    app.register_blueprint(organizations.bp)
     app.register_blueprint(openapi.bp)
     _init_plugins(app, settings)
 

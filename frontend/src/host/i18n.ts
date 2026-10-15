@@ -251,6 +251,8 @@ const fr: Text = {
     phone: 'Voir votre numéro de téléphone',
     address: 'Voir votre adresse postale',
     offline_access: 'Rester connecté quand vous n’utilisez pas l’application',
+    'organizations:read': 'Voir vos organisations, leurs membres et votre rôle',
+    'organizations:manage': 'Gérer vos organisations et leurs membres, selon votre rôle',
     admin: 'Administrer le fournisseur d’identité',
   },
   messages: {
@@ -475,6 +477,8 @@ const en: Text = {
     phone: 'See your phone number',
     address: 'See your postal address',
     offline_access: 'Stay signed in while you are not using the app',
+    'organizations:read': 'See your organizations, their members and your role',
+    'organizations:manage': 'Manage your organizations and their members, as your role allows',
     admin: 'Administer the identity provider',
   },
   messages: {

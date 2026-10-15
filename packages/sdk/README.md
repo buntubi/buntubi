@@ -14,7 +14,8 @@ so a form can say no before a round trip.
 | `@buntubi/sdk/developer` | `Developer`, the service portal elements call. No default: the portal provides it, mapped to its server functions |
 | `@buntubi/sdk/admin` | `Admin`, the same for console elements, provided by the console |
 | `@buntubi/sdk/account` | `Account`, the service account area elements call, and the account's shapes (`AccountSummary`, `PostalAddress`, `ProfilePatch`, ...) |
-| `@buntubi/sdk/roles` | What each organization role may do, as the provider decides it, so pages offer only what it would accept |
+| `@buntubi/sdk/roles` | What each organization role and portal role may do, as the provider decides it, so pages offer only what it would accept |
+| `@buntubi/sdk/organizations` | `organizationsClient`, for a product's server calling the organizations API as the signed-in person; refusals throw `OrganizationsApiError` |
 | `@buntubi/sdk/schemas/*` | Zod schemas for every form: `users`, `organizations`, `apps`, `team`, `catalogue`, `account`. Messages are i18n keys |
 | `@buntubi/sdk/webauthn` | `createPasskey`, `getPasskey`, `passkeysSupported`, `passkeyAutofillSupported`: the browser half of passkeys, converting the provider's JSON options |
 | `@buntubi/sdk/plugins` | The UI plugin interface: `definePlugin`, `PluginSection`, `PluginLook`, `PluginApi`, `sectionsOf`, `sectionOf`, `lookOf` |

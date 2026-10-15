@@ -15,14 +15,14 @@ from pydantic import BaseModel
 from pydantic.json_schema import models_json_schema
 
 from buntubi.config import get_settings
-from buntubi.web import admin, developer
+from buntubi.web import admin, developer, organizations
 
 bp = Blueprint("openapi", __name__)
 
 # Routes deliberately left out: the provider's own sign-in pages and the JSON endpoints they
 # call, which are not an integration surface.
 INTERNAL = {("POST", "/oauth/authorize")}
-DESCRIBED_PREFIXES = ("/.well-known/", "/oauth/", "/developer/api/", "/admin/api/")
+DESCRIBED_PREFIXES = ("/.well-known/", "/oauth/", "/developer/api/", "/admin/api/", "/v1/")
 
 REQUEST_MODELS: list[type[BaseModel]] = [
     developer.PublishIn,
@@ -34,6 +34,9 @@ REQUEST_MODELS: list[type[BaseModel]] = [
     developer.KeyIn,
     developer.MemberIn,
     developer.MemberPatch,
+    organizations.MembershipIn,
+    organizations.MembershipPatch,
+    organizations.TransferIn,
     admin.ClientIn,
     admin.ClientPatch,
     admin.ReviewIn,
@@ -221,6 +224,24 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                 ),
             },
         }
+    ),
+    # The organizations API: an organization as the person sees it, its members and invitations.
+    "Membership": obj(
+        {
+            "id": STRING,
+            "name": STRING,
+            "description": STRING,
+            "support_email": MAYBE_STRING,
+            "suspended": BOOL,
+            "role": ROLE,
+            "created_at": TIME,
+        }
+    ),
+    "OrganizationMember": obj(
+        {"id": STRING, "user_id": STRING, "email": STRING, "name": STRING, "role": ROLE, "added_at": TIME}
+    ),
+    "OrganizationInvitation": obj(
+        {"id": STRING, "email": STRING, "role": ROLE, "invited_at": TIME, "expires_at": TIME}
     ),
     "Member": obj(
         {
@@ -489,6 +510,12 @@ DEVELOPER: Security = [{"oauth2": ["developer"]}, {"bearer": []}]
 ADMIN: Security = [{"oauth2": ["admin"]}, {"bearer": []}]
 CLIENT: Security = [{"clientBasic": []}]
 SIGNED_IN: Security = [{"oauth2": ["openid"]}, {"bearer": []}]
+ORGANIZATIONS_READ: Security = [
+    {"oauth2": ["organizations:read"]},
+    {"oauth2": ["organizations:manage"]},
+    {"bearer": []},
+]
+ORGANIZATIONS_MANAGE: Security = [{"oauth2": ["organizations:manage"]}, {"bearer": []}]
 
 
 def body(schema: dict[str, Any], media: str = "application/json") -> dict[str, Any]:
@@ -566,6 +593,115 @@ def with_secret(key: str, name: str, secret: str) -> dict[str, Any]:
 
 def paths() -> dict[str, dict[str, Any]]:
     d, a, oidc = "Developer API", "Admin API", "OAuth and OpenID Connect"
+    return {**_organization_paths(), **_paths(d, a, oidc)}
+
+
+def _organization_paths() -> dict[str, dict[str, Any]]:
+    o, read, manage = "Organizations API", ORGANIZATIONS_READ, ORGANIZATIONS_MANAGE
+    org, member = ["organization_id"], ["organization_id", "member_id"]
+    membership = one("organization", "Membership")
+    return {
+        "/v1/organizations": {
+            "get": op(
+                "The person's organizations (only the token's, when it names one)",
+                o,
+                read,
+                listing("Membership"),
+            ),
+            "post": op(
+                "Create an organization, owned by the person",
+                o,
+                manage,
+                one("organization", "Membership", "201"),
+                request=body(ref("OrganizationIn")),
+            ),
+        },
+        "/v1/organizations/{organization_id}": {
+            "get": op("An organization the person is in, guests included", o, read, membership, params=org),
+            "patch": op(
+                "Change an organization",
+                o,
+                manage,
+                membership,
+                request=body(ref("OrganizationPatch")),
+                params=org,
+            ),
+            "delete": op(
+                "Delete an organization (owner)",
+                o,
+                manage,
+                {"200": answer(obj({"deleted": BOOL}))},
+                params=org,
+            ),
+        },
+        "/v1/organizations/{organization_id}/transfer": {
+            "post": op(
+                "Hand ownership to another member; the owner stays on as an admin",
+                o,
+                manage,
+                membership,
+                request=body(ref("TransferIn")),
+                params=org,
+            )
+        },
+        "/v1/organizations/{organization_id}/leave": {
+            "post": op("Leave the organization", o, manage, {"200": answer(obj({"left": BOOL}))}, params=org)
+        },
+        "/v1/organizations/{organization_id}/members": {
+            "get": op(
+                "Members and pending invitations (not for guests)",
+                o,
+                read,
+                {
+                    "200": answer(
+                        obj(
+                            {
+                                "items": {"type": "array", "items": ref("OrganizationMember")},
+                                "invitations": {"type": "array", "items": ref("OrganizationInvitation")},
+                            }
+                        )
+                    )
+                },
+                params=org,
+            ),
+            "post": op(
+                "Add someone with an account, or invite an address without one",
+                o,
+                manage,
+                {
+                    "201": answer(obj({"member": ref("OrganizationMember")})),
+                    "202": answer(obj({"invitation": ref("OrganizationInvitation")}), "Invited"),
+                },
+                request=body(ref("MembershipIn")),
+                params=org,
+            ),
+        },
+        "/v1/organizations/{organization_id}/members/{member_id}": {
+            "patch": op(
+                "Change a member's role",
+                o,
+                manage,
+                one("member", "OrganizationMember"),
+                request=body(ref("MembershipPatch")),
+                params=member,
+            ),
+            "delete": op(
+                "Remove a member", o, manage, {"200": answer(obj({"removed": BOOL}))}, params=member
+            ),
+        },
+        "/v1/organizations/{organization_id}/invitations/{invitation_id}": {
+            "delete": op(
+                "Withdraw an invitation",
+                o,
+                manage,
+                {"200": answer(obj({"withdrawn": BOOL}))},
+                params=["organization_id", "invitation_id"],
+            )
+        },
+    }
+
+
+def _paths(d: str, a: str, oidc: str) -> dict[str, dict[str, Any]]:
     return {
         # OpenID Connect and OAuth
         "/.well-known/openid-configuration": {"get": op("Discovery document", oidc, None, ok("Discovery"))},
@@ -1124,6 +1260,8 @@ def build() -> dict[str, Any]:
         "offline_access": "Refresh tokens",
         "developer": "The developer API",
         "admin": "The admin API (admin role and a second factor at sign-in)",
+        "organizations:read": "Read the person's organizations and their members",
+        "organizations:manage": "Change them, as the person's role allows",
     }
     return {
         "openapi": "3.1.0",
@@ -1133,6 +1271,7 @@ def build() -> dict[str, Any]:
             {"name": "OAuth and OpenID Connect"},
             {"name": "Developer API"},
             {"name": "Admin API"},
+            {"name": "Organizations API"},
         ],
         "paths": paths(),
         "components": {

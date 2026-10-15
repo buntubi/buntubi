@@ -173,10 +173,11 @@ def organizations_to_act_in(user: User) -> list[OrganizationMember]:
     return [m for m in memberships_of(user) if not m.organization.is_suspended]
 
 
-def membership(user: User, organization_id: str, ability: str = "read") -> OrganizationMember:
+def membership(user: User, organization_id: str, ability: str | None = "read") -> OrganizationMember:
     """
     The caller's place in the organization. Someone outside it gets `not_found`, the same answer
-    as an organization that does not exist; a member without the ability, `forbidden`.
+    as an organization that does not exist; a member without the ability, `forbidden`. No ability
+    asks only that they belong, in any role.
     """
     member = db().scalar(
         select(OrganizationMember).where(
@@ -186,7 +187,7 @@ def membership(user: User, organization_id: str, ability: str = "read") -> Organ
     )
     if member is None:
         raise PlatformError("not_found", 404)
-    if not can(member, ability):
+    if ability is not None and not can(member, ability):
         raise PlatformError("forbidden", 403, role=member.role)
     return member
 
@@ -223,6 +224,54 @@ def create_organization(user: User, name: str, description: str, support_email: 
 
 def owners_of(organization: Organization) -> list[OrganizationMember]:
     return [m for m in organization.members if m.role == "owner"]
+
+
+# Given for a setting a change leaves as it is.
+UNCHANGED = object()
+
+
+def update_organization(
+    member: OrganizationMember,
+    name: str | None = None,
+    description: str | None = None,
+    support_email: str | None | object = UNCHANGED,
+) -> Organization:
+    """Changes what was given; the member needs the settings ability, the organization must run."""
+    if not can(member, "settings"):
+        raise PlatformError("forbidden", 403, role=member.role)
+    organization = writable(member.organization)
+    if name is not None:
+        organization.name = name
+    if description is not None:
+        organization.description = description
+    if support_email is not UNCHANGED:
+        organization.support_email = str(support_email).lower() if support_email else None
+    return organization
+
+
+def delete_organization(member: OrganizationMember) -> None:
+    """Deletes it with everything it holds; an owner's to do, never the platform's own."""
+    if not can(member, "delete"):
+        raise PlatformError("forbidden", 403, role=member.role)
+    organization = member.organization
+    if organization.is_platform:
+        raise PlatformError("platform_organization", 409)
+    db().delete(organization)
+
+
+def transfer_ownership(actor: OrganizationMember, member: OrganizationMember) -> None:
+    """An owner hands ownership to another member, and stays on as an admin. Never to a guest."""
+    if actor.role != "owner":
+        raise PlatformError("forbidden", 403, role=actor.role)
+    if member.organization_id != actor.organization_id or member.id == actor.id:
+        raise PlatformError("not_found", 404)
+    if member.role == "guest":
+        raise PlatformError("guest_cannot_own", 422)
+    writable(actor.organization)
+    member.role = "owner"
+    member.portal_role = None
+    actor.role = "admin"
+    db().flush()
 
 
 def _app_ids(organization: Organization, client_ids: list[str]) -> list[uuid.UUID]:

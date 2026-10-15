@@ -17,9 +17,10 @@ in the [repository README](../README.md). Plugins are in [docs/plugins.md](../do
 | `/signin`, `/signup`, `/mfa`, `/consent`, `/accounts`, `/account/*`, ... | People, in a browser | The pages built from `frontend/`, rendered into `templates/shell.html` |
 | `/api/*` | Those pages | Sign-in steps, the account area, passkeys. Same-site, with a CSRF token |
 | `/developer/api/*` | The portal | Organizations, members, apps, secrets, test users, API keys. Bearer token with the `developer` scope |
+| `/v1/organizations/*` | Products, as the signed-in person | The person's organizations, members and invitations, under the portal's rules. `organizations:read`, `organizations:manage`; a token bound to an organization reaches that one only |
 | `/admin/api/*` | The console | Users, organizations, reviews, the catalogue, the platform's apps. Bearer token with the `admin` scope and a two-step sign-in |
 | `/api/plugins/<id>/*` | Plugin pages in the console and portal | Each plugin's own API |
-| `/openapi.json` | Developers, Postman | The OAuth endpoints, the developer API and the admin API |
+| `/openapi.json` | Developers, Postman | The OAuth endpoints, the developer, organizations and admin APIs |
 
 Grants: authorization code with PKCE, refresh token (rotated, with reuse detection), client
 credentials, and the device code. Tokens are JWTs signed with the newest key in

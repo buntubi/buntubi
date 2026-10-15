@@ -353,14 +353,13 @@ def get_organization(organization_id: str, me: User) -> Response:
 @developer()
 def update_organization(organization_id: str, me: User) -> Response:
     member = p.membership(me, organization_id, "settings")
-    organization = p.writable(member.organization)
     patch = parse(OrganizationPatch)
-    if patch.name is not None:
-        organization.name = patch.name
-    if patch.description is not None:
-        organization.description = patch.description
-    if "support_email" in patch.model_fields_set:
-        organization.support_email = str(patch.support_email).lower() if patch.support_email else None
+    p.update_organization(
+        member,
+        patch.name,
+        patch.description,
+        patch.support_email if "support_email" in patch.model_fields_set else p.UNCHANGED,
+    )
     db().commit()
     return jsonify(organization=organization_json(member))
 
@@ -368,13 +367,12 @@ def update_organization(organization_id: str, me: User) -> Response:
 @bp.delete("/organizations/<organization_id>")
 @developer()
 def delete_organization(organization_id: str, me: User) -> Response:
-    organization = p.organization_of(me, organization_id, "delete")
-    if organization.is_platform:
-        raise p.PlatformError("platform_organization", 409)
+    member = p.membership(me, organization_id, "delete")
+    organization = member.organization
+    p.delete_organization(member)
     audit.record(
         "developer.organization_deleted", user=me, organization=str(organization.id), name=organization.name
     )
-    db().delete(organization)
     db().commit()
     return jsonify(deleted=True)
 

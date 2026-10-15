@@ -35,6 +35,11 @@
       "development": "./src/roles.ts",
       "default": "./dist/roles.js"
     },
+    "./organizations": {
+      "types": "./src/organizations.ts",
+      "development": "./src/organizations.ts",
+      "default": "./dist/organizations.js"
+    },
     "./plugins": {
       "types": "./src/plugins.ts",
       "development": "./src/plugins.ts",
