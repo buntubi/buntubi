@@ -4,7 +4,7 @@
  * never knows where the calls go.
  */
 import { injectionToken } from '@fluixi/di';
-import type { ApiKey, App, AppKind, Invitation, Member, Organization, Platform, PortalRole, Role } from './types.js';
+import type { ApiKey, App, AppKind, Invitation, Member, Organization, OrganizationUsage, Platform, PortalRole, Role } from './types.js';
 
 export interface NewApp {
   name: string;
@@ -20,6 +20,7 @@ export interface NewApp {
   terms_url?: string;
   grant_types?: string[];
   brand?: { logo?: string };
+  organization_usage?: OrganizationUsage;
 }
 
 /** A change to an app: a link set to null is removed. */

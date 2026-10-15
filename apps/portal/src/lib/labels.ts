@@ -21,6 +21,7 @@ import type { CreateAppLabels } from '@idp/elements/create-app/logic';
 import type { OrganizationSettingsLabels } from '@idp/elements/organization-settings/logic';
 import type { ProductBrowserLabels } from '@idp/elements/product-browser/logic';
 import type { TeamLabels } from '@idp/elements/team/logic';
+import type { AppOrganizationsLabels } from '@idp/elements/app-organizations/logic';
 import { POSITIONS, type Position } from '@buntubi/sdk/roles';
 import type { ShellLabels } from '@idp/shell/shell';
 import type { CredentialsLabels } from '@idp/elements/credentials/logic';
@@ -220,6 +221,19 @@ export const appSettingsLabels = (): AppSettingsLabels => ({
   },
   hints: { description: t('st.descriptionHint'), logo: t('st.logoHint') },
   save: t('common.save'),
+  saved: t('st.saved'),
+  error: t('error.generic'),
+});
+
+export const appOrganizationsLabels = (): AppOrganizationsLabels => ({
+  title: t('ao.title'),
+  intro: t('ao.intro'),
+  usage: t('ao.usage'),
+  choices: {
+    none: { name: t('ao.none'), text: t('ao.noneText') },
+    optional: { name: t('ao.optional'), text: t('ao.optionalText') },
+    required: { name: t('ao.required'), text: t('ao.requiredText') },
+  },
   saved: t('st.saved'),
   error: t('error.generic'),
 });

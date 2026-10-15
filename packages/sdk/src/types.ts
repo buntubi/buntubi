@@ -5,6 +5,8 @@ import type { PostalAddress } from './account.js';
 export type Role = 'owner' | 'admin' | 'billing' | 'member' | 'guest';
 /** The developer portal's own role, which a member or a billing person may also hold. */
 export type PortalRole = 'developer' | 'reviewer' | 'viewer';
+/** Whether an app's tokens name an organization the person acts in: never, when asked, or always. */
+export type OrganizationUsage = 'none' | 'optional' | 'required';
 export type Environment = 'sandbox' | 'live';
 export type AppKind = 'consumer' | 'business' | 'web' | 'mobile' | 'backend' | 'internal';
 export type Platform = 'web' | 'ios' | 'android' | 'backend';
@@ -76,8 +78,7 @@ export interface App {
   category: string;
   platforms: Platform[];
   products: string[];
-  /** Whether its tokens name an organization the person acts in: never, when asked, or always. */
-  organization_usage: 'none' | 'optional' | 'required';
+  organization_usage: OrganizationUsage;
   disabled: boolean;
   secrets: Secret[];
   created_at: string;

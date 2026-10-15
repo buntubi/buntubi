@@ -2,10 +2,11 @@
 import { Stack } from '@fluixi-ui/layout';
 import { useRouteData } from '@fluixi/start/router';
 import { can } from '@buntubi/sdk/roles';
+import '@idp/elements/app-organizations';
 import '@idp/elements/app-settings';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
 import { errorText, t } from '../../../../../lib/i18n.js';
-import { appSettingsLabels, formMessages } from '../../../../../lib/labels.js';
+import { appOrganizationsLabels, appSettingsLabels, formMessages } from '../../../../../lib/labels.js';
 import '@idp/elements/page-header';
 
 export const routeData = appRouteData;
@@ -21,6 +22,12 @@ export default function SettingsPage() {
       labels={appSettingsLabels()}
       messages={formMessages()}
       describe={errorText}
+      />
+      <idp-app-organizations
+        app={data()?.app.app ?? null}
+        canEdit={can(data()?.app, 'edit_apps')}
+        labels={appOrganizationsLabels()}
+        describe={errorText}
       />
     </Stack>
   );
