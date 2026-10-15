@@ -8,3 +8,6 @@ __pycache__/
 .ruff_cache/
 node_modules/
 .env
+
+# Local builds against a fluixi-core checkout (scripts/dev-images.mjs)
+/.dev/
