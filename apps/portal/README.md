@@ -7,8 +7,8 @@ Start app, server-rendered, at http://localhost:3410 in development.
 ## Who gets in
 
 Any account that accepts the developer terms on the first visit; admins get in without them.
-Inside, what a person may do in an organization follows their role there (owner, manager,
-developer, reviewer, viewer), checked by the provider on every call. The repository README
+Inside, what a person may do in an organization follows their role there (owner, admin,
+billing, member, guest) and portal role (developer, reviewer, viewer), checked by the provider on every call. The repository README
 lists what each role can do.
 
 ## Pages

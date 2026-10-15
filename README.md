@@ -32,12 +32,19 @@ console:
 
 An account that accepts the developer terms gets into the portal. Admins get in without them.
 
-**Organizations** own apps, API keys and test users. Their members have one role each:
+**Organizations** own apps, API keys and test users. Their members have one role each, shared
+by every product, and a member or billing person may also hold a portal role:
 
-| Role | Can |
+| Role | Can in the portal |
 |---|---|
 | owner | everything, including deleting the organization and making other owners |
-| manager | members, settings, live keys, taking apps live |
+| admin | members, settings, billing, live keys, taking apps live |
+| billing | billing, read |
+| member | read |
+| guest | nothing: a product decides what a guest sees |
+
+| Portal role | Adds |
+|---|---|
 | developer | edit apps, test users, sandbox keys: on the apps their membership lists, or all of them when it lists none |
 | reviewer, viewer | read |
 
