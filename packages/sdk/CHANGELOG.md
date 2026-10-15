@@ -1,5 +1,11 @@
 # @buntubi/sdk
 
+## 0.5.1
+
+### Patch Changes
+
+- 7cfa1e3: Provider, console, and portal images are published for both `linux/amd64` and `linux/arm64` under a single tag, allowing any host to pull a native image.
+
 ## 0.5.0
 
 ### Minor Changes
