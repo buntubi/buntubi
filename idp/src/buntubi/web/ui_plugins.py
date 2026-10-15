@@ -23,6 +23,16 @@ from flask import Blueprint, Response, abort, current_app, send_file
 bp = Blueprint("ui_plugins", __name__)
 
 _ID = re.compile(r"^[a-z][a-z0-9-]*$")
+
+
+def _entry_in(half: str, entry: object) -> bool:
+    """Whether `entry` is a script inside the plugin's `half` folder, naming nothing outside it."""
+    if not isinstance(entry, str) or "\\" in entry or not re.search(r"\.m?js$", entry):
+        return False
+    parts = entry.split("/")
+    return parts[0] == half and len(parts) > 1 and all(p not in ("", ".", "..") for p in parts)
+
+
 _TYPES = {
     ".js": "text/javascript",
     ".mjs": "text/javascript",
@@ -85,8 +95,12 @@ def load(directory: Path | None, share_file: Path) -> UiPlugins:
                     f"{where} is missing or not JSON: build the plugin with buntubi-ui-plugin"
                 ) from error
             plugin_id, browser = manifest.get("id"), manifest.get("browser")
-            if not isinstance(plugin_id, str) or not _ID.fullmatch(plugin_id) or not isinstance(browser, str):
-                raise RuntimeError(f"{where} lacks an id or a browser entry")
+            if not isinstance(plugin_id, str) or not _ID.fullmatch(plugin_id):
+                raise RuntimeError(f"{where} lacks an id")
+            if not _entry_in("browser", browser) or not _entry_in("server", manifest.get("server")):
+                raise RuntimeError(
+                    f"{where} needs a browser entry under browser/ and a server entry under server/"
+                )
             if any(p.id == plugin_id for p in plugins):
                 raise RuntimeError(f'two mounted UI plugins have the id "{plugin_id}"')
             missing = sorted(set(manifest.get("shared", [])) - shared)

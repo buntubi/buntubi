@@ -3,7 +3,7 @@
  * browser half of a mounted plugin is ever served.
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createUiPluginHost, readUiPlugins, serveUiPluginFile, uiPluginIndex } from './runtime-server.js';
@@ -80,6 +80,23 @@ describe('readUiPlugins', () => {
   });
 });
 
+describe('manifest entries', () => {
+  it('refuses entries outside the plugin\'s browser and server folders', async () => {
+    for (const manifest of [
+      { server: '../../outside.js' },
+      { server: 'browser/index.js' },
+      { browser: 'server/index.js' },
+      { browser: 'browser/../../x.js' },
+      { server: '/etc/passwd' },
+      { browser: 'browser/index.css' },
+    ]) {
+      rmSync(join(dir, 'acme'), { recursive: true, force: true });
+      mount('acme', manifest);
+      await expect(readUiPlugins(dir), JSON.stringify(manifest)).rejects.toThrow(/entry/);
+    }
+  });
+});
+
 describe('uiPluginIndex', () => {
   it('addresses each browser entry under the base the app serves the folder at', async () => {
     mount('10-acme');
@@ -100,6 +117,15 @@ describe('serveUiPluginFile', () => {
     expect(await entry?.text()).toBe('export const plugin = {};');
     expect((await serve('acme/browser/chunks/page-abc123.js'))?.headers.get('cache-control')).toMatch(/immutable/);
     expect((await serve('acme/browser/look.css'))?.headers.get('content-type')).toMatch(/^text\/css/);
+  });
+
+  it('does not follow a link out of the plugin\'s browser folder', async () => {
+    mount('acme');
+    writeFileSync(join(dir, 'secret.js'), 'TOKEN=x');
+    symlinkSync(join(dir, 'secret.js'), join(dir, 'acme', 'browser', 'leak.js'));
+    symlinkSync(join(dir, 'acme', 'server'), join(dir, 'acme', 'browser', 'srv'));
+    expect(await serve('acme/browser/leak.js')).toBeNull();
+    expect(await serve('acme/browser/srv/index.js')).toBeNull();
   });
 
   it('serves nothing outside a mounted plugin\'s browser folder', async () => {

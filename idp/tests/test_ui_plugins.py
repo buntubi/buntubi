@@ -97,6 +97,27 @@ def test_a_bad_mount_stops_the_start(
         ui_plugins.load(tmp_path, share_file)
 
 
+@pytest.mark.parametrize(
+    "browser", ["../outside.js", "server/index.js", "browser/../../x.js", "/etc/passwd", "browser/x.css"]
+)
+def test_a_browser_entry_outside_the_browser_folder_stops_the_start(
+    tmp_path: Path, share_file: Path, browser: str
+) -> None:
+    mount(tmp_path, "acme", browser=browser)
+    with pytest.raises(RuntimeError, match="entry"):
+        ui_plugins.load(tmp_path, share_file)
+
+
+def test_a_link_out_of_the_browser_folder_is_not_followed(
+    app: Flask, browser: FlaskClient, mounted: Path, share_file: Path
+) -> None:
+    mount(mounted, "acme")
+    (mounted / "secret.js").write_text("TOKEN=x")
+    (mounted / "acme" / "browser" / "leak.js").symlink_to(mounted / "secret.js")
+    reload(app, mounted, share_file)
+    assert browser.get("/ui-plugins/acme/browser/leak.js").status_code == 404
+
+
 def test_a_folder_without_a_manifest_stops_the_start(tmp_path: Path, share_file: Path) -> None:
     (tmp_path / "broken").mkdir()
     with pytest.raises(RuntimeError, match="missing or not JSON"):

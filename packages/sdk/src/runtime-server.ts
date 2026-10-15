@@ -12,7 +12,7 @@
  *
  * @module
  */
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { readdir, readFile, realpath, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { IdpUiPlugin } from './plugins.js';
@@ -28,6 +28,17 @@ export interface MountedUiPlugin {
 }
 
 const ID = /^[a-z][a-z0-9-]*$/;
+
+/**
+ * Whether `entry` is a script inside the plugin's `half` folder: relative, no `.` or `..`
+ * segment, no backslash. The server entry is imported as code and the browser entry addresses
+ * a file, so neither may name anything outside its folder.
+ */
+function entryIn(half: 'browser' | 'server', entry: unknown): boolean {
+  if (typeof entry !== 'string' || entry.includes('\\') || !/\.m?js$/.test(entry)) return false;
+  const parts = entry.split('/');
+  return parts[0] === half && parts.length > 1 && parts.every((p) => p !== '' && p !== '.' && p !== '..');
+}
 
 /**
  * The plugins mounted in `dir`, ordered by folder name (`10-acme` before `20-other`). A missing
@@ -50,8 +61,9 @@ export async function readUiPlugins(dir: string): Promise<MountedUiPlugin[]> {
     } catch {
       throw new Error(`[buntubi] ${where} is missing or not JSON: build the plugin with buildUiPlugin.`);
     }
-    if (!ID.test(String(manifest.id)) || typeof manifest.browser !== 'string' || typeof manifest.server !== 'string') {
-      throw new Error(`[buntubi] ${where} lacks an id, a browser entry or a server entry.`);
+    if (!ID.test(String(manifest.id))) throw new Error(`[buntubi] ${where} lacks an id.`);
+    if (!entryIn('browser', manifest.browser) || !entryIn('server', manifest.server)) {
+      throw new Error(`[buntubi] ${where} needs a browser entry under browser/ and a server entry under server/.`);
     }
     if (found.some((p) => p.manifest.id === manifest.id)) throw new Error(`[buntubi] two mounted plugins have the id "${manifest.id}".`);
     const missing = (manifest.shared ?? []).filter((id) => !(SHARED_MODULES as readonly string[]).includes(id));
@@ -131,9 +143,10 @@ export async function serveUiPluginFile(dir: string, mounted: MountedUiPlugin[],
   const [folder, half, ...rest] = parts;
   if (!folder || half !== 'browser' || !rest.length || parts.some((p) => p.startsWith('.') || p.includes('\\'))) return null;
   if (!mounted.some((p) => p.folder === folder)) return null;
-  const base = resolve(dir, folder, 'browser');
-  const file = resolve(base, ...rest);
-  if (!file.startsWith(base + sep)) return null;
+  // Compared once links are resolved: a link inside the folder may point anywhere.
+  const base = await realpath(resolve(dir, folder, 'browser')).catch(() => null);
+  const file = base && (await realpath(resolve(base, ...rest)).catch(() => null));
+  if (!base || !file || !file.startsWith(base + sep)) return null;
   const type = TYPES[extname(file)];
   if (!type) return null;
   const info = await stat(file).catch(() => null);
