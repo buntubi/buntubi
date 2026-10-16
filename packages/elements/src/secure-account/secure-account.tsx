@@ -12,7 +12,14 @@ import { passkeysSupported } from '@buntubi/sdk/webauthn';
 import type { Messages } from '../messages.js';
 import type { TwoStepSectionLabels } from '../two-step-section/logic.js';
 import { useView } from '../view.js';
-import { secureAccountLabels, type SecureAccountEvents, type SecureAccountLabels, type SecureAccountLogic, type SecureAccountStep } from './logic.js';
+import {
+  secureAccountLabels,
+  type SecureAccountEvents,
+  type SecureAccountLabels,
+  type SecureAccountLogic,
+  type SecureAccountStep,
+  type SecureMethod,
+} from './logic.js';
 import { SecureAccountView } from './view.js';
 import '../secure-option/secure-option.js';
 import '../two-step-section/two-step-section.js';
@@ -35,9 +42,19 @@ export class IdpSecureAccount extends typedElement(props) {
     const busy = signal(false);
     const error = signal<string | null>(null);
     onMount(() => supported.set(passkeysSupported()));
-    const finish = (message: string) => {
-      done.set(message);
-      step.set('done');
+    const added = signal<SecureMethod[]>([]);
+    // The method not set up yet, if this browser can set it up.
+    const other = (): SecureMethod | null => {
+      if (!added().includes('app')) return 'app';
+      if (!added().includes('passkey') && supported()) return 'passkey';
+      return null;
+    };
+    // One method on: offer the other once, or finish when there is none left to offer.
+    const finish = (method: SecureMethod, message: string) => {
+      added.set([...added(), method]);
+      const both = added().length === 2;
+      done.set(both ? labels().bothDone : message);
+      step.set(!both && other() ? 'another' : 'done');
     };
     const logic: SecureAccountLogic = {
       labels,
@@ -45,12 +62,13 @@ export class IdpSecureAccount extends typedElement(props) {
       step,
       passkeys: supported,
       done,
+      other: () => (step() === 'another' ? other() : null),
       addPasskey: async () => {
         busy.set(true);
         error.set(null);
         try {
           await account.addPasskey();
-          finish(labels().passkeyDone);
+          finish('passkey', labels().passkeyDone);
         } catch (failure) {
           // Closing the browser's sheet is a choice, not a failure.
           if (!(failure instanceof Error && failure.message === 'passkey_cancelled')) {
@@ -64,9 +82,9 @@ export class IdpSecureAccount extends typedElement(props) {
         error.set(null);
         step.set('app');
       },
-      appEnabled: () => finish(labels().appDone),
-      back: () => step.set('choose'),
-      answer: () => this.emit('answer', { done: step() === 'done' }),
+      appEnabled: () => finish('app', labels().appDone),
+      back: () => step.set(added().length ? 'another' : 'choose'),
+      answer: () => this.emit('answer', { done: added().length > 0 }),
       busy,
       error,
       describe: () => this.describe,

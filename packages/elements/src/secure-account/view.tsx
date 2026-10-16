@@ -1,4 +1,7 @@
-/** The default look: the why, the two options in one card, and "not now"; then the setup or the done note. */
+/**
+ * The default look: the why, the two options in one card, and "not now"; then the setup; once
+ * one method is on, its note and the other method with "skip"; then the done note.
+ */
 import { css, Match, Show, Switch } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '../view.js';
@@ -20,6 +23,18 @@ const styles = css`
   .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
   .setup { display: block; font-size: 14px; }
 `;
+
+/** The note that a method is on, with its tick. */
+const done = (s: SecureAccountLogic) => (
+  <p class="done">
+    <span class="tick" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12.5l4.5 4.5L19 7.5" />
+      </svg>
+    </span>
+    {() => s.done()}
+  </p>
+);
 
 export const secureAccountView = (s: SecureAccountLogic) => (
   <div part="secure-account" class="secure">
@@ -70,15 +85,47 @@ export const secureAccountView = (s: SecureAccountLogic) => (
           onCancel={() => s.back()}
         />
       </Match>
+      <Match when={s.step() === 'another'}>
+        {done(s)}
+        <p class="intro">{() => s.labels().another}</p>
+        <div class="card">
+          <Show
+            when={s.other() === 'passkey'}
+            fallback={
+              <idp-secure-option
+                icon={PHONE}
+                title={s.labels().app.title}
+                text={s.labels().app.text}
+                action={s.labels().app.action}
+                busy={s.busy()}
+                onChoose={() => s.setUpApp()}
+              />
+            }
+          >
+            <idp-secure-option
+              icon={KEY}
+              title={s.labels().passkey.title}
+              text={s.labels().passkey.text}
+              action={s.labels().passkey.action}
+              busy={s.busy()}
+              onChoose={() => void s.addPasskey()}
+            />
+          </Show>
+        </div>
+        <Show when={s.error()}>
+          <p class="alert" role="alert">
+            {() => s.error()}
+          </p>
+        </Show>
+        <div class="later">
+          <Button variant="ghost" tone="neutral" disabled={s.busy()} onPress={() => s.answer()}>
+            {() => s.labels().skip}
+          </Button>
+          <p class="note">{() => s.labels().laterNote}</p>
+        </div>
+      </Match>
       <Match when={s.step() === 'done'}>
-        <p class="done">
-          <span class="tick" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12.5l4.5 4.5L19 7.5" />
-            </svg>
-          </span>
-          {() => s.done()}
-        </p>
+        {done(s)}
         <Button variant="solid" onPress={() => s.answer()}>
           {() => s.labels().continue}
         </Button>
