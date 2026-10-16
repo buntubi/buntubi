@@ -250,7 +250,12 @@ def register(app: Flask) -> None:
         delivery = db().get(WebhookDelivery, uuid.UUID(delivery_id))
         if delivery is None:
             raise click.ClickException("No such delivery.")
-        webhooks.redeliver(delivery)
+        from buntubi.services.platform import PlatformError
+
+        try:
+            webhooks.redeliver(delivery)
+        except PlatformError as refusal:
+            raise click.ClickException("The app no longer hears of this organization.") from refusal
         db().commit()
         click.echo(f"{delivery_id} will be sent again")
 

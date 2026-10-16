@@ -17,7 +17,7 @@ from typing import Any, TypedDict
 from urllib.parse import urlsplit
 
 import requests
-from sqlalchemy import or_, select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.dialects.postgresql import insert
 
 from buntubi.config import get_settings
@@ -25,6 +25,7 @@ from buntubi.db import db, utcnow
 from buntubi.models import (
     AppOrganization,
     Client,
+    Consent,
     OrganizationEventSequence,
     OrganizationMember,
     WebhookDelivery,
@@ -97,18 +98,43 @@ def _next_sequence(organization_id: uuid.UUID) -> int:
     return int(db().execute(statement).scalar_one())
 
 
+def _reading_roles() -> list[str]:
+    from buntubi.services.platform import ROLE_ABILITIES
+
+    return [role for role, abilities in ROLE_ABILITIES.items() if "read" in abilities]
+
+
 def _listeners(organization_id: uuid.UUID) -> list[uuid.UUID]:
-    """The apps with a webhook that hear of this organization: linked to it, or subscribed to all."""
+    """
+    The apps with a webhook that hear of this organization: subscribed to all of them, or linked to
+    it while someone who may read its members still lets the app act there. A guest's consent
+    gives nothing, and one taken back, or given by someone who left, stops the events. The
+    platform's own apps need no consent.
+    """
     linked = select(AppOrganization.client_id).where(AppOrganization.organization_id == organization_id)
+    readers = select(OrganizationMember.user_id).where(
+        OrganizationMember.organization_id == organization_id,
+        OrganizationMember.role.in_(_reading_roles()),
+    )
+    consented = select(Consent.client_id).where(
+        Consent.organization_id == organization_id, Consent.user_id.in_(readers)
+    )
     return list(
         db().scalars(
             select(Client.id).where(
                 Client.webhook_url.is_not(None),
                 Client.disabled_at.is_(None),
-                or_(Client.webhook_events == "all", Client.id.in_(linked)),
+                or_(
+                    Client.webhook_events == "all",
+                    and_(Client.id.in_(linked), or_(Client.first_party.is_(True), Client.id.in_(consented))),
+                ),
             )
         )
     )
+
+
+def listens(client_id: uuid.UUID, organization_id: uuid.UUID) -> bool:
+    return client_id in _listeners(organization_id)
 
 
 def emit(organization_id: uuid.UUID, type: Event, data: dict[str, Any]) -> WebhookEvent:
@@ -189,6 +215,9 @@ def _send(delivery: WebhookDelivery) -> None:
     if not client.webhook_url or not client.webhook_secret or client.disabled_at is not None:
         delivery.status, delivery.last_error = "failed", "no_endpoint"
         return
+    if not listens(client.id, event.organization_id):
+        delivery.status, delivery.last_error = "failed", "not_listening"
+        return
     # A name may resolve inside the network later than it was set: checked at each send.
     host = urlsplit(client.webhook_url).hostname or ""
     if not get_settings().local and not all(public_ip(a) for a in _addresses(host) or [""]):
@@ -259,6 +288,10 @@ def set_secret(client: Client) -> str:
 
 
 def redeliver(delivery: WebhookDelivery) -> None:
-    """Sends it again at the next pass, whatever happened to it before."""
+    """Sends it again at the next pass, whatever happened to it before, if the app still hears of it."""
+    from buntubi.services.platform import PlatformError
+
+    if not listens(delivery.client_id, delivery.event.organization_id):
+        raise PlatformError("not_listening", 409)
     delivery.status = "pending"
     delivery.next_attempt_at = utcnow()

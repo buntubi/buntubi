@@ -7,7 +7,10 @@ webhook: a signed `POST` to an address the app registers.
 ## Which apps receive what
 
 An app with a webhook receives the events of the organizations it works with: the ones it was
-given a token naming (`organization=<id>`). A platform product can be subscribed to every
+given a token naming (`organization=<id>`) by someone who may read the members, a guest's token
+not counting. It hears of an organization for as long as one such person keeps their consent:
+once the last of them takes the app back from their account, or leaves the organization, the
+events stop, deliveries still queued included. A platform product can be subscribed to every
 organization instead, from the platform file (`webhook_events = "all"`).
 
 | Event | When | `data` |

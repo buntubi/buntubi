@@ -107,9 +107,14 @@ def save_token(token: dict[str, Any], request: Any) -> None:
     )
     # What this request gave, for the authorization code it came from (see AuthorizationCodeGrant).
     g.issued_token = (claims["jti"], family_id)
-    # A token naming an organization: the app works with it, and hears of its events.
-    if context is not None and context.organization_id is not None:
-        webhooks.link(client.id, context.organization_id)
+    # A token naming an organization: the app works with it, and hears of its events when the
+    # person may read its members (webhooks.py decides who still lets it).
+    if context is not None and context.organization_id is not None and user is not None:
+        from buntubi.services.platform import acting_membership, can
+
+        member = acting_membership(user, context.organization_id)
+        if member is not None and can(member, "read"):
+            webhooks.link(client.id, context.organization_id)
     db().add(
         AccessTokenRecord(
             jti=claims["jti"],
