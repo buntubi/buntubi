@@ -23,7 +23,7 @@ from buntubi.db import db, utcnow
 from buntubi.models import ApiProduct, AppReview, AuditEvent, Client, LoginSession, Organization, Scope, User
 from buntubi.models.clients import GRANT_TYPES
 from buntubi.oauth.server import require_token
-from buntubi.services import accounts, audit, mail, mfa, profile
+from buntubi.services import accounts, audit, mail, mfa, passkeys, profile
 from buntubi.services import platform as p
 from buntubi.services.accounts import AccountError, sign_out_everywhere
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
@@ -152,6 +152,8 @@ def _user_json(user: User, last_sign_in: datetime | None = None) -> dict[str, An
         "developer_since": user.developer_since.isoformat() if user.developer_since else None,
         "password_set": user.password_hash is not None,
         "mfa": mfa.is_enabled(user),
+        # Passkeys are a second factor too: the two-step reset takes them with the app.
+        "passkeys": len(passkeys.list_for(user)),
         "disabled": user.disabled_at is not None,
         "created_at": user.created_at.isoformat(),
         "last_sign_in_at": last_sign_in.isoformat() if last_sign_in else None,
@@ -424,9 +426,11 @@ def reset_two_step(user_id: str, admin: User) -> Any:
         return jsonify(error="use_your_account_page"), 422
     if user.is_superadmin:
         return jsonify(error="superadmin_protected"), 422
+    # Every second factor goes: the app and the passkeys, so a lost device is no locked account.
     mfa.remove(user)
+    removed = passkeys.remove_all(user)
     sign_out_everywhere(user)
-    audit.record("admin.two_step_reset", user=admin, target=str(user.id))
+    audit.record("admin.two_step_reset", user=admin, target=str(user.id), passkeys=removed)
     db().commit()
     return jsonify(user=_one_user_json(user))
 

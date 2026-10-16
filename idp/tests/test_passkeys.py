@@ -203,3 +203,24 @@ def test_the_console_scope_asks_a_passkey_only_account_for_its_passkey(
         },
     ).json
     assert "mfa" in claims_of(tokens["access_token"])["amr"]
+
+
+def test_a_password_sign_in_asks_a_passkey_only_account_for_its_passkey(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    """A passkey is the account's second factor too: the password alone does not sign in."""
+    csrf = sign_up(browser, outbox)
+    device = SoftAuthenticator(ISSUER)
+    _add(browser, csrf, device)
+
+    other, page, reply = password_step(app)
+    assert reply.json == {"next": "mfa"}
+    assert other.get("/account").status_code == 302, "not signed in yet"
+    props = page_config(other, "/mfa")["props"]
+    assert props["passkey"] is True and props["code"] is False
+    answer = device.get(api(other, "POST", "/api/passkey/options", {"second_step": True}, page).json)
+    done = api(other, "POST", "/api/passkey", {"credential": answer, "second_step": True}, page)
+    assert "redirect" in done.json
+    with app.app_context():
+        login = db().scalars(select(LoginSession).order_by(LoginSession.created_at.desc())).first()
+        assert login is not None and list(login.auth_methods) == ["pwd", "hwk", "mfa"]

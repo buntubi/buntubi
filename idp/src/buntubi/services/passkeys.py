@@ -234,6 +234,14 @@ def rename(user: User, passkey_id: str, name: str) -> Passkey:
     return passkey
 
 
+def remove_all(user: User) -> int:
+    """Every passkey of the account, as an admin's two-step reset takes them; how many there were."""
+    found = list_for(user)
+    for passkey in found:
+        db().delete(passkey)
+    return len(found)
+
+
 def remove(user: User, passkey_id: str) -> str:
     passkey = _owned(user, passkey_id)
     name = passkey.name

@@ -186,6 +186,8 @@ export interface AdminUser {
   /** False for someone invited who has not chosen a password yet. */
   password_set: boolean;
   mfa: boolean;
+  /** How many passkeys the account has: a second factor like the app. */
+  passkeys: number;
   disabled: boolean;
   created_at: string;
   last_sign_in_at: string | null;

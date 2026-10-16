@@ -142,3 +142,25 @@ def test_an_admin_can_make_an_account_ready_without_any_email(app: Flask, outbox
         owner_browser, owner, "POST", "/users", {"email": "x@example.test", "password": "short"}
     )
     assert weak.status_code == 422 and weak.json["error"] == "weak_password"
+
+
+def test_resetting_two_step_also_removes_the_passkeys(app: Flask, outbox: list[mail.Message]) -> None:
+    """A passkey is a second factor like the app: the reset takes both, so a lost device unlocks."""
+    from soft_authenticator import SoftAuthenticator
+    from test_passkeys import _add
+
+    from buntubi.models import Passkey
+
+    from conftest import ISSUER
+
+    owner_browser, owner, dev_browser, _ = setup_people(app, outbox)
+    target = user_id(app, "dev@example.test")
+    _add(dev_browser, page_config(dev_browser, "/account")["csrf"], SoftAuthenticator(ISSUER))
+    reset = admin_call(owner_browser, owner, "DELETE", f"/users/{target}/mfa")
+    assert reset.status_code == 200, reset.json
+    with app.app_context():
+        assert db().scalars(select(Passkey).where(Passkey.user_id == target)).all() == []
+    fresh = app.test_client()
+    csrf = page_config(fresh, "/signin")["csrf"]
+    signed_in = api(fresh, "POST", "/api/session", {"email": "dev@example.test", "password": PASSWORD}, csrf)
+    assert signed_in.status_code == 200 and signed_in.json.get("next") != "mfa", signed_in.json

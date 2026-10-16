@@ -91,8 +91,8 @@ def _needs_verification(user: User, methods: list[str]) -> Response:
 
 
 def _next_step(user: User, methods: list[str], event: str) -> Response:
-    """Signs in, or asks for the second factor first when the account has one."""
-    if mfa.is_enabled(user):
+    """Signs in, or asks for the second factor first when the account has one: an app or a passkey."""
+    if mfa.is_enabled(user) or passkeys.list_for(user):
         sessions.set_pending(user, methods, "mfa")
         db().commit()
         return jsonify(next="mfa")

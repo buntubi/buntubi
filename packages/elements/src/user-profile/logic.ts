@@ -115,7 +115,7 @@ export const userProfileLabels: UserProfileLabels = {
   signOutHelp: 'Ends every session and the tokens apps hold for this person.',
   signedOut: 'Signed out everywhere.',
   resetTwoStep: 'Reset two-step sign-in',
-  resetTwoStepHelp: 'For a lost phone: two-step goes off and the person sets it up again.',
+  resetTwoStepHelp: 'For a lost phone or security key: two-step and the passkeys are removed, and the person sets them up again.',
   twoStepReset: 'Two-step sign-in is off.',
   disable: 'Disable the account',
   enable: 'Enable the account',

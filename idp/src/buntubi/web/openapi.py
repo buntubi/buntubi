@@ -397,6 +397,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "developer_since": MAYBE_TIME,
             "password_set": BOOL,
             "mfa": BOOL,
+            "passkeys": INT,
             "disabled": BOOL,
             "created_at": TIME,
             "last_sign_in_at": MAYBE_TIME,

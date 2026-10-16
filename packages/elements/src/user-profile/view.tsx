@@ -196,7 +196,7 @@ export const userProfileView = (p: UserProfileLogic) => (
             </Button>
             <p class="muted">{() => p.labels().signOutHelp}</p>
           </div>
-          <Show when={p.user()?.mfa}>
+          <Show when={p.user()?.mfa || !!p.user()?.passkeys}>
             <div class="action">
               <Button variant="outline" size="sm" tone="neutral" disabled={p.busy()} onPress={() => void p.act('twoStep')}>
                 {() => p.labels().resetTwoStep}
