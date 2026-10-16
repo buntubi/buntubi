@@ -23,7 +23,7 @@ Putting a deployment on a server (TLS, backups, key rotation) is in [operations]
 | A provider command | `idp <command>` from `idp/` | `docker compose exec provider flask <command>` |
 | The provider's log | its terminal | `docker compose logs -f provider` |
 | Settings | `idp/.env`, `apps/console/.env`, `apps/portal/.env` | `provider.env`, `console.env`, `portal.env` |
-| After changing settings | stop and start the program | `docker compose up -d <service>` |
+| After changing settings | stop and start the program | B.4 |
 | Upgrade | `git pull`, then `./scripts/install.sh` | new `BUNTUBI_VERSION`, then the steps in B.5 |
 
 ## A. In a terminal, without Docker
@@ -176,8 +176,13 @@ docker compose logs --since 10m provider | grep -A6 "email, test mode"
 recreate the service so it reads the file again:
 
 ```bash
-docker compose up -d provider
+docker compose up -d console              # after editing console.env
+docker compose up -d --force-recreate provider console portal   # after editing provider.env
 ```
+
+The console and the portal live in the provider container's network: a new provider container
+leaves them attached to the old one, and http://localhost:3420 and :3410 stop answering until
+they are recreated with it.
 
 ### B.5 Upgrading
 
