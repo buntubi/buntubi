@@ -1,6 +1,7 @@
 /**
  * The second step of a sign-in: the 6-digit code from the authenticator app, or a backup code
- * when the phone is not at hand. `success` carries the action's result.
+ * when the phone is not at hand, or a passkey. An account with a passkey and no app
+ * (`hasCode` false) is asked for the passkey only. `success` carries the action's result.
  */
 import { useView } from '@buntubi/sdk/view';
 import { MfaVerifyView } from './view.js';
@@ -27,6 +28,10 @@ export interface MfaVerifyLabels {
   useApp: string;
   usePasskey: string;
   passkeyPending: string;
+  /** Without an authenticator app: the passkey is the second step. */
+  passkeyIntro: string;
+  /** Without an app, in a browser that cannot use a passkey. */
+  passkeyUnavailable: string;
 }
 
 export const mfaVerifyLabels: MfaVerifyLabels = {
@@ -40,6 +45,8 @@ export const mfaVerifyLabels: MfaVerifyLabels = {
   useApp: 'Use the authenticator app',
   usePasskey: 'Use a passkey',
   passkeyPending: 'Waiting for your device',
+  passkeyIntro: 'Confirm it is you with your passkey.',
+  passkeyUnavailable: 'This browser cannot use a passkey. Continue on the device where you made it.',
 };
 
 export interface MfaVerifyEvents {
@@ -52,6 +59,8 @@ const props = {
   /** Answers the step with one of the person's passkeys; offered when `hasPasskey`. */
   passkeyAction: prop.any<ElementAction<void> | undefined>(undefined),
   hasPasskey: prop.boolean(false),
+  /** Whether the account has an authenticator app; without one, only the passkey is offered. */
+  hasCode: prop.boolean(true),
   labels: prop.object<MfaVerifyLabels>(mfaVerifyLabels),
   messages: prop.object<Messages>({}),
 };
@@ -102,6 +111,7 @@ export class IdpMfaVerify extends typedElement(props) {
       backup,
       canPasskey,
       code,
+      hasCode: () => this.hasCode,
       label,
       passkey,
       pending,

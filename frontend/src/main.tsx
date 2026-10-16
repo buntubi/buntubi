@@ -153,6 +153,7 @@ const screens: Record<string, () => Screen> = {
       <idp-mfa-verify
         action={(input) => api('POST', '/api/mfa/verify', input)}
         hasPasskey={props.passkey === true}
+        hasCode={props.code !== false}
         passkeyAction={async () => {
           const options = await api<Record<string, unknown>>('POST', '/api/passkey/options', { second_step: true });
           const credential = await getPasskey(options);

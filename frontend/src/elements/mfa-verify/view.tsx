@@ -6,54 +6,69 @@ import { Button } from '@fluixi-ui/button';
 import { viewToken } from '@buntubi/sdk/view';
 import type { MfaVerifyLogic } from './mfa-verify.js';
 
-export const mfaVerifyView = ({ askPasskey, backup, canPasskey, code, label, passkey, pending, problem, submit, toggle }: MfaVerifyLogic) =>
+export const mfaVerifyView = ({ askPasskey, backup, canPasskey, code, hasCode, label, passkey, pending, problem, submit, toggle }: MfaVerifyLogic) =>
   (
       <form
         class="idp-form"
         novalidate
         onSubmit={(event: SubmitEvent) => {
           event.preventDefault();
-          submit();
+          if (hasCode()) submit();
         }}
       >
-        <p class="idp-note">{() => (backup() ? label().backupIntro : label().intro)}</p>
-        {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
         <Show
-          when={backup()}
+          when={hasCode()}
           fallback={
-            <PinInput
-              class="idp-code"
-              length={6}
-              otp
-              aria-label={label().code}
-              value={code()}
-              onValueChange={(value: string) => code.set(value)}
-              onComplete={submit}
-            />
+            <>
+              <p class="idp-note">{() => (canPasskey() ? label().passkeyIntro : label().passkeyUnavailable)}</p>
+              {() => (passkey.error() ? <p class="idp-alert" role="alert">{passkey.error()}</p> : null)}
+              <Show when={canPasskey()}>
+                <Button type="button" variant="solid" data-part="passkey" disabled={passkey.pending()} onPress={askPasskey}>
+                  {() => (passkey.pending() ? label().passkeyPending : label().usePasskey)}
+                </Button>
+              </Show>
+            </>
           }
         >
-          {() => (
-            <Input
-              name="backup_code"
-              autocomplete="off"
-              aria-label={label().backupCode}
-              placeholder="XXXX-XXXX"
-              value={code()}
-              onInput={(event: InputEvent) => code.set((event.currentTarget as HTMLInputElement).value)}
-            />
-          )}
-        </Show>
-        <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
-          {() => (pending() ? label().pending : label().submit)}
-        </Button>
-        <Show when={canPasskey()}>
-          <Button type="button" variant="outline" tone="neutral" data-part="passkey" disabled={passkey.pending()} onPress={askPasskey}>
-            {() => (passkey.pending() ? label().passkeyPending : label().usePasskey)}
+          <p class="idp-note">{() => (backup() ? label().backupIntro : label().intro)}</p>
+          {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
+          <Show
+            when={backup()}
+            fallback={
+              <PinInput
+                class="idp-code"
+                length={6}
+                otp
+                aria-label={label().code}
+                value={code()}
+                onValueChange={(value: string) => code.set(value)}
+                onComplete={submit}
+              />
+            }
+          >
+            {() => (
+              <Input
+                name="backup_code"
+                autocomplete="off"
+                aria-label={label().backupCode}
+                placeholder="XXXX-XXXX"
+                value={code()}
+                onInput={(event: InputEvent) => code.set((event.currentTarget as HTMLInputElement).value)}
+              />
+            )}
+          </Show>
+          <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
+            {() => (pending() ? label().pending : label().submit)}
+          </Button>
+          <Show when={canPasskey()}>
+            <Button type="button" variant="outline" tone="neutral" data-part="passkey" disabled={passkey.pending()} onPress={askPasskey}>
+              {() => (passkey.pending() ? label().passkeyPending : label().usePasskey)}
+            </Button>
+          </Show>
+          <Button type="button" variant="ghost" onPress={toggle}>
+            {() => (backup() ? label().useApp : label().useBackup)}
           </Button>
         </Show>
-        <Button type="button" variant="ghost" onPress={toggle}>
-          {() => (backup() ? label().useApp : label().useBackup)}
-        </Button>
       </form>
     );
 

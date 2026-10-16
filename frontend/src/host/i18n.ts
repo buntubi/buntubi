@@ -236,6 +236,8 @@ const fr: Text = {
     useApp: 'Utiliser l’application',
     usePasskey: 'Utiliser une clé d’accès',
     passkeyPending: 'En attente de votre appareil',
+    passkeyIntro: 'Confirmez que c’est bien vous avec votre clé d’accès.',
+    passkeyUnavailable: 'Ce navigateur ne peut pas utiliser de clé d’accès. Continuez sur l’appareil où vous l’avez créée.',
   },
   deviceActivate: {
     intro: 'Saisissez le code affiché sur votre appareil. N’autorisez qu’un appareil que vous utilisez en ce moment.',
@@ -462,6 +464,8 @@ const en: Text = {
     useApp: 'Use the authenticator app',
     usePasskey: 'Use a passkey',
     passkeyPending: 'Waiting for your device',
+    passkeyIntro: 'Confirm it is you with your passkey.',
+    passkeyUnavailable: 'This browser cannot use a passkey. Continue on the device where you made it.',
   },
   deviceActivate: {
     intro: 'Enter the code shown on your device. Only allow a device you are using right now.',

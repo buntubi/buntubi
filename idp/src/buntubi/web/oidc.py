@@ -22,7 +22,7 @@ from buntubi.oauth.grants import GRANT_TYPES_SUPPORTED
 from buntubi.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
 from buntubi.security import csrf
 from buntubi.security.keys import ALGORITHM
-from buntubi.services import audit, consent, mfa, platform, session_check, sessions
+from buntubi.services import audit, consent, mfa, passkeys, platform, session_check, sessions
 from buntubi.web import pages
 
 bp = Blueprint("oidc", __name__)
@@ -307,12 +307,15 @@ SECOND_FACTOR_SCOPES = frozenset({"admin"})
 
 
 def _needs_second_factor(login: Any, scope: str) -> bool:
-    """A step-up is due: the scope needs it, the account has it, this sign-in did not use it."""
+    """
+    A step-up is due: the scope needs it, the account has a second factor (an authenticator app
+    or a passkey), this sign-in did not use it.
+    """
     wanted = set(scope_to_list(scope) or [])
     return (
         bool(wanted & SECOND_FACTOR_SCOPES)
         and "mfa" not in (login.auth_methods or [])
-        and mfa.is_enabled(login.user)
+        and (mfa.is_enabled(login.user) or bool(passkeys.list_for(login.user)))
     )
 
 

@@ -155,3 +155,51 @@ def test_the_second_step_refuses_someone_elses_passkey(
     answer = bobs_device.get(api(other, "POST", "/api/passkey/options", {}, page).json)
     refused = api(other, "POST", "/api/passkey", {"credential": answer, "second_step": True}, page)
     assert refused.json["error"] == "passkey_other_account"
+
+
+def test_the_console_scope_asks_a_passkey_only_account_for_its_passkey(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    """Signed up with a password, then a passkey and no authenticator app: the console's step-up
+    asks for the passkey, rather than handing out a token the admin API refuses."""
+    from urllib.parse import parse_qs, urlparse
+
+    from test_platform_gates import authorize
+    from test_plugins import claims_of
+
+    from buntubi.models import User
+
+    from conftest import REDIRECT, add_client
+
+    csrf = sign_up(browser, outbox)
+    device = SoftAuthenticator(ISSUER)
+    _add(browser, csrf, device)
+    with app.app_context():
+        user = db().scalar(select(User).where(User.email == "awa@example.test"))
+        assert user is not None
+        user.roles = ["admin"]
+        db().commit()
+    add_client(app, client_id="console", first_party=True, scope="openid profile email admin")
+
+    asked, verifier = authorize(browser, "console", scope="openid admin")
+    assert asked.status_code == 302 and urlparse(asked.location).path == "/mfa", "the passkey, not a token"
+    props = page_config(browser, "/mfa")["props"]
+    assert props["passkey"] is True and props["code"] is False, "no code to ask for without an app"
+
+    page = page_config(browser, "/mfa")["csrf"]
+    answer = device.get(api(browser, "POST", "/api/passkey/options", {"second_step": True}, page).json)
+    done = api(browser, "POST", "/api/passkey", {"credential": answer, "second_step": True}, page)
+    back = browser.get(done.json["redirect"])
+    assert back.status_code == 302 and back.location.startswith(REDIRECT), "back to the authorization"
+    code = parse_qs(urlparse(back.location).query)["code"][0]
+    tokens = browser.post(
+        "/oauth/token",
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": REDIRECT,
+            "client_id": "console",
+            "code_verifier": verifier,
+        },
+    ).json
+    assert "mfa" in claims_of(tokens["access_token"])["amr"]

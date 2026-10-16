@@ -19,7 +19,7 @@ from buntubi.db import db
 from buntubi.models import UserPicture
 from buntubi.oauth.server import authorization, query_client
 from buntubi.security import csrf
-from buntubi.services import passkeys, platform, security_prompt, sessions
+from buntubi.services import mfa, passkeys, platform, security_prompt, sessions
 from buntubi.web import ui_plugins
 
 bp = Blueprint("pages", __name__)
@@ -124,8 +124,12 @@ def mfa_step() -> Any:
     pending = sessions.pending("mfa")
     if pending is None:
         return redirect(url_for("pages.signin"))
-    # A passkey of this person's also answers the second step.
-    return shell("idp-mfa-verify", passkey=bool(passkeys.list_for(pending.user)))
+    # A passkey of this person's also answers the second step; without an app there is no code.
+    return shell(
+        "idp-mfa-verify",
+        passkey=bool(passkeys.list_for(pending.user)),
+        code=mfa.is_enabled(pending.user),
+    )
 
 
 @bp.get("/forgot-password")
