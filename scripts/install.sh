@@ -37,7 +37,7 @@ cd "$root"
 .venv/bin/pip install --quiet -c idp/requirements.lock -e "./idp[dev]"
 echo "$(.venv/bin/python --version) in .venv, provider installed."
 python="$root/.venv/bin/python"
-flask() { "$root/.venv/bin/flask" --app idp.app:create_app "$@"; }
+flask() { "$root/.venv/bin/flask" --app buntubi.app:create_app "$@"; }
 
 step "Provider settings (idp/.env)"
 cd "$root/idp"
@@ -63,7 +63,7 @@ step "Database"
 "$python" - <<'PY'
 import psycopg
 from sqlalchemy.engine import make_url
-from idp.config import get_settings
+from buntubi.config import get_settings
 
 url = make_url(get_settings().database_url)
 server = url.set(drivername="postgresql", database="postgres").render_as_string(hide_password=False)
@@ -75,12 +75,12 @@ with psycopg.connect(server, autocommit=True) as connection:
         connection.execute(f'create database "{url.database}"')
         print(f"Created {url.database}.")
 PY
-IDP_DATABASE_URL="$("$python" -c 'from idp.config import get_settings; print(get_settings().database_url)')" \
+IDP_DATABASE_URL="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().database_url)')" \
   "$root/.venv/bin/alembic" upgrade head 2>&1 | grep -v '^INFO' || true
-echo "Migrations at $(IDP_DATABASE_URL="$("$python" -c 'from idp.config import get_settings; print(get_settings().database_url)')" "$root/.venv/bin/alembic" current 2>/dev/null | tail -1)."
+echo "Migrations at $(IDP_DATABASE_URL="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().database_url)')" "$root/.venv/bin/alembic" current 2>/dev/null | tail -1)."
 
 step "Signing key"
-keys="$("$python" -c 'from idp.config import get_settings; print(get_settings().signing_keys_dir)')"
+keys="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().signing_keys_dir)')"
 if ls "$keys"/*.json >/dev/null 2>&1; then
   echo "Signing keys in $keys: $(ls "$keys"/*.json | wc -l | tr -d ' '). Kept: tokens they signed stay valid."
 else
@@ -133,18 +133,18 @@ if flask admin check; then
 elif [ -t 0 ]; then
   flask admin create
 else
-  echo "No superadmin, and no terminal to ask for one. Run: cd idp && ../.venv/bin/flask --app idp.app:create_app admin create" >&2
+  echo "No superadmin, and no terminal to ask for one. Run: cd idp && ../.venv/bin/flask --app buntubi.app:create_app admin create" >&2
   exit 1
 fi
 
 step "Platform"
 flask platform setup
 
-issuer="$("$python" -c 'from idp.config import get_settings; print(get_settings().issuer)')"
+issuer="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().issuer)')"
 cat <<EOF
 
 Ready. Start the provider:
-  cd idp && ../.venv/bin/flask --app idp.app:create_app run --port 5010
+  cd idp && ../.venv/bin/flask --app buntubi.app:create_app run --port 5010
 and, in two more terminals, the portal and the console:
   pnpm --dir apps/portal dev
   pnpm --dir apps/console dev
