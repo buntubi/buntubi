@@ -208,6 +208,22 @@ def test_an_unregistered_redirect_uri_is_never_followed(
     )
     assert reply.status_code == 400
     assert "evil.example" not in (reply.location or "")
+    # A page for the person, in the provider's look, that does not repeat the address it refused.
+    html = reply.get_data(as_text=True)
+    assert reply.mimetype == "text/html" and "evil.example" not in html
+    config = page_config(
+        browser,
+        "/oauth/authorize?" + urlencode(authorize_query(challenge, redirect_uri="https://evil.example/cb")),
+    )
+    assert config["element"] == "idp-authorize-error" and config["props"]["error"] == "invalid_request"
+
+
+def test_an_unknown_app_gets_the_same_page(browser: FlaskClient) -> None:
+    _, challenge = pkce()
+    query = authorize_query(challenge, client_id="nobody")
+    reply = browser.get("/oauth/authorize?" + urlencode(query))
+    assert reply.status_code == 400 and reply.mimetype == "text/html"
+    assert page_config(browser, "/oauth/authorize?" + urlencode(query))["props"]["error"] == "invalid_client"
 
 
 def test_a_first_party_client_skips_consent(

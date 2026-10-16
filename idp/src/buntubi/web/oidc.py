@@ -123,11 +123,12 @@ def authorize() -> Any:
     try:
         grant = authorization.get_consent_grant(end_user=login.user if login else None)
     except OAuth2Error as error:
+        # The app hears of it only at a redirect URI checked against its registered ones;
+        # otherwise the person is told, on a page of the provider's.
+        if not getattr(error, "redirect_uri", None):
+            return pages.authorize_error(error)
         response = authorization.handle_error_response(request, error)
-        # Set only once the redirect URI was checked against the client's registered ones.
-        if getattr(error, "redirect_uri", None):
-            response = _with_session_state(response, request.args.get("client_id", ""))
-        return response
+        return _with_session_state(response, request.args.get("client_id", ""))
 
     # OIDC Core 6: request objects are not supported, and refused as such rather than ignored,
     # which would drop the state and nonce they carry.

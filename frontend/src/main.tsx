@@ -291,6 +291,18 @@ const screens: Record<string, () => Screen> = {
     };
   },
 
+  'idp-authorize-error': () => ({
+    key: 'authorizeError',
+    body: () => (
+      <div class="idp-done" role="alert">
+        <p>{t.notes.authorizeError}</p>
+        <Show when={str('error')}>
+          <p class="idp-note">{t.notes.authorizeErrorCode.replace('{code}', str('error'))}</p>
+        </Show>
+      </div>
+    ),
+  }),
+
   'idp-blocked': () => {
     const contact = str('support_email');
     return {

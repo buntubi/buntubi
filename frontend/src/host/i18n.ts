@@ -30,6 +30,7 @@ export interface Text {
     signedOut: string;
     logoutConfirm: string;
     blocked: string;
+    authorizeError: string;
     mfa: string;
     twoStep: string;
     secureAccount: string;
@@ -60,6 +61,9 @@ export interface Text {
     logoutCancel: string;
     signedInAs: string;
     blocked: string;
+    /** The authorization request could not go back to its app. */
+    authorizeError: string;
+    authorizeErrorCode: string;
     blockedContact: string;
     unverified: string;
     privacy: string;
@@ -99,6 +103,7 @@ const fr: Text = {
     signedOut: 'Vous êtes déconnecté',
     logoutConfirm: 'Se déconnecter ?',
     blocked: 'Accès bloqué',
+    authorizeError: 'Ce lien ne fonctionne pas',
     mfa: 'Validation en deux étapes',
     twoStep: 'Validation en deux étapes',
     secureAccount: 'Protégez votre compte',
@@ -137,6 +142,8 @@ const fr: Text = {
     logoutCancel: 'Rester connecté',
     signedInAs: 'Connecté en tant que',
     blocked: 'Cette application est encore en développement : seules les personnes que son développeur a ajoutées peuvent s’y connecter.',
+    authorizeError: 'L’application qui vous a envoyé ici a fait une demande de connexion que nous ne pouvons pas accepter. Revenez à l’application et réessayez, ou contactez son assistance si cela continue.',
+    authorizeErrorCode: 'Code d’erreur : {code}',
     blockedContact: 'Pour y accéder, écrivez à',
     unverified: 'Cette application n’a pas encore été vérifiée. Ne continuez que si vous connaissez son développeur.',
     privacy: 'Confidentialité',
@@ -330,6 +337,7 @@ const en: Text = {
     signedOut: 'You are signed out',
     logoutConfirm: 'Sign out?',
     blocked: 'Access blocked',
+    authorizeError: 'This link does not work',
     mfa: 'Two-step sign-in',
     twoStep: 'Two-step sign-in',
     secureAccount: 'Protect your account',
@@ -368,6 +376,8 @@ const en: Text = {
     logoutCancel: 'Stay signed in',
     signedInAs: 'Signed in as',
     blocked: 'This app is still in development: only people its developer added can sign in.',
+    authorizeError: 'The app that sent you here made a sign-in request we cannot accept. Go back to the app and try again, or contact its support if this keeps happening.',
+    authorizeErrorCode: 'Error code: {code}',
     blockedContact: 'To get access, write to',
     unverified: 'This app has not been verified yet. Only continue if you know its developer.',
     privacy: 'Privacy',

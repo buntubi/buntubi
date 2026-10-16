@@ -152,6 +152,8 @@ def consent() -> Any:
     try:
         grant = authorization.get_consent_grant(end_user=login.user)
     except OAuth2Error as error:
+        if not getattr(error, "redirect_uri", None):
+            return authorize_error(error)
         return authorization.handle_error_response(request, error)
     client = grant.client
     organization = client.organization
@@ -173,6 +175,15 @@ def consent() -> Any:
         if (acting := platform.acting_membership(login.user, request.args.get("organization")))
         else None,
     )
+
+
+def authorize_error(error: Any) -> tuple[str, int]:
+    """
+    An authorization request that cannot go back to its app: an unknown or disabled app, or a
+    redirect URI it did not register. Only the error code is shown, never what the request
+    carried, so the page cannot be made to say something of an attacker's.
+    """
+    return shell("idp-authorize-error", error=str(error.error)), 400
 
 
 def blocked(client: Any) -> tuple[str, int]:
