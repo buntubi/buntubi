@@ -36,6 +36,8 @@ settings, never from the code.
 - Server-to-server access (client credentials), devices without a keyboard (device flow), and
   API keys for developers' scripts.
 - Tokens bound to an organization (`org_id`, `org_role`), when an app asks for one.
+- Signed webhooks telling products of every change to their organizations and members, retried
+  for a day, with a verifier in the SDK ([docs/webhooks.md](docs/webhooks.md)).
 
 ### Organizations
 
@@ -140,6 +142,7 @@ Each part has its own README with its layout, settings and commands.
 | `packages/shell/`, `packages/skin/`, `packages/theme/` | Layout, skin and colours of the apps |
 | `docs/running.md` | Starting everything from a terminal or with Docker, and every day after |
 | `docs/operations.md` | A deployment on a server: first deploy, upgrades, keys, backups |
+| `docs/webhooks.md` | Organization events for the products: what they carry, checking them, setting them up |
 | `docs/plugins.md` | Writing and installing plugins |
 | `docs/manual-testing.md` | A walk through every screen on a local install |
 | `docker/example/` | A complete deployment for one machine with Docker |

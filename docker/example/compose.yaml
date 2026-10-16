@@ -62,6 +62,22 @@ services:
       postgres:
         condition: service_healthy
 
+  # Sends organization events to the products' webhooks (docs/webhooks.md).
+  webhooks:
+    image: ghcr.io/buntubi/idp-provider:${BUNTUBI_VERSION:-0.5.1}
+    env_file: provider.env
+    environment:
+      IDP_DATABASE_URL: postgresql+psycopg://idp:${POSTGRES_PASSWORD}@postgres:5432/idp
+      IDP_SIGNING_KEYS_DIR: /keys
+      IDP_PLUGINS_SYNC_ON_START: "false"
+    command: ["flask", "webhooks", "deliver"]
+    volumes:
+      - ./keys:/keys
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   console:
     image: ghcr.io/buntubi/idp-console:${BUNTUBI_VERSION:-0.5.1}
     env_file: console.env

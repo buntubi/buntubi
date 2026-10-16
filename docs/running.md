@@ -21,6 +21,7 @@ Putting a deployment on a server (TLS, backups, key rotation) is in [operations]
 | Start | three terminals, below | `docker compose up -d` |
 | Stop | Ctrl+C in each | `docker compose down` (the data stays) |
 | A provider command | `idp <command>` from `idp/` | `docker compose exec provider flask <command>` |
+| Send webhooks | `idp webhooks deliver`, in its own terminal | the `webhooks` service, started with the rest |
 | The provider's log | its terminal | `docker compose logs -f provider` |
 | Settings | `idp/.env`, `apps/console/.env`, `apps/portal/.env` | `provider.env`, `console.env`, `portal.env` |
 | After changing settings | stop and start the program | B.4 |

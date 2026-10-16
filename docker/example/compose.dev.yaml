@@ -8,6 +8,10 @@ services:
     image: ghcr.io/buntubi/idp-provider:dev
     pull_policy: never
 
+  webhooks:
+    image: ghcr.io/buntubi/idp-provider:dev
+    pull_policy: never
+
   console:
     image: ghcr.io/buntubi/idp-console:dev
     pull_policy: never

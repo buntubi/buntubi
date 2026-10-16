@@ -155,3 +155,28 @@ def test_the_daily_prune_keeps_a_month_of_finished_deliveries(
         assert removed["webhook_deliveries"] == 1 and removed["webhook_events"] == 1
         assert [d.status for d in db().scalars(select(WebhookDelivery))] == ["pending"]
         assert [e.type for e in db().scalars(select(WebhookEvent))] == ["organization.updated"]
+
+
+# One vector shared with packages/sdk/src/webhooks.spec.ts: the provider signs as the SDK checks.
+VECTOR = (
+    "whsec_vector",
+    1700000000,
+    b'{"type":"member.added","sequence":1}',
+    "fdba52d689ee5afb5cb1f2c3f7147350428ab44bf2d4b1278d21845b3052a962",
+)
+
+
+def test_the_signature_matches_the_sdks_vector() -> None:
+    secret, stamp, body, expected = VECTOR
+    assert webhooks.signature(secret, stamp, body) == expected
+
+
+def test_the_sdk_knows_every_event_by_the_same_name() -> None:
+    import re
+    from pathlib import Path
+
+    source = (Path(__file__).parents[2] / "packages/sdk/src/webhooks.ts").read_text()
+    declared = re.search(r"export const WEBHOOK_EVENTS = \{(.*?)\} as const;", source, re.S)
+    assert declared is not None
+    names = set(re.findall(r"'([a-z_]+\.[a-z_]+)'", declared.group(1)))
+    assert names == {event.value for event in webhooks.Event}

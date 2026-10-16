@@ -40,6 +40,11 @@
       "development": "./src/organizations.ts",
       "default": "./dist/organizations.js"
     },
+    "./webhooks": {
+      "types": "./src/webhooks.ts",
+      "development": "./src/webhooks.ts",
+      "default": "./dist/webhooks.js"
+    },
     "./plugins": {
       "types": "./src/plugins.ts",
       "development": "./src/plugins.ts",
