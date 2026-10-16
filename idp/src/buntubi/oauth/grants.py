@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Any
 
-from authlib.oauth2.rfc6749 import grants, list_to_scope, scope_to_list
+from authlib.oauth2.rfc6749 import InvalidRequestError, grants, list_to_scope, scope_to_list
 from authlib.oauth2.rfc7636 import CodeChallenge
 from authlib.oauth2.rfc8628 import DeviceCodeGrant as _DeviceCodeGrant
 from authlib.oidc.core import OpenIDCode as _OpenIDCode
@@ -70,9 +70,21 @@ def context_of(user: User | None) -> AuthContext | None:
 
 
 class S256CodeChallenge(CodeChallenge):  # type: ignore[misc]
-    """PKCE with S256 only: `plain` gives no protection if the code is intercepted."""
+    """
+    PKCE with S256 only: `plain` gives no protection if the code is intercepted. A public client
+    must send it, refused at the request itself; a confidential client may leave it out, its
+    secret and the nonce protecting the code (RFC 9700 2.1.1), and is checked when it sends it.
+    """
 
     SUPPORTED_CODE_CHALLENGE_METHOD = ["S256"]
+
+    def validate_code_challenge(self, grant: Any, redirect_uri: str) -> None:
+        payload = grant.request.payload.data
+        if not payload.get("code_challenge") and not payload.get("code_challenge_method"):
+            if grant.request.client.is_public:
+                raise InvalidRequestError("Missing 'code_challenge'")
+            return
+        super().validate_code_challenge(grant, redirect_uri)
 
 
 def _still_in(user: User, organization_id: uuid.UUID | None) -> bool:
@@ -119,6 +131,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[mis
         client = request.client
         if not g.get("consented_now") and not _never_reviewed(client):
             scope = list_to_scope([s for s in scope_to_list(scope) or [] if s != "offline_access"])
+        challenge = data.get("code_challenge")
         db().execute(delete(AuthorizationCode).where(AuthorizationCode.expires_at < utcnow() - CODE_KEPT))
         db().add(
             AuthorizationCode(
@@ -129,8 +142,8 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):  # type: ignore[mis
                 redirect_uri=request.payload.redirect_uri,
                 scope=scope,
                 nonce=data.get("nonce"),
-                code_challenge=data["code_challenge"],
-                code_challenge_method=data.get("code_challenge_method", "S256"),
+                code_challenge=challenge,
+                code_challenge_method=data.get("code_challenge_method", "S256") if challenge else None,
                 auth_time=login.created_at,
                 auth_methods=login.auth_methods,
                 organization_id=g.get("organization_id"),

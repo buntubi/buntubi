@@ -50,8 +50,9 @@ class AuthorizationCode(IdMixin, Base, AuthorizationCodeMixin):  # type: ignore[
     redirect_uri: Mapped[str] = mapped_column(String(2048))
     scope: Mapped[str] = mapped_column(String(1000))
     nonce: Mapped[str | None] = mapped_column(String(255))
-    code_challenge: Mapped[str] = mapped_column(String(128))
-    code_challenge_method: Mapped[str] = mapped_column(String(10))
+    # Absent for a confidential client that sent no PKCE (oauth/grants.py S256CodeChallenge).
+    code_challenge: Mapped[str | None] = mapped_column(String(128))
+    code_challenge_method: Mapped[str | None] = mapped_column(String(10))
     auth_time: Mapped[datetime]
     auth_methods: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list)
     # The organization the person acts in, which the tokens name; none for person-only tokens.

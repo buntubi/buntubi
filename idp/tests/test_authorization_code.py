@@ -147,20 +147,54 @@ def test_state_changes_need_the_csrf_token(browser: FlaskClient) -> None:
     )
 
 
-def test_pkce_is_required_and_must_be_s256(
-    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
-) -> None:
+def test_a_public_client_must_send_pkce_with_s256(app: Flask, browser: FlaskClient) -> None:
+    """Refused at the request itself, before anyone signs in: the app gets the error back."""
     add_client(app, first_party=True)
-    sign_up(browser, outbox)
     _, challenge = pkce()
     missing = authorize_query(challenge)
     del missing["code_challenge"], missing["code_challenge_method"]
     plain = authorize_query(challenge, code_challenge_method="plain")
     for query in (missing, plain):
         reply = browser.get("/oauth/authorize?" + urlencode(query))
-        # Refused, either directly or by redirecting with the error; never with a code.
-        assert "code=" not in (reply.location or "")
-        assert reply.status_code == 400 or "error=invalid_request" in (reply.location or "")
+        assert reply.status_code == 302 and reply.location.startswith(REDIRECT + "?"), reply.location
+        assert parse_qs(urlparse(reply.location).query)["error"] == ["invalid_request"]
+
+
+def test_a_confidential_client_may_leave_pkce_out(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    """Its secret and the nonce protect the code (RFC 9700 2.1.1); sent anyway, PKCE is checked."""
+    import base64
+
+    from buntubi.models import ClientSecret
+    from buntubi.security.tokens import hash_token
+
+    add_client(
+        app,
+        client_type="confidential",
+        token_endpoint_auth_method="client_secret_basic",
+        first_party=True,
+        secrets=[ClientSecret(secret_hash=hash_token("s3cret"), prefix="spa")],
+    )
+    sign_up(browser, outbox)
+    basic = {"Authorization": "Basic " + base64.b64encode(b"spa:s3cret").decode()}
+    verifier, challenge = pkce()
+    without = authorize_query(challenge)
+    del without["code_challenge"], without["code_challenge_method"]
+    reply = browser.get("/oauth/authorize?" + urlencode(without))
+    code = parse_qs(urlparse(reply.location).query)["code"][0]
+    exchange = {"grant_type": "authorization_code", "code": code, "redirect_uri": REDIRECT}
+    tokens = browser.post("/oauth/token", data=exchange, headers=basic)
+    assert tokens.status_code == 200 and "id_token" in tokens.json, tokens.json
+
+    reply = browser.get("/oauth/authorize?" + urlencode(authorize_query(challenge, nonce="n-second")))
+    code = parse_qs(urlparse(reply.location).query)["code"][0]
+    exchange = {"grant_type": "authorization_code", "code": code, "redirect_uri": REDIRECT}
+    assert browser.post("/oauth/token", data=exchange, headers=basic).status_code == 400, (
+        "the verifier is due"
+    )
+    tokens = browser.post("/oauth/token", data={**exchange, "code_verifier": verifier}, headers=basic)
+    assert tokens.status_code == 200, tokens.json
 
 
 def test_an_unregistered_redirect_uri_is_never_followed(
