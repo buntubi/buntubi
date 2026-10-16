@@ -132,7 +132,10 @@ def apps_of(user: User, locale: str) -> list[dict[str, Any]]:
             .group_by(AccessTokenRecord.client_id)
         )
     }
-    consents = {c.client_id: c for c in db().scalars(select(Consent).where(Consent.user_id == user.id))}
+    # One consent for the person and one per organization they named: the app is listed once.
+    consents: dict[Any, list[Consent]] = {}
+    for one in db().scalars(select(Consent).where(Consent.user_id == user.id)):
+        consents.setdefault(one.client_id, []).append(one)
     ids = set(consents) | set(usage)
     if not ids:
         return []
@@ -140,11 +143,14 @@ def apps_of(user: User, locale: str) -> list[dict[str, Any]]:
     brand = get_settings().brand_name
     apps = []
     for client in clients:
-        consent = consents.get(client.id)
-        if consent is None and not client.first_party:
+        given = consents.get(client.id, [])
+        if not given and not client.first_party:
             continue
         first, last = usage.get(client.id, (None, None))
-        scopes = list(consent.scopes) if consent else (client.scope or "").split()
+        scopes = (
+            list(dict.fromkeys(s for c in given for s in c.scopes)) if given else (client.scope or "").split()
+        )
+        since = min(c.granted_at for c in given) if given else first
         apps.append(
             {
                 "id": client.client_id,
@@ -154,7 +160,7 @@ def apps_of(user: User, locale: str) -> list[dict[str, Any]]:
                 if client.first_party
                 else (client.organization.name if client.organization else ""),
                 "platform": client.first_party,
-                "since": _iso(consent.granted_at if consent else first),
+                "since": _iso(since),
                 "last_used_at": _iso(last),
                 "scopes": _scope_texts([s for s in scopes if s != "openid"], locale),
             }
@@ -169,9 +175,12 @@ def remove_app(user: User, client_id: str) -> Client:
         raise AccountError("not_found")
     if client.first_party:
         raise AccountError("platform_app")
-    consent = db().scalar(select(Consent).where(Consent.user_id == user.id, Consent.client_id == client.id))
-    if consent is None:
+    given = (
+        db().scalars(select(Consent).where(Consent.user_id == user.id, Consent.client_id == client.id)).all()
+    )
+    if not given:
         raise AccountError("not_found")
-    db().delete(consent)
+    for consent in given:
+        db().delete(consent)
     _revoke_tokens(user, client_id=client.id)
     return client

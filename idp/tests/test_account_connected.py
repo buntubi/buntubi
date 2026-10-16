@@ -97,3 +97,31 @@ def test_connected_apps_list_and_remove_access(
         )
         assert db().scalar(select(AccessTokenRecord.revoked_at).where(AccessTokenRecord.jti == "b1")) is None
     assert browser.get("/api/account/activity").json["events"][0]["kind"] == "app_access_removed"
+
+
+def test_removing_an_app_takes_back_every_consent_given_to_it(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    """One for the person and one per organization: the account lists the app once, removes all."""
+    from buntubi.services import platform as p
+
+    csrf = sign_up(browser, outbox)
+    add_client(app, client_id="kora", name="Kora Sync")
+    with app.app_context():
+        user = db().scalar(select(User).where(User.email == "awa@example.test"))
+        kora = db().scalar(select(Client).where(Client.client_id == "kora"))
+        assert user and kora
+        acme = p.create_organization(user, "ACME", "", None)
+        db().add(Consent(user_id=user.id, client_id=kora.id, scopes=["openid", "profile"]))
+        db().add(
+            Consent(user_id=user.id, client_id=kora.id, organization_id=acme.id, scopes=["openid", "email"])
+        )
+        db().commit()
+
+    apps = browser.get("/api/account/apps").json["apps"]
+    assert [a["id"] for a in apps] == ["kora"]
+    assert sorted(s["name"] for s in apps[0]["scopes"]) == ["email", "profile"]
+    assert api(browser, "DELETE", "/api/account/apps/kora", None, csrf).status_code == 200
+    assert browser.get("/api/account/apps").json["apps"] == []
+    with app.app_context():
+        assert db().scalars(select(Consent)).all() == []
