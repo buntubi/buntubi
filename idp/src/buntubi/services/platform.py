@@ -34,9 +34,10 @@ from buntubi.models import (
     User,
 )
 from buntubi.security.tokens import new_token
-from buntubi.services import mail
+from buntubi.services import mail, webhooks
 from buntubi.services.accounts import AccountError, normalize_email
 from buntubi.services.credentials import issue_api_key, issue_client_secret
+from buntubi.services.webhooks import Event, InvitationData
 
 MAX_ORGANIZATIONS = 10
 MAX_APPS = 20
@@ -218,6 +219,9 @@ def create_organization(user: User, name: str, description: str, support_email: 
     organization.members.append(OrganizationMember(user_id=user.id, role="owner"))
     db().add(organization)
     db().flush()
+    webhooks.organization_changed(
+        organization, Event.ORGANIZATION_CREATED, owner=webhooks.member_data(organization.members[0])
+    )
     plugins.emit("organization.created", {"organization": str(organization.id), "owner": str(user.id)})
     return organization
 
@@ -246,6 +250,7 @@ def update_organization(
         organization.description = description
     if support_email is not UNCHANGED:
         organization.support_email = str(support_email).lower() if support_email else None
+    webhooks.organization_changed(organization, Event.ORGANIZATION_UPDATED)
     return organization
 
 
@@ -256,6 +261,12 @@ def delete_organization(member: OrganizationMember) -> None:
     organization = member.organization
     if organization.is_platform:
         raise PlatformError("platform_organization", 409)
+    forget_organization(organization)
+
+
+def forget_organization(organization: Organization) -> None:
+    """Deletes it, its products told first: every way of deleting one comes through here."""
+    webhooks.organization_changed(organization, Event.ORGANIZATION_DELETED)
     db().delete(organization)
 
 
@@ -268,10 +279,13 @@ def transfer_ownership(actor: OrganizationMember, member: OrganizationMember) ->
     if member.role == "guest":
         raise PlatformError("guest_cannot_own", 422)
     writable(actor.organization)
+    previous = member.role
     member.role = "owner"
     member.portal_role = None
     actor.role = "admin"
     db().flush()
+    for changed, before in ((member, previous), (actor, "owner")):
+        webhooks.member_changed(changed, Event.MEMBER_ROLE_CHANGED, previous_role=before)
 
 
 def _app_ids(organization: Organization, client_ids: list[str]) -> list[uuid.UUID]:
@@ -318,6 +332,7 @@ def add_member(
     )
     organization.members.append(member)
     db().flush()
+    webhooks.member_changed(member, Event.MEMBER_ADDED)
     return member
 
 
@@ -429,14 +444,24 @@ def accept_invitations(user: User) -> list[Organization]:
         invitation.accepted_at = now
         if any(m.user_id == user.id for m in organization.members):
             continue
-        organization.members.append(
-            OrganizationMember(
-                user_id=user.id,
-                role=invitation.role,
-                portal_role=invitation.portal_role,
-                app_ids=list(invitation.app_ids),
-            )
+        member = OrganizationMember(
+            user_id=user.id,
+            role=invitation.role,
+            portal_role=invitation.portal_role,
+            app_ids=list(invitation.app_ids),
         )
+        organization.members.append(member)
+        db().flush()
+        webhooks.emit(
+            organization.id,
+            Event.INVITATION_ACCEPTED,
+            {
+                "invitation": InvitationData(
+                    id=str(invitation.id), email=invitation.email, role=invitation.role
+                )
+            },
+        )
+        webhooks.member_changed(member, Event.MEMBER_ADDED)
         joined.append(organization)
     db().flush()
     return joined
@@ -471,6 +496,7 @@ def change_member(
     else:
         new_portal = portal_role
     _check_portal_role(new_role, new_portal)
+    previous = member.role
     if new_role != member.role:
         _check_role_change(actor, new_role)
         if member.role == "owner":
@@ -482,6 +508,9 @@ def change_member(
     if client_ids is not None:
         member.app_ids = _app_ids(member.organization, client_ids)
     db().flush()
+    # The portal's own role and app list are the portal's: products hear of the role only.
+    if member.role != previous:
+        webhooks.member_changed(member, Event.MEMBER_ROLE_CHANGED, previous_role=previous)
     _cut_member_access(member.organization)
 
 
@@ -495,6 +524,7 @@ def remove_member(actor: OrganizationMember, member: OrganizationMember) -> None
             _check_role_change(actor, "owner")
     if member.role == "owner" and len(owners_of(organization)) == 1:
         raise PlatformError("last_owner", 409)
+    webhooks.member_changed(member, Event.MEMBER_REMOVED)
     organization.members.remove(member)
     db().flush()
     _cut_member_access(organization)
@@ -568,8 +598,10 @@ def join_platform(admin: User, organization: Organization | None = None) -> None
         return
     if any(m.user_id == admin.id for m in organization.members):
         return
-    organization.members.append(OrganizationMember(user_id=admin.id, role="owner"))
+    member = OrganizationMember(user_id=admin.id, role="owner")
+    organization.members.append(member)
     db().flush()
+    webhooks.member_changed(member, Event.MEMBER_ADDED)
 
 
 def grant_admin(user: User) -> None:
@@ -587,6 +619,14 @@ def revoke_admin(user: User) -> None:
 
 def leave_platform(user: User) -> None:
     """Takes a former admin out of the platform organization."""
+    seats = db().scalars(
+        select(OrganizationMember).where(
+            OrganizationMember.user_id == user.id,
+            OrganizationMember.organization_id.in_(select(Organization.id).where(Organization.is_platform)),
+        )
+    )
+    for seat in seats:
+        webhooks.member_changed(seat, Event.MEMBER_REMOVED)
     db().execute(
         delete(OrganizationMember).where(
             OrganizationMember.user_id == user.id,
@@ -988,6 +1028,7 @@ def suspend(organization: Organization, reason: str) -> None:
     organization.suspended_reason = reason
     for client in apps_of(organization):
         _revoke_tokens(client)
+    webhooks.organization_changed(organization, Event.ORGANIZATION_SUSPENDED)
     plugins.emit("organization.suspended", {"organization": str(organization.id), "reason": reason})
 
 
@@ -1003,6 +1044,7 @@ def remove_test_user(organization: Organization, email: str) -> None:
 def restore(organization: Organization) -> None:
     organization.suspended_at = None
     organization.suspended_reason = None
+    webhooks.organization_changed(organization, Event.ORGANIZATION_RESTORED)
     plugins.emit("organization.restored", {"organization": str(organization.id)})
 
 

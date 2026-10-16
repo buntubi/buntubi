@@ -19,7 +19,8 @@ from buntubi.models import (
     TotpCredential,
     User,
 )
-from buntubi.services import backchannel, connected, passkeys, profile, retention
+from buntubi.services import backchannel, connected, passkeys, profile, retention, webhooks
+from buntubi.services.webhooks import Event
 
 
 def export(user: User, here: set[Any]) -> dict[str, Any]:
@@ -141,6 +142,9 @@ def delete(user: User, *, source: str) -> None:
             select(LoginSession.id).where(LoginSession.user_id == user.id, LoginSession.revoked_at.is_(None))
         )
     )
+    # The organizations it was in hear that it left, before its memberships go with it.
+    for seat in db().scalars(select(OrganizationMember).where(OrganizationMember.user_id == user.id)):
+        webhooks.member_changed(seat, Event.MEMBER_REMOVED)
     retention.forget_in_audit(user.id, user.email)
     # Not through audit.record: that would keep the address and browser of the person just forgotten.
     db().add(AuditEvent(event="account.deleted", details={"source": source, "account": str(user.id)}))

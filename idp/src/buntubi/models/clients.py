@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Any, Literal
 
 from authlib.oauth2.rfc6749 import ClientMixin, list_to_scope, scope_to_list
-from sqlalchemy import Boolean, ForeignKey, String, select
+from sqlalchemy import Boolean, ForeignKey, LargeBinary, String, select
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -78,6 +78,12 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     # Whether its tokens name an organization the person acts in: "none", "optional" (when the
     # request names one) or "required" (the person picks one when the request names none).
     organization_usage: Mapped[str] = mapped_column(String(8), default="none", server_default="none")
+    # Where organization events go (services/webhooks.py), the secret that signs them (sealed:
+    # it is read back to sign), and which: "linked" (the organizations the app works with) or
+    # "all" (every organization, for the platform's own products).
+    webhook_url: Mapped[str | None] = mapped_column(String(2048))
+    webhook_secret: Mapped[bytes | None] = mapped_column(LargeBinary)
+    webhook_events: Mapped[str] = mapped_column(String(8), default="linked", server_default="linked")
     # How the sign-in screens look for this client: {"name", "logo", "accent", "skin"}.
     brand: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     disabled_at: Mapped[datetime | None]

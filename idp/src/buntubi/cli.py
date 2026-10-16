@@ -205,7 +205,7 @@ def register(app: Flask) -> None:
                 organization=str(organization.id),
                 name=organization.name,
             )
-            db().delete(organization)
+            platform.forget_organization(organization)
         for user in found:
             closing.delete(user, source="cli")
         db().commit()
