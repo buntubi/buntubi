@@ -22,7 +22,7 @@ in the [repository README](../README.md). Plugins are in [docs/plugins.md](../do
 | `/api/plugins/<id>/*` | Plugin pages in the console and portal | Each plugin's own API |
 | `/openapi.json` | Developers, Postman | The OAuth endpoints, the developer, organizations and admin APIs |
 
-Grants: authorization code with PKCE, refresh token (rotated, with reuse detection), client
+Grants: authorization code with PKCE (S256, required for public clients), refresh token (rotated, with reuse detection), client
 credentials, and the device code. Tokens are JWTs signed with the newest key in
 `IDP_SIGNING_KEYS_DIR`; every key in the directory still verifies.
 

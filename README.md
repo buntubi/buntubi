@@ -1,8 +1,129 @@
-# Identity provider
+# Buntubi
 
-An OAuth 2.1 and OpenID Connect provider with a developer portal and an owner console. One
-deployment serves one brand: its own products sign people in through it, and outside developers
-register apps that call those products' APIs.
+Buntubi is an identity platform: an OAuth 2.1 and OpenID Connect provider, a developer portal and
+an owner console, deployed together. One deployment serves one brand. Its own products sign
+people in through it, outside developers register apps that call those products' APIs, and
+organizations, their members and roles live in it, shared by every product.
+
+It is white-label: the name, colours, logo and links people see come from the deployment's
+settings, never from the code.
+
+## What it does
+
+### For the people who sign in
+
+- One account per email address, created with a verified address.
+- Sign-in with a password, a passkey, or a password and a second step. The second step is a code
+  from an authenticator app (with one-time backup codes) or a passkey. Once an account has one,
+  a password alone no longer signs in.
+- After sign-up, a passkey and two-step sign-in are offered once; both can be added later.
+- Several accounts in one browser, with a picker.
+- Consent per app: a person sees what an app asks for and allows it once; an app that asks for
+  more, or for another organization, asks again.
+- An account area: personal information and photo, email change, security (password, passkeys,
+  two-step, backup codes, recent activity), devices with their sessions, connected apps with a
+  way to remove each, a download of their data in JSON, and account deletion.
+
+### For apps
+
+- Sign-in with the authorization code flow and OpenID Connect, PKCE with S256.
+- Access tokens as signed JWTs that an API checks against the published keys, or by
+  introspection. ID tokens, the userinfo endpoint and discovery.
+- Refresh tokens, rotated at each use, with reuse detection: a copied token ends its whole
+  family. `offline_access` keeps an app signed in after the browser session ends.
+- Sign-out everywhere a session reached: the sign-out endpoint, a session check for open pages,
+  and back-channel logout to every app that took part.
+- Server-to-server access (client credentials), devices without a keyboard (device flow), and
+  API keys for developers' scripts.
+- Tokens bound to an organization (`org_id`, `org_role`), when an app asks for one.
+
+### Organizations
+
+- Organizations with five roles shared by every product: owner, admin, billing, member, guest.
+  Each product keeps its own finer roles on top.
+- Invitations by email, ownership transfer, and suspension by the platform's admins.
+- The organizations API (`/v1/organizations`), which products call as the signed-in person to
+  build their own team screens on the same rules.
+
+### For developers: the portal
+
+- Apps start in a sandbox, open to the organization's members and test users, and go live; an
+  app asking for sensitive scopes goes live after a review.
+- A catalogue of API products and their scopes, client secrets with rotation, API keys, test
+  users, redirect addresses, and the brand shown on the consent screen.
+- The OpenAPI description at `/openapi.json`.
+
+### For the owner of the deployment: the console
+
+- Accounts (search, disable, reset two-step, sign out everywhere, admin role), organizations
+  (suspend, restore), app reviews, the catalogue, the platform's own apps and the audit log.
+- Open to admins with two-step sign-in only.
+
+### Brand and extension
+
+- The deployment's name, colours, logo, links and the look of the sign-in pages.
+- Plugins: Python plugins add products, scopes, token claims and hooks to the provider; UI
+  plugins add pages to the console and the portal and a look to the sign-in pages, mounted at
+  run time without rebuilding the images ([docs/plugins.md](docs/plugins.md)).
+
+### Security
+
+- Passwords hashed with scrypt, codes and refresh tokens stored as hashes, client secrets shown
+  once.
+- Rate limits on every credential check, a pause after repeated wrong passwords, CSRF checks on
+  every change, a strict content security policy on the provider's pages, and security headers
+  on the console and the portal.
+- An audit log of every account, app and admin action, and data retention with a daily prune.
+
+## Standards
+
+| Specification | Supported |
+|---|---|
+| OAuth 2.0 (RFC 6749) and Bearer tokens (RFC 6750) | Authorization code, refresh token and client credentials grants; the token in a header, or for userinfo also in a form body |
+| OAuth 2.1 and the OAuth security practice (RFC 9700) | No implicit or password grant; exact redirect addresses; PKCE required for public clients, optional for confidential ones; refresh token rotation |
+| PKCE (RFC 7636) | S256 only |
+| Token revocation (RFC 7009) and introspection (RFC 7662) | Both; introspection for confidential clients |
+| Device authorization (RFC 8628) | Yes |
+| JWT access tokens (RFC 9068) | Yes, signed RS256, `typ` `at+jwt` |
+| Authorization server issuer identification (RFC 9207) | `iss` in every authorization answer |
+| OpenID Connect Core 1.0 | Code flow; `prompt` none, login, consent and select_account; `max_age`, `id_token_hint`, `nonce`; standard claims for the profile, email, phone and address scopes. `login_hint`, `ui_locales`, `claims_locales` and `display` are accepted and ignored |
+| OpenID Connect Discovery 1.0 | `/.well-known/openid-configuration` and the key set |
+| OpenID Connect RP-Initiated Logout 1.0 | Yes |
+| OpenID Connect Session Management 1.0 | Yes |
+| OpenID Connect Back-Channel Logout 1.0 | Yes, with the session id |
+
+Not supported: the implicit and hybrid flows, `form_post`, dynamic client registration,
+front-channel logout, pairwise subject identifiers, request objects (`request` and
+`request_uri` are refused as unsupported), the `claims` parameter, `acr_values`, and client
+authentication by signed JWT.
+
+**Conformance.** The OpenID Foundation conformance suite was run locally against the Basic OP,
+Config OP, RP-Initiated Logout, Session Management and Back-Channel Logout profiles, with no
+failure. Warnings remain on optional points: the ID token carries `email`, which the specification
+prefers to leave to userinfo, and userinfo has no value for profile claims the platform does not
+keep (birthdate, nickname, website and the like). This is a local run, not a certification.
+
+## Connecting an app
+
+1. **Register the app** in the portal, in an organization: its redirect addresses and the scopes
+   it needs. A public app (in the browser, on a phone) has no secret; a server app gets one.
+2. **Read the discovery document** at `<issuer>/.well-known/openid-configuration`: it gives every
+   endpoint and the key set. Any OpenID Connect library configures itself from it.
+3. **Sign people in** with the authorization code flow: send them to the authorization endpoint
+   with `response_type=code`, the app's `client_id`, a registered `redirect_uri`, the scopes
+   (`openid` first), a `state` and a `nonce`, and PKCE (`code_challenge` with S256, required for a
+   public app). Exchange the code at the token endpoint.
+4. **Use the tokens.** The ID token says who signed in (`sub`, the person's stable id, and the
+   claims the scopes allow). The access token goes to APIs, which check its signature against the
+   key set, its `aud` and expiry, or ask the introspection endpoint when they need the live
+   state. Access tokens last 5 minutes; with `offline_access`, a refresh token renews them.
+5. **Sign out** through the end session endpoint with the ID token as `id_token_hint`, and
+   register a `backchannel_logout_uri` to hear when a session ends elsewhere.
+6. **Work in an organization**, when the app needs one: set its organization setting in the
+   portal and pass `organization=<id>`, or let people pick. The tokens then carry `org_id` and
+   `org_role`, and the organizations API gives the members.
+
+Every endpoint, request and answer is in `/openapi.json`, which Postman imports.
 
 ## Repository
 
@@ -17,15 +138,19 @@ Each part has its own README with its layout, settings and commands.
 | `packages/elements/` | The custom elements the portal and console are built from |
 | `packages/sdk/` | Types, services and the Vite plugin shared by the apps and by UI plugins |
 | `packages/shell/`, `packages/skin/`, `packages/theme/` | Layout, skin and colours of the apps |
+| `docs/running.md` | Starting everything from a terminal or with Docker, and every day after |
+| `docs/operations.md` | A deployment on a server: first deploy, upgrades, keys, backups |
 | `docs/plugins.md` | Writing and installing plugins |
 | `docs/manual-testing.md` | A walk through every screen on a local install |
+| `docker/example/` | A complete deployment for one machine with Docker |
 
-## How it fits together
+## Concepts
 
 **Accounts.** One person, one email. An account can hold two roles from the command line or the
 console:
 
-- `admin`: opens the owner console. The console also requires two-step sign-in.
+- `admin`: opens the owner console. The console also requires a second factor at sign-in: an
+  authenticator app or a passkey.
 - `superadmin`: an admin who gives and takes the admin role in the console. A superadmin is
   created only from the command line, before the platform is deployed, and the console cannot
   disable or demote one.
