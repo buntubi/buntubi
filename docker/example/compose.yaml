@@ -71,6 +71,9 @@ services:
       IDP_SIGNING_KEYS_DIR: /keys
       IDP_PLUGINS_SYNC_ON_START: "false"
     command: ["flask", "webhooks", "deliver"]
+    # The image checks its web server, which this process does not run.
+    healthcheck:
+      disable: true
     volumes:
       - ./keys:/keys
     restart: unless-stopped
