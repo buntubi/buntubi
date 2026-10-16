@@ -87,6 +87,9 @@ products and scopes as code; entries added in the console are edited there.
 
 ## First install on your machine
 
+[docs/running.md](docs/running.md) has both ways side by side: from this checkout in a
+terminal, or from the images with Docker, with a ready deployment in `docker/example/`.
+
 ```bash
 ./scripts/install.sh
 ```

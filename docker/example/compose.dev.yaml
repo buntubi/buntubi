@@ -1,0 +1,17 @@
+# The images `pnpm images:dev` builds from this repository's working tree, in place of a
+# published version. Nothing is pulled.
+#
+#   docker compose -f compose.yaml -f compose.dev.yaml up -d
+
+services:
+  provider:
+    image: ghcr.io/buntubi/idp-provider:dev
+    pull_policy: never
+
+  console:
+    image: ghcr.io/buntubi/idp-console:dev
+    pull_policy: never
+
+  portal:
+    image: ghcr.io/buntubi/idp-portal:dev
+    pull_policy: never

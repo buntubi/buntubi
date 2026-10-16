@@ -37,7 +37,8 @@ directory must be writable by the image's user (uid 10001). Give those env files
 and portal containers.
 
 Then start the three containers. The provider listens on 8000 and the console and portal on
-3420 and 3410. The provider's health check is `GET /healthz`: `ok`, or `unavailable` with
+3420 and 3410. `docker/example/` is a working compose file for one machine to start from, and
+[running](running.md) the commands for every day. The provider's health check is `GET /healthz`: `ok`, or `unavailable` with
 status 503 when the database does not answer.
 
 ## UI plugins

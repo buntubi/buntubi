@@ -1,0 +1,82 @@
+# Buntubi from its published images, on one machine: PostgreSQL, the provider, the console and
+# the portal at http://localhost:5010, :3420 and :3410. docs/running.md walks through it.
+#
+# First run, from this folder:
+#   cp .env.example .env               # then set POSTGRES_PASSWORD
+#   cp provider.env.example provider.env    # then set IDP_SECRET_KEY
+#   cp console.env.example console.env      # then set SESSION_SECRET
+#   cp portal.env.example portal.env        # then set SESSION_SECRET
+#   cp platform.example.toml platform.toml
+#   mkdir -p keys ui-plugins
+#   docker compose up -d postgres
+#   docker compose run --rm provider alembic upgrade head
+#   docker compose run --rm provider flask keys generate
+#   docker compose run --rm -it provider flask admin create
+#   docker compose run --rm -v .:/deployment provider flask platform setup --file /deployment/platform.toml
+#   docker compose up -d
+#
+# The console and the portal share the provider's network namespace, so localhost:5010, :3420
+# and :3410 mean the same thing to the browser and to the containers.
+#
+# Images built from this repository's working tree (`pnpm images:dev`) instead of a published
+# version: add compose.dev.yaml, `docker compose -f compose.yaml -f compose.dev.yaml ...`.
+
+name: buntubi
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: idp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: idp
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "idp", "-d", "idp"]
+      interval: 5s
+      retries: 10
+
+  provider:
+    image: ghcr.io/buntubi/idp-provider:${BUNTUBI_VERSION:-0.5.1}
+    env_file: provider.env
+    environment:
+      IDP_DATABASE_URL: postgresql+psycopg://idp:${POSTGRES_PASSWORD}@postgres:5432/idp
+      IDP_SIGNING_KEYS_DIR: /keys
+    # The issuer is http://localhost:5010, so the provider listens there inside the namespace too.
+    command: ["gunicorn", "--bind", "0.0.0.0:5010", "--access-logfile", "-", "buntubi.app:create_app()"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(urllib.request.urlopen('http://127.0.0.1:5010/healthz', timeout=4).status != 200)"]
+      interval: 10s
+      start_period: 20s
+    volumes:
+      - ./keys:/keys
+      - ./ui-plugins:/app/ui-plugins:ro
+    ports:
+      - "5010:5010"
+      - "3420:3420"
+      - "3410:3410"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  console:
+    image: ghcr.io/buntubi/idp-console:${BUNTUBI_VERSION:-0.5.1}
+    env_file: console.env
+    volumes:
+      - ./ui-plugins:/app/ui-plugins:ro
+    network_mode: service:provider
+    depends_on:
+      - provider
+
+  portal:
+    image: ghcr.io/buntubi/idp-portal:${BUNTUBI_VERSION:-0.5.1}
+    env_file: portal.env
+    volumes:
+      - ./ui-plugins:/app/ui-plugins:ro
+    network_mode: service:provider
+    depends_on:
+      - provider
+
+volumes:
+  postgres:
