@@ -4,6 +4,8 @@ introspection, userinfo, device authorization and logout.
 """
 
 import uuid
+from collections.abc import Callable
+from functools import wraps
 from typing import Any
 from urllib.parse import urlencode
 
@@ -67,6 +69,10 @@ def discovery() -> Response:
         introspection_endpoint_auth_methods_supported=["client_secret_basic", "client_secret_post"],
         code_challenge_methods_supported=["S256"],
         authorization_response_iss_parameter_supported=True,
+        # Said outright: an absent request_uri_parameter_supported means true (OIDC Discovery 3).
+        request_parameter_supported=False,
+        request_uri_parameter_supported=False,
+        claims_parameter_supported=False,
         prompt_values_supported=["none", "login", "consent", "select_account"],
         claims_supported=[
             "sub",
@@ -122,6 +128,12 @@ def authorize() -> Any:
         if getattr(error, "redirect_uri", None):
             response = _with_session_state(response, request.args.get("client_id", ""))
         return response
+
+    # OIDC Core 6: request objects are not supported, and refused as such rather than ignored,
+    # which would drop the state and nonce they carry.
+    for parameter in ("request", "request_uri"):
+        if request.args.get(parameter):
+            return _error_redirect(grant, f"{parameter}_not_supported")
 
     if login is None or "login" in prompt or _too_old(login):
         if "none" in prompt:
@@ -240,7 +252,25 @@ def device_authorization() -> Response:
     return response
 
 
+def _bearer_from_body(view: Callable[..., Response]) -> Callable[..., Response]:
+    """RFC 6750 2.2: a form-encoded POST may carry the token as `access_token` instead of a header."""
+
+    @wraps(view)
+    def wrapper(*args: Any, **kwargs: Any) -> Response:
+        if (
+            request.method == "POST"
+            and "Authorization" not in request.headers
+            and request.mimetype == "application/x-www-form-urlencoded"
+            and (token := request.form.get("access_token"))
+        ):
+            request.environ["HTTP_AUTHORIZATION"] = f"Bearer {token}"
+        return view(*args, **kwargs)
+
+    return wrapper
+
+
 @bp.route("/oauth/userinfo", methods=["GET", "POST"])
+@_bearer_from_body
 @require_token("openid")
 def userinfo() -> Response:
     from authlib.integrations.flask_oauth2 import current_token

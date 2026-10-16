@@ -431,3 +431,35 @@ def test_an_email_that_cannot_leave_is_said_and_nothing_is_kept(
         assert db().scalar(select(User).where(User.email == "awa@example.test")) is None, (
             "signing up again works"
         )
+
+
+def test_request_objects_are_refused_as_unsupported(app: Flask, browser: FlaskClient) -> None:
+    """OIDC Core 6: not supported, so refused with the named errors rather than silently ignored,
+    which would drop the state and nonce the object carries. Discovery says so too."""
+    add_client(app, first_party=True)
+    _, challenge = pkce()
+    for parameter, error in (
+        ("request", "request_not_supported"),
+        ("request_uri", "request_uri_not_supported"),
+    ):
+        query = authorize_query(challenge, **{parameter: "eyJhbGciOiJub25lIn0.e30."})
+        reply = browser.get("/oauth/authorize?" + urlencode(query))
+        assert reply.status_code == 302 and reply.location.startswith(REDIRECT + "?"), reply.location
+        params = parse_qs(urlparse(reply.location).query)
+        assert params["error"] == [error] and params["state"] == ["s1"]
+    discovery = browser.get("/.well-known/openid-configuration").json
+    assert discovery["request_parameter_supported"] is False
+    assert discovery["request_uri_parameter_supported"] is False
+    assert discovery["claims_parameter_supported"] is False
+
+
+def test_userinfo_takes_the_token_in_a_form_body(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    """RFC 6750 2.2, which OIDC Core 5.3.1 allows for the userinfo endpoint."""
+    tokens = signed_in_tokens(app, browser, outbox)
+    reply = browser.post("/oauth/userinfo", data={"access_token": tokens["access_token"]})
+    assert reply.status_code == 200 and reply.json["email"] == "awa@example.test", reply.get_data(
+        as_text=True
+    )
+    assert browser.post("/oauth/userinfo", data={"access_token": "nope"}).status_code == 401
