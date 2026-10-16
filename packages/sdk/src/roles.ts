@@ -4,7 +4,7 @@
  * PORTAL_ABILITIES). Pages use it to offer only what the provider would accept; the provider still
  * checks every call.
  */
-import type { PortalRole, Role } from './types.js';
+import { PORTAL_ROLES, type PortalRole, type Role } from './types.js';
 
 export type Ability =
   | 'read'
@@ -53,9 +53,8 @@ export function can(membership: Membership | null | undefined, ability: Ability)
  */
 export type Position = Role | PortalRole;
 
-export const POSITIONS: Position[] = ['owner', 'admin', 'billing', 'developer', 'reviewer', 'viewer', 'member', 'guest'];
-
-const PORTAL_ROLES: PortalRole[] = ['developer', 'reviewer', 'viewer'];
+/** In the order the team screens offer them: the portal roles stand between billing and member. */
+export const POSITIONS = ['owner', 'admin', 'billing', 'developer', 'reviewer', 'viewer', 'member', 'guest'] as const satisfies readonly Position[];
 
 /** The position a membership shows as. */
 export const positionOf = (membership: Membership): Position =>
@@ -63,7 +62,7 @@ export const positionOf = (membership: Membership): Position =>
 
 /** The role and portal role a position stands for. */
 export const rolesOf = (position: Position): { role: Role; portal_role: PortalRole | null } =>
-  (PORTAL_ROLES as string[]).includes(position)
+  (PORTAL_ROLES as readonly string[]).includes(position)
     ? { role: 'member', portal_role: position as PortalRole }
     : { role: position as Role, portal_role: null };
 

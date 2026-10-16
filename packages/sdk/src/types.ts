@@ -2,11 +2,14 @@
 import type { PostalAddress } from './account.js';
 
 /** A person's role in an organization, shared by every product. */
-export type Role = 'owner' | 'admin' | 'billing' | 'member' | 'guest';
+export const ROLES = ['owner', 'admin', 'billing', 'member', 'guest'] as const;
+export type Role = (typeof ROLES)[number];
 /** The developer portal's own role, which a member or a billing person may also hold. */
-export type PortalRole = 'developer' | 'reviewer' | 'viewer';
+export const PORTAL_ROLES = ['developer', 'reviewer', 'viewer'] as const;
+export type PortalRole = (typeof PORTAL_ROLES)[number];
 /** Whether an app's tokens name an organization the person acts in: never, when asked, or always. */
-export type OrganizationUsage = 'none' | 'optional' | 'required';
+export const ORGANIZATION_USAGES = ['none', 'optional', 'required'] as const;
+export type OrganizationUsage = (typeof ORGANIZATION_USAGES)[number];
 export type Environment = 'sandbox' | 'live';
 export type AppKind = 'consumer' | 'business' | 'web' | 'mobile' | 'backend' | 'internal';
 export type Platform = 'web' | 'ios' | 'android' | 'backend';

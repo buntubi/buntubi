@@ -1,7 +1,8 @@
 /** Whether an app's tokens name an organization, apart from how the card looks. */
-import type { OrganizationUsage } from '@buntubi/sdk/types';
+import { ORGANIZATION_USAGES, type OrganizationUsage } from '@buntubi/sdk/types';
 
-export const USAGES: OrganizationUsage[] = ['none', 'optional', 'required'];
+/** The choices, in the order the card offers them. */
+export const USAGES = ORGANIZATION_USAGES;
 
 export interface AppOrganizationsLabels {
   title: string;
