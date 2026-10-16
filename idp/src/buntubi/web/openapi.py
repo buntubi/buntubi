@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from pydantic.json_schema import models_json_schema
 
 from buntubi.config import get_settings
+from buntubi.services.webhooks import Event
 from buntubi.web import admin, developer, organizations
 
 bp = Blueprint("openapi", __name__)
@@ -226,6 +227,22 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
         }
     ),
     # The organizations API: an organization as the person sees it, its members and invitations.
+    "WebhookDelivery": obj(
+        {
+            "id": STRING,
+            "event_id": STRING,
+            "event_type": {"type": "string", "enum": [e.value for e in Event]},
+            "organization_id": STRING,
+            "status": {"type": "string", "enum": ["pending", "delivered", "failed"]},
+            "attempts": INT,
+            "last_status": {"type": ["integer", "null"]},
+            "last_error": MAYBE_STRING,
+            "created_at": TIME,
+            "last_attempt_at": {"type": ["string", "null"], "format": "date-time"},
+            "next_attempt_at": {"type": ["string", "null"], "format": "date-time"},
+            "delivered_at": {"type": ["string", "null"], "format": "date-time"},
+        }
+    ),
     "Membership": obj(
         {
             "id": STRING,
@@ -300,6 +317,8 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "platforms": {"type": "array", "items": PLATFORM},
             "products": STRINGS,
             "organization_usage": ORGANIZATION_USAGE,
+            "webhook_url": MAYBE_STRING,
+            "webhook_events": {"type": "string", "enum": ["linked", "all"]},
             "disabled": BOOL,
             "secrets": {"type": "array", "items": ref("Secret")},
             "created_at": TIME,
@@ -932,7 +951,14 @@ def _paths(d: str, a: str, oidc: str) -> dict[str, dict[str, Any]]:
                 "Create an app (sandbox)",
                 d,
                 DEVELOPER,
-                with_secret("app", "App", "client_secret"),
+                {
+                    "201": answer(
+                        obj(
+                            {"app": ref("App"), "client_secret": MAYBE_STRING, "webhook_secret": MAYBE_STRING}
+                        ),
+                        "Created; the client and webhook secrets are shown this once",
+                    )
+                },
                 request=body(ref("AppIn")),
                 params=["organization_id"],
             )
@@ -984,16 +1010,43 @@ def _paths(d: str, a: str, oidc: str) -> dict[str, dict[str, Any]]:
                 params=["client_id"],
             ),
             "patch": op(
-                "Change an app",
+                "Change an app; a first webhook address answers its secret, this once",
                 d,
                 DEVELOPER,
-                one("app", "App"),
+                {"200": answer(obj({"app": ref("App"), "webhook_secret": STRING}, required=["app"]))},
                 request=body(ref("AppPatch")),
                 params=["client_id"],
             ),
             "delete": op(
                 "Delete an app", d, DEVELOPER, {"200": answer(obj({"deleted": BOOL}))}, params=["client_id"]
             ),
+        },
+        "/developer/api/apps/{client_id}/webhook-secret": {
+            "post": op(
+                "A new webhook signing secret, shown this once; the previous one stops signing",
+                d,
+                DEVELOPER,
+                {"200": answer(obj({"webhook_secret": STRING}))},
+                params=["client_id"],
+            )
+        },
+        "/developer/api/apps/{client_id}/webhook-deliveries": {
+            "get": op(
+                "The app's last 50 webhook deliveries, newest first",
+                d,
+                DEVELOPER,
+                listing("WebhookDelivery"),
+                params=["client_id"],
+            )
+        },
+        "/developer/api/apps/{client_id}/webhook-deliveries/{delivery_id}/redeliver": {
+            "post": op(
+                "Send a webhook delivery again at the next pass",
+                d,
+                DEVELOPER,
+                one("delivery", "WebhookDelivery"),
+                params=["client_id", "delivery_id"],
+            )
         },
         "/developer/api/apps/{client_id}/overview": {
             "get": op(

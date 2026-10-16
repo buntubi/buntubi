@@ -10,6 +10,9 @@ export type PortalRole = (typeof PORTAL_ROLES)[number];
 /** Whether an app's tokens name an organization the person acts in: never, when asked, or always. */
 export const ORGANIZATION_USAGES = ['none', 'optional', 'required'] as const;
 export type OrganizationUsage = (typeof ORGANIZATION_USAGES)[number];
+/** Which organizations' events an app's webhook hears of: those it works with, or every one. */
+export const WEBHOOK_SCOPES = ['linked', 'all'] as const;
+export type WebhookScope = (typeof WEBHOOK_SCOPES)[number];
 export type Environment = 'sandbox' | 'live';
 export type AppKind = 'consumer' | 'business' | 'web' | 'mobile' | 'backend' | 'internal';
 export type Platform = 'web' | 'ios' | 'android' | 'backend';
@@ -82,6 +85,9 @@ export interface App {
   platforms: Platform[];
   products: string[];
   organization_usage: OrganizationUsage;
+  /** Where its organization events are posted; the signing secret is never read back. */
+  webhook_url: string | null;
+  webhook_events: WebhookScope;
   disabled: boolean;
   secrets: Secret[];
   created_at: string;

@@ -14,6 +14,7 @@ from authlib.integrations.flask_oauth2 import current_token
 from authlib.oauth2.rfc6749 import scope_to_list
 from flask import Blueprint, Response, abort, jsonify
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
+from sqlalchemy import select
 
 from buntubi import plugins
 from buntubi.config import get_settings
@@ -27,13 +28,14 @@ from buntubi.models import (
     OrganizationMember,
     Scope,
     User,
+    WebhookDelivery,
 )
 from buntubi.oauth.server import require_token
-from buntubi.services import audit, mfa
+from buntubi.services import audit, mfa, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import rotate_client_secret
 from buntubi.web.admin import Brand, review_json
-from buntubi.web.validation import RedirectUri, parse
+from buntubi.web.validation import RedirectUri, WebhookUrl, parse
 
 bp = Blueprint("developer", __name__, url_prefix="/developer/api")
 
@@ -107,6 +109,8 @@ class AppIn(BaseModel):
     platforms: list[Platform] = Field(default=[], max_length=4)
     products: list[str] = Field(default=[], max_length=50)
     organization_usage: OrganizationUsage = "none"
+    # Where organization events go; the signing secret is made with it and shown once.
+    webhook_url: WebhookUrl | None = None
 
 
 class AppPatch(BaseModel):
@@ -124,6 +128,11 @@ class AppPatch(BaseModel):
     platforms: list[Platform] | None = Field(default=None, max_length=4)
     products: list[str] | None = Field(default=None, max_length=50)
     organization_usage: OrganizationUsage | None = None
+    # null removes the webhook and its secret.
+    webhook_url: WebhookUrl | None = None
+    # An app hears of the organizations it works with; every organization is for the
+    # platform's own products, set in the platform file.
+    webhook_events: Literal["linked"] | None = None
 
 
 class TestUserIn(BaseModel):
@@ -239,6 +248,8 @@ def app_json(client: Client) -> dict[str, Any]:
         "platforms": client.platforms,
         "products": client.products,
         "organization_usage": client.organization_usage,
+        "webhook_url": client.webhook_url,
+        "webhook_events": client.webhook_events,
         "disabled": client.disabled_at is not None,
         "secrets": [secret_json(s) for s in client.secrets] if not client.is_public else [],
         "created_at": client.created_at.isoformat(),
@@ -488,9 +499,13 @@ def create_app(organization_id: str, me: User) -> tuple[Response, int]:
             organization_usage=data.organization_usage,
         ),
     )
+    webhook_secret = None
+    if data.webhook_url is not None:
+        client.webhook_url = data.webhook_url
+        webhook_secret = webhooks.set_secret(client)
     audit.record("developer.app_created", user=me, client=client)
     db().commit()
-    return jsonify(app=app_json(client), client_secret=secret), 201
+    return jsonify(app=app_json(client), client_secret=secret, webhook_secret=webhook_secret), 201
 
 
 @bp.get("/apps/<client_id>")
@@ -498,6 +513,66 @@ def create_app(organization_id: str, me: User) -> tuple[Response, int]:
 def get_app(client_id: str, me: User) -> Response:
     client, member = p.app_of(me, client_id)
     return jsonify(app=app_json(client), role=member.role, portal_role=member.portal_role)
+
+
+@bp.post("/apps/<client_id>/webhook-secret")
+@developer()
+def rotate_webhook_secret(client_id: str, me: User) -> Response:
+    """A new signing secret, shown this once; the previous one stops signing at once."""
+    client, _ = p.app_of(me, client_id, "edit_apps")
+    if client.webhook_url is None:
+        raise p.PlatformError("no_webhook", 409)
+    secret = webhooks.set_secret(client)
+    audit.record("developer.webhook_secret_rotated", user=me, client=client)
+    db().commit()
+    return jsonify(webhook_secret=secret)
+
+
+def delivery_json(delivery: WebhookDelivery) -> dict[str, Any]:
+    return {
+        "id": str(delivery.id),
+        "event_id": str(delivery.event_id),
+        "event_type": delivery.event.type,
+        "organization_id": str(delivery.event.organization_id),
+        "status": delivery.status,
+        "attempts": delivery.attempts,
+        "last_status": delivery.last_status,
+        "last_error": delivery.last_error,
+        "created_at": delivery.created_at.isoformat(),
+        "last_attempt_at": delivery.last_attempt_at.isoformat() if delivery.last_attempt_at else None,
+        "next_attempt_at": delivery.next_attempt_at.isoformat() if delivery.status == "pending" else None,
+        "delivered_at": delivery.delivered_at.isoformat() if delivery.delivered_at else None,
+    }
+
+
+@bp.get("/apps/<client_id>/webhook-deliveries")
+@developer()
+def webhook_deliveries(client_id: str, me: User) -> Response:
+    """The app's last 50 deliveries, newest first."""
+    client, _ = p.app_of(me, client_id)
+    rows = db().scalars(
+        select(WebhookDelivery)
+        .where(WebhookDelivery.client_id == client.id)
+        .order_by(WebhookDelivery.created_at.desc())
+        .limit(50)
+    )
+    return jsonify(items=[delivery_json(d) for d in rows])
+
+
+@bp.post("/apps/<client_id>/webhook-deliveries/<delivery_id>/redeliver")
+@developer()
+def redeliver_webhook(client_id: str, delivery_id: str, me: User) -> Response:
+    client, _ = p.app_of(me, client_id, "edit_apps")
+    delivery = db().scalar(
+        select(WebhookDelivery).where(
+            WebhookDelivery.id == p.parse_uuid(delivery_id), WebhookDelivery.client_id == client.id
+        )
+    )
+    if delivery is None:
+        raise p.PlatformError("not_found", 404)
+    webhooks.redeliver(delivery)
+    db().commit()
+    return jsonify(delivery=delivery_json(delivery))
 
 
 @bp.get("/apps/<client_id>/overview")
@@ -534,8 +609,21 @@ def update_app(client_id: str, me: User) -> Response:
         client.products = p.checked_products(patch.products)
     if patch.scopes is not None:
         p.set_app_scopes(client, patch.scopes)
+    webhook_secret = None
+    if "webhook_url" in fields:
+        if patch.webhook_url is None:
+            client.webhook_url, client.webhook_secret = None, None
+        else:
+            client.webhook_url = patch.webhook_url
+            # A first address gets a secret, shown this once; a changed one keeps its secret.
+            if client.webhook_secret is None:
+                webhook_secret = webhooks.set_secret(client)
+    if patch.webhook_events is not None:
+        client.webhook_events = patch.webhook_events
     audit.record("developer.app_updated", user=me, client=client, fields=sorted(fields))
     db().commit()
+    if webhook_secret is not None:
+        return jsonify(app=app_json(client), webhook_secret=webhook_secret)
     return jsonify(app=app_json(client))
 
 

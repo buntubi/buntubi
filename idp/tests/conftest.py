@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import requests
 from flask import Flask
 from flask.testing import FlaskClient
 from sqlalchemy import create_engine, text
@@ -183,3 +184,29 @@ def platform_scopes(app: Flask) -> Iterator[None]:
     with app.app_context():
         db().query(Scope).filter(Scope.name.in_(["billing.read", "billing.write"])).delete()
         db().commit()
+
+
+class Endpoint:
+    """Stands for the products' webhook URLs: records what was posted, answers what it is told."""
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+        self.answers: list[int | Exception] = []
+
+    def __call__(self, url: str, **kwargs: Any) -> Any:
+        self.calls.append({"url": url, **kwargs})
+        answer = self.answers.pop(0) if self.answers else 200
+        if isinstance(answer, Exception):
+            raise answer
+        response = requests.Response()
+        response.status_code = answer
+        return response
+
+
+@pytest.fixture
+def endpoint(monkeypatch: pytest.MonkeyPatch) -> Endpoint:
+    fake = Endpoint()
+    from buntubi.services import webhooks
+
+    monkeypatch.setattr(webhooks.requests, "post", fake)
+    return fake

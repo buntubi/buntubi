@@ -14,11 +14,13 @@ import uuid
 from datetime import timedelta
 from enum import StrEnum
 from typing import Any, TypedDict
+from urllib.parse import urlsplit
 
 import requests
 from sqlalchemy import or_, select
 from sqlalchemy.dialects.postgresql import insert
 
+from buntubi.config import get_settings
 from buntubi.db import db, utcnow
 from buntubi.models import (
     AppOrganization,
@@ -29,6 +31,8 @@ from buntubi.models import (
     WebhookEvent,
 )
 from buntubi.security import crypto
+from buntubi.security.addresses import public_ip, resolve
+from buntubi.security.tokens import new_token
 
 log = logging.getLogger(__name__)
 
@@ -185,6 +189,11 @@ def _send(delivery: WebhookDelivery) -> None:
     if not client.webhook_url or not client.webhook_secret or client.disabled_at is not None:
         delivery.status, delivery.last_error = "failed", "no_endpoint"
         return
+    # A name may resolve inside the network later than it was set: checked at each send.
+    host = urlsplit(client.webhook_url).hostname or ""
+    if not get_settings().local and not all(public_ip(a) for a in _addresses(host) or [""]):
+        delivery.status, delivery.last_error = "failed", "address_not_allowed"
+        return
     body = body_of(event)
     stamp = int(time.time())
     headers = {
@@ -231,6 +240,22 @@ def deliver_due(limit: int = 50) -> int:
         db().commit()
         tried += 1
     return tried
+
+
+def _addresses(host: str) -> list[str]:
+    return resolve(host)
+
+
+def new_secret() -> str:
+    """A signing secret, shown to the app once and kept sealed: the provider reads it back to sign."""
+    return f"whsec_{new_token()}"
+
+
+def set_secret(client: Client) -> str:
+    """A new signing secret for the app; the one it replaces stops signing at once."""
+    secret = new_secret()
+    client.webhook_secret = crypto.seal(secret)
+    return secret
 
 
 def redeliver(delivery: WebhookDelivery) -> None:

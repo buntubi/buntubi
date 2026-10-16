@@ -21,6 +21,7 @@ export interface NewApp {
   grant_types?: string[];
   brand?: { logo?: string };
   organization_usage?: OrganizationUsage;
+  webhook_url?: string | null;
 }
 
 /** A change to an app: a link set to null is removed. */

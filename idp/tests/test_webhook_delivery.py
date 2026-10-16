@@ -8,7 +8,6 @@ import hashlib
 import hmac
 import json
 from datetime import timedelta
-from typing import Any
 
 import pytest
 import requests
@@ -21,33 +20,9 @@ from buntubi.security import crypto
 from buntubi.services import mail, webhooks
 from buntubi.services import platform as p
 
-from conftest import add_client, sign_up
+from conftest import Endpoint, add_client, sign_up
 
 SECRET = "whsec_test_secret"
-
-
-class Endpoint:
-    """Stands for the products' webhook URLs: records what was posted, answers what it is told."""
-
-    def __init__(self) -> None:
-        self.calls: list[dict[str, Any]] = []
-        self.answers: list[int | Exception] = []
-
-    def __call__(self, url: str, **kwargs: Any) -> Any:
-        self.calls.append({"url": url, **kwargs})
-        answer = self.answers.pop(0) if self.answers else 200
-        if isinstance(answer, Exception):
-            raise answer
-        response = requests.Response()
-        response.status_code = answer
-        return response
-
-
-@pytest.fixture
-def endpoint(monkeypatch: pytest.MonkeyPatch) -> Endpoint:
-    fake = Endpoint()
-    monkeypatch.setattr(webhooks.requests, "post", fake)
-    return fake
 
 
 @pytest.fixture

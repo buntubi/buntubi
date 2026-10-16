@@ -20,7 +20,7 @@ from sqlalchemy import select
 from buntubi.db import db
 from buntubi.models import Client
 from buntubi.models.clients import GRANT_TYPES
-from buntubi.services import audit
+from buntubi.services import audit, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
 
@@ -50,6 +50,11 @@ class AppSpec:
     # "none", "optional" or "required": whether its tokens name an organization (models/clients.py).
     # Left out, the app keeps what it has.
     organization_usage: str | None = None
+    # Where its organization events go, which ("linked" or "all"), and where its signing secret
+    # is written. The file wins for what it names, as for the back-channel address.
+    webhook_url: str | None = None
+    webhook_events: str | None = None
+    webhook_secret: SecretTarget | None = None
     secret: SecretTarget | None = None
 
 
@@ -87,6 +92,19 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
     usage = entry.get("organization_usage")
     if usage not in (None, "none", "optional", "required"):
         raise SetupError(f"{where}: organization_usage is none, optional or required")
+    webhook_events = entry.get("webhook_events")
+    if webhook_events not in (None, "linked", "all"):
+        raise SetupError(f"{where}: webhook_events is linked or all")
+    webhook_secret = entry.get("webhook_secret")
+    webhook_target = None
+    if webhook_secret is not None:
+        if not (
+            isinstance(webhook_secret, dict) and webhook_secret.get("file") and webhook_secret.get("key")
+        ):
+            raise SetupError(f"{where}: webhook_secret = {{ file = ..., key = ... }}")
+        if not entry.get("webhook_url"):
+            raise SetupError(f"{where}: a webhook secret needs a webhook_url")
+        webhook_target = SecretTarget((base / webhook_secret["file"]).resolve(), webhook_secret["key"])
     secret = entry.get("secret")
     target = None
     if secret is not None:
@@ -107,6 +125,9 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
         homepage_url=entry.get("homepage_url"),
         backchannel_logout_uri=entry.get("backchannel_logout_uri"),
         organization_usage=usage,
+        webhook_url=entry.get("webhook_url"),
+        webhook_events=webhook_events,
+        webhook_secret=webhook_target,
         secret=target,
     )
 
@@ -153,8 +174,25 @@ def apply(specs: list[AppSpec], *, rotate_secrets: bool = False) -> SetupReport:
         if secret is not None and spec.secret is not None:
             write_env(spec.secret.file, spec.secret.key, secret)
             report.secrets.append(f"{spec.client_id} -> {spec.secret.file.name}:{spec.secret.key}")
+        _apply_webhook(client, spec, rotate_secrets, report)
     db().commit()
     return report
+
+
+def _apply_webhook(client: Client, spec: AppSpec, rotate_secrets: bool, report: SetupReport) -> None:
+    """The webhook the file names; its secret is made once (or rotated) and written to its file."""
+    if spec.webhook_url is not None:
+        client.webhook_url = spec.webhook_url
+    if spec.webhook_events is not None:
+        client.webhook_events = spec.webhook_events
+    if spec.webhook_secret is None or client.webhook_url is None:
+        return
+    if client.webhook_secret is None or rotate_secrets:
+        secret = webhooks.set_secret(client)
+        write_env(spec.webhook_secret.file, spec.webhook_secret.key, secret)
+        report.secrets.append(
+            f"{spec.client_id} webhook -> {spec.webhook_secret.file.name}:{spec.webhook_secret.key}"
+        )
 
 
 def write_env(file: Path, key: str, value: str) -> None:

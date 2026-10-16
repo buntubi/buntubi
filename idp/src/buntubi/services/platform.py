@@ -136,6 +136,11 @@ def _uuid(value: str) -> uuid.UUID:
         raise PlatformError("not_found", 404) from None
 
 
+def parse_uuid(value: str) -> uuid.UUID:
+    """An id from an address; one that is not an id is `not_found`, like one that does not exist."""
+    return _uuid(value)
+
+
 def memberships_of(user: User) -> list[OrganizationMember]:
     return list(
         db().scalars(
