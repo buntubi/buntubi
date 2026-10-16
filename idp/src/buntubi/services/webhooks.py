@@ -5,14 +5,21 @@ delivery for every app that hears of that organization are written with the chan
 all. Sending them is `deliver_due`'s work, in its own process.
 """
 
+import hashlib
+import hmac
+import json
+import logging
+import time
 import uuid
+from datetime import timedelta
 from enum import StrEnum
 from typing import Any, TypedDict
 
+import requests
 from sqlalchemy import or_, select
 from sqlalchemy.dialects.postgresql import insert
 
-from buntubi.db import db
+from buntubi.db import db, utcnow
 from buntubi.models import (
     AppOrganization,
     Client,
@@ -21,6 +28,21 @@ from buntubi.models import (
     WebhookDelivery,
     WebhookEvent,
 )
+from buntubi.security import crypto
+
+log = logging.getLogger(__name__)
+
+# The waits after each failed try; the last one repeats until a day after the event.
+RETRY_DELAYS = (
+    timedelta(minutes=1),
+    timedelta(minutes=5),
+    timedelta(minutes=30),
+    timedelta(hours=2),
+    timedelta(hours=6),
+    timedelta(hours=12),
+)
+GIVE_UP_AFTER = timedelta(days=1)
+TIMEOUT_SECONDS = 10
 
 
 class Event(StrEnum):
@@ -131,3 +153,87 @@ def organization_changed(organization: Any, type: Event, **data: Any) -> Webhook
 def member_changed(member: OrganizationMember, type: Event, **data: Any) -> WebhookEvent:
     """An event about one member of an organization, which it carries as it is."""
     return emit(member.organization_id, type, {"member": member_data(member), **data})
+
+
+# ── Sending ───────────────────────────────────────────────────────────────────────────────────
+
+
+def body_of(event: WebhookEvent) -> bytes:
+    """The event as the products receive it, compact JSON; the signature covers these bytes."""
+    payload = {
+        "id": str(event.id),
+        "type": event.type,
+        "created_at": event.created_at.isoformat(),
+        "organization_id": str(event.organization_id),
+        "sequence": event.sequence,
+        "data": event.data,
+    }
+    return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
+
+
+def signature(secret: str, timestamp: int, body: bytes) -> str:
+    """HMAC-SHA256 over `<timestamp>.<body>`, hex: `@buntubi/sdk/webhooks` checks it the same way."""
+    return hmac.new(secret.encode(), f"{timestamp}.".encode() + body, hashlib.sha256).hexdigest()
+
+
+def _send(delivery: WebhookDelivery) -> None:
+    """One try: delivered on a 2xx, otherwise the next try is planned, or the delivery given up."""
+    client, event = delivery.client, delivery.event
+    now = utcnow()
+    delivery.attempts += 1
+    delivery.last_attempt_at = now
+    if not client.webhook_url or not client.webhook_secret or client.disabled_at is not None:
+        delivery.status, delivery.last_error = "failed", "no_endpoint"
+        return
+    body = body_of(event)
+    stamp = int(time.time())
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Buntubi-Webhooks/1",
+        "Buntubi-Event-Id": str(event.id),
+        "Buntubi-Event-Type": event.type,
+        "Buntubi-Signature": f"t={stamp},v1={signature(crypto.unseal(client.webhook_secret), stamp, body)}",
+    }
+    try:
+        # A redirect is an answer, not followed: the app said where its events go.
+        response = requests.post(
+            client.webhook_url, data=body, headers=headers, timeout=TIMEOUT_SECONDS, allow_redirects=False
+        )
+        delivery.last_status, delivery.last_error = response.status_code, None
+        if 200 <= response.status_code < 300:
+            delivery.status, delivery.delivered_at = "delivered", now
+            return
+    except requests.RequestException as error:
+        delivery.last_status, delivery.last_error = None, str(error)[:500]
+    if now - delivery.created_at >= GIVE_UP_AFTER:
+        delivery.status = "failed"
+        return
+    delivery.next_attempt_at = now + RETRY_DELAYS[min(delivery.attempts, len(RETRY_DELAYS)) - 1]
+
+
+def deliver_due(limit: int = 50) -> int:
+    """
+    Tries the deliveries that are due, oldest first, committing each: several workers share the
+    queue, a row locked by one being skipped by the others. Returns how many were tried.
+    """
+    tried = 0
+    while tried < limit:
+        delivery = db().scalar(
+            select(WebhookDelivery)
+            .where(WebhookDelivery.status == "pending", WebhookDelivery.next_attempt_at <= utcnow())
+            .order_by(WebhookDelivery.created_at)
+            .limit(1)
+            .with_for_update(skip_locked=True)
+        )
+        if delivery is None:
+            break
+        _send(delivery)
+        db().commit()
+        tried += 1
+    return tried
+
+
+def redeliver(delivery: WebhookDelivery) -> None:
+    """Sends it again at the next pass, whatever happened to it before."""
+    delivery.status = "pending"
+    delivery.next_attempt_at = utcnow()

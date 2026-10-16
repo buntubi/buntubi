@@ -5,7 +5,7 @@ daily. Every row it removes has stopped working already: nothing a person can st
 
 from datetime import timedelta
 
-from sqlalchemy import Text, and_, cast, delete, func, or_, select, update
+from sqlalchemy import Text, and_, cast, delete, exists, func, or_, select, update
 
 from buntubi.config import get_settings
 from buntubi.db import db, utcnow
@@ -18,6 +18,8 @@ from buntubi.models import (
     Invitation,
     LoginSession,
     RefreshToken,
+    WebhookDelivery,
+    WebhookEvent,
 )
 
 # Past their end, rows stay this long so a late request is answered "expired", not "unknown".
@@ -66,6 +68,21 @@ def prune() -> dict[str, int]:
     run(
         "invitations",
         delete(Invitation).where(and_(Invitation.accepted_at.is_(None), Invitation.expires_at < before)),
+    )
+    # A month of finished deliveries, for the delivery log; an event goes with its last delivery.
+    finished_before = now - timedelta(days=settings.webhook_retention_days)
+    run(
+        "webhook_deliveries",
+        delete(WebhookDelivery).where(
+            WebhookDelivery.status.in_(("delivered", "failed")), WebhookDelivery.created_at < finished_before
+        ),
+    )
+    run(
+        "webhook_events",
+        delete(WebhookEvent).where(
+            WebhookEvent.created_at < finished_before,
+            ~exists().where(WebhookDelivery.event_id == WebhookEvent.id),
+        ),
     )
     run(
         "audit_events",

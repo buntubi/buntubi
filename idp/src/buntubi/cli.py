@@ -217,6 +217,43 @@ def register(app: Flask) -> None:
         for kind, count in retention.prune().items():
             click.echo(f"{kind:<20} {count}")
 
+    @app.cli.group("webhooks")
+    def webhooks_group() -> None:
+        """Organization events sent to the products."""
+
+    @webhooks_group.command("deliver")
+    @click.option("--once", is_flag=True, help="One pass over what is due, then stop.")
+    @click.option("--interval", default=5.0, show_default=True, help="Seconds between passes.")
+    def webhooks_deliver(once: bool, interval: float) -> None:
+        """Sends the events that are due, and keeps doing so: run it as its own process."""
+        import time
+
+        from buntubi.services import webhooks
+
+        while True:
+            sent = webhooks.deliver_due()
+            if once:
+                click.echo(f"{sent} sent")
+                return
+            if not sent:
+                time.sleep(interval)
+
+    @webhooks_group.command("redeliver")
+    @click.argument("delivery_id")
+    def webhooks_redeliver(delivery_id: str) -> None:
+        """Sends one delivery again at the next pass."""
+        import uuid
+
+        from buntubi.models import WebhookDelivery
+        from buntubi.services import webhooks
+
+        delivery = db().get(WebhookDelivery, uuid.UUID(delivery_id))
+        if delivery is None:
+            raise click.ClickException("No such delivery.")
+        webhooks.redeliver(delivery)
+        db().commit()
+        click.echo(f"{delivery_id} will be sent again")
+
     @app.cli.group("plugins")
     def plugins_group() -> None:
         """The deployment's plugins (IDP_PLUGINS)."""

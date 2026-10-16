@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     # the audit trail.
     session_retention_days: int = 30
     audit_retention_days: int = 365
+    # How long delivered and failed webhook deliveries stay in the delivery log.
+    webhook_retention_days: int = 30
 
     # Email through Resend. Test mode logs the message, codes and links included, instead of
     # sending it: for development only, refused with a public issuer.
