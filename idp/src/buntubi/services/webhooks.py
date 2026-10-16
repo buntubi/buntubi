@@ -9,6 +9,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 import time
 import uuid
 from datetime import timedelta
@@ -16,7 +17,8 @@ from enum import StrEnum
 from typing import Any, TypedDict
 from urllib.parse import urlsplit
 
-import requests
+import certifi
+import urllib3
 from sqlalchemy import and_, or_, select
 from sqlalchemy.dialects.postgresql import insert
 
@@ -218,11 +220,15 @@ def _send(delivery: WebhookDelivery) -> None:
     if not listens(client.id, event.organization_id):
         delivery.status, delivery.last_error = "failed", "not_listening"
         return
-    # A name may resolve inside the network later than it was set: checked at each send.
-    host = urlsplit(client.webhook_url).hostname or ""
-    if not get_settings().local and not all(public_ip(a) for a in _addresses(host) or [""]):
-        delivery.status, delivery.last_error = "failed", "address_not_allowed"
-        return
+    # A name may resolve inside the network later than it was set: resolved at each send, every
+    # address checked, and the request made to the one checked, never resolved again.
+    address: str | None = None
+    if not get_settings().local:
+        addresses = _addresses(urlsplit(client.webhook_url).hostname or "")
+        if not addresses or not all(public_ip(a) for a in addresses):
+            delivery.status, delivery.last_error = "failed", "address_not_allowed"
+            return
+        address = addresses[0]
     body = body_of(event)
     stamp = int(time.time())
     headers = {
@@ -233,20 +239,60 @@ def _send(delivery: WebhookDelivery) -> None:
         "Buntubi-Signature": f"t={stamp},v1={signature(crypto.unseal(client.webhook_secret), stamp, body)}",
     }
     try:
-        # A redirect is an answer, not followed: the app said where its events go.
-        response = requests.post(
-            client.webhook_url, data=body, headers=headers, timeout=TIMEOUT_SECONDS, allow_redirects=False
-        )
-        delivery.last_status, delivery.last_error = response.status_code, None
-        if 200 <= response.status_code < 300:
+        status = _post(client.webhook_url, data=body, headers=headers, address=address)
+        delivery.last_status, delivery.last_error = status, None
+        if 200 <= status < 300:
             delivery.status, delivery.delivered_at = "delivered", now
             return
-    except requests.RequestException as error:
+    except urllib3.exceptions.HTTPError as error:
         delivery.last_status, delivery.last_error = None, str(error)[:500]
     if now - delivery.created_at >= GIVE_UP_AFTER:
         delivery.status = "failed"
         return
     delivery.next_attempt_at = now + RETRY_DELAYS[min(delivery.attempts, len(RETRY_DELAYS)) - 1]
+
+
+def _post(url: str, *, data: bytes, headers: dict[str, str], address: str | None) -> int:
+    """
+    POSTs to `url` over a connection to `address` when given, the URL's name staying the Host and
+    the name the certificate must carry. Answers the status: a redirect is an answer, not
+    followed, and the body is never read.
+    """
+    parts = urlsplit(url)
+    name = parts.hostname or ""
+    secure = parts.scheme == "https"
+    port = parts.port or (443 if secure else 80)
+    timeout = urllib3.Timeout(connect=TIMEOUT_SECONDS, read=TIMEOUT_SECONDS)
+    pool: urllib3.HTTPConnectionPool
+    if secure:
+        pool = urllib3.HTTPSConnectionPool(
+            address or name,
+            port,
+            timeout=timeout,
+            retries=False,
+            cert_reqs="CERT_REQUIRED",
+            ca_certs=os.environ.get("REQUESTS_CA_BUNDLE") or certifi.where(),
+            server_hostname=name,
+            assert_hostname=name,
+        )
+    else:
+        pool = urllib3.HTTPConnectionPool(address or name, port, timeout=timeout, retries=False)
+    path = (parts.path or "/") + (f"?{parts.query}" if parts.query else "")
+    try:
+        response = pool.urlopen(
+            "POST",
+            path,
+            body=data,
+            headers={**headers, "Host": parts.netloc},
+            redirect=False,
+            preload_content=False,
+            assert_same_host=False,
+        )
+        status = int(response.status)
+        response.close()
+        return status
+    finally:
+        pool.close()
 
 
 def deliver_due(limit: int = 50) -> int:

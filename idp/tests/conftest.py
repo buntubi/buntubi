@@ -208,5 +208,5 @@ def endpoint(monkeypatch: pytest.MonkeyPatch) -> Endpoint:
     fake = Endpoint()
     from buntubi.services import webhooks
 
-    monkeypatch.setattr(webhooks.requests, "post", fake)
+    monkeypatch.setattr(webhooks, "_post", lambda url, **kwargs: fake(url, **kwargs).status_code)
     return fake

@@ -126,8 +126,9 @@ webhook_secret = { file = "../my-product/.env", key = "BUNTUBI_WEBHOOK_SECRET" }
 **The address.** The provider makes these requests itself, so a provider on the internet takes
 only `https` addresses to public hosts: not `localhost`, not an internal name (`.local`,
 `.internal`, `.lan`), not a private or link-local IP, no credentials in the address. The host is
-resolved again at each delivery, and an address that has turned private is not sent to
-(`address_not_allowed`). A provider on this machine, for development, takes `http` and local
+resolved again at each delivery, and an address that has turned private, or a name that no
+longer resolves, is not sent to (`address_not_allowed`). The request goes to the address checked,
+never resolved a second time, with the name kept as the Host and checked against the certificate. A provider on this machine, for development, takes `http` and local
 addresses.
 
 ## Running the sender

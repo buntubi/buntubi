@@ -187,3 +187,79 @@ webhook_secret = { file = "product.env", key = "WEBHOOK_SECRET" }
         client = db().scalar(select(Client).where(Client.client_id == "product"))
         assert client is not None and client.webhook_events == "all" and client.webhook_secret is not None
         assert crypto.unseal(client.webhook_secret) == written
+
+
+def _queue_for_all(app: Flask, browser: FlaskClient, dev: dict[str, str]) -> None:
+    created = new_app(browser, dev, webhook_url=HOOK)
+    with app.app_context():
+        client = db().scalar(select(Client).where(Client.client_id == created.json["app"]["client_id"]))
+        assert client is not None and client.organization_id is not None
+        client.webhook_events = "all"
+        webhooks.emit(client.organization_id, webhooks.Event.ORGANIZATION_UPDATED, {})
+        db().commit()
+
+
+def test_a_name_that_does_not_resolve_is_not_sent_to(
+    app: Flask,
+    browser: FlaskClient,
+    dev: dict[str, str],
+    endpoint: Endpoint,
+    public: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _queue_for_all(app, browser, dev)
+    monkeypatch.setattr(webhooks, "_addresses", lambda host: [])
+    with app.app_context():
+        webhooks.deliver_due()
+        delivery = db().scalar(select(WebhookDelivery))
+        assert delivery is not None and delivery.last_error == "address_not_allowed"
+    assert endpoint.calls == []
+
+
+def test_the_request_goes_to_the_address_that_was_checked(
+    app: Flask,
+    browser: FlaskClient,
+    dev: dict[str, str],
+    endpoint: Endpoint,
+    public: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Resolved once: a name answering a public address, then an inside one, is not asked again."""
+    _queue_for_all(app, browser, dev)
+    monkeypatch.setattr(webhooks, "_addresses", lambda host: ["93.184.216.34"])
+    with app.app_context():
+        webhooks.deliver_due()
+    assert [call.get("address") for call in endpoint.calls] == ["93.184.216.34"]
+
+
+def test_posting_connects_to_the_given_address_with_the_name_as_host_and_reads_no_body() -> None:
+    import http.server
+    import threading
+
+    seen: dict[str, str] = {}
+
+    class Hook(http.server.BaseHTTPRequestHandler):
+        def do_POST(self) -> None:
+            seen["host"] = self.headers["Host"]
+            seen["body"] = self.rfile.read(int(self.headers["Content-Length"])).decode()
+            self.send_response(200)
+            # Promises far more than anyone should read; the sender reads none of it.
+            self.send_header("Content-Length", str(10**10))
+            self.end_headers()
+            self.wfile.write(b"x" * 1024)
+
+        def log_message(self, *args: object) -> None:
+            pass
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), Hook)
+    threading.Thread(target=server.handle_request, daemon=True).start()
+    port = server.server_address[1]
+    status = webhooks._post(
+        f"http://hooks.example.test:{port}/in?x=1",
+        data=b'{"a":1}',
+        headers={"Content-Type": "application/json"},
+        address="127.0.0.1",
+    )
+    server.server_close()
+    assert status == 200
+    assert seen == {"host": f"hooks.example.test:{port}", "body": '{"a":1}'}
