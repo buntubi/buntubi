@@ -51,8 +51,9 @@ def test_the_catalogue_lists_the_api_and_its_scopes(app: Flask) -> None:
         product = db().get(ApiProduct, "organizations")
         assert product is not None and product.auth == ["oauth2"]
         scopes = db().scalars(select(Scope).where(Scope.product == "organizations")).all()
+        # Reading shows other people's names and addresses: an app is reviewed before it may.
         assert {(s.name, s.sensitivity) for s in scopes} == {
-            ("organizations:read", "public"),
+            ("organizations:read", "sensitive"),
             ("organizations:manage", "sensitive"),
         }
 
