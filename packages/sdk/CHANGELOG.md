@@ -1,5 +1,20 @@
 # @buntubi/sdk
 
+## 0.6.0
+
+### Minor Changes
+
+- 11195e5: `ROLE_ABILITIES` and `PORTAL_ABILITIES` replace `ABILITIES`; `can(membership, ability)` accepts `{ role, portal_role }` with role values `owner`, `admin`, `billing`, `member`, `guest` and portal roles `developer`, `reviewer`, `viewer`; `portal_role` is available on `Organization`, `Member`, and `Invitation`; `POSITIONS`, `positionOf`, and `rolesOf` are exported from `@buntubi/sdk/roles`. `App` includes the `organization_usage` property, which can be `none`, `optional`, or `required`. The new `@buntubi/sdk/organizations` entry exports `organizationsClient({ issuer, accessToken, fetch })`, which calls `/v1/organizations` as the signed-in person and throws `OrganizationsApiError` with status and code on refusals.
+- 635fb3a: The CLI `buntubi-ui-plugin build <entry>` (or `buildUiPlugin` from `@buntubi/sdk/plugin-build`) builds UI plugins that are mounted at `/app/ui-plugins` in the provider, console, and portal without rebuilding images. Plugins receive shared code from `@buntubi/sdk/shared` via `SHARED_MODULES` instead of bundling it themselves. Runtime functions such as `loadMountedUiPlugins`, `mountedUiPlugins`, `uiPluginIndexScript`, `createUiPluginHost`, and `readUiPlugins` load these plugins, and `IDP_UI_PLUGINS` remains functional for development.
+- 3638a7c: The new `@buntubi/sdk/webhooks` entry adds a `verifyWebhook({ secret, body, signature, toleranceSeconds, now })` function that validates the Buntubi-Signature header using HMAC-SHA256 with a 300 s tolerance and returns the typed event or throws `WebhookVerificationError` with codes missing_signature, malformed_signature, too_old, bad_signature, or malformed_body, introduces `WEBHOOK_EVENTS` and a discriminated-union `WebhookEvent` with typed data, adds `webhook_url` and `webhook_events` properties to `App`, and exports `WEBHOOK_SCOPES`.
+
+### Patch Changes
+
+- 77a3dd8: `AdminUser` includes `passkeys`, the account's passkey count, and the admin two-step reset removes the passkeys together with the authenticator app.
+- 382a560: Provider, console, and portal images are published for both `linux/amd64` and `linux/arm64` under a single tag, allowing any host to pull a native image.
+- 7cc4edb: `@buntubi/sdk/types` exports `ROLES`, `PORTAL_ROLES` and `ORGANIZATION_USAGES` as const arrays and derives `Role`, `PortalRole` and `OrganizationUsage` from them; `@buntubi/sdk/roles` exports `POSITIONS` as a const tuple that `memberInviteSchema` uses to build its enum.
+- 729ed29: serveUiPluginFile and createUiPluginHost compare real paths, so a symbolic link inside a plugin's `browser/` folder that points outside the folder is not served. readUiPlugins rejects a manifest whose `browser` or `server` entry is not a `.js` or `.mjs` path inside its own `browser/` or `server/` folder, or contains a `.` or `..` segment.
+
 ## 0.5.0
 
 ### Minor Changes
