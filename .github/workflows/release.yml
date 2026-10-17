@@ -22,6 +22,13 @@ concurrency:
 jobs:
   changesets:
     runs-on: ubuntu-latest
+    # The release environment holds RELEASE_TOKEN and is open to main only; npm trusts this job
+    # (trusted publishing, environment `release`, this file) instead of a stored token.
+    environment: release
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
     outputs:
       release: ${{ steps.version.outputs.release }}
       version: ${{ steps.version.outputs.version }}
@@ -37,10 +44,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # pnpm reads the token from the user .npmrc.
-      - run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # pnpm hands the upload to npm, which needs 11.5.1 or later for trusted publishing.
+      - run: npm install -g npm@^11.5.1
       - id: changesets
         uses: changesets/action@v1
         with:
@@ -52,7 +57,6 @@ jobs:
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       # Release when no changeset is pending and this version has no tag yet, whatever the action
       # reported: a run that published the SDK but stopped before the rest finishes on the next push.
       - id: version
