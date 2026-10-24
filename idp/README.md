@@ -73,7 +73,7 @@ Run from `idp/` as `../.venv/bin/flask --app buntubi.app:create_app <command>`.
 | `users admins`, `users promote`, `users demote` | Lists admins; gives or takes the admin role |
 | `users delete <pattern> --yes` | Deletes accounts by email (a `*` pattern works), as deleting from the account page does: apps are signed out, plugins told, the audit trail kept without who it was |
 | `prune` | Deletes expired codes and tokens, sign-ins ended more than `IDP_SESSION_RETENTION_DAYS` ago and audit rows older than `IDP_AUDIT_RETENTION_DAYS`; schedule it daily |
-| `platform setup [--file] [--rotate-secrets]` | The platform organization, the apps `platform.toml` lists, and the plugins' catalogue |
+| `platform setup [--file] [--rotate <client_id>] [--rotate-secrets]` | The platform organization, the apps `platform.toml` lists, and the plugins' catalogue |
 | `clients create`, `clients homepage <client_id> [url]` | A client by hand; set or clear the address it lives at |
 | `plugins list`, `plugins sync` | The plugins running; bring the catalogue in line with them |
 

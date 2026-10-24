@@ -56,6 +56,12 @@ class AppSpec:
     webhook_events: str | None = None
     webhook_secret: SecretTarget | None = None
     secret: SecretTarget | None = None
+    # Which of `STATED` the file names: those win on an app that exists, the rest stay as they are.
+    stated: frozenset[str] = frozenset()
+
+
+# Settings the file restates on every run; the name stays as a screen left it.
+STATED = ("redirect_uris", "post_logout_redirect_uris", "grant_types", "scope", "homepage_url")
 
 
 @dataclass
@@ -129,11 +135,21 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
         webhook_events=webhook_events,
         webhook_secret=webhook_target,
         secret=target,
+        stated=frozenset(key for key in STATED if key in entry),
     )
 
 
-def apply(specs: list[AppSpec], *, rotate_secrets: bool = False) -> SetupReport:
-    """Creates the platform organization and the apps it lacks. Commits."""
+def apply(
+    specs: list[AppSpec], *, rotate_secrets: bool = False, rotate: frozenset[str] = frozenset()
+) -> SetupReport:
+    """
+    Creates the platform organization and the apps it lacks, and brings the others to what the
+    file says. New secrets for every app with `rotate_secrets`, for those named in `rotate`
+    otherwise. Commits.
+    """
+    unknown = rotate - {spec.client_id for spec in specs}
+    if unknown:
+        raise SetupError(f"not in the file: {', '.join(sorted(unknown))}")
     report = SetupReport()
     organization = p.platform_organization()
     for spec in specs:
@@ -169,12 +185,15 @@ def apply(specs: list[AppSpec], *, rotate_secrets: bool = False) -> SetupReport:
                 client.backchannel_logout_uri = spec.backchannel_logout_uri
             if spec.organization_usage is not None:
                 client.organization_usage = spec.organization_usage
-            if rotate_secrets and spec.secret is not None:
+            for key in spec.stated:
+                value = getattr(spec, key)
+                setattr(client, key, list(value) if isinstance(value, tuple) else value)
+            if (rotate_secrets or spec.client_id in rotate) and spec.secret is not None:
                 secret = rotate_client_secret(client)
         if secret is not None and spec.secret is not None:
             write_env(spec.secret.file, spec.secret.key, secret)
             report.secrets.append(f"{spec.client_id} -> {spec.secret.file.name}:{spec.secret.key}")
-        _apply_webhook(client, spec, rotate_secrets, report)
+        _apply_webhook(client, spec, rotate_secrets or spec.client_id in rotate, report)
     db().commit()
     return report
 

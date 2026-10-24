@@ -358,7 +358,14 @@ def register(app: Flask) -> None:
     @click.option(
         "--rotate-secrets", is_flag=True, help="New secrets for apps that exist, written to their files."
     )
-    def platform_setup(path: Path, rotate_secrets: bool) -> None:
+    @click.option(
+        "--rotate",
+        "rotate",
+        multiple=True,
+        metavar="CLIENT_ID",
+        help="A new secret for this app only, written to its file. Repeatable.",
+    )
+    def platform_setup(path: Path, rotate_secrets: bool, rotate: tuple[str, ...]) -> None:
         """The platform organization, the apps in the file, the plugins' catalogue. Safe to run again."""
         from buntubi import plugins
         from buntubi.plugins.sync import CatalogueError, sync
@@ -367,7 +374,7 @@ def register(app: Flask) -> None:
         if not any(u.is_superadmin for u in db().scalars(select(User))):
             raise click.ClickException("no superadmin yet: run `flask admin create` first")
         try:
-            report = setup.apply(setup.read(path), rotate_secrets=rotate_secrets)
+            report = setup.apply(setup.read(path), rotate_secrets=rotate_secrets, rotate=frozenset(rotate))
             catalogue = sync(plugins.active())
         except (setup.SetupError, CatalogueError) as error:
             raise click.ClickException(str(error)) from error

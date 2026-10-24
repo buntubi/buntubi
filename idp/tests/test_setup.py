@@ -112,3 +112,61 @@ def test_admin_check_says_whether_there_is_a_superadmin(app: Flask) -> None:
     superadmin(app)
     found = runner.invoke(args=["admin", "check"])
     assert found.exit_code == 0 and "root@example.test" in found.output
+
+
+def test_what_the_file_says_wins_on_an_app_that_exists(app: Flask, tmp_path: Path) -> None:
+    superadmin(app)
+    (tmp_path / "console").mkdir()
+    file = tmp_path / "platform.toml"
+    file.write_text(FILE)
+    runner = app.test_cli_runner()
+    assert runner.invoke(args=["platform", "setup", "--file", str(file)]).exit_code == 0
+    with app.app_context():
+        tool = db().scalar(select(Client).where(Client.client_id == "tool"))
+        assert tool is not None
+        tool.scope = "openid set in a screen"
+        db().commit()
+
+    console_scope = 'scope = "openid profile email admin organizations:read"'
+    console_uris = '["https://console.example/auth/callback", "https://console.example/cb"]'
+    file.write_text(
+        FILE.replace('scope = "openid profile email admin"', console_scope)
+        .replace('["https://console.example/auth/callback"]', console_uris)
+        .replace(
+            'redirect_uris = ["https://tool.example/cb"]', 'redirect_uris = ["https://tool.example/new"]'
+        )
+    )
+    assert runner.invoke(args=["platform", "setup", "--file", str(file)]).exit_code == 0
+    with app.app_context():
+        console = db().scalar(select(Client).where(Client.client_id == "console"))
+        tool = db().scalar(select(Client).where(Client.client_id == "tool"))
+        assert console is not None and tool is not None
+        assert console.scope == "openid profile email admin organizations:read"
+        assert console.redirect_uris == [
+            "https://console.example/auth/callback",
+            "https://console.example/cb",
+        ]
+        assert tool.redirect_uris == ["https://tool.example/new"]
+        assert tool.scope == "openid set in a screen", "a setting the file leaves out stays"
+
+
+def test_rotate_replaces_the_named_apps_secret_only(app: Flask, tmp_path: Path) -> None:
+    superadmin(app)
+    env = tmp_path / "console" / ".env"
+    env.parent.mkdir()
+    other = FILE + (
+        '\n[[apps]]\nclient_id = "worker"\nname = "Worker"\ngrant_types = ["client_credentials"]\n'
+        'scope = ""\nsecret = { file = "worker.env", key = "WORKER_SECRET" }\n'
+    )
+    file = tmp_path / "platform.toml"
+    file.write_text(other)
+    runner = app.test_cli_runner()
+    assert runner.invoke(args=["platform", "setup", "--file", str(file)]).exit_code == 0
+    console_secret, worker_secret = env.read_text(), (tmp_path / "worker.env").read_text()
+
+    rotated = runner.invoke(args=["platform", "setup", "--file", str(file), "--rotate", "worker"])
+    assert rotated.exit_code == 0, rotated.output
+    assert env.read_text() == console_secret and (tmp_path / "worker.env").read_text() != worker_secret
+
+    unknown = runner.invoke(args=["platform", "setup", "--file", str(file), "--rotate", "nobody"])
+    assert unknown.exit_code != 0 and "nobody" in unknown.output
