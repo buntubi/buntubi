@@ -92,6 +92,9 @@ class Settings(BaseSettings):
     # Bring the catalogue in line with the plugins when the app starts. Turn off where several
     # workers start at once, and run `flask plugins sync` on deploy instead.
     plugins_sync_on_start: bool = True
+    # Catalogues declared as data, without a plugin: JSON files of products and scopes, each
+    # synced under the owner it names (buntubi.plugins.catalogue_file).
+    catalogue_files: list[Path] = []
     # Folder of UI plugins built with buntubi-ui-plugin (one subfolder each), whose browser halves
     # the sign-in pages load at run time. Unset: none.
     ui_plugins_dir: Path | None = None

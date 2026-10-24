@@ -182,6 +182,44 @@ development it also runs at start. Where several workers start at once, set
 An entry a plugin manages carries its id in `managed_by`, and the admin API refuses to edit it
 with `409 managed_by_plugin`: change the plugin and sync instead.
 
+#### A catalogue without a plugin
+
+A deployment that only has an API to offer can declare its products and scopes as data, with no
+Python: a JSON file per owner, named in `IDP_CATALOGUE_FILES`. Each file is synced like a
+plugin's catalogue, under its `owner`, at start and by `flask plugins sync`; take a file out of
+the setting and its rows are deprecated as a plugin's would be.
+
+```json
+{
+  "owner": "acme",
+  "products": [
+    {
+      "slug": "acme-orders",
+      "names": { "fr": "Commandes", "en": "Orders" },
+      "descriptions": { "fr": "Les commandes d'Acme.", "en": "Acme's orders." },
+      "resource": "https://api.acme.example",
+      "auth": ["oauth2", "api_key"]
+    }
+  ],
+  "scopes": [
+    {
+      "name": "orders:write",
+      "descriptions": { "fr": "Modifier les commandes", "en": "Change orders" },
+      "sensitivity": "sensitive",
+      "product": "acme-orders"
+    }
+  ]
+}
+```
+
+```sh
+echo 'IDP_CATALOGUE_FILES=["/deployment/catalogue.json"]' >> idp/.env
+```
+
+The fields are the ones above, with the same defaults. `owner` follows the rule for a plugin id
+and must not be one: the provider refuses to start on a file that is missing or not in this
+shape.
+
 ### Events
 
 `on_event(name, payload)` is called after the change is made. A listener that raises is logged

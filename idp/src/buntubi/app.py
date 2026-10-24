@@ -110,7 +110,12 @@ def create_app(settings: Settings | None = None) -> Flask:
 
 def _init_plugins(app: Flask, settings: Settings) -> None:
     """Load the deployment's plugins, mount their APIs, and sync their catalogue if asked."""
-    loaded = plugins.load(settings.plugins)
+    from buntubi.plugins import catalogue_file
+
+    loaded = [*plugins.load(settings.plugins), *catalogue_file.load(settings.catalogue_files)]
+    ids = [plugin.id for plugin in loaded]
+    if len(ids) != len(set(ids)):
+        raise RuntimeError(f"two plugins or catalogue files share an id: {sorted(ids)}")
     plugins.use(loaded)
     for plugin in loaded:
         blueprint = plugin.blueprint()
