@@ -20,6 +20,7 @@ from sqlalchemy import select
 from buntubi.db import db
 from buntubi.models import Client
 from buntubi.models.clients import GRANT_TYPES
+from buntubi.plugins import SLUG
 from buntubi.services import audit, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
@@ -56,6 +57,8 @@ class AppSpec:
     webhook_events: str | None = None
     webhook_secret: SecretTarget | None = None
     secret: SecretTarget | None = None
+    # The sign-in look of a mounted UI plugin, kept in the app's brand. Left out, it keeps its own.
+    look: str | None = None
     # Which of `STATED` the file names: those win on an app that exists, the rest stay as they are.
     stated: frozenset[str] = frozenset()
 
@@ -111,6 +114,9 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
         if not entry.get("webhook_url"):
             raise SetupError(f"{where}: a webhook secret needs a webhook_url")
         webhook_target = SecretTarget((base / webhook_secret["file"]).resolve(), webhook_secret["key"])
+    look = entry.get("look")
+    if look is not None and not (isinstance(look, str) and SLUG.match(look)):
+        raise SetupError(f"{where}: look is a lowercase slug, the name a UI plugin gives it")
     secret = entry.get("secret")
     target = None
     if secret is not None:
@@ -136,6 +142,7 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
         webhook_secret=webhook_target,
         secret=target,
         stated=frozenset(key for key in STATED if key in entry),
+        look=look,
     )
 
 
@@ -193,6 +200,8 @@ def apply(
         if secret is not None and spec.secret is not None:
             write_env(spec.secret.file, spec.secret.key, secret)
             report.secrets.append(f"{spec.client_id} -> {spec.secret.file.name}:{spec.secret.key}")
+        if spec.look is not None:
+            client.brand = {**(client.brand or {}), "look": spec.look}
         _apply_webhook(client, spec, rotate_secrets or spec.client_id in rotate, report)
     db().commit()
     return report

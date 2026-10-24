@@ -170,3 +170,27 @@ def test_rotate_replaces_the_named_apps_secret_only(app: Flask, tmp_path: Path) 
 
     unknown = runner.invoke(args=["platform", "setup", "--file", str(file), "--rotate", "nobody"])
     assert unknown.exit_code != 0 and "nobody" in unknown.output
+
+
+def test_the_file_gives_an_app_its_sign_in_look(app: Flask, tmp_path: Path) -> None:
+    superadmin(app)
+    (tmp_path / "console").mkdir()
+    file = tmp_path / "platform.toml"
+    file.write_text(FILE.replace("first_party = false", 'first_party = false\nlook = "tool"'))
+    runner = app.test_cli_runner()
+    assert runner.invoke(args=["platform", "setup", "--file", str(file)]).exit_code == 0
+    with app.app_context():
+        tool = db().scalar(select(Client).where(Client.client_id == "tool"))
+        assert tool is not None and tool.brand == {"look": "tool"}
+        tool.brand = {"look": "tool", "accent": "#123456"}
+        db().commit()
+
+    file.write_text(FILE.replace("first_party = false", 'first_party = false\nlook = "tool-dark"'))
+    assert runner.invoke(args=["platform", "setup", "--file", str(file)]).exit_code == 0
+    with app.app_context():
+        tool = db().scalar(select(Client).where(Client.client_id == "tool"))
+        assert tool is not None and tool.brand == {"look": "tool-dark", "accent": "#123456"}
+
+    file.write_text(FILE.replace("first_party = false", 'first_party = false\nlook = "Tool Look"'))
+    refused = runner.invoke(args=["platform", "setup", "--file", str(file)])
+    assert refused.exit_code != 0 and "look" in refused.output

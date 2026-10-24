@@ -239,7 +239,8 @@ time. With `--no-web` it sets up the provider only.
 8. Runs `flask platform setup`: the platform organization, the apps the file lists and the
    plugins' catalogue. A new confidential app's secret is written into the env file its entry
    names and is never printed. On an app that exists, what the file states wins (scope,
-   redirect and logout addresses, grant types, home page) and the rest stays as a screen left it.
+   redirect and logout addresses, grant types, home page, sign-in look) and the rest stays as a
+   screen left it.
    `--rotate <client_id>` gives one app a new secret, `--rotate-secrets` every listed app.
 
 `./scripts/reset-local.sh` empties the database first, then runs the install script. It refuses

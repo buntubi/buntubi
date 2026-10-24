@@ -376,8 +376,10 @@ sign-in pages' looks.
 
 ### Looks for the sign-in pages
 
-A look replaces the hero beside the sign-in form and restyles the page. The UI plugin defines it;
-the provider plugin decides which clients get it, by returning `look` from `page_brand`.
+A look replaces the hero beside the sign-in form and restyles the page. The UI plugin defines it.
+Which apps get it is set per app: `look = "acme"` on its entry in `platform.toml`, which
+`flask platform setup` keeps in the app's brand, or a provider plugin returning `look` from
+`page_brand`, which wins. A UI plugin that only brings looks needs no provider plugin.
 
 ```ts
 export const plugin = definePlugin({

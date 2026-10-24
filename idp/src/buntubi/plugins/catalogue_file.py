@@ -11,7 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from buntubi.plugins import _SLUG, Catalogue, Localized, Plugin, Product, ScopeSpec
+from buntubi.plugins import SLUG, Catalogue, Localized, Plugin, Product, ScopeSpec
 
 
 class CatalogueFileError(RuntimeError):
@@ -48,7 +48,7 @@ class _Scope(BaseModel):
 
 class _File(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    owner: str = Field(pattern=_SLUG.pattern)
+    owner: str = Field(pattern=SLUG.pattern)
     products: list[_Product] = []
     scopes: list[_Scope] = []
 

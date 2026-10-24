@@ -152,7 +152,7 @@ def load(names: list[str]) -> list[Plugin]:
     plugins: list[Plugin] = []
     for name in names:
         # It names the plugin's routes (/api/plugins/<id>/), its catalogue rows and audit events.
-        if not _SLUG.match(name):
+        if not SLUG.match(name):
             raise RuntimeError(f"plugin name {name!r} is not a lowercase slug (letters, digits, hyphens)")
         point = found.get(name)
         if point is None:
@@ -202,7 +202,7 @@ def live_checks(client: Client) -> list[LiveCheck]:
 
 
 BRAND_KEYS = frozenset({"name", "accent", "logo", "skin", "tagline", "look"})
-_SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,39}$")
+SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,39}$")
 
 
 def page_brand(client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
@@ -222,7 +222,7 @@ def page_brand(client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
             if key not in BRAND_KEYS:
                 continue
             # A look names an attribute value and a CSS selector: a plain slug only.
-            if key == "look" and not (isinstance(value, str) and _SLUG.match(value)):
+            if key == "look" and not (isinstance(value, str) and SLUG.match(value)):
                 log.warning("plugin %s gave an invalid look %r", plugin.id, value)
                 continue
             result[key] = value
