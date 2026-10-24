@@ -19,7 +19,7 @@ from urllib.parse import urlsplit
 
 import certifi
 import urllib3
-from sqlalchemy import and_, or_, select
+from sqlalchemy import ColumnElement, and_, or_, select
 from sqlalchemy.dialects.postgresql import insert
 
 from buntubi.config import get_settings
@@ -28,6 +28,7 @@ from buntubi.models import (
     AppOrganization,
     Client,
     Consent,
+    Organization,
     OrganizationEventSequence,
     OrganizationMember,
     WebhookDelivery,
@@ -106,12 +107,12 @@ def _reading_roles() -> list[str]:
     return [role for role, abilities in ROLE_ABILITIES.items() if "read" in abilities]
 
 
-def _listeners(organization_id: uuid.UUID) -> list[uuid.UUID]:
+def _hears(organization_id: Any) -> ColumnElement[bool]:
     """
-    The apps with a webhook that hear of this organization: subscribed to all of them, or linked to
-    it while someone who may read its members still lets the app act there. A guest's consent
-    gives nothing, and one taken back, or given by someone who left, stops the events. The
-    platform's own apps need no consent.
+    Whether the app (the `Client` of the query) hears of the organization (an id, or a column to
+    test each row): subscribed to all of them, or linked to it while someone who may read its
+    members still lets the app act there. A guest's consent gives nothing, and one taken back, or
+    given by someone who left, ends it. The platform's own apps need no consent.
     """
     linked = select(AppOrganization.client_id).where(AppOrganization.organization_id == organization_id)
     readers = select(OrganizationMember.user_id).where(
@@ -121,18 +122,55 @@ def _listeners(organization_id: uuid.UUID) -> list[uuid.UUID]:
     consented = select(Consent.client_id).where(
         Consent.organization_id == organization_id, Consent.user_id.in_(readers)
     )
+    return or_(
+        Client.webhook_events == "all",
+        and_(Client.id.in_(linked), or_(Client.first_party.is_(True), Client.id.in_(consented))),
+    )
+
+
+def _listeners(organization_id: uuid.UUID) -> list[uuid.UUID]:
+    """The apps with a webhook that hear of this organization."""
     return list(
         db().scalars(
             select(Client.id).where(
-                Client.webhook_url.is_not(None),
-                Client.disabled_at.is_(None),
-                or_(
-                    Client.webhook_events == "all",
-                    and_(Client.id.in_(linked), or_(Client.first_party.is_(True), Client.id.in_(consented))),
-                ),
+                Client.webhook_url.is_not(None), Client.disabled_at.is_(None), _hears(organization_id)
             )
         )
     )
+
+
+def heard_by(client: Client) -> list[Organization]:
+    """The organizations the app hears of, webhook or not, by name."""
+    return list(
+        db().scalars(
+            select(Organization)
+            .join(Client, Client.id == client.id)
+            .where(_hears(Organization.id))
+            .order_by(Organization.name)
+        )
+    )
+
+
+def heard(client: Client, organization_id: uuid.UUID) -> Organization | None:
+    """That organization, if the app hears of it."""
+    return db().scalar(
+        select(Organization)
+        .join(Client, Client.id == client.id)
+        .where(Organization.id == organization_id, _hears(Organization.id))
+    )
+
+
+def last_sequence(organization_id: uuid.UUID) -> int:
+    """
+    The number of the organization's latest event, 0 before the first. Held until the transaction
+    ends: a change waits for its number, so what is read after this matches it.
+    """
+    last = db().scalar(
+        select(OrganizationEventSequence.last)
+        .where(OrganizationEventSequence.organization_id == organization_id)
+        .with_for_update(read=True)
+    )
+    return int(last or 0)
 
 
 def listens(client_id: uuid.UUID, organization_id: uuid.UUID) -> bool:

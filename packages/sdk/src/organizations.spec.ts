@@ -1,6 +1,6 @@
 /** The organizations API client: what it sends, and how a refusal comes back. */
 import { describe, expect, it } from 'vitest';
-import { OrganizationsApiError, organizationsClient } from './organizations.js';
+import { appOrganizationsClient, OrganizationsApiError, organizationsClient } from './organizations.js';
 
 function fakeFetch(status: number, body: unknown) {
   const calls: { url: string; init: RequestInit }[] = [];
@@ -45,5 +45,37 @@ describe('organizationsClient', () => {
     const failure = await client.leave('o1').catch((error: unknown) => error);
     expect(failure).toBeInstanceOf(OrganizationsApiError);
     expect(failure).toMatchObject({ status: 409, code: 'last_owner' });
+  });
+});
+
+describe('appOrganizationsClient', () => {
+  it('signs in as the app once, then reads with that token', async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const fetch = (async (url: string | URL | Request, init?: RequestInit) => {
+      calls.push({ url: String(url), init: init ?? {} });
+      const body = String(url).endsWith('/oauth/token')
+        ? { access_token: 'app-tok', expires_in: 3600 }
+        : { items: [{ id: 'o1', name: 'ACME', suspended: false, sequence: 4 }] };
+      return new Response(JSON.stringify(body), { status: 200 });
+    }) as typeof globalThis.fetch;
+    const client = appOrganizationsClient({ issuer: 'https://id.example/', clientId: 'sync', clientSecret: 's3cret', fetch });
+
+    expect(await client.list()).toEqual([{ id: 'o1', name: 'ACME', suspended: false, sequence: 4 }]);
+    await client.list();
+
+    expect(calls.map((c) => c.url)).toEqual([
+      'https://id.example/oauth/token',
+      'https://id.example/v1/app/organizations',
+      'https://id.example/v1/app/organizations',
+    ]);
+    expect(new Headers(calls[0]?.init.headers).get('authorization')).toBe(`Basic ${btoa('sync:s3cret')}`);
+    expect(String(calls[0]?.init.body)).toBe('grant_type=client_credentials&scope=organizations%3Aread');
+    expect(new Headers(calls[1]?.init.headers).get('authorization')).toBe('Bearer app-tok');
+  });
+
+  it('throws when the provider refuses the app', async () => {
+    const fetch = (async () => new Response(JSON.stringify({ error: 'invalid_client' }), { status: 401 })) as typeof globalThis.fetch;
+    const client = appOrganizationsClient({ issuer: 'https://id.example', clientId: 'sync', clientSecret: 'wrong', fetch });
+    await expect(client.get('o1')).rejects.toMatchObject({ status: 401, code: 'invalid_client' });
   });
 });

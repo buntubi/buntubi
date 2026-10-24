@@ -13,12 +13,13 @@ from typing import Any, Literal, TypeVar
 from authlib.integrations.flask_oauth2 import current_token
 from flask import Blueprint, Response, abort, jsonify
 from pydantic import BaseModel, EmailStr, Field
+from sqlalchemy import select
 
 from buntubi.config import get_settings
 from buntubi.db import db
-from buntubi.models import Invitation, OrganizationMember, User
+from buntubi.models import Client, Invitation, OrganizationMember, User
 from buntubi.oauth.server import require_token
-from buntubi.services import audit
+from buntubi.services import audit, webhooks
 from buntubi.services import platform as p
 from buntubi.web.developer import OrganizationIn, OrganizationPatch
 from buntubi.web.validation import parse
@@ -282,3 +283,51 @@ def withdraw_invitation(organization_id: str, invitation_id: str, me: User) -> R
     )
     db().commit()
     return jsonify(withdrawn=True)
+
+
+# A product's own server repairing its copy, with its credentials and no person: the organizations
+# it hears of, shaped as in the events (services/webhooks.py), with the latest event number.
+
+
+def app_caller(view: F) -> F:
+    """The caller, as an app whose token (client credentials) holds `organizations:read`."""
+
+    @require_token("organizations:read")
+    @wraps(view)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        client = db().scalar(select(Client).where(Client.client_id == current_token.claims.client_id))
+        if current_token.user is not None or client is None or client.disabled_at is not None:
+            abort(403)
+        return view(*args, app=client, **kwargs)
+
+    return wrapper
+
+
+@bp.get("/app/organizations")
+@app_caller
+def app_organizations(app: Client) -> Response:
+    return jsonify(
+        items=[
+            {**webhooks.organization_data(o), "sequence": webhooks.last_sequence(o.id)}
+            for o in webhooks.heard_by(app)
+        ]
+    )
+
+
+@bp.get("/app/organizations/<organization_id>")
+@app_caller
+def app_organization(app: Client, organization_id: str) -> Response:
+    organization = webhooks.heard(app, p.parse_uuid(organization_id))
+    if organization is None:
+        raise p.PlatformError("not_found", 404)
+    sequence = webhooks.last_sequence(organization.id)
+    members = db().scalars(
+        select(OrganizationMember)
+        .where(OrganizationMember.organization_id == organization.id)
+        .order_by(OrganizationMember.added_at)
+    )
+    return jsonify(
+        organization=webhooks.organization_data(organization),
+        members=[webhooks.member_data(m) for m in members],
+        sequence=sequence,
+    )

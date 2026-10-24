@@ -522,6 +522,11 @@ _APP_REVIEW = {
 }
 RESPONSE_SCHEMAS["AppReview"] = obj(_APP_REVIEW, [key for key in _APP_REVIEW if key != "decided_by"])
 
+_EVENT_ORGANIZATION = {"id": STRING, "name": STRING, "suspended": BOOL}
+RESPONSE_SCHEMAS["EventOrganization"] = obj(_EVENT_ORGANIZATION)
+RESPONSE_SCHEMAS["AppOrganization"] = obj({**_EVENT_ORGANIZATION, "sequence": INT})
+RESPONSE_SCHEMAS["EventMember"] = obj({"id": STRING, "user_id": STRING, "email": STRING, "role": STRING})
+
 # ── Operations ────────────────────────────────────────────────────────────────────────────────
 
 Security = list[dict[str, list[str]]]
@@ -536,6 +541,8 @@ ORGANIZATIONS_READ: Security = [
     {"bearer": []},
 ]
 ORGANIZATIONS_MANAGE: Security = [{"oauth2": ["organizations:manage"]}, {"bearer": []}]
+# An app's own token (client credentials), never a person's.
+APP_ORGANIZATIONS: Security = [{"oauth2": ["organizations:read"]}, {"bearer": []}]
 
 
 def body(schema: dict[str, Any], media: str = "application/json") -> dict[str, Any]:
@@ -708,6 +715,33 @@ def _organization_paths() -> dict[str, dict[str, Any]]:
             "delete": op(
                 "Remove a member", o, manage, {"200": answer(obj({"removed": BOOL}))}, params=member
             ),
+        },
+        "/v1/app/organizations": {
+            "get": op(
+                "The organizations the app hears of, with their latest event number",
+                o,
+                APP_ORGANIZATIONS,
+                listing("AppOrganization"),
+            )
+        },
+        "/v1/app/organizations/{organization_id}": {
+            "get": op(
+                "One of them with its members, as of its latest event number",
+                o,
+                APP_ORGANIZATIONS,
+                {
+                    "200": answer(
+                        obj(
+                            {
+                                "organization": ref("EventOrganization"),
+                                "members": {"type": "array", "items": ref("EventMember")},
+                                "sequence": INT,
+                            }
+                        )
+                    )
+                },
+                params=org,
+            )
         },
         "/v1/organizations/{organization_id}/invitations/{invitation_id}": {
             "delete": op(
@@ -1340,7 +1374,10 @@ def build() -> dict[str, Any]:
                             "refreshUrl": f"{issuer}/oauth/token",
                             "scopes": scopes,
                         },
-                        "clientCredentials": {"tokenUrl": f"{issuer}/oauth/token", "scopes": {}},
+                        "clientCredentials": {
+                            "tokenUrl": f"{issuer}/oauth/token",
+                            "scopes": {"organizations:read": scopes["organizations:read"]},
+                        },
                     },
                 },
                 "bearer": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"},

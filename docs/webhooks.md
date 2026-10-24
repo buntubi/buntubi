@@ -86,10 +86,44 @@ In another language, the same steps:
 - **Once per event.** A delivery can arrive twice (an answer lost on the way back): skip an `id`
   already applied.
 - **In order.** Apply an organization's events by `sequence`. When one is missing, or a request
-  failed for too long, read the organization again from the organizations API
-  (`GET /v1/organizations/{id}` and `/members`, or `@buntubi/sdk/organizations`) and continue
-  from there. Do the same on start, and once a day: the copy repairs itself even if an event was
-  lost.
+  failed for too long, read the organization again (below) and continue from the event after
+  the `sequence` it answers. Do the same on start, and once a day: the copy repairs itself even
+  if an event was lost.
+
+## Reading the organizations again
+
+The app reads the organizations it hears of with its own token, no person involved, shaped as
+the events carry them:
+
+| | |
+|---|---|
+| `GET /v1/app/organizations` | each one with its latest event number (`sequence`) |
+| `GET /v1/app/organizations/{id}` | one with its members, as of `sequence`; `404` for one the app does not hear of |
+
+The app must be confidential, allowed the `client_credentials` grant and the
+`organizations:read` scope. In `platform.toml`:
+
+```toml
+[[apps]]
+client_id = "my-product"
+# ...
+grant_types = ["authorization_code", "refresh_token", "client_credentials"]
+scope = "openid profile email organizations:read"
+```
+
+`appOrganizationsClient` from `@buntubi/sdk/organizations` gets and renews the token itself:
+
+```ts
+import { appOrganizationsClient } from '@buntubi/sdk/organizations';
+
+const provider = appOrganizationsClient({ issuer, clientId, clientSecret });
+for (const { id, sequence } of await provider.list()) {
+  if (sequence > lastApplied(id)) replaceCopy(await provider.get(id));
+}
+```
+
+A person's token is refused here (`403`): it reads the person's organizations under
+`/v1/organizations` instead.
 
 ## Delivery and retries
 

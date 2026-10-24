@@ -14,6 +14,10 @@
  * @module
  */
 import type { Role } from './types.js';
+import type { WebhookMember, WebhookOrganization } from './webhooks.js';
+
+/** Claims a token issued for one organization carries: its id and the person's role there. */
+export const ORGANIZATION_CLAIMS = { id: 'org_id', role: 'org_role' } as const;
 
 /** An organization as the person sees it, with their role there. */
 export interface OrganizationMembership {
@@ -70,13 +74,9 @@ export interface OrganizationsClientOptions {
   fetch?: typeof globalThis.fetch;
 }
 
-export function organizationsClient(options: OrganizationsClientOptions) {
-  const base = `${options.issuer.replace(/\/+$/, '')}/v1/organizations`;
-  const fetch = options.fetch ?? globalThis.fetch;
-  const at = (...segments: string[]) => [base, ...segments.map(encodeURIComponent)].join('/');
-
-  async function call<T>(method: string, url: string, body?: unknown): Promise<{ status: number; data: T }> {
-    const headers = new Headers({ authorization: `Bearer ${await options.accessToken()}`, accept: 'application/json' });
+function caller(fetch: typeof globalThis.fetch, accessToken: () => string | Promise<string>) {
+  return async function call<T>(method: string, url: string, body?: unknown): Promise<{ status: number; data: T }> {
+    const headers = new Headers({ authorization: `Bearer ${await accessToken()}`, accept: 'application/json' });
     if (body !== undefined) headers.set('content-type', 'application/json');
     const response = await fetch(url, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
     const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
@@ -85,7 +85,15 @@ export function organizationsClient(options: OrganizationsClientOptions) {
       throw new OrganizationsApiError(response.status, typeof error === 'string' ? error : 'http_error', details);
     }
     return { status: response.status, data: data as T };
-  }
+  };
+}
+
+const trimmed = (issuer: string) => issuer.replace(/\/+$/, '');
+
+export function organizationsClient(options: OrganizationsClientOptions) {
+  const base = `${trimmed(options.issuer)}/v1/organizations`;
+  const call = caller(options.fetch ?? globalThis.fetch, options.accessToken);
+  const at = (...segments: string[]) => [base, ...segments.map(encodeURIComponent)].join('/');
 
   return {
     /** The person's organizations; only the token's when it names one. */
@@ -131,3 +139,66 @@ export function organizationsClient(options: OrganizationsClientOptions) {
 }
 
 export type OrganizationsClient = ReturnType<typeof organizationsClient>;
+
+/** An organization the app hears of, as its events carry it, with its latest event number. */
+export interface AppOrganization extends WebhookOrganization {
+  sequence: number;
+}
+
+/** One organization with its members, as of event `sequence`: the next event to apply is the one after. */
+export interface AppOrganizationCopy {
+  organization: WebhookOrganization;
+  members: WebhookMember[];
+  sequence: number;
+}
+
+export interface AppOrganizationsClientOptions {
+  issuer: string;
+  /** A confidential app allowed `organizations:read`; its token is fetched and renewed here. */
+  clientId: string;
+  clientSecret: string;
+  fetch?: typeof globalThis.fetch;
+}
+
+/**
+ * The organizations API for a product's own server, with no person: the organizations the app
+ * hears of (those its webhook would report), to build or repair its copy of them.
+ *
+ * @example
+ * ```ts
+ * const provider = appOrganizationsClient({ issuer, clientId, clientSecret });
+ * for (const { id } of await provider.list()) await replaceCopy(await provider.get(id));
+ * ```
+ */
+export function appOrganizationsClient(options: AppOrganizationsClientOptions) {
+  const issuer = trimmed(options.issuer);
+  const fetch = options.fetch ?? globalThis.fetch;
+  let token: { value: string; until: number } | undefined;
+
+  async function accessToken() {
+    if (token && Date.now() < token.until) return token.value;
+    const response = await fetch(`${issuer}/oauth/token`, {
+      method: 'POST',
+      headers: {
+        authorization: `Basic ${btoa(`${encodeURIComponent(options.clientId)}:${encodeURIComponent(options.clientSecret)}`)}`,
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({ grant_type: 'client_credentials', scope: 'organizations:read' }),
+    });
+    const data = (await response.json().catch(() => ({}))) as { access_token?: string; expires_in?: number; error?: string };
+    if (!response.ok || !data.access_token) throw new OrganizationsApiError(response.status, data.error ?? 'http_error');
+    // Renewed a minute early, so a token never expires on the way.
+    token = { value: data.access_token, until: Date.now() + ((data.expires_in ?? 300) - 60) * 1000 };
+    return token.value;
+  }
+
+  const base = `${issuer}/v1/app/organizations`;
+  const call = caller(fetch, accessToken);
+  return {
+    list: async () => (await call<{ items: AppOrganization[] }>('GET', base)).data.items,
+    /** 404 `not_found` for one the app does not hear of. */
+    get: async (organization: string) => (await call<AppOrganizationCopy>('GET', `${base}/${encodeURIComponent(organization)}`)).data,
+  };
+}
+
+export type AppOrganizationsClient = ReturnType<typeof appOrganizationsClient>;
