@@ -11,7 +11,8 @@ given a token naming (`organization=<id>`) by someone who may read the members, 
 not counting. It hears of an organization for as long as one such person keeps their consent:
 once the last of them takes the app back from their account, or leaves the organization, the
 events stop, deliveries still queued included. A platform product can be subscribed to every
-organization instead, from the platform file (`webhook_events = "all"`).
+organization instead, from the platform file (`webhook_events = "all"`). A deletion goes to the apps that
+heard of the organization when it was deleted, though its links go with it.
 
 | Event | When | `data` |
 |---|---|---|

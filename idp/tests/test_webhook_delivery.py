@@ -179,3 +179,32 @@ def test_the_sdk_knows_every_event_by_the_same_name() -> None:
     assert declared is not None
     names = set(re.findall(r"'([a-z_]+\.[a-z_]+)'", declared.group(1)))
     assert names == {event.value for event in webhooks.Event}
+
+
+def test_a_deleted_organization_reaches_the_apps_that_heard_of_it(
+    app: Flask, endpoint: Endpoint, outbox: list[mail.Message]
+) -> None:
+    with app.app_context():
+        secret = crypto.seal(SECRET)
+    # A first-party app linked to the organization, the way an app hears of most of them.
+    add_client(
+        app,
+        client_id="product",
+        first_party=True,
+        webhook_url="https://product.example/hooks",
+        webhook_secret=secret,
+    )
+    sign_up(app.test_client(), outbox)
+    with app.app_context():
+        user = db().scalar(select(User).where(User.email == "awa@example.test"))
+        product = db().scalar(select(Client).where(Client.client_id == "product"))
+        assert user is not None and product is not None
+        organization = p.create_organization(user, "ACME", "", None)
+        webhooks.link(product.id, organization.id)
+        db().commit()
+        p.delete_organization(organization.members[0])
+        db().commit()
+        # Deleting it took its link with it; the event still goes where it was queued.
+        assert webhooks.deliver_due() == 1
+        assert [json.loads(call["data"])["type"] for call in endpoint.calls] == ["organization.deleted"]
+        assert delivery().status == "delivered"

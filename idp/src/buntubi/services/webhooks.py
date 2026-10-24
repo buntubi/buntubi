@@ -177,6 +177,15 @@ def listens(client_id: uuid.UUID, organization_id: uuid.UUID) -> bool:
     return client_id in _listeners(organization_id)
 
 
+def _still_hears(client_id: uuid.UUID, event: WebhookEvent) -> bool:
+    """
+    Whether a queued event still goes to the app: a consent taken back stops it. A deletion took
+    the organization's links with it, so it goes to the apps that heard of it when it happened,
+    the ones it was queued for.
+    """
+    return event.type == Event.ORGANIZATION_DELETED.value or listens(client_id, event.organization_id)
+
+
 def emit(organization_id: uuid.UUID, type: Event, data: dict[str, Any]) -> WebhookEvent:
     """Records an event of the organization, with a delivery for each app that hears of it."""
     db().flush()
@@ -255,7 +264,7 @@ def _send(delivery: WebhookDelivery) -> None:
     if not client.webhook_url or not client.webhook_secret or client.disabled_at is not None:
         delivery.status, delivery.last_error = "failed", "no_endpoint"
         return
-    if not listens(client.id, event.organization_id):
+    if not _still_hears(client.id, event):
         delivery.status, delivery.last_error = "failed", "not_listening"
         return
     # A name may resolve inside the network later than it was set: resolved at each send, every
@@ -375,7 +384,7 @@ def redeliver(delivery: WebhookDelivery) -> None:
     """Sends it again at the next pass, whatever happened to it before, if the app still hears of it."""
     from buntubi.services.platform import PlatformError
 
-    if not listens(delivery.client_id, delivery.event.organization_id):
+    if not _still_hears(delivery.client_id, delivery.event):
         raise PlatformError("not_listening", 409)
     delivery.status = "pending"
     delivery.next_attempt_at = utcnow()
