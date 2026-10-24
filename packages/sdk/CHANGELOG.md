@@ -1,5 +1,11 @@
 # @buntubi/sdk
 
+## 0.6.1
+
+### Patch Changes
+
+- fb4e744: You can import `@buntubi/sdk/webhooks` and `@buntubi/sdk/organizations` directly from the `@buntubi/sdk` package.
+
 ## 0.6.0
 
 ### Minor Changes
