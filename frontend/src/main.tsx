@@ -96,6 +96,7 @@ const screens: Record<string, () => Screen> = {
         labels={t.signIn}
         messages={t.messages}
         forgotHref="/forgot-password"
+        email={typeof props.email === 'string' ? props.email : ''}
         onSuccess={(event) => follow(event.detail.result)}
       />
     ),
@@ -122,6 +123,7 @@ const screens: Record<string, () => Screen> = {
         schema={signUpSchema}
         labels={t.signUp}
         messages={t.messages}
+        email={typeof props.email === 'string' ? props.email : ''}
         onSuccess={(event) => follow(event.detail.result)}
       />
     ),

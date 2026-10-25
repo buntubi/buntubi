@@ -19,7 +19,7 @@ from buntubi.db import db
 from buntubi.models import UserPicture
 from buntubi.oauth.server import authorization, query_client
 from buntubi.security import csrf
-from buntubi.services import mfa, passkeys, platform, security_prompt, sessions
+from buntubi.services import login_hint, mfa, passkeys, platform, security_prompt, sessions
 from buntubi.web import ui_plugins
 
 bp = Blueprint("pages", __name__)
@@ -102,12 +102,13 @@ def home() -> Response:
 
 @bp.get("/signin")
 def signin() -> str:
-    return shell("idp-sign-in")
+    # The address an app named for the person, if any, as the form's starting email.
+    return shell("idp-sign-in", email=login_hint.from_request())
 
 
 @bp.get("/signup")
 def signup() -> str:
-    return shell("idp-sign-up")
+    return shell("idp-sign-up", email=login_hint.from_request())
 
 
 @bp.get("/verify-email")

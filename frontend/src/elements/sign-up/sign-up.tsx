@@ -48,6 +48,8 @@ const props = {
   schema: prop.any<FormSchema<SignUp> | undefined>(undefined),
   labels: prop.object<SignUpLabels>(signUpLabels),
   messages: prop.object<Messages>({}),
+  /** The address to start from, when the app named one. */
+  email: prop.string(''),
 };
 
 export class IdpSignUp extends typedElement(props) {
@@ -61,7 +63,7 @@ export class IdpSignUp extends typedElement(props) {
     const form = createForm({
       givenName: createField('', { validators: validate('givenName') }),
       familyName: createField('', { validators: validate('familyName') }),
-      email: createField('', { validators: validate('email') }),
+      email: createField(this.email, { validators: validate('email') }),
       password: createField('', { validators: validate('password') }),
     });
     const { run, pending, error } = useElementAction('idp-sign-up', () => this.action, text);

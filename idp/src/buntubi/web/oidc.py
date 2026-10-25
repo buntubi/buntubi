@@ -24,7 +24,7 @@ from buntubi.oauth.grants import GRANT_TYPES_SUPPORTED
 from buntubi.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
 from buntubi.security import csrf
 from buntubi.security.keys import ALGORITHM
-from buntubi.services import audit, consent, mfa, passkeys, platform, session_check, sessions
+from buntubi.services import audit, consent, login_hint, mfa, passkeys, platform, session_check, sessions
 from buntubi.web import pages
 
 bp = Blueprint("oidc", __name__)
@@ -73,7 +73,8 @@ def discovery() -> Response:
         request_parameter_supported=False,
         request_uri_parameter_supported=False,
         claims_parameter_supported=False,
-        prompt_values_supported=["none", "login", "consent", "select_account"],
+        # `create` opens sign-up (Initiating User Registration via OpenID Connect 1.0).
+        prompt_values_supported=["none", "login", "consent", "select_account", "create"],
         claims_supported=[
             "sub",
             "iss",
@@ -136,11 +137,17 @@ def authorize() -> Any:
         if request.args.get(parameter):
             return _error_redirect(grant, f"{parameter}_not_supported")
 
+    # An app asking for sign-up sends someone without an account there; someone signed in
+    # already has one and carries on.
+    if "create" in prompt and login is None:
+        sessions.remember_return_to(_authorize_path(drop_prompt=True))
+        return redirect(login_hint.onto(url_for("pages.signup")))
+
     if login is None or "login" in prompt or _too_old(login):
         if "none" in prompt:
             return _error_redirect(grant, "login_required")
         sessions.remember_return_to(_authorize_path(drop_prompt=True))
-        return redirect(url_for("pages.signin"))
+        return redirect(login_hint.onto(url_for("pages.signin")))
 
     # Some scopes need a second factor at sign-in (the console's `admin`). A session signed in
     # without one, for instance before two-step was turned on, is asked for the code here and

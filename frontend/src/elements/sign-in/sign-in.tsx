@@ -62,6 +62,8 @@ const props = {
   messages: prop.object<Messages>({}),
   /** Where "forgot your password" leads; hidden when empty. */
   forgotHref: prop.string(''),
+  /** The address to start from, when the app named one. */
+  email: prop.string(''),
 };
 
 export class IdpSignIn extends typedElement(props) {
@@ -69,7 +71,7 @@ export class IdpSignIn extends typedElement(props) {
     const label = () => ({ ...signInLabels, ...this.labels });
     const text = messageReader(() => this.messages);
     const form = createForm({
-      email: createField('', { validators: [fieldValidator<SignIn, 'email'>(() => this.schema, 'email', text)] }),
+      email: createField(this.email, { validators: [fieldValidator<SignIn, 'email'>(() => this.schema, 'email', text)] }),
       password: createField('', {
         validators: [fieldValidator<SignIn, 'password'>(() => this.schema, 'password', text)],
       }),
