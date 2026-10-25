@@ -1,6 +1,7 @@
 """
 First install, from a deployment's `platform.toml`: the platform organization, the platform's own
-apps, and the catalogue its plugins declare. The superadmin is made by `flask admin create`.
+apps, the profile fields it asks for, and the catalogue its plugins declare. The superadmin is
+made by `flask admin create`.
 
 Running it again adds what is missing and leaves the rest alone: an app changed in the console
 or the portal keeps its changes. A new confidential app's secret goes into the env file the
@@ -20,8 +21,9 @@ from sqlalchemy import select
 from buntubi.db import db
 from buntubi.models import Client
 from buntubi.models.clients import GRANT_TYPES
+from buntubi.models.profile_fields import FIELD_MODES, STANDARD_FIELDS
 from buntubi.plugins import SLUG
-from buntubi.services import audit, webhooks
+from buntubi.services import audit, profile_fields, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
 
@@ -85,6 +87,29 @@ def read(path: Path) -> list[AppSpec]:
     if len(ids) != len(set(ids)):
         raise SetupError("two apps share a client_id")
     return specs
+
+
+def read_profile(path: Path) -> dict[str, str]:
+    """The profile field modes the file's `[profile]` table sets, one key per field."""
+    with path.open("rb") as handle:
+        table = tomllib.load(handle).get("profile", {})
+    if not isinstance(table, dict):
+        raise SetupError('profile is a table: [profile] then birthdate = "optional"')
+    for key, mode in table.items():
+        if key not in STANDARD_FIELDS:
+            raise SetupError(f"profile.{key}: not a profile field ({', '.join(STANDARD_FIELDS)})")
+        if mode not in FIELD_MODES:
+            raise SetupError(f"profile.{key}: the mode is {', '.join(FIELD_MODES)}")
+    return dict(table)
+
+
+def apply_profile(wanted: dict[str, str]) -> list[str]:
+    """Stores the modes the file names; the fields it leaves out keep theirs. Commits."""
+    changed = profile_fields.set_modes(wanted)
+    if changed:
+        audit.record("platform.profile_fields_changed", fields={key: wanted[key] for key in changed})
+    db().commit()
+    return changed
 
 
 def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:

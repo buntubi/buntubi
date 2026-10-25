@@ -88,7 +88,7 @@ settings, never from the code.
 | Device authorization (RFC 8628) | Yes |
 | JWT access tokens (RFC 9068) | Yes, signed RS256, `typ` `at+jwt` |
 | Authorization server issuer identification (RFC 9207) | `iss` in every authorization answer |
-| OpenID Connect Core 1.0 | Code flow; `prompt` none, login, consent and select_account; `max_age`, `id_token_hint`, `nonce`; standard claims for the profile, email, phone and address scopes. `login_hint` fills the email on the sign-in and sign-up pages; `ui_locales`, `claims_locales` and `display` are accepted and ignored |
+| OpenID Connect Core 1.0 | Code flow; `prompt` none, login, consent and select_account; `max_age`, `id_token_hint`, `nonce`; standard claims for the profile, email, phone and address scopes, the optional profile claims as the deployment chooses. `login_hint` fills the email on the sign-in and sign-up pages; `ui_locales`, `claims_locales` and `display` are accepted and ignored |
 | Initiating User Registration via OpenID Connect 1.0 | `prompt=create` opens sign-up, then returns to the app |
 | OpenID Connect Discovery 1.0 | `/.well-known/openid-configuration` and the key set |
 | OpenID Connect RP-Initiated Logout 1.0 | Yes |
@@ -103,8 +103,8 @@ authentication by signed JWT.
 **Conformance.** The OpenID Foundation conformance suite was run locally against the Basic OP,
 Config OP, RP-Initiated Logout, Session Management and Back-Channel Logout profiles, with no
 failure. Warnings remain on optional points: the ID token carries `email`, which the specification
-prefers to leave to userinfo, and userinfo has no value for profile claims the platform does not
-keep (birthdate, nickname, website and the like). This is a local run, not a certification.
+prefers to leave to userinfo, and userinfo has no value for profile claims a deployment leaves hidden (birthdate, nickname,
+website and the like, set per field in `platform.toml`). This is a local run, not a certification.
 
 ## Connecting an app
 

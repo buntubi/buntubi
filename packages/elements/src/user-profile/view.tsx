@@ -3,6 +3,7 @@ import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input, Textarea } from '@fluixi-ui/input';
+import { PROFILE_FIELDS } from '@buntubi/sdk/account';
 import { viewToken } from '../view.js';
 import type { UserProfileLogic } from './logic.js';
 import '@bambiste/countries/elements';
@@ -125,6 +126,21 @@ export const userProfileView = (p: UserProfileLogic) => (
           </div>
         </Form>
       </section>
+      <Show when={Object.keys(p.page()?.fields ?? {}).length > 0}>
+        <section class="card">
+          <h2>{() => p.labels().profileFields}</h2>
+          <ul>
+            <For each={PROFILE_FIELDS.filter((field) => p.page()?.fields[field])}>
+              {(field) => (
+                <li>
+                  <span>{() => p.labels().fields[field]}</span>
+                  <span class={() => (p.page()?.profile[field] ? '' : 'muted')}>{() => p.page()?.profile[field] || p.labels().notSet}</span>
+                </li>
+              )}
+            </For>
+          </ul>
+        </section>
+      </Show>
       <section class="card">
         <h2>{() => p.labels().organizations}</h2>
         <Show when={p.page()?.organizations.length} fallback={<p class="muted">{() => p.labels().noOrganization}</p>}>

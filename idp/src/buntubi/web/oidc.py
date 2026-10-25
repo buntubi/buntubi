@@ -19,6 +19,7 @@ from sqlalchemy import text
 from buntubi.config import get_settings
 from buntubi.db import db, utcnow
 from buntubi.extensions import limiter
+from buntubi.models.profile_fields import STANDARD_FIELDS
 from buntubi.oauth.claims import SCOPES, user_claims
 from buntubi.oauth.grants import GRANT_TYPES_SUPPORTED
 from buntubi.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
@@ -91,6 +92,7 @@ def discovery() -> Response:
             "locale",
             "picture",
             "updated_at",
+            *STANDARD_FIELDS,
             "email",
             "email_verified",
             "phone_number",

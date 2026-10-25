@@ -22,6 +22,9 @@ def user_claims(user: User, scope: str) -> dict[str, Any]:
             picture=user.picture,
             updated_at=int(user.updated_at.timestamp()),
         )
+        from buntubi.services import profile_fields  # as for the address below
+
+        claims.update(profile_fields.values_of(user, profile_fields.shown()))
     if "email" in scopes:
         claims.update(email=user.email, email_verified=user.email_verified)
     if "phone" in scopes and user.phone:

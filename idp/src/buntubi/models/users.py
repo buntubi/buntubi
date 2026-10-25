@@ -1,7 +1,7 @@
 """People with an account, and the outside identities (Google) linked to them."""
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -43,6 +43,13 @@ class User(IdMixin, TimestampMixin, Base):
     address_region: Mapped[str] = mapped_column(String(100), default="")
     address_postal_code: Mapped[str] = mapped_column(String(20), default="")
     address_country: Mapped[str | None] = mapped_column(String(2))
+    # The standard profile claims a platform may ask for (models/profile_fields.py).
+    birthdate: Mapped[date | None]
+    gender: Mapped[str | None] = mapped_column(String(10))
+    middle_name: Mapped[str | None] = mapped_column(String(80))
+    nickname: Mapped[str | None] = mapped_column(String(80))
+    website: Mapped[str | None] = mapped_column(String(500))
+    zoneinfo: Mapped[str | None] = mapped_column(String(64))
     # "admin" opens the admin API. "superadmin", given only from the command line, also gives and
     # takes the admin role in the console, and the console cannot disable or demote it.
     roles: Mapped[list[str]] = mapped_column(ARRAY(String(32)), default=list)

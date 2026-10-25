@@ -316,6 +316,10 @@
     "./secure-account": "./src/secure-account/secure-account.tsx",
     "./secure-account/view": "./src/secure-account/view.tsx",
     "./secure-account/logic": "./src/secure-account/logic.ts",
+    "./about-section": "./src/about-section/about-section.tsx",
+    "./about-section/view": "./src/about-section/view.tsx",
+    "./about-section/logic": "./src/about-section/logic.ts",
+    "./about-section/field-input": "./src/about-section/field-input.tsx",
     "./address-section": "./src/address-section/address-section.tsx",
     "./address-section/view": "./src/address-section/view.tsx",
     "./address-section/logic": "./src/address-section/logic.ts"

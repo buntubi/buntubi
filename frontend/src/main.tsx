@@ -25,6 +25,7 @@ import { createApi, type Redirect } from './host/api.js';
 import { lookOf, viewsOf } from '@buntubi/sdk/plugins';
 import { overrideViews } from '@buntubi/sdk/view';
 import { getPasskey } from '@buntubi/sdk/webauthn';
+import { PROFILE_FIELDS, type ProfileField } from '@buntubi/sdk/account';
 import builtUiPlugins from 'virtual:idp-ui-plugins';
 import { mountedUiPlugins } from '@buntubi/sdk/runtime';
 import { applyBrand } from './host/brand.js';
@@ -42,6 +43,10 @@ const config = readConfig();
 const t = text[config.locale] ?? text.fr;
 const api = createApi(config.csrf, config.session);
 const props = config.props;
+// The profile fields the platform requires at sign-up, as the provider listed them.
+const signUpFields = (Array.isArray(props.fields) ? props.fields : []).filter((field): field is ProfileField =>
+  (PROFILE_FIELDS as readonly unknown[]).includes(field),
+);
 const str = (key: string) => (typeof props[key] === 'string' ? (props[key] as string) : '');
 
 const go = (url: string) => window.location.assign(url);
@@ -118,9 +123,11 @@ const screens: Record<string, () => Screen> = {
             email: input.email,
             password: input.password,
             locale: config.locale,
+            ...Object.fromEntries(signUpFields.map((field) => [field, input[field].trim()])),
           })
         }
         schema={signUpSchema}
+        fields={signUpFields}
         labels={t.signUp}
         messages={t.messages}
         email={typeof props.email === 'string' ? props.email : ''}

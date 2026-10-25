@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from pydantic.json_schema import models_json_schema
 
 from buntubi.config import get_settings
+from buntubi.models.profile_fields import STANDARD_FIELDS
 from buntubi.services.webhooks import Event
 from buntubi.web import admin, developer, organizations
 
@@ -430,6 +431,20 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                 "items": obj({"id": STRING, "name": STRING, "role": ROLE, "platform": BOOL}),
             },
             "active_sessions": INT,
+            "fields": {
+                "type": "object",
+                "description": "The profile fields the platform shows, and how firmly it asks.",
+                "properties": {
+                    key: {"type": "string", "enum": ["optional", "required"]} for key in STANDARD_FIELDS
+                },
+                "additionalProperties": False,
+            },
+            "profile": {
+                "type": "object",
+                "description": "The person's values for the fields shown; the birthdate as YYYY-MM-DD.",
+                "properties": {key: MAYBE_STRING for key in STANDARD_FIELDS},
+                "additionalProperties": False,
+            },
         }
     ),
     "AdminOrganization": obj(

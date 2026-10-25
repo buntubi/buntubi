@@ -1,11 +1,13 @@
 /** The default look of idp-sign-up. */
+import { For } from '@fluixi/core';
 import { Form, FormField } from '@fluixi-ui/form';
+import { ProfileFieldInput } from '@idp/elements/about-section/field-input';
 import { Input } from '@fluixi-ui/input';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '@buntubi/sdk/view';
 import type { SignUpLogic } from './sign-up.js';
 
-export const signUpView = ({ error, form, label, pending, submit }: SignUpLogic) =>
+export const signUpView = ({ asked, error, form, label, pending, submit }: SignUpLogic) =>
   (
       <Form form={form} onSubmit={submit} class="idp-form" novalidate>
         {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
@@ -38,6 +40,11 @@ export const signUpView = ({ error, form, label, pending, submit }: SignUpLogic)
             />
           )}
         </FormField>
+        <For each={asked()}>
+          {(field) => (
+            <ProfileFieldInput field={field} control={form.get(field)} label={label().fields[field]} genders={label().genders} />
+          )}
+        </For>
         <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
           {() => (pending() ? label().pending : label().submit)}
         </Button>

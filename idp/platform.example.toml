@@ -43,3 +43,13 @@ secret = { file = "../apps/portal/.env", key = "PORTAL_CLIENT_SECRET" }
 # redirect_uris = ["https://oauth.pstmn.io/v1/callback"]
 # scope = "openid profile email offline_access developer"
 # first_party = false
+
+# The standard profile fields the platform asks for: "hidden" (the default), "optional" (in the
+# account area) or "required" (asked at sign-up too). Shown fields are released under `profile`.
+# [profile]
+# birthdate = "optional"
+# gender = "optional"
+# middle_name = "optional"
+# nickname = "optional"
+# website = "optional"
+# zoneinfo = "optional"

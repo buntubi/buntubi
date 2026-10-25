@@ -302,6 +302,16 @@ export const userProfileLabels = (): UserProfileLabels => ({
   noPortal: t('users.noPortal'),
   organizations: t('users.organizations'),
   noOrganization: t('users.noOrganization'),
+  profileFields: t('users.profileFields'),
+  fields: {
+    birthdate: t('users.field.birthdate'),
+    gender: t('users.field.gender'),
+    middle_name: t('users.field.middle_name'),
+    nickname: t('users.field.nickname'),
+    website: t('users.field.website'),
+    zoneinfo: t('users.field.zoneinfo'),
+  },
+  notSet: t('users.notSet'),
   platform: t('apps.platform'),
   roles: {
     owner: t('users.role.owner'),

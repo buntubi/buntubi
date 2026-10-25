@@ -366,7 +366,7 @@ def register(app: Flask) -> None:
         help="A new secret for this app only, written to its file. Repeatable.",
     )
     def platform_setup(path: Path, rotate_secrets: bool, rotate: tuple[str, ...]) -> None:
-        """The platform organization, the apps in the file, the plugins' catalogue. Safe to run again."""
+        """The platform organization, the file's apps and profile fields, the catalogue. Safe to run again."""
         from buntubi import plugins
         from buntubi.plugins.sync import CatalogueError, sync
         from buntubi.services import setup
@@ -375,6 +375,7 @@ def register(app: Flask) -> None:
             raise click.ClickException("no superadmin yet: run `flask admin create` first")
         try:
             report = setup.apply(setup.read(path), rotate_secrets=rotate_secrets, rotate=frozenset(rotate))
+            fields = setup.apply_profile(setup.read_profile(path))
             catalogue = sync(plugins.active())
         except (setup.SetupError, CatalogueError) as error:
             raise click.ClickException(str(error)) from error
@@ -384,6 +385,8 @@ def register(app: Flask) -> None:
             click.echo(f"kept      {client_id}")
         for target in report.secrets:
             click.echo(f"secret    {target}")
+        for key in fields:
+            click.echo(f"profile   {key}")
         for kind in ("added", "updated", "adopted", "restored", "deprecated"):
             for entry in getattr(catalogue, kind):
                 click.echo(f"{kind:<10}{entry}")

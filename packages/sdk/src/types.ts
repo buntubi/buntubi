@@ -1,5 +1,5 @@
 /** What the provider's developer API answers with, as the portal and its elements see it. */
-import type { PostalAddress } from './account.js';
+import type { AccountSummary, PostalAddress, ProfileField } from './account.js';
 
 /** A person's role in an organization, shared by every product. */
 export const ROLES = ['owner', 'admin', 'billing', 'member', 'guest'] as const;
@@ -207,6 +207,9 @@ export interface AdminUserPage {
   user: AdminUser;
   organizations: { id: string; name: string; role: Role; platform: boolean }[];
   active_sessions: number;
+  /** The profile fields the platform shows, and the person's values for them. */
+  fields: AccountSummary['fields'];
+  profile: Partial<Record<ProfileField, string | null>>;
 }
 
 /** A new account: invited by email when there is no password, ready to use when there is one. */

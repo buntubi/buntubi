@@ -16,6 +16,7 @@ from buntubi.config import get_settings
 from buntubi.db import db, utcnow
 from buntubi.extensions import limiter
 from buntubi.models import Consent, DeviceCode, LoginSession, User
+from buntubi.models.profile_fields import STANDARD_FIELDS
 from buntubi.security import csrf
 from buntubi.security.passwords import verify_password
 from buntubi.security.tokens import normalize_user_code
@@ -31,6 +32,7 @@ from buntubi.services import (
     passkeys,
     platform,
     profile,
+    profile_fields,
     security_prompt,
     sessions,
 )
@@ -150,6 +152,8 @@ def sign_out() -> Response:
 @limiter.limit("5 per minute")
 def sign_up() -> Response:
     data = _body()
+    # Checked before the account exists, so a refusal reads the same for a known address.
+    fields = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}, signing_up=True)
     made = accounts.register(
         NewAccount(
             email=_text(data, "email"),
@@ -166,6 +170,7 @@ def sign_up() -> Response:
         sessions.set_existing_sign_up(made.user.email)
         db().commit()
         return jsonify(next="verify_email", email=made.user.email)
+    profile_fields.store(made.user, fields)
     audit.record("sign_up", user=made.user)
     return _needs_verification(made.user, ["pwd"])
 
@@ -334,7 +339,9 @@ def account_summary() -> Any:
     user = login.user
     here = sessions.all_signed_in()
     now = utcnow()
+    shown = profile_fields.shown()
     summary = jsonify(
+        fields=shown,
         user={
             "id": str(user.id),
             "email": user.email,
@@ -346,6 +353,7 @@ def account_summary() -> Any:
             "phone": user.phone,
             "country": user.country,
             "address": profile.address_of(user),
+            **profile_fields.values_of(user, shown),
             "picture": user.picture,
             "pending_email": profile.pending_email(user),
             "created_at": user.created_at.isoformat(),
@@ -390,7 +398,7 @@ _COUNTRY = re.compile(r"^([A-Za-z]{2})?$")
 
 @bp.patch("/account/profile")
 def update_profile() -> Response:
-    """Name, phone, country, address and language; only the fields sent change."""
+    """Name, phone, country, address, language and the profile fields shown; only the fields sent change."""
     data = _body()
     user = _me()
     fields: dict[str, str] = {}
@@ -416,6 +424,9 @@ def update_profile() -> Response:
         profile.set_address(user, parts)
         fields.update({f"address.{k}": "" for k in parts})
     profile.update(user, **{k: v for k, v in fields.items() if not k.startswith("address.")})
+    extra = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS})
+    profile_fields.store(user, extra)
+    fields.update({key: "" for key in extra})
     audit.record("profile_updated", user=user, fields=sorted(fields))
     db().commit()
     return jsonify(updated=sorted(fields))

@@ -23,7 +23,7 @@ from buntubi.db import db, utcnow
 from buntubi.models import ApiProduct, AppReview, AuditEvent, Client, LoginSession, Organization, Scope, User
 from buntubi.models.clients import GRANT_TYPES
 from buntubi.oauth.server import require_token
-from buntubi.services import accounts, audit, mail, mfa, passkeys, profile
+from buntubi.services import accounts, audit, mail, mfa, passkeys, profile, profile_fields
 from buntubi.services import platform as p
 from buntubi.services.accounts import AccountError, sign_out_everywhere
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
@@ -370,7 +370,14 @@ def get_user(user_id: str, admin: User) -> Response:
             LoginSession.user_id == user.id, LoginSession.revoked_at.is_(None), LoginSession.expires_at > now
         )
     )
-    return jsonify(user=_one_user_json(user), organizations=memberships, active_sessions=int(sessions or 0))
+    shown = profile_fields.shown()
+    return jsonify(
+        user=_one_user_json(user),
+        organizations=memberships,
+        active_sessions=int(sessions or 0),
+        fields=shown,
+        profile=profile_fields.values_of(user, shown),
+    )
 
 
 @bp.patch("/users/<user_id>")

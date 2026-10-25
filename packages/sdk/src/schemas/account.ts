@@ -3,6 +3,7 @@
  * update_profile, services/profile.py). Messages are i18n keys.
  */
 import { z } from 'zod';
+import { GENDERS } from '../account.js';
 
 const name = z.string().max(100, 'form.tooLong');
 
@@ -21,6 +22,25 @@ export const addressSchema = z.object({
   region: z.string().trim().max(100, 'form.tooLong'),
   postal_code: z.string().trim().max(20, 'form.tooLong'),
   country: z.string().trim().regex(/^([A-Za-z]{2})?$/, 'form.country'),
+});
+
+const optionalText = z.string().trim().max(80, 'form.tooLong');
+
+/** The profile fields a platform may show; the element adds `form.required` for a required one. */
+export const aboutSchema = z.object({
+  birthdate: z
+    .string()
+    .trim()
+    .regex(/^(\d{4}-\d{2}-\d{2})?$/, 'form.date'),
+  gender: z.string().refine((value) => value === '' || (GENDERS as readonly string[]).includes(value), 'form.choice'),
+  middle_name: optionalText,
+  nickname: optionalText,
+  website: z
+    .string()
+    .trim()
+    .max(500, 'form.tooLong')
+    .regex(/^(https?:\/\/[^\s/?#]+[^\s]*)?$/, 'form.website'),
+  zoneinfo: z.string().trim().max(64, 'form.tooLong'),
 });
 
 export const countrySchema = z.object({ country: z.string().trim().regex(/^([A-Za-z]{2})?$/, 'form.country') });
@@ -60,6 +80,7 @@ export const deleteAccountSchema = z.object({
 export type NameInput = z.infer<typeof nameSchema>;
 export type PhoneInput = z.infer<typeof phoneSchema>;
 export type CountryInput = z.infer<typeof countrySchema>;
+export type AboutInput = z.infer<typeof aboutSchema>;
 export type AddressInput = z.infer<typeof addressSchema>;
 export type EmailChangeInput = z.infer<typeof emailChangeSchema>;
 export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;

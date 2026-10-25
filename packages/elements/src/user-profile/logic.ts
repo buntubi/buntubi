@@ -3,6 +3,7 @@ import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
 import type { UserEditInput } from '@buntubi/sdk/schemas/users';
 import type { AdminUser, AdminUserPage, Role } from '@buntubi/sdk/types';
+import type { ProfileField } from '@buntubi/sdk/account';
 
 export interface UserProfileLabels {
   profile: string;
@@ -41,6 +42,9 @@ export interface UserProfileLabels {
   noPortal: string;
   organizations: string;
   noOrganization: string;
+  profileFields: string;
+  fields: Record<ProfileField, string>;
+  notSet: string;
   platform: string;
   roles: Record<Role, string>;
   security: string;
@@ -105,6 +109,16 @@ export const userProfileLabels: UserProfileLabels = {
   noPortal: 'Not used',
   organizations: 'Organizations',
   noOrganization: 'Member of none.',
+  profileFields: 'About',
+  fields: {
+    birthdate: 'Date of birth',
+    gender: 'Gender',
+    middle_name: 'Middle name',
+    nickname: 'Nickname',
+    website: 'Website',
+    zoneinfo: 'Time zone',
+  },
+  notSet: 'Not set',
   platform: 'Platform',
   roles: { owner: 'Owner', admin: 'Admin', billing: 'Billing', member: 'Member', guest: 'Guest' },
   security: 'Access',

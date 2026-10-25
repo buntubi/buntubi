@@ -19,7 +19,7 @@ from buntubi.db import db
 from buntubi.models import UserPicture
 from buntubi.oauth.server import authorization, query_client
 from buntubi.security import csrf
-from buntubi.services import login_hint, mfa, passkeys, platform, security_prompt, sessions
+from buntubi.services import login_hint, mfa, passkeys, platform, profile_fields, security_prompt, sessions
 from buntubi.web import ui_plugins
 
 bp = Blueprint("pages", __name__)
@@ -108,7 +108,9 @@ def signin() -> str:
 
 @bp.get("/signup")
 def signup() -> str:
-    return shell("idp-sign-up", email=login_hint.from_request())
+    # The fields the platform requires, asked on the form with name and email.
+    required = [key for key, mode in profile_fields.shown().items() if mode == "required"]
+    return shell("idp-sign-up", email=login_hint.from_request(), fields=required)
 
 
 @bp.get("/verify-email")

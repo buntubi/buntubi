@@ -13,9 +13,21 @@ export interface BrowserAccount {
   current: boolean;
 }
 
+/** The OpenID Connect profile claims a platform may ask for, beyond name and email. */
+export const PROFILE_FIELDS = ['birthdate', 'gender', 'middle_name', 'nickname', 'website', 'zoneinfo'] as const;
+export type ProfileField = (typeof PROFILE_FIELDS)[number];
+/** hidden: neither asked nor released; optional: in the account area; required: asked at sign-up too. */
+export const FIELD_MODES = ['hidden', 'optional', 'required'] as const;
+export type FieldMode = (typeof FIELD_MODES)[number];
+export const GENDERS = ['female', 'male', 'other'] as const;
+export type Gender = (typeof GENDERS)[number];
+
 /** What the account home shows. */
 export interface AccountSummary {
-  user: {
+  /** The profile fields the platform shows, and how firmly it asks; a hidden one is left out. */
+  fields: Partial<Record<ProfileField, Exclude<FieldMode, 'hidden'>>>;
+  /** The values of the fields shown, as `YYYY-MM-DD` for the birthdate; null when not set. */
+  user: Partial<Record<ProfileField, string | null>> & {
     id: string;
     email: string;
     email_verified: boolean;
@@ -216,6 +228,13 @@ export interface ProfilePatch {
   /** The parts sent change; an empty one clears it. */
   address?: Partial<PostalAddress>;
   locale?: 'fr' | 'en';
+  /** Fields the platform shows; an empty one clears it, unless it is required. */
+  birthdate?: string;
+  gender?: Gender | '';
+  middle_name?: string;
+  nickname?: string;
+  website?: string;
+  zoneinfo?: string;
 }
 
 /** A postal address, in the parts of the OIDC address claim. Empty strings when not set. */
