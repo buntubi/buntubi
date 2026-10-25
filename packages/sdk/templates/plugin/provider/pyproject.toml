@@ -1,0 +1,13 @@
+# {{label}}'s provider plugin: Python, because the provider runs on Flask. Installed into the
+# provider's image by provider.Dockerfile, turned on by IDP_PLUGINS.
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{id}}-idp"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[project.entry-points."buntubi.plugins"]
+{{id}} = "{{module}}:{{className}}"
