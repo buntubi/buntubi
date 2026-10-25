@@ -21,3 +21,15 @@ scope = "openid profile email developer"
 homepage_url = "{{portalUrl}}/"
 backchannel_logout_uri = "{{portalUrl}}/auth/backchannel-logout"
 secret = { file = "portal.env", key = "PORTAL_CLIENT_SECRET" }
+
+# Social sign-in, once IDP_GOOGLE_* or IDP_GITHUB_* is set in identity.env.
+# [social]
+# providers = ["google", "github"]
+
+# Whether people can make an account; invited addresses always can.
+# [signup]
+# open = true
+
+# The profile fields asked of people: "hidden" (the default), "optional" or "required".
+# [profile]
+# birthdate = "optional"

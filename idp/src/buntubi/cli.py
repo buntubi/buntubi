@@ -376,6 +376,7 @@ def register(app: Flask) -> None:
         try:
             report = setup.apply(setup.read(path), rotate_secrets=rotate_secrets, rotate=frozenset(rotate))
             fields = setup.apply_profile(setup.read_profile(path))
+            access = setup.apply_access(setup.read_access(path))
             catalogue = sync(plugins.active())
         except (setup.SetupError, CatalogueError) as error:
             raise click.ClickException(str(error)) from error
@@ -387,6 +388,8 @@ def register(app: Flask) -> None:
             click.echo(f"secret    {target}")
         for key in fields:
             click.echo(f"profile   {key}")
+        for key in access:
+            click.echo(f"setting   {key}")
         for kind in ("added", "updated", "adopted", "restored", "deprecated"):
             for entry in getattr(catalogue, kind):
                 click.echo(f"{kind:<10}{entry}")

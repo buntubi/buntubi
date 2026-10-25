@@ -78,6 +78,10 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     # Whether its tokens name an organization the person acts in: "none", "optional" (when the
     # request names one) or "required" (the person picks one when the request names none).
     organization_usage: Mapped[str] = mapped_column(String(8), default="none", server_default="none")
+    # Which of the deployment's social providers its sign-in page offers; None: every one.
+    social_providers: Mapped[list[str] | None] = mapped_column(ARRAY(String(32)))
+    # Whether its sign-in page lets people make an account; only narrows the deployment's policy.
+    signup_open: Mapped[bool] = mapped_column(default=True, server_default="true")
     # Where organization events go (services/webhooks.py), the secret that signs them (sealed:
     # it is read back to sign), and which: "linked" (the organizations the app works with) or
     # "all" (every organization, for the platform's own products).

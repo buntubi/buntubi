@@ -61,6 +61,13 @@ class Settings(BaseSettings):
     # choose the address the rate limits and the audit trail see.
     trusted_proxies: int = 0
 
+    # Social sign-in (buntubi/social): a provider is offered once its client is set here and
+    # platform.toml lists it under [social].
+    google_client_id: str = ""
+    google_client_secret: SecretStr = SecretStr("")
+    github_client_id: str = ""
+    github_client_secret: SecretStr = SecretStr("")
+
     @property
     def local(self) -> bool:
         """An issuer on this machine: development and tests."""

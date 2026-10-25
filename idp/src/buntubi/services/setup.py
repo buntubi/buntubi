@@ -22,10 +22,12 @@ from buntubi.db import db
 from buntubi.models import Client
 from buntubi.models.clients import GRANT_TYPES
 from buntubi.models.profile_fields import FIELD_MODES, STANDARD_FIELDS
+from buntubi.models.settings import SIGNUP_OPEN_SETTING, SOCIAL_PROVIDERS_SETTING
 from buntubi.plugins import SLUG
-from buntubi.services import audit, profile_fields, webhooks
+from buntubi.services import audit, platform_settings, profile_fields, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
+from buntubi.social import SOCIAL_PROVIDERS
 
 
 class SetupError(ValueError):
@@ -61,6 +63,10 @@ class AppSpec:
     secret: SecretTarget | None = None
     # The sign-in look of a mounted UI plugin, kept in the app's brand. Left out, it keeps its own.
     look: str | None = None
+    # Which of the deployment's social providers its sign-in offers (None: every one), and whether
+    # it lets people make an account. Left out, the app keeps what it has.
+    social_providers: tuple[str, ...] | None = None
+    signup_open: bool | None = None
     # Which of `STATED` the file names: those win on an app that exists, the rest stay as they are.
     stated: frozenset[str] = frozenset()
 
@@ -103,6 +109,53 @@ def read_profile(path: Path) -> dict[str, str]:
     return dict(table)
 
 
+@dataclass(frozen=True)
+class Access:
+    """`[social]` and `[signup]`: the providers offered and whether sign-up is open."""
+
+    social_providers: tuple[str, ...] | None = None
+    signup_open: bool | None = None
+
+
+def read_access(path: Path) -> Access:
+    with path.open("rb") as handle:
+        data = tomllib.load(handle)
+    social_table, signup_table = data.get("social", {}), data.get("signup", {})
+    if not isinstance(social_table, dict) or not isinstance(signup_table, dict):
+        raise SetupError("social and signup are tables: [social] providers = [...], [signup] open = true")
+    providers = social_table.get("providers")
+    if providers is not None:
+        providers = _providers(providers, "social.providers")
+    open_ = signup_table.get("open")
+    if open_ is not None and not isinstance(open_, bool):
+        raise SetupError("signup.open is true or false")
+    return Access(providers, open_)
+
+
+def apply_access(access: Access) -> list[str]:
+    """Stores what the file names; what it leaves out keeps its value. Commits."""
+    changed = []
+    if access.social_providers is not None and platform_settings.put(
+        SOCIAL_PROVIDERS_SETTING, list(access.social_providers)
+    ):
+        changed.append("social.providers")
+    if access.signup_open is not None and platform_settings.put(SIGNUP_OPEN_SETTING, access.signup_open):
+        changed.append("signup.open")
+    if changed:
+        audit.record("platform.access_changed", settings=changed)
+    db().commit()
+    return changed
+
+
+def _providers(value: Any, where: str) -> tuple[str, ...]:
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise SetupError(f"{where} is a list of provider ids")
+    unknown = [item for item in value if item not in SOCIAL_PROVIDERS]
+    if unknown:
+        raise SetupError(f"{where}: unknown providers {unknown} ({', '.join(SOCIAL_PROVIDERS)})")
+    return tuple(value)
+
+
 def apply_profile(wanted: dict[str, str]) -> list[str]:
     """Stores the modes the file names; the fields it leaves out keep theirs. Commits."""
     changed = profile_fields.set_modes(wanted)
@@ -142,6 +195,12 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
     look = entry.get("look")
     if look is not None and not (isinstance(look, str) and SLUG.match(look)):
         raise SetupError(f"{where}: look is a lowercase slug, the name a UI plugin gives it")
+    social_providers = entry.get("social_providers")
+    if social_providers is not None:
+        social_providers = _providers(social_providers, f"{where}: social_providers")
+    signup_open = entry.get("signup")
+    if signup_open is not None and not isinstance(signup_open, bool):
+        raise SetupError(f"{where}: signup is true or false")
     secret = entry.get("secret")
     target = None
     if secret is not None:
@@ -168,6 +227,8 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
         secret=target,
         stated=frozenset(key for key in STATED if key in entry),
         look=look,
+        social_providers=social_providers,
+        signup_open=signup_open,
     )
 
 
@@ -204,6 +265,8 @@ def apply(
                 homepage_url=spec.homepage_url,
                 backchannel_logout_uri=spec.backchannel_logout_uri,
                 organization_usage=spec.organization_usage or "none",
+                social_providers=list(spec.social_providers) if spec.social_providers is not None else None,
+                signup_open=spec.signup_open is not False,
             )
             db().add(client)
             secret = issue_client_secret(client) if confidential else None
@@ -217,6 +280,10 @@ def apply(
                 client.backchannel_logout_uri = spec.backchannel_logout_uri
             if spec.organization_usage is not None:
                 client.organization_usage = spec.organization_usage
+            if spec.social_providers is not None:
+                client.social_providers = list(spec.social_providers)
+            if spec.signup_open is not None:
+                client.signup_open = spec.signup_open
             for key in spec.stated:
                 value = getattr(spec, key)
                 setattr(client, key, list(value) if isinstance(value, tuple) else value)

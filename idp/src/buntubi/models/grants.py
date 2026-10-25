@@ -29,7 +29,7 @@ class LoginSession(IdMixin, Base):
     last_seen_at: Mapped[datetime] = mapped_column(default=utcnow)
     expires_at: Mapped[datetime]
     revoked_at: Mapped[datetime | None]
-    # How the user proved who they are ("pwd", "google", "otp"): the OIDC amr claim.
+    # How the user proved who they are ("pwd", "fed" for a social provider, "otp"): the OIDC amr claim.
     auth_methods: Mapped[list[str]] = mapped_column(ARRAY(String(16)), default=list)
     ip: Mapped[str | None] = mapped_column(String(45))
     user_agent: Mapped[str | None] = mapped_column(String(512))

@@ -35,6 +35,7 @@ from buntubi.services import (
     profile_fields,
     security_prompt,
     sessions,
+    social,
 )
 from buntubi.services.accounts import AccountError, NewAccount
 
@@ -73,6 +74,11 @@ def _text(data: dict[str, Any], key: str, limit: int = 320) -> str:
 
 
 def _signed_in(user: User, methods: list[str], event: str, replaces: str | None = None) -> Response:
+    return jsonify(redirect=complete_sign_in(user, methods, event, replaces))
+
+
+def complete_sign_in(user: User, methods: list[str], event: str, replaces: str | None = None) -> str:
+    """Starts the session and answers where to go: back to the app, or the account area."""
     sessions.start(user, methods, replaces=replaces)
     audit.record(event, user=user, methods=methods)
     # Organizations that invited this address before it had an account.
@@ -82,8 +88,8 @@ def _signed_in(user: User, methods: list[str], event: str, replaces: str | None 
     # Just verified and nothing but a password: offered a passkey or two-step once, the way
     # back to the app kept for after.
     if event == "email_verified" and security_prompt.applies(user):
-        return jsonify(redirect=url_for("pages.secure_account"))
-    return jsonify(redirect=sessions.take_return_to(url_for("pages.account")))
+        return url_for("pages.secure_account")
+    return sessions.take_return_to(url_for("pages.account"))
 
 
 def _needs_verification(user: User, methods: list[str]) -> Response:
@@ -154,6 +160,9 @@ def sign_up() -> Response:
     data = _body()
     # Checked before the account exists, so a refusal reads the same for a known address.
     fields = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}, signing_up=True)
+    # Closed for everyone but invited addresses; said the same way whether the address has an account.
+    if not social.signup_allowed(_text(data, "email").strip().lower()):
+        raise AccountError("signup_closed")
     made = accounts.register(
         NewAccount(
             email=_text(data, "email"),

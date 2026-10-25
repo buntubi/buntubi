@@ -53,3 +53,13 @@ secret = { file = "../apps/portal/.env", key = "PORTAL_CLIENT_SECRET" }
 # nickname = "optional"
 # website = "optional"
 # zoneinfo = "optional"
+
+# Social sign-in: the providers offered, once their client is set in the env (IDP_GOOGLE_*,
+# IDP_GITHUB_*). An app can narrow them with `social_providers = ["github"]` in its entry.
+# [social]
+# providers = ["google", "github"]
+
+# Whether people can make an account; invited addresses always can. An app can close its own
+# sign-up with `signup = false` in its entry.
+# [signup]
+# open = true

@@ -89,6 +89,8 @@ class Identity(IdMixin, TimestampMixin, Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     provider: Mapped[str] = mapped_column(String(32))
     subject: Mapped[str] = mapped_column(String(255))
+    # The provider's address at linking time, shown in the account area; never used to match.
     email: Mapped[str | None] = mapped_column(String(320))
+    last_used_at: Mapped[datetime | None]
 
     user: Mapped[User] = relationship(back_populates="identities")

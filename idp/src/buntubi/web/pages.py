@@ -14,12 +14,22 @@ from flask import Blueprint, abort, redirect, render_template, request, session,
 from werkzeug.wrappers import Response
 
 from buntubi import plugins
+from buntubi import social as social_sign_in
 from buntubi.config import get_settings
 from buntubi.db import db
 from buntubi.models import UserPicture
 from buntubi.oauth.server import authorization, query_client
 from buntubi.security import csrf
-from buntubi.services import login_hint, mfa, passkeys, platform, profile_fields, security_prompt, sessions
+from buntubi.services import (
+    login_hint,
+    mfa,
+    passkeys,
+    platform,
+    profile_fields,
+    security_prompt,
+    sessions,
+    social,
+)
 from buntubi.web import ui_plugins
 
 bp = Blueprint("pages", __name__)
@@ -27,7 +37,7 @@ bp = Blueprint("pages", __name__)
 LOCALES = ("fr", "en")
 
 
-def _locale() -> str:
+def locale() -> str:
     chosen = request.args.get("lang") or session.get("lang")
     if chosen in LOCALES:
         session["lang"] = chosen
@@ -73,7 +83,7 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         "element": element,
         # The account area wears the platform's own look, whichever app the person came from.
         "account": account,
-        "locale": _locale(),
+        "locale": locale(),
         "csrf": csrf.token(),
         # The session the page is opened for: requests declare it, and a switch since is refused.
         "session": sessions.current_id(),
@@ -100,17 +110,35 @@ def home() -> Response:
     return redirect(url_for("pages.account"))
 
 
+def _social_props() -> dict[str, Any]:
+    """The providers this page offers, and why the last round trip to one ended, if it did."""
+    error = request.args.get("social_error")
+    provider = social_sign_in.get(request.args.get("provider", ""))
+    return {
+        "social": [{"id": p.id, "label": p.label} for p in social.offered()],
+        "socialError": error if error in social.REFUSALS else None,
+        "socialProvider": provider.label if provider else None,
+    }
+
+
 @bp.get("/signin")
 def signin() -> str:
     # The address an app named for the person, if any, as the form's starting email.
-    return shell("idp-sign-in", email=login_hint.from_request())
+    return shell("idp-sign-in", email=login_hint.from_request(), **_social_props())
 
 
 @bp.get("/signup")
 def signup() -> str:
     # The fields the platform requires, asked on the form with name and email.
     required = [key for key, mode in profile_fields.shown().items() if mode == "required"]
-    return shell("idp-sign-up", email=login_hint.from_request(), fields=required)
+    return shell(
+        "idp-sign-up",
+        email=login_hint.from_request(),
+        fields=required,
+        # Closed: the page says sign-up is by invitation; an invited address still goes through.
+        signupOpen=social.signup_allowed(None),
+        **_social_props(),
+    )
 
 
 @bp.get("/verify-email")

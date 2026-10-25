@@ -192,6 +192,12 @@ def remember_return_to(path: str) -> None:
         session[_RETURN_TO] = path
 
 
+def return_to() -> str | None:
+    """Where signing in will lead, left in place."""
+    path = session.get(_RETURN_TO)
+    return path if isinstance(path, str) and is_local_path(path) else None
+
+
 def take_return_to(default: str = "/") -> str:
     path = session.pop(_RETURN_TO, None)
     return path if path and is_local_path(path) else default
