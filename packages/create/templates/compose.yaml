@@ -1,0 +1,96 @@
+# {{name}}'s identity provider: Buntubi from its published images, its provider built with this
+# project's plugins (provider.Dockerfile), their UI halves mounted from ui-plugins/.
+#
+# `pnpm run setup` the first time (database, signing key, the first admin, the apps in
+# platform.toml), then `pnpm up` and `pnpm down`. The console and the portal share the
+# provider's network namespace, so http://localhost:5010, :3420 and :3410 mean the same thing to
+# the browser and to the containers.
+#
+# Upgrading: change the version below and in provider.Dockerfile, then `pnpm run setup` again (it
+# only adds what is missing) and `pnpm up`.
+
+name: {{slug}}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: idp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: idp
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "idp", "-d", "idp"]
+      interval: 5s
+      retries: 10
+
+  provider:
+    build:
+      context: .
+      dockerfile: provider.Dockerfile
+    image: {{slug}}-provider
+    env_file: identity.env
+    environment:
+      IDP_DATABASE_URL: postgresql+psycopg://idp:${POSTGRES_PASSWORD}@postgres:5432/idp
+      IDP_SIGNING_KEYS_DIR: /keys
+    # The issuer is http://localhost:5010, so the provider listens there inside the namespace too.
+    command: ["gunicorn", "--bind", "0.0.0.0:5010", "--access-logfile", "-", "buntubi.app:create_app()"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(urllib.request.urlopen('http://127.0.0.1:5010/healthz', timeout=4).status != 200)"]
+      interval: 10s
+      start_period: 20s
+    volumes:
+      - ./keys:/keys
+      - &ui-plugins ./ui-plugins:/app/ui-plugins:ro
+    ports:
+      - "5010:5010"
+      - "3420:3420"
+      - "3410:3410"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Sends organization events to the apps' webhooks.
+  webhooks:
+    image: {{slug}}-provider
+    env_file: identity.env
+    environment:
+      IDP_DATABASE_URL: postgresql+psycopg://idp:${POSTGRES_PASSWORD}@postgres:5432/idp
+      IDP_SIGNING_KEYS_DIR: /keys
+      IDP_PLUGINS_SYNC_ON_START: "false"
+    command: ["flask", "webhooks", "deliver"]
+    # The image checks its web server, which this process does not run.
+    healthcheck:
+      disable: true
+    volumes:
+      - ./keys:/keys
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    depends_on:
+      provider:
+        condition: service_started
+
+  console:
+    image: ghcr.io/buntubi/idp-console:{{version}}
+    env_file: console.env
+    volumes:
+      - *ui-plugins
+    network_mode: service:provider
+    depends_on:
+      - provider
+
+  portal:
+    image: ghcr.io/buntubi/idp-portal:{{version}}
+    env_file: portal.env
+    volumes:
+      - *ui-plugins
+    network_mode: service:provider
+    depends_on:
+      - provider
+
+volumes:
+  postgres:

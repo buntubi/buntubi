@@ -1,0 +1,23 @@
+# {{name}}'s apps, created by `pnpm run setup`. Running it again only adds what is missing. A
+# confidential app's secret is written into the env file `secret` names, relative to this file,
+# and never printed. Add the apps that sign in through this provider below.
+
+[[apps]]
+client_id = "owner-console"
+name = "Owner console"
+redirect_uris = ["http://localhost:3420/auth/callback"]
+post_logout_redirect_uris = ["http://localhost:3420/"]
+scope = "openid profile email admin"
+homepage_url = "http://localhost:3420/"
+backchannel_logout_uri = "http://localhost:3420/auth/backchannel-logout"
+secret = { file = "console.env", key = "CONSOLE_CLIENT_SECRET" }
+
+[[apps]]
+client_id = "developer-portal"
+name = "Developer portal"
+redirect_uris = ["http://localhost:3410/auth/callback"]
+post_logout_redirect_uris = ["http://localhost:3410/"]
+scope = "openid profile email developer"
+homepage_url = "http://localhost:3410/"
+backchannel_logout_uri = "http://localhost:3410/auth/backchannel-logout"
+secret = { file = "portal.env", key = "PORTAL_CLIENT_SECRET" }
