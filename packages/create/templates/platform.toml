@@ -5,19 +5,19 @@
 [[apps]]
 client_id = "owner-console"
 name = "Owner console"
-redirect_uris = ["http://localhost:3420/auth/callback"]
-post_logout_redirect_uris = ["http://localhost:3420/"]
+redirect_uris = ["{{consoleUrl}}/auth/callback"]
+post_logout_redirect_uris = ["{{consoleUrl}}/"]
 scope = "openid profile email admin"
-homepage_url = "http://localhost:3420/"
-backchannel_logout_uri = "http://localhost:3420/auth/backchannel-logout"
+homepage_url = "{{consoleUrl}}/"
+backchannel_logout_uri = "{{consoleUrl}}/auth/backchannel-logout"
 secret = { file = "console.env", key = "CONSOLE_CLIENT_SECRET" }
 
 [[apps]]
 client_id = "developer-portal"
 name = "Developer portal"
-redirect_uris = ["http://localhost:3410/auth/callback"]
-post_logout_redirect_uris = ["http://localhost:3410/"]
+redirect_uris = ["{{portalUrl}}/auth/callback"]
+post_logout_redirect_uris = ["{{portalUrl}}/"]
 scope = "openid profile email developer"
-homepage_url = "http://localhost:3410/"
-backchannel_logout_uri = "http://localhost:3410/auth/backchannel-logout"
+homepage_url = "{{portalUrl}}/"
+backchannel_logout_uri = "{{portalUrl}}/auth/backchannel-logout"
 secret = { file = "portal.env", key = "PORTAL_CLIENT_SECRET" }

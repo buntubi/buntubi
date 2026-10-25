@@ -10,7 +10,17 @@ export interface Choices {
   name: string;
   /** Lowercase letters, digits and hyphens: the compose project and the package name. */
   slug: string;
+  /** Where people reach it: on this machine, or at public https addresses. */
+  address: { local: true } | { local: false; provider: string; console: string; portal: string };
+  /** How it sends email: to its log (local only), or through Resend. */
+  email: { through: 'log' } | { through: 'resend'; key: string; from: string };
 }
+
+/** The addresses on this machine: the console and the portal share the provider's network. */
+const LOCAL = { provider: 'http://localhost:5010', console: 'http://localhost:3420', portal: 'http://localhost:3410' };
+
+/** The three addresses the project answers at. */
+export const addressesOf = (choices: Choices) => (choices.address.local ? LOCAL : choices.address);
 
 export type Files = Map<string, string>;
 
@@ -24,10 +34,19 @@ type Entry = [key: string, value: string, comment: string];
 
 export function generate(choices: Choices, version: string, templates: string, secret: () => string): Files {
   if (!SLUG.test(choices.slug)) throw new Error(`"${choices.slug}" must be lowercase letters, digits and hyphens, starting with a letter`);
+  // The provider refuses to start on a public address with email that only goes to its log.
+  if (!choices.address.local && choices.email.through === 'log') throw new Error('a public address needs email that leaves the machine: choose resend');
+  const at = addressesOf(choices);
   const files: Files = new Map();
   for (const file of walk(templates)) {
     const path = relative(templates, file).replace(DOTFILE, '$1.$2');
-    files.set(path, readFileSync(file, 'utf8').replaceAll('{{name}}', choices.name).replaceAll('{{slug}}', choices.slug).replaceAll('{{version}}', version));
+    const text = readFileSync(file, 'utf8')
+      .replaceAll('{{name}}', choices.name)
+      .replaceAll('{{slug}}', choices.slug)
+      .replaceAll('{{version}}', version)
+      .replaceAll('{{consoleUrl}}', at.console)
+      .replaceAll('{{portalUrl}}', at.portal);
+    files.set(path, text);
   }
   files.set(
     'package.json',
@@ -67,16 +86,25 @@ function env(entries: Entry[], withValues: boolean): string {
 }
 
 function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
+  const at = addressesOf(choices);
+  const email: Entry[] =
+    choices.email.through === 'log'
+      ? [['IDP_EMAIL_TEST_MODE', 'true', 'Local only: emails, sign-in codes included, go to the log.']]
+      : [
+          ['IDP_EMAIL_TEST_MODE', 'false', ''],
+          ['IDP_RESEND_API_KEY', choices.email.key, 'Email through Resend: the API key from resend.com.'],
+          ['IDP_EMAIL_FROM', choices.email.from, 'The sender, on a domain verified at Resend.'],
+        ];
   return [
     ['.env', [['POSTGRES_PASSWORD', secret(), 'Read by docker compose: the database password, shared by postgres and the provider.']]],
     [
       'identity.env',
       [
-        ['IDP_ISSUER', 'http://localhost:5010', "The provider's address; every IDP_* setting is documented in Buntubi."],
+        ['IDP_ISSUER', at.provider, "The provider's address; every IDP_* setting is documented in Buntubi."],
         ['IDP_SECRET_KEY', secret(), 'Never change it: it signs sessions and encrypts authenticator secrets.'],
         ['IDP_SECURE_COOKIES', 'true', ''],
-        ['IDP_EMAIL_TEST_MODE', 'true', 'Local only: emails, sign-in codes included, go to the log.'],
-        ['IDP_RATE_LIMIT_STORAGE', 'memory://', ''],
+        ...email,
+        ['IDP_RATE_LIMIT_STORAGE', 'memory://', 'One provider process; several need a shared store (redis://...).'],
         ['IDP_BRAND_NAME', choices.name, ''],
         ['IDP_PLUGINS', '[]', 'The provider plugins turned on, by id, in order; `buntubi add plugin` adds to it.'],
       ],
@@ -84,9 +112,9 @@ function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
     [
       'console.env',
       [
-        ['IDP_URL', 'http://localhost:5010', ''],
-        ['APP_URL', 'http://localhost:3420', ''],
-        ['PORTAL_URL', 'http://localhost:3410', ''],
+        ['IDP_URL', at.provider, ''],
+        ['APP_URL', at.console, ''],
+        ['PORTAL_URL', at.portal, ''],
         ['CONSOLE_CLIENT_ID', 'owner-console', ''],
         ['CONSOLE_CLIENT_SECRET', '', 'Written by `pnpm run setup`.'],
         ['SESSION_SECRET', secret(), 'Encrypts the session cookie: at least 32 characters.'],
@@ -95,8 +123,8 @@ function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
     [
       'portal.env',
       [
-        ['IDP_URL', 'http://localhost:5010', ''],
-        ['APP_URL', 'http://localhost:3410', ''],
+        ['IDP_URL', at.provider, ''],
+        ['APP_URL', at.portal, ''],
         ['PORTAL_CLIENT_ID', 'developer-portal', ''],
         ['PORTAL_CLIENT_SECRET', '', 'Written by `pnpm run setup`.'],
         ['SESSION_SECRET', secret(), 'Encrypts the session cookie: at least 32 characters.'],

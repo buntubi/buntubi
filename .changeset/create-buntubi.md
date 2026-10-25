@@ -2,4 +2,4 @@
 "create-buntubi": minor
 ---
 
-`npm create buntubi` creates a project using the published images: compose, a provider image built with the project's plugins, env files with fresh secrets, and platform.toml with the console and the portal.
+`npm create buntubi` creates a project with published images, a provider image built from the project's plugins, fresh secret env files, and a `platform.toml` configured for console and portal, asking for its public addresses and email, each also given as a flag.
