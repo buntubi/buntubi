@@ -119,6 +119,10 @@ listen on 3420 and 3410. No image holds settings, keys or `platform.toml`.
 
 ### B.2 First run
 
+From the checkout, `pnpm docker setup` runs every step below in `docker/example/`, generating
+the secrets, and can be run again; then `pnpm docker up`, `pnpm docker down` and
+`pnpm docker logs`. Add `--dev` to run the images `pnpm images:dev` built from this checkout.
+
 `docker/example/` is a complete deployment for one machine: PostgreSQL, the provider on
 localhost:5010, the console and the portal. Copy the folder anywhere, then from it:
 

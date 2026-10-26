@@ -7,6 +7,7 @@
     "dev": "./scripts/dev.sh",
     "idp": "./scripts/idp.sh",
     "migrate": "cd idp && ../.venv/bin/alembic upgrade head",
+    "docker": "./scripts/docker.sh",
     "build": "pnpm -r run build",
     "typecheck": "pnpm -r --filter '!@idp/skin' exec tsc --noEmit -p .",
     "version": "changeset version && node scripts/sync-version.mjs && pnpm install --lockfile-only",
