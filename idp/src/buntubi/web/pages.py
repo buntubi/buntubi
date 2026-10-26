@@ -18,6 +18,7 @@ from buntubi import social as social_sign_in
 from buntubi.config import get_settings
 from buntubi.db import db
 from buntubi.models import UserPicture
+from buntubi.models.profile_fields import STANDARD_FIELDS
 from buntubi.oauth.server import authorization, query_client
 from buntubi.security import csrf
 from buntubi.services import (
@@ -122,6 +123,31 @@ def _social_props() -> dict[str, Any]:
     }
 
 
+def _required_platform_fields(keys: list[str] | None = None) -> list[dict[str, Any]]:
+    """The platform's own required fields, as the forms draw them; only `keys` when given."""
+    return [
+        field.as_json()
+        for field in profile_fields.platform_fields()
+        if field.mode == "required" and (keys is None or field.key in keys)
+    ]
+
+
+@bp.get("/profile/complete")
+def complete_missing_profile() -> Any:
+    """The required fields a sign-in found missing, asked before it goes on."""
+    pending = sessions.pending("profile")
+    if pending is None:
+        return redirect(url_for("pages.signin"))
+    missing = profile_fields.missing_required(pending.user)
+    return shell(
+        "idp-complete-profile",
+        email=pending.user.email,
+        fields=[key for key in missing if key in STANDARD_FIELDS],
+        platformFields=_required_platform_fields(missing),
+        action="/api/profile/complete",
+    )
+
+
 @bp.get("/terms/accept")
 def accept_terms() -> Any:
     if sessions.pending("terms") is None or terms.current() is None:
@@ -143,6 +169,7 @@ def signup() -> str:
         "idp-sign-up",
         email=login_hint.from_request(),
         fields=required,
+        platformFields=_required_platform_fields(),
         # Closed: the page says sign-up is by invitation; an invited address still goes through.
         signupOpen=social.signup_allowed(None),
         terms=terms.current(),

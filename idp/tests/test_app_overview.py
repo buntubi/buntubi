@@ -119,6 +119,7 @@ def test_products_group_scopes_and_apps_choose_them(app: Flask, outbox: list[mai
         "offline_access",
         "openid",
         "phone",
+        "platform_profile",
         "profile",
     ]
     assert identity["approval"] == "review"

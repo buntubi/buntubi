@@ -1,11 +1,14 @@
 """
-The profile fields a platform asks for, beyond name and email: which are hidden, optional or
-required, and the one check every value goes through, at sign-up and in the account area alike.
+The profile fields a platform asks for, beyond name and email: the standard OpenID Connect ones
+and its own. Which are hidden, optional or required, and the one check every value goes through,
+at sign-up, at the sign-in that asks for a missing one, and in the account area alike.
 """
 
 from __future__ import annotations
 
+import math
 import re
+from dataclasses import dataclass
 from datetime import date
 from typing import Any
 from urllib.parse import urlsplit
@@ -13,8 +16,9 @@ from zoneinfo import available_timezones
 
 from sqlalchemy import select
 
+from buntubi import plugins
 from buntubi.db import db, utcnow
-from buntubi.models import ProfileField, User
+from buntubi.models import ProfileField, ProfileValue, User
 from buntubi.models.profile_fields import FIELD_MODES, GENDERS, STANDARD_FIELDS
 from buntubi.services.accounts import AccountError
 
@@ -24,7 +28,9 @@ _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 def modes() -> dict[str, str]:
     """Every standard field and its mode; one the platform never configured is hidden."""
-    configured = {row.key: row.mode for row in db().scalars(select(ProfileField))}
+    configured = {
+        row.key: row.mode for row in db().scalars(select(ProfileField).where(ProfileField.type.is_(None)))
+    }
     return {key: configured.get(key, "hidden") for key in STANDARD_FIELDS}
 
 
@@ -126,3 +132,155 @@ def _is_web_address(value: str) -> bool:
     except ValueError:
         return False
     return parts.scheme in ("https", "http") and bool(parts.hostname)
+
+
+# ── The platform's own fields ──────────────────────────────────────────────────────────────────
+
+
+@dataclass(frozen=True)
+class PlatformField:
+    key: str
+    type: str
+    mode: str
+    labels: dict[str, str]
+    choices: tuple[dict[str, Any], ...] = ()
+
+    def as_json(self) -> dict[str, Any]:
+        return {
+            "key": self.key,
+            "type": self.type,
+            "mode": self.mode,
+            "label": self.labels,
+            "choices": list(self.choices),
+        }
+
+
+def platform_fields() -> list[PlatformField]:
+    """The platform's own fields people see, in the order platform.toml lists them."""
+    rows = db().scalars(
+        select(ProfileField)
+        .where(ProfileField.type.is_not(None), ProfileField.mode != "hidden")
+        .order_by(ProfileField.position)
+    )
+    return [PlatformField(r.key, str(r.type), r.mode, dict(r.labels), tuple(r.choices)) for r in rows]
+
+
+def set_platform_fields(fields: list[PlatformField]) -> list[str]:
+    """
+    Stores the fields platform.toml declares, in its order. One it no longer lists keeps its row
+    and its values, hidden. Returns the keys changed.
+    """
+    rows = {r.key: r for r in db().scalars(select(ProfileField).where(ProfileField.type.is_not(None)))}
+    changed: list[str] = []
+    for position, field in enumerate(fields):
+        row = rows.pop(field.key, None)
+        wanted = {
+            "mode": field.mode,
+            "type": field.type,
+            "labels": dict(field.labels),
+            "choices": list(field.choices),
+            "position": position,
+        }
+        if row is None:
+            db().add(ProfileField(key=field.key, updated_at=utcnow(), **wanted))
+        elif any(getattr(row, name) != value for name, value in wanted.items()):
+            for name, value in wanted.items():
+                setattr(row, name, value)
+        else:
+            continue
+        changed.append(field.key)
+    for row in rows.values():
+        if row.mode != "hidden":
+            row.mode = "hidden"
+            changed.append(row.key)
+    return changed
+
+
+def clean_platform(field: PlatformField, raw: Any) -> Any:
+    """The value to store, None for an empty one. Refused as `invalid_<key>`."""
+    if raw is None or raw == "" or raw == []:
+        return None
+    if field.type == "text" and isinstance(raw, str):
+        value = raw.strip()
+        if len(value) <= 500 and not _CONTROL.search(value):
+            return value or None
+    elif field.type == "number" and isinstance(raw, int | float) and not isinstance(raw, bool):
+        if math.isfinite(raw):
+            return raw
+    elif field.type == "date" and isinstance(raw, str) and _DATE.match(raw.strip()):
+        try:
+            return date.fromisoformat(raw.strip()).isoformat()
+        except ValueError:
+            pass
+    elif (field.type == "boolean" and isinstance(raw, bool)) or (
+        field.type == "choice" and isinstance(raw, str) and raw in _choice_values(field)
+    ):
+        return raw
+    elif field.type == "choices" and isinstance(raw, list) and all(isinstance(v, str) for v in raw):
+        allowed = _choice_values(field)
+        if set(raw) <= set(allowed):
+            return [value for value in allowed if value in raw]
+    raise AccountError(f"invalid_{field.key}")
+
+
+def check_platform(data: dict[str, Any], *, user: User | None, signing_up: bool = False) -> dict[str, Any]:
+    """
+    The values to store for the platform fields `data` names. A field not shown is refused as
+    `unknown_field`; a required one cannot be emptied, and at sign-up must be given. A plugin may
+    refuse a value with its own code (`Plugin.profile_field_refusal`).
+    """
+    fields = {field.key: field for field in platform_fields()}
+    for key in data:
+        if key not in fields:
+            raise AccountError("unknown_field")
+    values = {key: clean_platform(fields[key], raw) for key, raw in data.items()}
+    for key, value in values.items():
+        if value is not None and (refusal := plugins.profile_field_refusal(user, key, value)):
+            raise AccountError(refusal)
+    for key, field in fields.items():
+        given = key in values
+        if field.mode == "required" and (given or signing_up) and values.get(key) is None:
+            raise AccountError(f"{key}_required")
+    return values
+
+
+def store_platform(user: User, values: dict[str, Any]) -> None:
+    """Sets the values given; None removes one. The user must have an id (flushed)."""
+    if not values:
+        return
+    rows = {r.key: r for r in db().scalars(select(ProfileValue).where(ProfileValue.user_id == user.id))}
+    for key, value in values.items():
+        row = rows.get(key)
+        if value is None:
+            if row is not None:
+                db().delete(row)
+        elif row is None:
+            db().add(ProfileValue(user_id=user.id, key=key, value=value, updated_at=utcnow()))
+        else:
+            row.value = value
+
+
+def platform_values(user: User) -> dict[str, Any]:
+    """The person's values for the platform fields people see, as the API and the claim give them."""
+    shown_keys = [field.key for field in platform_fields()]
+    if not shown_keys:
+        return {}
+    rows = db().scalars(
+        select(ProfileValue).where(ProfileValue.user_id == user.id, ProfileValue.key.in_(shown_keys))
+    )
+    found = {row.key: row.value for row in rows}
+    return {key: found[key] for key in shown_keys if key in found}
+
+
+def missing_required(user: User) -> list[str]:
+    """The required fields, standard or the platform's own, this account has no value for."""
+    standard = [key for key, mode in shown().items() if mode == "required" and getattr(user, key) is None]
+    have = platform_values(user)
+    own = [field.key for field in platform_fields() if field.mode == "required" and field.key not in have]
+    return standard + own
+
+
+def _choice_values(field: PlatformField) -> list[str]:
+    return [
+        str(choice["value"]) for choice in field.choices if isinstance(choice, dict) and "value" in choice
+    ]

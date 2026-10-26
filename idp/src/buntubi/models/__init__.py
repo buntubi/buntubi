@@ -23,12 +23,13 @@ from buntubi.models.platform import (
     OrganizationTestUser,
     Scope,
 )
-from buntubi.models.profile_fields import ProfileField
+from buntubi.models.profile_fields import ProfileField, ProfileValue
 from buntubi.models.settings import PlatformSetting
 from buntubi.models.users import Identity, User
 from buntubi.models.webhooks import AppOrganization, OrganizationEventSequence, WebhookDelivery, WebhookEvent
 
 __all__ = [
+    "ProfileValue",
     "PlatformSetting",
     "ProfileField",
     "AppOrganization",

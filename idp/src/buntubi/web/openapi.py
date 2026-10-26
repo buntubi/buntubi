@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from pydantic.json_schema import models_json_schema
 
 from buntubi.config import get_settings
-from buntubi.models.profile_fields import STANDARD_FIELDS
+from buntubi.models.profile_fields import PLATFORM_FIELD_TYPES, STANDARD_FIELDS
 from buntubi.services.webhooks import Event
 from buntubi.social import SOCIAL_PROVIDERS
 from buntubi.web import admin, developer, organizations
@@ -67,6 +67,21 @@ MANAGED: dict[str, Any] = {
     "deprecated_at": MAYBE_TIME,
 }
 STRINGS: dict[str, Any] = {"type": "array", "items": STRING}
+LABELS: dict[str, Any] = {"type": "object", "properties": {"fr": STRING, "en": STRING}}
+PLATFORM_FIELD: dict[str, Any] = {
+    "type": "object",
+    "description": "One of the platform's own profile fields, as platform.toml declares it.",
+    "properties": {
+        "key": STRING,
+        "type": {"type": "string", "enum": list(PLATFORM_FIELD_TYPES)},
+        "mode": {"type": "string", "enum": ["optional", "required"]},
+        "label": LABELS,
+        "choices": {
+            "type": "array",
+            "items": {"type": "object", "properties": {"value": STRING, "label": LABELS}},
+        },
+    },
+}
 SOCIAL_PROVIDER: dict[str, Any] = {"type": "string", "enum": list(SOCIAL_PROVIDERS)}
 PROFILE_MODES: dict[str, Any] = {
     "type": "object",
@@ -389,6 +404,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                     },
                     "signup_open": BOOL,
                     "profile_fields": PROFILE_MODES,
+                    "platform_fields": {"type": "array", "items": PLATFORM_FIELD},
                 }
             ),
         }
@@ -470,6 +486,11 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                 "description": "The person's values for the fields shown; the birthdate as YYYY-MM-DD.",
                 "properties": {key: MAYBE_STRING for key in STANDARD_FIELDS},
                 "additionalProperties": False,
+            },
+            "platform_fields": {"type": "array", "items": PLATFORM_FIELD},
+            "platform_profile": {
+                "type": "object",
+                "description": "The person's values for the platform's own fields, by key.",
             },
             "identities": {
                 "type": "array",

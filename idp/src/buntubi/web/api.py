@@ -91,6 +91,11 @@ def complete_sign_in(
         sessions.set_pending(user, methods, "terms", replaces=replaces, provider=provider)
         db().commit()
         return url_for("pages.accept_terms")
+    # A required field this account lacks (it became required after the account was made).
+    if profile_fields.missing_required(user):
+        sessions.set_pending(user, methods, "profile", replaces=replaces, provider=provider)
+        db().commit()
+        return url_for("pages.complete_missing_profile")
     sessions.start(user, methods, replaces=replaces)
     # `provider`: the social provider the first step went through; the client: the app whose
     # request this sign-in continues. Both for the security activity.
@@ -174,6 +179,8 @@ def sign_up() -> Response:
     data = _body()
     # Checked before the account exists, so a refusal reads the same for a known address.
     fields = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}, signing_up=True)
+    own = data.get("platform_profile")
+    platform = profile_fields.check_platform(own if isinstance(own, dict) else {}, user=None, signing_up=True)
     accepted = terms.check(data)
     # Closed for everyone but invited addresses; said the same way whether the address has an account.
     if not social.signup_allowed(_text(data, "email").strip().lower()):
@@ -195,6 +202,7 @@ def sign_up() -> Response:
         db().commit()
         return jsonify(next="verify_email", email=made.user.email)
     profile_fields.store(made.user, fields)
+    profile_fields.store_platform(made.user, platform)
     terms.record(made.user, accepted)
     audit.record("sign_up", user=made.user)
     return _needs_verification(made.user, ["pwd"])
@@ -211,6 +219,27 @@ def accept_terms() -> Any:
     return _signed_in(
         pending.user, pending.methods, "sign_in", replaces=pending.replaces, provider=pending.provider
     )
+
+
+@bp.post("/profile/complete")
+@limiter.limit("10 per minute")
+def complete_missing_profile() -> Any:
+    """The required fields a sign-in asked for: stored, then the sign-in goes on."""
+    pending = sessions.pending("profile")
+    if pending is None:
+        return jsonify(error="no_pending_sign_in"), 400
+    data = _body()
+    user = pending.user
+    profile_fields.store(user, profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}))
+    own = data.get("platform_profile")
+    profile_fields.store_platform(
+        user, profile_fields.check_platform(own if isinstance(own, dict) else {}, user=user)
+    )
+    db().flush()
+    if still := profile_fields.missing_required(user):
+        raise AccountError(f"{still[0]}_required")
+    audit.record("profile_updated", user=user, fields=sorted(data))
+    return _signed_in(user, pending.methods, "sign_in", replaces=pending.replaces, provider=pending.provider)
 
 
 @bp.post("/email/verify")
@@ -386,6 +415,7 @@ def account_summary() -> Any:
     shown = profile_fields.shown()
     summary = jsonify(
         fields=shown,
+        platform_fields=[field.as_json() for field in profile_fields.platform_fields()],
         user={
             "id": str(user.id),
             "email": user.email,
@@ -398,6 +428,7 @@ def account_summary() -> Any:
             "country": user.country,
             "address": profile.address_of(user),
             **profile_fields.values_of(user, shown),
+            "platform_profile": profile_fields.platform_values(user),
             "picture": user.picture,
             "pending_email": profile.pending_email(user),
             "created_at": user.created_at.isoformat(),
@@ -471,6 +502,11 @@ def update_profile() -> Response:
     extra = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS})
     profile_fields.store(user, extra)
     fields.update({key: "" for key in extra})
+    own = data.get("platform_profile")
+    if isinstance(own, dict):
+        platform = profile_fields.check_platform(own, user=user)
+        profile_fields.store_platform(user, platform)
+        fields.update({f"platform_profile.{key}": "" for key in platform})
     audit.record("profile_updated", user=user, fields=sorted(fields))
     db().commit()
     return jsonify(updated=sorted(fields))

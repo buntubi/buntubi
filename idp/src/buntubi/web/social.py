@@ -83,6 +83,7 @@ def complete_page() -> Any:
     return pages.shell(
         "idp-complete-profile",
         fields=required,
+        platformFields=[f.as_json() for f in profile_fields.platform_fields() if f.mode == "required"],
         email=found.email,
         provider=found.provider,
         terms=terms.current(),

@@ -93,6 +93,7 @@ def discovery() -> Response:
             "picture",
             "updated_at",
             *STANDARD_FIELDS,
+            "platform_profile",
             "email",
             "email_verified",
             "phone_number",

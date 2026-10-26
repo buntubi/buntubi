@@ -7,7 +7,17 @@ from authlib.oauth2.rfc6749 import scope_to_list
 from buntubi.models import User
 
 # `admin` opens the admin API, and only for a user with the admin role.
-SCOPES = ("openid", "profile", "email", "phone", "address", "offline_access", "admin", "developer")
+SCOPES = (
+    "openid",
+    "profile",
+    "email",
+    "phone",
+    "address",
+    "platform_profile",
+    "offline_access",
+    "admin",
+    "developer",
+)
 
 
 def user_claims(user: User, scope: str) -> dict[str, Any]:
@@ -33,4 +43,9 @@ def user_claims(user: User, scope: str) -> dict[str, Any]:
         from buntubi.services.profile import address_claim  # the services import the OAuth server
 
         claims.update(address=address_claim(user))
+    if "platform_profile" in scopes:
+        from buntubi.services import profile_fields  # as for the address above
+
+        # The platform's own fields people see, as one object: {"sector": "retail"}.
+        claims.update(platform_profile=profile_fields.platform_values(user) or None)
     return {k: v for k, v in claims.items() if v is not None}

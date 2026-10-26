@@ -43,6 +43,7 @@ REGISTERED_CLAIMS = frozenset(
         "auth_time",
         "amr",
         "sid",
+        "platform_profile",
     }
 )
 
@@ -135,6 +136,14 @@ class Plugin:
         """What the console and the portal show for it; free-form, read by their UI plugins."""
         return {}
 
+    def profile_field_refusal(self, user: User | None, key: str, value: Any) -> str | None:
+        """
+        A refusal code for a value of one of the platform's own profile fields, already checked
+        for its type (`invalid_siret`, worded by the UI plugins), or None. `user` is None at
+        sign-up, before the account exists.
+        """
+        return None
+
     def page_brand(self, client: Client | None, brand: dict[str, Any]) -> dict[str, Any]:
         """
         Changes to the sign-in pages' brand for this client (None: the platform's own pages):
@@ -194,6 +203,15 @@ def scope_refusal(client: Client, scopes: list[str]) -> str | None:
         reason = plugin.scope_refusal(client, scopes)
         if reason:
             return reason
+    return None
+
+
+def profile_field_refusal(user: User | None, key: str, value: Any) -> str | None:
+    """The first refusal any plugin gives for this value."""
+    for plugin in _active:
+        refusal = plugin.profile_field_refusal(user, key, value)
+        if refusal:
+            return refusal
     return None
 
 

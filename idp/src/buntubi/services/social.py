@@ -26,6 +26,7 @@ from buntubi import plugins, social
 from buntubi.config import get_settings
 from buntubi.db import db, utcnow
 from buntubi.models import Client, Identity, Invitation, User
+from buntubi.models.profile_fields import STANDARD_FIELDS
 from buntubi.security.tokens import new_token
 from buntubi.services import audit, platform_settings, profile_fields, sessions, terms
 from buntubi.services.accounts import AccountError
@@ -137,7 +138,11 @@ def finish(provider: Provider, args: dict[str, str], signed_in: User | None, loc
     if not signup_allowed(found.email):
         return _refused(provider, "signup_closed")
     # Required fields or terms to accept: asked before the account is made.
-    if terms.current() is not None or any(mode == "required" for mode in profile_fields.shown().values()):
+    if (
+        terms.current() is not None
+        or any(mode == "required" for mode in profile_fields.shown().values())
+        or any(field.mode == "required" for field in profile_fields.platform_fields())
+    ):
         session[_WAITING] = {**asdict(found), "at": time.time()}
         return Outcome(NEEDS_PROFILE, provider.id)
     return _create(found, {}, locale)
@@ -160,7 +165,9 @@ def complete(data: dict[str, Any], locale: str) -> Outcome:
     found = waiting()
     if found is None:
         raise AccountError("expired")
-    values = profile_fields.check(data, signing_up=True)
+    values = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}, signing_up=True)
+    own = data.get("platform_profile")
+    platform = profile_fields.check_platform(own if isinstance(own, dict) else {}, user=None, signing_up=True)
     accepted = terms.check(data)
     session.pop(_WAITING, None)
     provider = social.get(found.provider)
@@ -170,6 +177,7 @@ def complete(data: dict[str, Any], locale: str) -> Outcome:
         return _refused(provider, "signup_closed")
     made = _create(found, values, locale)
     if made.kind == SIGNED_IN and made.user is not None:
+        profile_fields.store_platform(made.user, platform)
         terms.record(made.user, accepted)
     return made
 

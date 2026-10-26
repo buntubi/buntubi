@@ -21,12 +21,18 @@ from sqlalchemy import select
 from buntubi.db import db
 from buntubi.models import Client
 from buntubi.models.clients import GRANT_TYPES
-from buntubi.models.profile_fields import FIELD_MODES, STANDARD_FIELDS
+from buntubi.models.profile_fields import (
+    FIELD_MODES,
+    PLATFORM_FIELD_KEY,
+    PLATFORM_FIELD_TYPES,
+    STANDARD_FIELDS,
+)
 from buntubi.models.settings import SIGNUP_OPEN_SETTING, SOCIAL_PROVIDERS_SETTING, TERMS_VERSION_SETTING
 from buntubi.plugins import SLUG
 from buntubi.services import audit, platform_settings, profile_fields, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
+from buntubi.services.profile_fields import PlatformField
 from buntubi.social import SOCIAL_PROVIDERS
 
 
@@ -95,18 +101,98 @@ def read(path: Path) -> list[AppSpec]:
     return specs
 
 
-def read_profile(path: Path) -> dict[str, str]:
-    """The profile field modes the file's `[profile]` table sets, one key per field."""
+@dataclass(frozen=True)
+class Profile:
+    """`[profile]`: standard fields by mode, and the platform's own under `[[profile.fields]]`."""
+
+    modes: dict[str, str]
+    # None when the file declares no platform field: those stored keep their state.
+    fields: list[PlatformField] | None = None
+
+
+# Claim names a platform field cannot take: the standard ones and those the tokens carry.
+_TAKEN_KEYS = frozenset(
+    {*STANDARD_FIELDS, "name", "given_name", "family_name", "email", "phone_number", "address", "locale"}
+)
+
+
+def read_profile(path: Path) -> Profile:
+    """The profile `[profile]` sets: one mode per standard field, the platform's fields in order."""
     with path.open("rb") as handle:
         table = tomllib.load(handle).get("profile", {})
     if not isinstance(table, dict):
         raise SetupError('profile is a table: [profile] then birthdate = "optional"')
+    modes: dict[str, str] = {}
     for key, mode in table.items():
+        if key == "fields":
+            continue
         if key not in STANDARD_FIELDS:
             raise SetupError(f"profile.{key}: not a profile field ({', '.join(STANDARD_FIELDS)})")
         if mode not in FIELD_MODES:
             raise SetupError(f"profile.{key}: the mode is {', '.join(FIELD_MODES)}")
-    return dict(table)
+        modes[key] = mode
+    declared = table.get("fields")
+    if declared is None:
+        return Profile(modes)
+    if not isinstance(declared, list):
+        raise SetupError("profile.fields is a list: [[profile.fields]] then key, type, label")
+    fields = [_platform_field(entry, f"profile.fields[{index}]") for index, entry in enumerate(declared)]
+    keys = [field.key for field in fields]
+    if len(keys) != len(set(keys)):
+        raise SetupError("two profile fields share a key")
+    return Profile(modes, fields)
+
+
+def _platform_field(entry: Any, where: str) -> PlatformField:
+    if not isinstance(entry, dict):
+        raise SetupError(f"{where}: a table with key, type and label")
+    key, kind, mode = entry.get("key"), entry.get("type"), entry.get("mode", "optional")
+    if not isinstance(key, str) or not PLATFORM_FIELD_KEY.match(key):
+        raise SetupError(f"{where}: key is a lowercase name, letters, digits and _, at most 40")
+    if key in _TAKEN_KEYS:
+        raise SetupError(f"{where}: {key} is a standard claim; set it under [profile] or pick another key")
+    if kind not in PLATFORM_FIELD_TYPES:
+        raise SetupError(f"{where}: type is {', '.join(PLATFORM_FIELD_TYPES)}")
+    if mode not in FIELD_MODES:
+        raise SetupError(f"{where}: the mode is {', '.join(FIELD_MODES)}")
+    label = _labels(entry.get("label"), f"{where}.label")
+    choices = entry.get("choices")
+    if kind in ("choice", "choices"):
+        if not isinstance(choices, list) or not choices:
+            raise SetupError(f"{where}: a {kind} field lists its choices")
+        made = []
+        for index, choice in enumerate(choices):
+            spot = f"{where}.choices[{index}]"
+            value = choice.get("value") if isinstance(choice, dict) else None
+            if not isinstance(value, str) or not 0 < len(value) <= 64:
+                raise SetupError(f"{spot}: value is a short string")
+            made.append({"value": value, "label": _labels(choice.get("label"), f"{spot}.label")})
+        if len({c["value"] for c in made}) != len(made):
+            raise SetupError(f"{where}: two choices share a value")
+        return PlatformField(key, kind, mode, label, tuple(made))
+    if choices is not None:
+        raise SetupError(f"{where}: only a choice or choices field has choices")
+    return PlatformField(key, kind, mode, label)
+
+
+def _labels(value: Any, where: str) -> dict[str, str]:
+    if not (
+        isinstance(value, dict)
+        and all(isinstance(value.get(locale), str) and value[locale].strip() for locale in ("fr", "en"))
+    ):
+        raise SetupError(f'{where}: {{ fr = "...", en = "..." }}')
+    return {"fr": value["fr"].strip(), "en": value["en"].strip()}
+
+
+def apply_profile(wanted: Profile) -> list[str]:
+    """Stores what the file names; the fields it leaves out keep theirs. Commits."""
+    changed = profile_fields.set_modes(wanted.modes)
+    if wanted.fields is not None:
+        changed += profile_fields.set_platform_fields(wanted.fields)
+    if changed:
+        audit.record("platform.profile_fields_changed", fields=changed)
+    db().commit()
+    return changed
 
 
 @dataclass(frozen=True)
@@ -162,15 +248,6 @@ def _providers(value: Any, where: str) -> tuple[str, ...]:
     if unknown:
         raise SetupError(f"{where}: unknown providers {unknown} ({', '.join(SOCIAL_PROVIDERS)})")
     return tuple(value)
-
-
-def apply_profile(wanted: dict[str, str]) -> list[str]:
-    """Stores the modes the file names; the fields it leaves out keep theirs. Commits."""
-    changed = profile_fields.set_modes(wanted)
-    if changed:
-        audit.record("platform.profile_fields_changed", fields={key: wanted[key] for key in changed})
-    db().commit()
-    return changed
 
 
 def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:

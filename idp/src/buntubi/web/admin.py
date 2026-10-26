@@ -381,6 +381,8 @@ def get_user(user_id: str, admin: User) -> Response:
         active_sessions=int(sessions or 0),
         fields=shown,
         profile=profile_fields.values_of(user, shown),
+        platform_fields=[field.as_json() for field in profile_fields.platform_fields()],
+        platform_profile=profile_fields.platform_values(user),
         identities=[
             {
                 "provider": identity.provider,
@@ -572,6 +574,7 @@ def _sign_in_settings() -> dict[str, Any]:
         "providers": providers,
         "signup_open": platform_settings.signup_open(),
         "profile_fields": profile_fields.shown(),
+        "platform_fields": [field.as_json() for field in profile_fields.platform_fields()],
     }
 
 
