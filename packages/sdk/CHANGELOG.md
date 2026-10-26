@@ -1,5 +1,15 @@
 # @buntubi/sdk
 
+## 0.9.0
+
+### Minor Changes
+
+- b227580: `create-buntubi` exports `generate` and `TEMPLATES`; using the `host` option creates a project embedded in a product folder with its compose project name, command names, extra provider settings and mounts, extra apps in `platform.toml`, and without its own package or readme. `@buntubi/sdk/project` exports `runSetup`, `runUp`, and `runDown` with options `mount`, `dev`, and `name`, and the `buntubi` command accepts `--dev`.
+
+### Patch Changes
+
+- dc2321d: The provider image runs gunicorn with 8 threads via `GUNICORN_CMD_ARGS`, preventing an idle browser connection from blocking the sole worker and causing token request timeouts.
+
 ## 0.8.0
 
 ### Minor Changes
