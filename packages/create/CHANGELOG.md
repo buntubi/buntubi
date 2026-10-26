@@ -1,5 +1,11 @@
 # create-buntubi
 
+## 0.9.0
+
+### Minor Changes
+
+- b227580: `create-buntubi` exports `generate` and `TEMPLATES`; using the `host` option creates a project embedded in a product folder with its compose project name, command names, extra provider settings and mounts, extra apps in `platform.toml`, and without its own package or readme. `@buntubi/sdk/project` exports `runSetup`, `runUp`, and `runDown` with options `mount`, `dev`, and `name`, and the `buntubi` command accepts `--dev`.
+
 ## 0.8.0
 
 ### Minor Changes
