@@ -374,6 +374,28 @@ anything renders. When two plugins give a view for the same tag, the one listed 
 elements' `part` attributes can be styled from a stylesheet, and the next section covers the
 sign-in pages' looks.
 
+### Social sign-in buttons
+
+Each provider's button on the sign-in and sign-up pages is an `idp-social-button`, and the list
+around them is `idp-social-buttons`. A view given for `idp-social-button:<provider>` replaces
+that provider's button only; one given for `idp-social-button` replaces every provider's button
+without its own; one given for `idp-social-buttons` replaces the whole list and the separator.
+
+```ts
+export const plugin = definePlugin({
+  id: 'acme',
+  views: {
+    'idp-social-button:github': ({ label, href }) => (
+      <a class="acme-github" href={href()}>{label()}</a>
+    ),
+  },
+});
+```
+
+A button's logic gives `provider`, `label` (already worded, "Continue with GitHub"), `href`,
+`icon` (the provider's mark as SVG paths, or null) and `go`. The same buttons appear in the
+account area to link a provider, with "Link GitHub" as their label.
+
 ### Looks for the sign-in pages
 
 A look replaces the hero beside the sign-in form and restyles the page. The UI plugin defines it.

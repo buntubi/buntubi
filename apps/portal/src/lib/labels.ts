@@ -22,6 +22,7 @@ import type { OrganizationSettingsLabels } from '@idp/elements/organization-sett
 import type { ProductBrowserLabels } from '@idp/elements/product-browser/logic';
 import type { TeamLabels } from '@idp/elements/team/logic';
 import type { AppOrganizationsLabels } from '@idp/elements/app-organizations/logic';
+import type { AppSignInLabels } from '@idp/elements/app-sign-in/logic';
 import { POSITIONS, type Position } from '@buntubi/sdk/roles';
 import type { ShellLabels } from '@idp/shell/shell';
 import type { CredentialsLabels } from '@idp/elements/credentials/logic';
@@ -221,6 +222,17 @@ export const appSettingsLabels = (): AppSettingsLabels => ({
   },
   hints: { description: t('st.descriptionHint'), logo: t('st.logoHint') },
   save: t('common.save'),
+  saved: t('st.saved'),
+  error: t('error.generic'),
+});
+
+export const appSignInLabels = (): AppSignInLabels => ({
+  title: t('asi.title'),
+  intro: t('asi.intro'),
+  providers: t('asi.providers'),
+  noneOffered: t('asi.noneOffered'),
+  signup: t('asi.signup'),
+  signupHelp: t('asi.signupHelp'),
   saved: t('st.saved'),
   error: t('error.generic'),
 });

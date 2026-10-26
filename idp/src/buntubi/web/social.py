@@ -104,6 +104,7 @@ def identities() -> Response:
             {
                 "id": str(identity.id),
                 "provider": identity.provider,
+                "label": provider.label if (provider := social.get(identity.provider)) else identity.provider,
                 "email": identity.email,
                 "created_at": identity.created_at.isoformat(),
                 "last_used_at": identity.last_used_at.isoformat() if identity.last_used_at else None,

@@ -1,5 +1,6 @@
 /** Element and shell words, built from the catalogue in one place so a language change reaches them all. */
 import type { AccessGateLabels } from '@idp/elements/access-gate/logic';
+import type { SignInSettingsLabels } from '@idp/elements/sign-in-settings/logic';
 import type { NotFoundLabels } from '@idp/elements/not-found/logic';
 import type { OrganizationListLabels } from '@idp/elements/organization-list/logic';
 import type { OrganizationRowLabels } from '@idp/elements/organization-row/logic';
@@ -98,7 +99,7 @@ export const pageErrorLabels = (): PageErrorLabels => ({ title: t('page.error.ti
 
 /** The overview's counts, in reading order, each leading to its page. */
 export const overviewStats = (counts: AdminOverview | null): Stat[] => {
-  const stat = (key: keyof AdminOverview, label: string, href: string): Stat => ({
+  const stat = (key: Exclude<keyof AdminOverview, 'sign_in'>, label: string, href: string): Stat => ({
     key,
     label: t(label),
     value: counts?.[key] ?? 0,
@@ -115,6 +116,30 @@ export const overviewStats = (counts: AdminOverview | null): Stat[] => {
     stat('sandbox_apps', 'overview.sandbox', paths.organizations()),
   ];
 };
+
+export const signInSettingsLabels = (): SignInSettingsLabels => ({
+  title: t('signIn.title'),
+  about: t('signIn.about'),
+  providers: t('signIn.providers'),
+  offered: t('signIn.offered'),
+  noClient: t('signIn.noClient'),
+  notListed: t('signIn.notListed'),
+  off: t('signIn.off'),
+  signup: t('signIn.signup'),
+  signupOpen: t('signIn.signupOpen'),
+  signupInvited: t('signIn.signupInvited'),
+  profileFields: t('signIn.profileFields'),
+  noFields: t('signIn.noFields'),
+  fields: {
+    birthdate: t('users.field.birthdate'),
+    gender: t('users.field.gender'),
+    middle_name: t('users.field.middle_name'),
+    nickname: t('users.field.nickname'),
+    website: t('users.field.website'),
+    zoneinfo: t('users.field.zoneinfo'),
+  },
+  modes: { optional: t('signIn.optional'), required: t('signIn.required') },
+});
 
 export const reviewWaitingLabels = (): ReviewWaitingLabels => ({
   title: t('reviews.title'),
@@ -312,6 +337,8 @@ export const userProfileLabels = (): UserProfileLabels => ({
     zoneinfo: t('users.field.zoneinfo'),
   },
   notSet: t('users.notSet'),
+  identities: t('users.identities'),
+  noIdentity: t('users.noIdentity'),
   platform: t('apps.platform'),
   roles: {
     owner: t('users.role.owner'),

@@ -45,6 +45,8 @@ export interface UserProfileLabels {
   profileFields: string;
   fields: Record<ProfileField, string>;
   notSet: string;
+  identities: string;
+  noIdentity: string;
   platform: string;
   roles: Record<Role, string>;
   security: string;
@@ -119,6 +121,8 @@ export const userProfileLabels: UserProfileLabels = {
     zoneinfo: 'Time zone',
   },
   notSet: 'Not set',
+  identities: 'Linked accounts',
+  noIdentity: 'No account linked.',
   platform: 'Platform',
   roles: { owner: 'Owner', admin: 'Admin', billing: 'Billing', member: 'Member', guest: 'Guest' },
   security: 'Access',

@@ -16,6 +16,9 @@ settings, never from the code.
 - Sign-in with a password, a passkey, or a password and a second step. The second step is a code
   from an authenticator app (with one-time backup codes) or a passkey. Once an account has one,
   a password alone no longer signs in.
+- Sign-in with Google or GitHub when the deployment offers them, each app choosing among them.
+  A provider is linked to an existing account only from the account area, never because an
+  address matches, and it does not stand for the second step.
 - After sign-up, a passkey and two-step sign-in are offered once; both can be added later.
 - Several accounts in one browser, with a picker.
 - Consent per app: a person sees what an app asks for and allows it once; an app that asks for

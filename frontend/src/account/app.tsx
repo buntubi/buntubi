@@ -22,6 +22,7 @@ import {
   type ConnectedApp,
   type Device,
   type Passkey,
+  type SignInMethods,
 } from '@buntubi/sdk/account';
 import '@idp/elements/account-area';
 import '@idp/elements/account-check';
@@ -40,6 +41,7 @@ import '@idp/elements/preferences-section';
 import '@idp/elements/profile-section';
 import '@idp/elements/page-header';
 import '@idp/elements/passkeys-section';
+import '@idp/elements/sign-in-methods';
 import '@idp/elements/password-section';
 import '@idp/elements/security-activity';
 import '@idp/elements/two-step-section';
@@ -107,12 +109,13 @@ export function mountAccount(root: HTMLElement, context: Context): void {
   provideRoot([{ provide: Account, useValue: service }]);
   const summary = () => api<AccountSummary>('GET', '/api/account');
   const security = async () => {
-    const [account, activity, keys] = await Promise.all([
+    const [account, activity, keys, methods] = await Promise.all([
       summary(),
       api<AccountActivity>('GET', '/api/account/activity'),
       api<{ passkeys: Passkey[] }>('GET', '/api/account/passkeys'),
+      api<SignInMethods>('GET', '/api/account/identities'),
     ]);
-    return { account, activity, passkeys: keys.passkeys };
+    return { account, activity, passkeys: keys.passkeys, methods };
   };
   const describe = (error: unknown) => {
     const code = error instanceof Error ? error.message : 'generic';
@@ -365,7 +368,13 @@ export function mountAccount(root: HTMLElement, context: Context): void {
   }
 
   function Security(): ComponentChild {
-    const loaded = useRouteData<{ account: AccountSummary; activity: AccountActivity; passkeys: Passkey[] }>();
+    const loaded = useRouteData<{ account: AccountSummary; activity: AccountActivity; passkeys: Passkey[]; methods: SignInMethods }>();
+    // Back from a provider after linking it, or with why it was not linked.
+    const back = new URLSearchParams(window.location.search);
+    const providerName = (id: string | null) => {
+      const methods = loaded()?.methods;
+      return methods?.identities.find((i) => i.provider === id)?.label ?? methods?.available.find((p) => p.id === id)?.label ?? id ?? '';
+    };
     const data = () => loaded()?.account;
     const t = context.text;
     return (
@@ -385,6 +394,19 @@ export function mountAccount(root: HTMLElement, context: Context): void {
             locale={config.locale}
             labels={w.security.passkeys}
             messages={t.messages}
+            describe={describe}
+          />
+          <idp-sign-in-methods
+            identities={loaded()?.methods.identities ?? []}
+            available={loaded()?.methods.available ?? []}
+            connected={back.get('connected') ? providerName(back.get('connected')) : ''}
+            refusal={
+              back.get('social_error')
+                ? (t.social.refusals[back.get('social_error') ?? ''] ?? '').replace('{provider}', providerName(back.get('provider')))
+                : ''
+            }
+            locale={config.locale}
+            labels={w.security.signInMethods}
             describe={describe}
           />
           <idp-two-step-section

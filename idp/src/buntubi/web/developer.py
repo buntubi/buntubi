@@ -16,7 +16,7 @@ from flask import Blueprint, Response, abort, jsonify
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 from sqlalchemy import select
 
-from buntubi import plugins
+from buntubi import plugins, social
 from buntubi.config import get_settings
 from buntubi.db import db, utcnow
 from buntubi.models import (
@@ -31,9 +31,10 @@ from buntubi.models import (
     WebhookDelivery,
 )
 from buntubi.oauth.server import require_token
-from buntubi.services import audit, mfa, webhooks
+from buntubi.services import audit, mfa, platform_settings, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import rotate_client_secret
+from buntubi.social import SocialProviderId
 from buntubi.web.admin import Brand, review_json
 from buntubi.web.validation import RedirectUri, WebhookUrl, parse
 
@@ -128,6 +129,10 @@ class AppPatch(BaseModel):
     platforms: list[Platform] | None = Field(default=None, max_length=4)
     products: list[str] | None = Field(default=None, max_length=50)
     organization_usage: OrganizationUsage | None = None
+    # Which of the deployment's social providers its sign-in offers; null offers every one.
+    social_providers: list[SocialProviderId] | None = Field(default=None, max_length=10)
+    # Whether its sign-in lets people make an account; it cannot open what the deployment closed.
+    signup_open: bool | None = None
     # null removes the webhook and its secret.
     webhook_url: WebhookUrl | None = None
     # An app hears of the organizations it works with; every organization is for the
@@ -248,6 +253,14 @@ def app_json(client: Client) -> dict[str, Any]:
         "platforms": client.platforms,
         "products": client.products,
         "organization_usage": client.organization_usage,
+        "social_providers": client.social_providers,
+        "signup_open": client.signup_open,
+        # What the deployment offers, for the app to choose from.
+        "social_offered": [
+            {"id": pid, "label": provider.label}
+            for pid in platform_settings.social_providers()
+            if (provider := social.get(pid)) and provider.configured()
+        ],
         "webhook_url": client.webhook_url,
         "webhook_events": client.webhook_events,
         "disabled": client.disabled_at is not None,
@@ -603,6 +616,12 @@ def update_app(client_id: str, me: User) -> Response:
     for name in ("kind", "description", "category", "organization_usage"):
         if getattr(patch, name) is not None:
             setattr(client, name, getattr(patch, name))
+    if "social_providers" in fields:
+        client.social_providers = (
+            sorted(set(patch.social_providers)) if patch.social_providers is not None else None
+        )
+    if patch.signup_open is not None:
+        client.signup_open = patch.signup_open
     if patch.platforms is not None:
         client.platforms = sorted(set(patch.platforms))
     if patch.products is not None:

@@ -19,6 +19,8 @@ import './elements/account-select/account-select.js';
 import './elements/organization-select/organization-select.js';
 import './elements/device-activate/device-activate.js';
 import './elements/mfa-verify/mfa-verify.js';
+import './elements/complete-profile/complete-profile.js';
+import '@idp/elements/social-buttons';
 import type { AccountItem } from './elements/account-select/account-select.js';
 import type { OrganizationItem } from './elements/organization-select/organization-select.js';
 import { createApi, type Redirect } from './host/api.js';
@@ -46,6 +48,25 @@ const props = config.props;
 // The profile fields the platform requires at sign-up, as the provider listed them.
 const signUpFields = (Array.isArray(props.fields) ? props.fields : []).filter((field): field is ProfileField =>
   (PROFILE_FIELDS as readonly unknown[]).includes(field),
+);
+// The providers this page offers, and why the last round trip to one ended, if it did.
+const socialProviders = (Array.isArray(props.social) ? props.social : []) as { id: string; label: string }[];
+const socialRefusal = () => {
+  const code = typeof props.socialError === 'string' ? props.socialError : '';
+  if (!code) return null;
+  const provider = typeof props.socialProvider === 'string' ? props.socialProvider : '';
+  return (
+    <p class="idp-alert" role="alert">
+      {(t.social.refusals[code] ?? t.messages.generic ?? '').replace('{provider}', provider)}
+    </p>
+  );
+};
+const socialButtons = () => (
+  <idp-social-buttons
+    providers={socialProviders}
+    labels={t.social.buttons}
+    loginHint={typeof props.email === 'string' ? props.email : ''}
+  />
 );
 const str = (key: string) => (typeof props[key] === 'string' ? (props[key] as string) : '');
 
@@ -90,20 +111,24 @@ const screens: Record<string, () => Screen> = {
   'idp-sign-in': () => ({
     key: 'signIn',
     body: () => (
-      <idp-sign-in
-        action={(input) => api('POST', '/api/session', input)}
-        passkeyAction={async ({ conditional, signal }) => {
-          const options = await api<Record<string, unknown>>('POST', '/api/passkey/options', {});
-          const credential = await getPasskey(options, conditional, signal);
-          return api('POST', '/api/passkey', { credential });
-        }}
-        schema={signInSchema}
-        labels={t.signIn}
-        messages={t.messages}
-        forgotHref="/forgot-password"
-        email={typeof props.email === 'string' ? props.email : ''}
-        onSuccess={(event) => follow(event.detail.result)}
-      />
+      <>
+        {socialRefusal()}
+        {socialButtons()}
+        <idp-sign-in
+          action={(input) => api('POST', '/api/session', input)}
+          passkeyAction={async ({ conditional, signal }) => {
+            const options = await api<Record<string, unknown>>('POST', '/api/passkey/options', {});
+            const credential = await getPasskey(options, conditional, signal);
+            return api('POST', '/api/passkey', { credential });
+          }}
+          schema={signInSchema}
+          labels={t.signIn}
+          messages={t.messages}
+          forgotHref="/forgot-password"
+          email={typeof props.email === 'string' ? props.email : ''}
+          onSuccess={(event) => follow(event.detail.result)}
+        />
+      </>
     ),
     footer: () => (
       <FooterLink lead={t.links.noAccount} href="/signup">
@@ -115,22 +140,47 @@ const screens: Record<string, () => Screen> = {
   'idp-sign-up': () => ({
     key: 'signUp',
     body: () => (
-      <idp-sign-up
-        action={(input) =>
-          api('POST', '/api/signup', {
-            given_name: input.givenName,
-            family_name: input.familyName,
-            email: input.email,
-            password: input.password,
-            locale: config.locale,
-            ...Object.fromEntries(signUpFields.map((field) => [field, input[field].trim()])),
-          })
-        }
-        schema={signUpSchema}
+      <>
+        {props.signupOpen === false ? <p class="idp-note">{t.social.signupClosed}</p> : null}
+        {socialRefusal()}
+        {socialButtons()}
+        <idp-sign-up
+          action={(input) =>
+            api('POST', '/api/signup', {
+              given_name: input.givenName,
+              family_name: input.familyName,
+              email: input.email,
+              password: input.password,
+              locale: config.locale,
+              ...Object.fromEntries(signUpFields.map((field) => [field, input[field].trim()])),
+            })
+          }
+          schema={signUpSchema}
+          fields={signUpFields}
+          labels={t.signUp}
+          messages={t.messages}
+          email={typeof props.email === 'string' ? props.email : ''}
+          onSuccess={(event) => follow(event.detail.result)}
+        />
+      </>
+    ),
+
+    footer: () => (
+      <FooterLink lead={t.links.haveAccount} href="/signin">
+        {t.links.signIn}
+      </FooterLink>
+    ),
+  }),
+
+  'idp-complete-profile': () => ({
+    key: 'completeProfile',
+    body: () => (
+      <idp-complete-profile
+        action={(input) => api('POST', '/api/signup/complete', input)}
         fields={signUpFields}
-        labels={t.signUp}
+        email={str('email')}
+        labels={t.completeProfile}
         messages={t.messages}
-        email={typeof props.email === 'string' ? props.email : ''}
         onSuccess={(event) => follow(event.detail.result)}
       />
     ),

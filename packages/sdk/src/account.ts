@@ -65,6 +65,8 @@ export interface AccountService {
   signOut(id: string): Promise<string>;
   /** Signs every account out of this browser; answers where to go next. */
   signOutAll(): Promise<string>;
+  /** Removes a linked provider; refused as `last_way_in` when nothing else signs the account in. */
+  unlinkIdentity(id: string): Promise<void>;
   /** Changes what is given; an empty phone or country clears it. */
   updateProfile(patch: ProfilePatch): Promise<void>;
   /** The photo, already made small. */
@@ -163,6 +165,25 @@ export interface Passkey {
   synced: boolean;
   created_at: string;
   last_used_at: string | null;
+}
+
+/** A provider account linked for sign-in (Google, GitHub). */
+export interface LinkedIdentity {
+  id: string;
+  provider: string;
+  /** The provider's name, to show. */
+  label: string;
+  /** Its address at the provider when it was linked; never used to match. */
+  email: string | null;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+/** What the sign-in methods card shows: linked providers, the ones that can still be linked. */
+export interface SignInMethods {
+  identities: LinkedIdentity[];
+  available: { id: string; label: string }[];
+  has_password: boolean;
 }
 
 export interface TwoStepEnrolment {

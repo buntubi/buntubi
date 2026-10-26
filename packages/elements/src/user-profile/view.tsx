@@ -142,6 +142,21 @@ export const userProfileView = (p: UserProfileLogic) => (
         </section>
       </Show>
       <section class="card">
+        <h2>{() => p.labels().identities}</h2>
+        <Show when={p.page()?.identities.length} fallback={<p class="muted">{() => p.labels().noIdentity}</p>}>
+          <ul>
+            <For each={p.page()?.identities ?? []}>
+              {(identity) => (
+                <li>
+                  <span>{identity.provider}</span>
+                  <span class="muted">{identity.email ?? ''}</span>
+                </li>
+              )}
+            </For>
+          </ul>
+        </Show>
+      </section>
+      <section class="card">
         <h2>{() => p.labels().organizations}</h2>
         <Show when={p.page()?.organizations.length} fallback={<p class="muted">{() => p.labels().noOrganization}</p>}>
           <ul>

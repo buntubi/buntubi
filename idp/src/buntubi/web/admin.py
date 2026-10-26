@@ -17,17 +17,19 @@ from flask import Blueprint, Response, abort, jsonify, request, url_for
 from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy import func, select
 
-from buntubi import plugins
+from buntubi import plugins, social
 from buntubi.config import get_settings
 from buntubi.db import db, utcnow
 from buntubi.models import ApiProduct, AppReview, AuditEvent, Client, LoginSession, Organization, Scope, User
 from buntubi.models.clients import GRANT_TYPES
 from buntubi.oauth.server import require_token
-from buntubi.services import accounts, audit, mail, mfa, passkeys, profile, profile_fields
+from buntubi.services import accounts, audit, mail, mfa, passkeys, platform_settings, profile, profile_fields
 from buntubi.services import platform as p
+from buntubi.services import social as social_flow
 from buntubi.services.accounts import AccountError, sign_out_everywhere
 from buntubi.services.credentials import issue_client_secret, rotate_client_secret
 from buntubi.services.platform import PlatformError
+from buntubi.social import SOCIAL_PROVIDERS
 from buntubi.web.validation import RedirectUri, parse
 
 bp = Blueprint("admin", __name__, url_prefix="/admin/api")
@@ -377,6 +379,15 @@ def get_user(user_id: str, admin: User) -> Response:
         active_sessions=int(sessions or 0),
         fields=shown,
         profile=profile_fields.values_of(user, shown),
+        identities=[
+            {
+                "provider": identity.provider,
+                "email": identity.email,
+                "created_at": identity.created_at.isoformat(),
+                "last_used_at": identity.last_used_at.isoformat() if identity.last_used_at else None,
+            }
+            for identity in social_flow.identities_of(user)
+        ],
     )
 
 
@@ -536,7 +547,30 @@ def overview(admin: User) -> Response:
         live_apps=_count(Client, Client.first_party.is_(False), Client.environment == "live"),
         sandbox_apps=_count(Client, Client.first_party.is_(False), Client.environment == "sandbox"),
         pending_reviews=_count(Client, Client.review_status == "pending"),
+        sign_in=_sign_in_settings(),
     )
+
+
+def _sign_in_settings() -> dict[str, Any]:
+    """How people sign in here, as platform.toml and the env set it; read only in the console."""
+    listed = platform_settings.social_providers()
+    providers = []
+    for provider_id in SOCIAL_PROVIDERS:
+        provider = social.get(provider_id)
+        assert provider is not None
+        providers.append(
+            {
+                "id": provider_id,
+                "label": provider.label,
+                "configured": provider.configured(),
+                "listed": provider_id in listed,
+            }
+        )
+    return {
+        "providers": providers,
+        "signup_open": platform_settings.signup_open(),
+        "profile_fields": profile_fields.shown(),
+    }
 
 
 # ── Reviews ───────────────────────────────────────────────────────────────────────────────────

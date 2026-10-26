@@ -21,6 +21,7 @@ export function accountService(api: Api, changed: () => void = () => {}): Accoun
     switchTo: async (id) => (await api<Redirect>('POST', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
     signOut: async (id) => (await api<Redirect>('DELETE', `/api/accounts/${encodeURIComponent(id)}`)).redirect,
     signOutAll: async () => (await api<Redirect>('DELETE', '/api/accounts')).redirect,
+    unlinkIdentity: (id) => after(api('DELETE', `/api/account/identities/${encodeURIComponent(id)}`)),
     updateProfile: (patch) => after(api('PATCH', '/api/account/profile', patch)),
     setPicture: (picture) => after(api('POST', '/api/account/picture', picture)),
     removePicture: () => after(api('DELETE', '/api/account/picture')),

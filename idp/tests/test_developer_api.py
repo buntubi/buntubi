@@ -315,3 +315,31 @@ def test_an_app_says_whether_its_tokens_name_an_organization(
     assert changed.json["app"]["organization_usage"] == "optional"
     refused = call(browser, dev, "PATCH", f"/apps/{client_id}", {"organization_usage": "always"})
     assert refused.status_code == 422
+
+
+def test_an_app_narrows_the_providers_and_closes_its_sign_up(
+    app: Flask, browser: FlaskClient, dev: dict[str, str]
+) -> None:
+    organization_id = new_organization(browser, dev)
+    created = call(
+        browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {"name": "Web", "redirect_uris": ["https://shop.example/cb"]},
+    )
+    client_id = created.json["app"]["client_id"]
+    assert (created.json["app"]["social_providers"], created.json["app"]["signup_open"]) == (None, True)
+    changed = call(
+        browser, dev, "PATCH", f"/apps/{client_id}", {"social_providers": ["github"], "signup_open": False}
+    )
+    assert (changed.json["app"]["social_providers"], changed.json["app"]["signup_open"]) == (
+        ["github"],
+        False,
+    )
+    every = call(browser, dev, "PATCH", f"/apps/{client_id}", {"social_providers": None})
+    assert every.json["app"]["social_providers"] is None
+    assert (
+        call(browser, dev, "PATCH", f"/apps/{client_id}", {"social_providers": ["myspace"]}).status_code
+        == 422
+    )

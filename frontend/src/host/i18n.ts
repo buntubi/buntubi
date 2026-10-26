@@ -10,6 +10,8 @@ import type { OrganizationSelectLabels } from '../elements/organization-select/o
 import type { DeviceActivateLabels } from '../elements/device-activate/device-activate.js';
 import type { MfaVerifyLabels } from '../elements/mfa-verify/mfa-verify.js';
 import type { SecureAccountLabels } from '@idp/elements/secure-account/logic';
+import type { SocialButtonsLabels } from '@idp/elements/social-buttons/logic';
+import type { CompleteProfileLabels } from '../elements/complete-profile/complete-profile.js';
 import type { Messages } from '../elements/shared/messages.js';
 import type { Locale } from './config.js';
 
@@ -35,6 +37,7 @@ export interface Text {
     twoStep: string;
     secureAccount: string;
     yourApps: string;
+    completeProfile: string;
   };
   /** One line under some titles, keyed like `titles`. */
   subtitles: Partial<Record<keyof Text['titles'], string>>;
@@ -82,6 +85,14 @@ export interface Text {
   deviceActivate: DeviceActivateLabels;
   mfaVerify: MfaVerifyLabels;
   secureAccount: SecureAccountLabels;
+  social: {
+    buttons: SocialButtonsLabels;
+    /** Why a round trip to a provider ended without a sign-in, by code; {provider} is its name. */
+    refusals: Record<string, string>;
+    /** On the sign-up page when the deployment or the app closed sign-up. */
+    signupClosed: string;
+  };
+  completeProfile: CompleteProfileLabels;
   scopes: Record<string, string>;
   messages: Messages;
 }
@@ -107,6 +118,7 @@ const fr: Text = {
     mfa: 'Validation en deux étapes',
     twoStep: 'Validation en deux étapes',
     secureAccount: 'Protégez votre compte',
+    completeProfile: 'Encore une étape',
     yourApps: 'Vos applications',
   },
   subtitles: {
@@ -265,6 +277,34 @@ const fr: Text = {
     deny: 'Refuser',
     pending: 'Un instant',
   },
+  social: {
+    buttons: { continueWith: 'Continuer avec {provider}', separator: 'ou' },
+    refusals: {
+      expired: 'La connexion a pris trop de temps. Réessayez.',
+      cancelled: 'Connexion avec {provider} annulée.',
+      provider_failed: '{provider} n’a pas pu confirmer qui vous êtes. Réessayez ou utilisez votre adresse e-mail.',
+      account_disabled: 'Ce compte est désactivé.',
+      account_exists: 'Un compte utilise déjà cette adresse. Connectez-vous avec, puis liez {provider} depuis votre compte.',
+      no_verified_email: '{provider} n’a pas donné d’adresse e-mail vérifiée. Créez le compte avec votre adresse e-mail.',
+      signup_closed: 'La création de compte se fait sur invitation.',
+      already_linked: 'Ce compte {provider} est déjà lié à un autre compte.',
+    },
+    signupClosed: 'La création de compte se fait sur invitation. Une adresse invitée peut créer son compte ici.',
+  },
+  completeProfile: {
+    intro: 'Encore une étape pour créer le compte de {email}.',
+    submit: 'Créer mon compte',
+    pending: 'Création',
+    fields: {
+      birthdate: 'Date de naissance',
+      gender: 'Genre',
+      middle_name: 'Deuxième prénom',
+      nickname: 'Surnom',
+      website: 'Site web',
+      zoneinfo: 'Fuseau horaire',
+    },
+    genders: { female: 'Femme', male: 'Homme', other: 'Autre' },
+  },
   scopes: {
     openid: 'Vous identifier',
     profile: 'Voir votre nom et votre photo',
@@ -320,6 +360,9 @@ const fr: Text = {
     website_required: 'Le site web est obligatoire.',
     zoneinfo_required: 'Le fuseau horaire est obligatoire.',
     unknown_field: 'Ce champ n’est pas proposé.',
+    signup_closed: 'La création de compte se fait sur invitation.',
+    expired: 'Cette étape a expiré. Recommencez la connexion.',
+    last_way_in: 'Ajoutez un mot de passe ou une passkey avant de retirer votre seul moyen de connexion.',
     too_long: 'C’est trop long.',
     unsupported_picture: 'Choisissez une image JPEG, PNG ou WebP.',
     picture_too_large: 'Cette image est trop lourde.',
@@ -366,6 +409,7 @@ const en: Text = {
     mfa: 'Two-step sign-in',
     twoStep: 'Two-step sign-in',
     secureAccount: 'Protect your account',
+    completeProfile: 'One more step',
     yourApps: 'Your apps',
   },
   subtitles: {
@@ -524,6 +568,34 @@ const en: Text = {
     deny: 'Refuse',
     pending: 'One moment',
   },
+  social: {
+    buttons: { continueWith: 'Continue with {provider}', separator: 'or' },
+    refusals: {
+      expired: 'Signing in took too long. Try again.',
+      cancelled: 'Signing in with {provider} was cancelled.',
+      provider_failed: '{provider} could not confirm who you are. Try again or use your email address.',
+      account_disabled: 'This account is disabled.',
+      account_exists: 'An account already uses this address. Sign in with it, then link {provider} from your account.',
+      no_verified_email: '{provider} gave no verified email address. Create the account with your email address.',
+      signup_closed: 'Accounts are made by invitation.',
+      already_linked: 'This {provider} account is already linked to another account.',
+    },
+    signupClosed: 'Accounts are made by invitation. An invited address can create its account here.',
+  },
+  completeProfile: {
+    intro: 'One more step to make the account for {email}.',
+    submit: 'Create my account',
+    pending: 'Creating',
+    fields: {
+      birthdate: 'Date of birth',
+      gender: 'Gender',
+      middle_name: 'Middle name',
+      nickname: 'Nickname',
+      website: 'Website',
+      zoneinfo: 'Time zone',
+    },
+    genders: { female: 'Female', male: 'Male', other: 'Other' },
+  },
   scopes: {
     openid: 'Know who you are',
     profile: 'See your name and picture',
@@ -579,6 +651,9 @@ const en: Text = {
     website_required: 'Website is required.',
     zoneinfo_required: 'Time zone is required.',
     unknown_field: 'This field is not offered.',
+    signup_closed: 'Accounts are made by invitation.',
+    expired: 'This step expired. Start signing in again.',
+    last_way_in: 'Add a password or a passkey before removing your only way in.',
     too_long: 'This is too long.',
     unsupported_picture: 'Pick a JPEG, PNG or WebP image.',
     picture_too_large: 'This image is too large.',

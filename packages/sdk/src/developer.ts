@@ -27,6 +27,8 @@ export interface NewApp {
 /** A change to an app: a link set to null is removed. */
 export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'terms_url' | 'brand' | 'grant_types'>> & {
   scopes?: string[];
+  social_providers?: string[] | null;
+  signup_open?: boolean;
   homepage_url?: string | null;
   privacy_url?: string | null;
   terms_url?: string | null;

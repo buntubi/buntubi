@@ -85,6 +85,12 @@ export interface App {
   platforms: Platform[];
   products: string[];
   organization_usage: OrganizationUsage;
+  /** The deployment's social providers its sign-in offers; null offers every one. */
+  social_providers: string[] | null;
+  /** Whether its sign-in lets people make an account; it cannot open what the deployment closed. */
+  signup_open: boolean;
+  /** The providers the deployment offers, to choose from. */
+  social_offered: { id: string; label: string }[];
   /** Where its organization events are posted; the signing secret is never read back. */
   webhook_url: string | null;
   webhook_events: WebhookScope;
@@ -126,6 +132,15 @@ export interface AdminOverview {
   live_apps: number;
   sandbox_apps: number;
   pending_reviews: number;
+  sign_in: SignInSettings;
+}
+
+/** How people sign in on the deployment, as platform.toml and the env set it. */
+export interface SignInSettings {
+  /** Every social provider Buntubi knows: `configured` (its client is in the env), `listed` (in [social]). */
+  providers: { id: string; label: string; configured: boolean; listed: boolean }[];
+  signup_open: boolean;
+  profile_fields: AccountSummary['fields'];
 }
 
 /** An organization as the platform owner sees it. */
@@ -210,6 +225,8 @@ export interface AdminUserPage {
   /** The profile fields the platform shows, and the person's values for them. */
   fields: AccountSummary['fields'];
   profile: Partial<Record<ProfileField, string | null>>;
+  /** Provider accounts linked for sign-in. */
+  identities: { provider: string; email: string | null; created_at: string; last_used_at: string | null }[];
 }
 
 /** A new account: invited by email when there is no password, ready to use when there is one. */

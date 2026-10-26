@@ -17,6 +17,7 @@ from pydantic.json_schema import models_json_schema
 from buntubi.config import get_settings
 from buntubi.models.profile_fields import STANDARD_FIELDS
 from buntubi.services.webhooks import Event
+from buntubi.social import SOCIAL_PROVIDERS
 from buntubi.web import admin, developer, organizations
 
 bp = Blueprint("openapi", __name__)
@@ -66,6 +67,13 @@ MANAGED: dict[str, Any] = {
     "deprecated_at": MAYBE_TIME,
 }
 STRINGS: dict[str, Any] = {"type": "array", "items": STRING}
+SOCIAL_PROVIDER: dict[str, Any] = {"type": "string", "enum": list(SOCIAL_PROVIDERS)}
+PROFILE_MODES: dict[str, Any] = {
+    "type": "object",
+    "description": "The profile fields the platform shows, and how firmly it asks.",
+    "properties": {key: {"type": "string", "enum": ["optional", "required"]} for key in STANDARD_FIELDS},
+    "additionalProperties": False,
+}
 ENVIRONMENT: dict[str, Any] = {"type": "string", "enum": ["sandbox", "live"]}
 KIND: dict[str, Any] = {
     "type": "string",
@@ -318,6 +326,17 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "platforms": {"type": "array", "items": PLATFORM},
             "products": STRINGS,
             "organization_usage": ORGANIZATION_USAGE,
+            "social_providers": {
+                "type": ["array", "null"],
+                "items": SOCIAL_PROVIDER,
+                "description": "The deployment's providers its sign-in offers; null offers every one.",
+            },
+            "signup_open": BOOL,
+            "social_offered": {
+                "type": "array",
+                "description": "The providers the deployment offers, to choose from.",
+                "items": obj({"id": SOCIAL_PROVIDER, "label": STRING}),
+            },
             "webhook_url": MAYBE_STRING,
             "webhook_events": {"type": "string", "enum": ["linked", "all"]},
             "disabled": BOOL,
@@ -350,16 +369,28 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
     # Admin API
     "Overview": obj(
         {
-            name: INT
-            for name in (
-                "users",
-                "developers",
-                "organizations",
-                "suspended_organizations",
-                "live_apps",
-                "sandbox_apps",
-                "pending_reviews",
-            )
+            **{
+                name: INT
+                for name in (
+                    "users",
+                    "developers",
+                    "organizations",
+                    "suspended_organizations",
+                    "live_apps",
+                    "sandbox_apps",
+                    "pending_reviews",
+                )
+            },
+            "sign_in": obj(
+                {
+                    "providers": {
+                        "type": "array",
+                        "items": obj({"id": STRING, "label": STRING, "configured": BOOL, "listed": BOOL}),
+                    },
+                    "signup_open": BOOL,
+                    "profile_fields": PROFILE_MODES,
+                }
+            ),
         }
     ),
     "AdminMe": obj(
@@ -431,19 +462,24 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                 "items": obj({"id": STRING, "name": STRING, "role": ROLE, "platform": BOOL}),
             },
             "active_sessions": INT,
-            "fields": {
-                "type": "object",
-                "description": "The profile fields the platform shows, and how firmly it asks.",
-                "properties": {
-                    key: {"type": "string", "enum": ["optional", "required"]} for key in STANDARD_FIELDS
-                },
-                "additionalProperties": False,
-            },
+            "fields": PROFILE_MODES,
             "profile": {
                 "type": "object",
                 "description": "The person's values for the fields shown; the birthdate as YYYY-MM-DD.",
                 "properties": {key: MAYBE_STRING for key in STANDARD_FIELDS},
                 "additionalProperties": False,
+            },
+            "identities": {
+                "type": "array",
+                "description": "Provider accounts linked for sign-in.",
+                "items": obj(
+                    {
+                        "provider": STRING,
+                        "email": MAYBE_STRING,
+                        "created_at": TIME,
+                        "last_used_at": MAYBE_TIME,
+                    }
+                ),
             },
         }
     ),

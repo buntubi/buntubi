@@ -1,0 +1,5 @@
+---
+"@buntubi/sdk": minor
+---
+
+Sign-in with Google (OpenID Connect) or GitHub is available when the corresponding `IDP_GOOGLE_*` or `IDP_GITHUB_*` variables are set and the provider appears in the `[social]` list in `platform.toml`. Each app can narrow the options via `social_providers`. The deployment's `[signup]` open flag controls whether new accounts can be created, while an app can disable sign-up on its own page with `signup = false` but invited addresses always remain allowed. A provider links to an existing account only from the account area and never by matching address, provider sign-in does not count as the second step, and required profile fields are requested before the account is created. UI plugin views replace buttons using `idp-social-button:<provider>` for a single provider, `idp-social-button` for each provider, or `idp-social-buttons` for the whole list, and the SDK adds `LinkedIdentity`, `SignInMethods`, `AccountService.unlinkIdentity`, `App.social_providers`, `App.signup_open`, and `AdminOverview.sign_in`.

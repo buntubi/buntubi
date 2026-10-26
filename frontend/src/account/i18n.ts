@@ -217,6 +217,19 @@ const fr = {
   security: {
     title: 'Sécurité',
     intro: 'Comment vous vous connectez, et ce qui s’est passé récemment sur votre compte.',
+    signInMethods: {
+      title: 'Connexion avec d’autres comptes',
+      about: 'Connectez-vous avec un compte que vous avez déjà ailleurs. Votre compte ici reste le même.',
+      empty: 'Aucun compte lié.',
+      linkedOn: 'lié le {date}',
+      lastUsed: 'utilisé le {date}',
+      connect: 'Lier {provider}',
+      remove: 'Délier',
+      connected: '{provider} est lié.',
+      removed: 'Délié.',
+      lastWayIn: 'Ajoutez un mot de passe ou une passkey avant de délier votre seul moyen de connexion.',
+      error: 'Une erreur est survenue. Réessayez.',
+    },
     passkeys: {
       title: 'Clés d’accès',
       unnamed: 'Clé d’accès',
@@ -544,6 +557,19 @@ const en: Words = {
   security: {
     title: 'Security',
     intro: 'How you sign in, and what happened on your account lately.',
+    signInMethods: {
+      title: 'Sign-in with other accounts',
+      about: 'Sign in with an account you already have elsewhere. Your account here stays the same.',
+      empty: 'No account linked.',
+      linkedOn: 'linked {date}',
+      lastUsed: 'last used {date}',
+      connect: 'Link {provider}',
+      remove: 'Unlink',
+      connected: '{provider} is linked.',
+      removed: 'Unlinked.',
+      lastWayIn: 'Add a password or a passkey before unlinking your only way in.',
+      error: 'Something went wrong. Try again.',
+    },
     passkeys: {
       title: 'Passkeys',
       unnamed: 'Passkey',
