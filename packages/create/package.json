@@ -12,6 +12,12 @@
   "bin": {
     "create-buntubi": "./dist/cli.js"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/generate.d.ts",
+      "default": "./dist/generate.js"
+    }
+  },
   "files": [
     "dist",
     "templates"

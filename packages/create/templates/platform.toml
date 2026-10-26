@@ -1,4 +1,4 @@
-# {{name}}'s apps, created by `pnpm run setup`. Running it again only adds what is missing. A
+# {{name}}'s apps, created by `{{setupCommand}}`. Running it again only adds what is missing. A
 # confidential app's secret is written into the env file `secret` names, relative to this file,
 # and never printed. Add the apps that sign in through this provider below.
 
@@ -34,3 +34,4 @@ secret = { file = "portal.env", key = "PORTAL_CLIENT_SECRET" }
 # The profile fields asked of people: "hidden" (the default), "optional" or "required".
 # [profile]
 # birthdate = "optional"
+{{hostApps}}

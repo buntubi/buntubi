@@ -124,6 +124,11 @@
       "types": "./src/runtime-server.ts",
       "development": "./src/runtime-server.ts",
       "default": "./dist/runtime-server.js"
+    },
+    "./project": {
+      "types": "./src/project/compose.ts",
+      "development": "./src/project/compose.ts",
+      "default": "./dist/project/compose.js"
     }
   },
   "bin": {
@@ -240,6 +245,10 @@
       "./runtime/server": {
         "types": "./dist/runtime-server.d.ts",
         "default": "./dist/runtime-server.js"
+      },
+      "./project": {
+        "types": "./dist/project/compose.d.ts",
+        "default": "./dist/project/compose.js"
       }
     }
   },

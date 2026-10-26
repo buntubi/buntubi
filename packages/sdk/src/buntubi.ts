@@ -3,6 +3,7 @@
  * `buntubi <command>`, run in a Buntubi project's folder (one made by `npm create buntubi`):
  *
  *   setup                 the database, a signing key, the first admin, the apps in platform.toml
+ *                         (setup, up and down take --dev: compose.dev.yaml, Buntubi's local images)
  *   build                 build the plugins' pages into ui-plugins/
  *   up | down             start it, stop it
  *   add plugin <id>       a plugin of the project's own in plugins/<id>, both halves
@@ -20,10 +21,11 @@ const own = JSON.parse(readFileSync(join(here, '..', 'package.json'), 'utf8')) a
 function main(args: string[]): number {
   const [command, ...rest] = args;
   const dir = process.cwd();
-  if (command === 'setup') return runSetup(dir, process.stdin.isTTY === true);
+  const dev = rest.includes('--dev');
+  if (command === 'setup') return runSetup(dir, process.stdin.isTTY === true, { dev });
   if (command === 'build') return runBuild(dir);
-  if (command === 'up') return runUp(dir);
-  if (command === 'down') return runDown(dir);
+  if (command === 'up') return runUp(dir, { dev });
+  if (command === 'down') return runDown(dir, { dev });
   if (command === 'add' && rest[0] === 'plugin' && rest[1]) {
     const id = rest[1];
     if (existsSync(join(dir, 'plugins', id))) throw new Error(`plugins/${id} already exists`);

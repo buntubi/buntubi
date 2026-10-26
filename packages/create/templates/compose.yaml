@@ -1,15 +1,15 @@
 # {{name}}'s identity provider: Buntubi from its published images, its provider built with this
 # project's plugins (provider.Dockerfile), their UI halves mounted from ui-plugins/.
 #
-# `pnpm run setup` the first time (database, signing key, the first admin, the apps in
-# platform.toml), then `pnpm up` and `pnpm down`. The console and the portal share the
+# `{{setupCommand}}` the first time (database, signing key, the first admin, the apps in
+# platform.toml), then `{{upCommand}}` and `{{downCommand}}`. The console and the portal share the
 # provider's network namespace, so http://localhost:5010, :3420 and :3410 mean the same thing to
 # the browser and to the containers.
 #
-# Upgrading: change the version below and in provider.Dockerfile, then `pnpm run setup` again (it
-# only adds what is missing) and `pnpm up`.
+# Upgrading: change the version below and in provider.Dockerfile, then `{{setupCommand}}` again (it
+# only adds what is missing) and `{{upCommand}}`.
 
-name: {{slug}}
+name: {{composeName}}
 
 services:
   postgres:
@@ -43,7 +43,7 @@ services:
     volumes:
       - ./keys:/keys
       - &ui-plugins ./ui-plugins:/app/ui-plugins:ro
-    ports:
+{{providerVolumes}}    ports:
       - "5010:5010"
       - "3420:3420"
       - "3410:3410"
@@ -67,7 +67,7 @@ services:
       disable: true
     volumes:
       - ./keys:/keys
-    extra_hosts:
+{{providerVolumes}}    extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
     depends_on:

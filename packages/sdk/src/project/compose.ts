@@ -31,8 +31,28 @@ export function setupSteps(root: string, platformFile = 'platform.toml'): Compos
   ];
 }
 
-const compose = (dir: string, args: string[], quiet = false) =>
-  spawnSync('docker', ['compose', ...args], { cwd: dir, stdio: quiet ? 'ignore' : 'inherit' }).status ?? 1;
+/** How `setup`, `up` and `down` run, for the `buntubi` command or a product embedding a project. */
+export interface RunOptions {
+  /**
+   * The folder mounted for `platform setup` and the platform file's path inside it. The project's
+   * own by default; a product holding the project in one of its folders mounts its root.
+   */
+  mount?: { root: string; platformFile: string };
+  /** compose.dev.yaml over compose.yaml: the images built from Buntubi's checkout (`pnpm images:dev`). */
+  dev?: boolean;
+  /** What the lines it says start with. */
+  name?: string;
+  log?: (line: string) => void;
+}
+
+const files = (dir: string, dev: boolean) => {
+  if (!dev) return [];
+  if (!existsSync(join(dir, 'compose.dev.yaml'))) throw new Error(`no compose.dev.yaml in ${dir} for --dev`);
+  return ['-f', 'compose.yaml', '-f', 'compose.dev.yaml'];
+};
+
+const compose = (dir: string, args: string[], dev = false, quiet = false) =>
+  spawnSync('docker', ['compose', ...files(dir, dev), ...args], { cwd: dir, stdio: quiet ? 'ignore' : 'inherit' }).status ?? 1;
 
 /** The project folder `dir`, or why it is not one. */
 export function projectDir(dir: string): string {
@@ -40,22 +60,23 @@ export function projectDir(dir: string): string {
   return dir;
 }
 
-export function runSetup(dir: string, interactive: boolean, log: (line: string) => void = console.log): number {
+export function runSetup(dir: string, interactive: boolean, options: RunOptions = {}): number {
+  const { dev = false, name = 'buntubi', log = console.log } = options;
   projectDir(dir);
-  for (const step of setupSteps(dir)) {
+  for (const step of setupSteps(options.mount?.root ?? dir, options.mount?.platformFile)) {
     if (step.when === 'no-keys' && existsSync(join(dir, 'keys')) && readdirSync(join(dir, 'keys')).length > 0) continue;
     if (step.when === 'no-admin') {
-      if (compose(dir, ['run', '--rm', 'provider', 'flask', 'admin', 'check'], true) === 0) continue;
+      if (compose(dir, ['run', '--rm', 'provider', 'flask', 'admin', 'check'], dev, true) === 0) continue;
       if (!interactive) {
-        log(`buntubi: no admin yet; from ${dir}, run: docker compose ${step.args.join(' ')}`);
+        log(`${name}: no admin yet; from ${dir}, run: docker compose ${[...files(dir, dev), ...step.args].join(' ')}`);
         continue;
       }
     }
-    log(`buntubi: ${step.says}`);
-    const code = compose(dir, step.args);
+    log(`${name}: ${step.says}`);
+    const code = compose(dir, step.args, dev);
     if (code !== 0) return code;
   }
-  log('buntubi: set up; start it with `buntubi up`');
+  log(`${name}: set up`);
   return 0;
 }
 
@@ -78,5 +99,5 @@ export function runBuild(dir: string, log: (line: string) => void = console.log)
   return 0;
 }
 
-export const runUp = (dir: string) => compose(projectDir(dir), ['up', '-d', '--build']);
-export const runDown = (dir: string) => compose(projectDir(dir), ['down']);
+export const runUp = (dir: string, options: RunOptions = {}) => compose(projectDir(dir), ['up', '-d', '--build'], options.dev);
+export const runDown = (dir: string, options: RunOptions = {}) => compose(projectDir(dir), ['down'], options.dev);

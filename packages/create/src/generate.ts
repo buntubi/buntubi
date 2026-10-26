@@ -4,6 +4,7 @@
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export interface Choices {
   /** The platform's name, on its sign-in pages. */
@@ -24,15 +25,35 @@ export const addressesOf = (choices: Choices) => (choices.address.local ? LOCAL 
 
 export type Files = Map<string, string>;
 
+/** Where the templates ship, for a product generating an embedded project. */
+export const TEMPLATES = fileURLToPath(new URL('../templates', import.meta.url));
+
 export const SLUG = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 
 /** Template files are stored with a leading underscore where npm would drop a dotfile. */
 const DOTFILE = /(^|\/)_(gitignore)$/;
 
 /** One setting: its key, its value, and the comment above it. */
-type Entry = [key: string, value: string, comment: string];
+export type Entry = [key: string, value: string, comment: string];
 
-export function generate(choices: Choices, version: string, templates: string, secret: () => string): Files {
+/**
+ * A product that runs its identity provider beside itself, in one of its folders (Tabaxal in
+ * `infra/identity`): the project is generated for it, without a package or readme of its own.
+ */
+export interface Host {
+  /** The compose project's name, `<slug>-identity` for instance. */
+  composeName: string;
+  /** The commands its people run, as its own scripts name them. */
+  commands: { setup: string; up: string; down: string };
+  /** More provider settings, after Buntubi's own in identity.env. */
+  providerEnv?: Entry[];
+  /** More mounts on the provider and the webhooks process, as `./file:/in/container[:ro]`. */
+  providerVolumes?: string[];
+  /** Its own apps, as `[[apps]]` tables appended to platform.toml. */
+  apps?: string;
+}
+
+export function generate(choices: Choices, version: string, templates: string, secret: () => string, host?: Host): Files {
   if (!SLUG.test(choices.slug)) throw new Error(`"${choices.slug}" must be lowercase letters, digits and hyphens, starting with a letter`);
   // The provider refuses to start on a public address with email that only goes to its log.
   if (!choices.address.local && choices.email.through === 'log') throw new Error('a public address needs email that leaves the machine: choose resend');
@@ -45,8 +66,25 @@ export function generate(choices: Choices, version: string, templates: string, s
       .replaceAll('{{slug}}', choices.slug)
       .replaceAll('{{version}}', version)
       .replaceAll('{{consoleUrl}}', at.console)
-      .replaceAll('{{portalUrl}}', at.portal);
+      .replaceAll('{{portalUrl}}', at.portal)
+      .replaceAll('{{composeName}}', host?.composeName ?? choices.slug)
+      .replaceAll('{{setupCommand}}', host?.commands.setup ?? 'pnpm run setup')
+      .replaceAll('{{upCommand}}', host?.commands.up ?? 'pnpm up')
+      .replaceAll('{{downCommand}}', host?.commands.down ?? 'pnpm down')
+      .replaceAll('{{providerVolumes}}', (host?.providerVolumes ?? []).map((volume) => `      - ${volume}\n`).join(''))
+      .replaceAll('{{hostApps}}', host?.apps ? `\n${host.apps.trimEnd()}\n` : '');
+    // An embedded project belongs to the product: no readme or ignore file of its own.
+    if (host && (path === 'README.md' || path === '.gitignore')) continue;
     files.set(path, text);
+  }
+  if (host) {
+    files.set('plugins/.gitkeep', '');
+    files.set('ui-plugins/.gitkeep', '');
+    for (const [file, entries] of envFiles(choices, secret, host)) {
+      files.set(file, env(entries, true));
+      files.set(`${file}.example`, env(entries, false));
+    }
+    return files;
   }
   files.set(
     'package.json',
@@ -85,7 +123,7 @@ function env(entries: Entry[], withValues: boolean): string {
   return `${entries.map(([key, value, comment]) => `${comment ? `# ${comment}\n` : ''}${key}=${withValues || !secret.test(key) ? value : ''}`).join('\n')}\n`;
 }
 
-function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
+function envFiles(choices: Choices, secret: () => string, host?: Host): [string, Entry[]][] {
   const at = addressesOf(choices);
   const email: Entry[] =
     choices.email.through === 'log'
@@ -111,6 +149,7 @@ function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
         ['IDP_GOOGLE_CLIENT_SECRET', '', ''],
         ['IDP_GITHUB_CLIENT_ID', '', 'Sign-in with GitHub: an OAuth App, or a GitHub App with Email addresses read-only; callback <issuer>/signin/github/callback.'],
         ['IDP_GITHUB_CLIENT_SECRET', '', ''],
+        ...(host?.providerEnv ?? []),
       ],
     ],
     [
@@ -120,7 +159,7 @@ function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
         ['APP_URL', at.console, ''],
         ['PORTAL_URL', at.portal, ''],
         ['CONSOLE_CLIENT_ID', 'owner-console', ''],
-        ['CONSOLE_CLIENT_SECRET', '', 'Written by `pnpm run setup`.'],
+        ['CONSOLE_CLIENT_SECRET', '', `Written by \`${host?.commands.setup ?? 'pnpm run setup'}\`.`],
         ['SESSION_SECRET', secret(), 'Encrypts the session cookie: at least 32 characters.'],
       ],
     ],
@@ -130,7 +169,7 @@ function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
         ['IDP_URL', at.provider, ''],
         ['APP_URL', at.portal, ''],
         ['PORTAL_CLIENT_ID', 'developer-portal', ''],
-        ['PORTAL_CLIENT_SECRET', '', 'Written by `pnpm run setup`.'],
+        ['PORTAL_CLIENT_SECRET', '', `Written by \`${host?.commands.setup ?? 'pnpm run setup'}\`.`],
         ['SESSION_SECRET', secret(), 'Encrypts the session cookie: at least 32 characters.'],
       ],
     ],

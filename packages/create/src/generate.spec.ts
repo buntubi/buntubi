@@ -49,4 +49,27 @@ describe('create-buntubi', () => {
   it('refuses a public address with email that only reaches the log', () => {
     expect(() => generate({ ...live, email: { through: 'log' } }, '0.7.0', templates, secret)).toThrow(/choose resend/);
   });
+
+  it('makes an embedded project for a product that runs it beside itself', () => {
+    const files = generate(local, '0.9.0', templates, secret, {
+      composeName: 'acme-identity',
+      commands: { setup: 'pnpm identity:setup', up: 'pnpm identity:up', down: 'pnpm identity:down' },
+      providerEnv: [['IDP_CATALOGUE_FILES', '["/app/catalogue/acme.json"]', 'The API catalogue.']],
+      providerVolumes: ['./catalogue.json:/app/catalogue/acme.json:ro'],
+      apps: '[[apps]]\nclient_id = "acme"\nname = "Acme"',
+    });
+    expect([...files.keys()].sort()).toEqual([
+      '.env', '.env.example', 'compose.yaml', 'console.env', 'console.env.example', 'identity.env', 'identity.env.example',
+      'platform.toml', 'plugins/.gitkeep', 'portal.env', 'portal.env.example', 'provider.Dockerfile', 'ui-plugins/.gitkeep',
+    ]);
+    const compose = files.get('compose.yaml')!;
+    expect(compose).toContain('name: acme-identity');
+    expect(compose).toContain('`pnpm identity:setup` the first time');
+    // Mounted on the provider and on the webhooks process.
+    expect(compose.split('./catalogue.json:/app/catalogue/acme.json:ro').length).toBe(3);
+    expect(files.get('identity.env')).toContain('IDP_CATALOGUE_FILES=["/app/catalogue/acme.json"]');
+    expect(files.get('console.env')).toContain('Written by `pnpm identity:setup`.');
+    expect(files.get('platform.toml')).toContain('client_id = "acme"');
+    for (const [path, text] of files) expect(text, path).not.toContain('{{');
+  });
 });
