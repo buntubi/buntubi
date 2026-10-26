@@ -13,7 +13,7 @@ import {
 } from './logic.js';
 import { SecurityActivityView } from './view.js';
 import { SOCIAL_ICONS } from '../social-button/icons.js';
-import type { SocialIcon } from '../social-button/logic.js';
+import { activityIcon } from './icons.js';
 
 const props = {
   events: prop.object<ActivityEntry[]>([]),
@@ -35,9 +35,6 @@ const INFO: ActivityKind[] = [
   'provider_linked',
   'provider_unlinked',
 ];
-
-// The mark of a row about the account itself rather than an outside provider.
-const SHIELD: SocialIcon = { viewBox: '0 0 24 24', paths: [{ d: 'M12 2 4 5v6c0 5.2 3.4 9.4 8 11 4.6-1.6 8-5.8 8-11V5l-8-3z' }] };
 
 const toneOf = (kind: ActivityKind): ActivityTone => (WARN.includes(kind) ? 'warn' : INFO.includes(kind) ? 'info' : 'ok');
 
@@ -69,7 +66,8 @@ export class IdpSecurityActivity extends typedElement(props) {
       const l = labels();
       return this.events.map((entry, index) => ({
         key: `${entry.at}-${index}`,
-        mark: (entry.provider_id && SOCIAL_ICONS[entry.provider_id]) || SHIELD,
+        brand: (entry.provider_id && SOCIAL_ICONS[entry.provider_id]) || null,
+        icon: activityIcon(entry),
         what: what(entry, l),
         where: where(entry, l),
         when: dateTime(entry.at, this.locale),

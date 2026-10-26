@@ -74,8 +74,10 @@ export type ActivityTone = 'ok' | 'warn' | 'info';
 
 export interface ActivityRow {
   key: string;
-  /** The provider's mark for a row about Google or GitHub, a shield for the rest. */
-  mark: SocialIcon;
+  /** The provider's mark for a row about Google or GitHub; null for the rest, which show `icon`. */
+  brand: SocialIcon | null;
+  /** A line icon's path data (24 box), for a row without a brand. */
+  icon: string;
   what: string;
   where: string;
   when: string;

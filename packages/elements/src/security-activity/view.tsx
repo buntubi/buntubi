@@ -20,7 +20,8 @@ const styles = css`
   .what { display: flex; align-items: center; gap: 10px; color: var(--idp-text); font-weight: 500; }
   .what :deep([data-avatar]) { width: 30px; height: 30px; flex: none; background: var(--idp-surface-2); }
   .what svg { width: 16px; height: 16px; }
-  .what svg path:not([fill]) { fill: var(--idp-muted); }
+  .brand path:not([fill]) { fill: var(--idp-text); }
+  .line { fill: none; stroke: var(--idp-muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .empty { margin: 0; padding: 18px; color: var(--idp-muted); }
   .advice { margin: 0; padding: 12px 18px; border-top: 1px solid var(--idp-border); color: var(--idp-muted); font-size: 12.5px; }
 `;
@@ -54,9 +55,18 @@ export const securityActivityView = (a: SecurityActivityLogic) => (
                       <BadgeAnchor dot placement="bottom-end" overlap="circular" tone={TONES[row().tone]} aria-hidden="true">
                         <Avatar>
                           <AvatarFallback>
-                            <svg viewBox={row().mark.viewBox} focusable="false">
-                              <For each={row().mark.paths}>{(path) => <path d={path.d} fill={path.fill} />}</For>
-                            </svg>
+                            {() => {
+                              const brand = row().brand;
+                              return brand ? (
+                                <svg class="brand" viewBox={brand.viewBox} focusable="false">
+                                  <For each={brand.paths}>{(path) => <path d={path.d} fill={path.fill} />}</For>
+                                </svg>
+                              ) : (
+                                <svg class="line" viewBox="0 0 24 24" focusable="false">
+                                  <path d={row().icon} />
+                                </svg>
+                              );
+                            }}
                           </AvatarFallback>
                         </Avatar>
                       </BadgeAnchor>
