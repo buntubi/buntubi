@@ -41,6 +41,13 @@ settings, never from the code.
 - Tokens bound to an organization (`org_id`, `org_role`), when an app asks for one.
 - Signed webhooks telling products of every change to their organizations and members, retried
   for a day, with a verifier in the SDK ([docs/webhooks.md](docs/webhooks.md)).
+- The profile the platform asks for: the standard OpenID Connect claims it turns on (birthdate,
+  website and the like) under `profile`, and its own fields as one `platform_profile` claim
+  under the scope of that name. An app can name the fields it needs (`required_fields`); people
+  without them are asked on their way to it.
+- Its own data about each person, a JSON object of up to 16 KiB, through
+  `/v1/app/users/{user_id}/data` with a client credentials token holding `app_data`; kept apart
+  from every other app and out of tokens.
 
 ### Organizations
 
