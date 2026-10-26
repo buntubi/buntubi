@@ -66,7 +66,9 @@ pnpm dev
 One terminal, each line prefixed by its program: the provider on the port of `IDP_ISSUER`
 (http://localhost:5010), the sign-in pages rebuilt into the provider on every change (reload the
 page; the provider needs no restart), the portal (http://localhost:3410) and the console
-(http://localhost:3420). Ctrl+C stops them all. `pnpm dev --no-web` starts the provider only.
+(http://localhost:3420). Ctrl+C stops them all. `pnpm dev --no-web` starts the provider only. It
+refuses to start when one of those ports is already taken, and names what holds it (a Docker
+container of another deployment, for example).
 
 The provider reads `.env` from `idp/`; `pnpm dev` and `pnpm idp` start it there.
 
