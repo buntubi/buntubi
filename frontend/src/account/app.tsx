@@ -272,6 +272,8 @@ export function mountAccount(root: HTMLElement, context: Context): void {
           <idp-about-section
             fields={data()?.fields ?? {}}
             values={user() ?? {}}
+            platformFields={data()?.platform_fields ?? []}
+            platformValues={user()?.platform_profile ?? {}}
             locale={config.locale}
             labels={w.info.about}
             messages={context.text.messages}

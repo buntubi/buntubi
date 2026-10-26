@@ -11,10 +11,16 @@ import { useElementAction, type ElementAction } from '../shared/element-action.j
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
 import { CompleteProfileView } from './view.js';
+import { platformForm, platformValuesOf } from '@idp/elements/about-section/platform-field-input';
+import type { PlatformField, PlatformValue } from '@buntubi/sdk/account';
 import { termsValidator, type TermsToAccept } from '../shared/terms-check.js';
 import '../shared/form.css';
 
-export type CompleteProfile = Record<ProfileField, string> & { acceptTerms: boolean };
+export type CompleteProfile = Record<ProfileField, string> & {
+  acceptTerms: boolean;
+  /** The platform's own required fields, by key. */
+  platformProfile?: Record<string, PlatformValue | null>;
+};
 
 export interface CompleteProfileLabels {
   /** {email}: the address the account is made for. */
@@ -58,6 +64,9 @@ const props = {
   email: prop.string(''),
   /** The platform's terms to accept, when it has some. */
   terms: prop.any<TermsToAccept | null>(null),
+  /** The platform's own fields to ask. */
+  platformFields: prop.any<PlatformField[]>([]),
+  locale: prop.string('en'),
 };
 
 export class IdpCompleteProfile extends typedElement(props) {
@@ -79,8 +88,12 @@ export class IdpCompleteProfile extends typedElement(props) {
       zoneinfo: field('zoneinfo'),
       acceptTerms: createField(false, { validators: [termsValidator(() => this.terms, () => text('form.terms'))] }),
     });
+    const own = (this.platformFields ?? []).length ? platformForm(this.platformFields, {}, () => text('form.required')) : null;
     const { run, pending, error } = useElementAction('idp-complete-profile', () => this.action, text);
-    const submit = (values: CompleteProfile) => {
+    const submit = async (entered: CompleteProfile) => {
+      const platformProfile = own ? await platformValuesOf(own, this.platformFields) : undefined;
+      if (platformProfile === null) return;
+      const values = { ...entered, ...(platformProfile ? { platformProfile } : {}) };
       this.emit('submit', values);
       if (!this.action) return;
       run(values).then(
@@ -88,7 +101,14 @@ export class IdpCompleteProfile extends typedElement(props) {
         () => {},
       );
     };
-    return { asked, error, form, terms: () => this.terms, intro: () => label().intro.replace('{email}', this.email), label, pending, submit };
+    return {
+      asked,
+      platform: () => this.platformFields ?? [],
+      platformForm: own,
+      locale: () => this.locale,
+      error,
+      form,
+      terms: () => this.terms, intro: () => label().intro.replace('{email}', this.email), label, pending, submit };
   }
 
   protected override render(): unknown {

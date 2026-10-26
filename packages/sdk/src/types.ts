@@ -1,5 +1,5 @@
 /** What the provider's developer API answers with, as the portal and its elements see it. */
-import type { AccountSummary, PostalAddress, ProfileField } from './account.js';
+import type { AccountSummary, PlatformField, PlatformValue, PostalAddress, ProfileField } from './account.js';
 
 /** A person's role in an organization, shared by every product. */
 export const ROLES = ['owner', 'admin', 'billing', 'member', 'guest'] as const;
@@ -141,6 +141,7 @@ export interface SignInSettings {
   providers: { id: string; label: string; configured: boolean; listed: boolean }[];
   signup_open: boolean;
   profile_fields: AccountSummary['fields'];
+  platform_fields: PlatformField[];
 }
 
 /** An organization as the platform owner sees it. */
@@ -225,6 +226,8 @@ export interface AdminUserPage {
   /** The profile fields the platform shows, and the person's values for them. */
   fields: AccountSummary['fields'];
   profile: Partial<Record<ProfileField, string | null>>;
+  platform_fields: PlatformField[];
+  platform_profile: Record<string, PlatformValue>;
   /** Provider accounts linked for sign-in. */
   identities: { provider: string; email: string | null; created_at: string; last_used_at: string | null }[];
 }

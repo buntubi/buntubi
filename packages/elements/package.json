@@ -320,6 +320,7 @@
     "./about-section/view": "./src/about-section/view.tsx",
     "./about-section/logic": "./src/about-section/logic.ts",
     "./about-section/field-input": "./src/about-section/field-input.tsx",
+    "./about-section/platform-field-input": "./src/about-section/platform-field-input.tsx",
     "./social-button": "./src/social-button/social-button.tsx",
     "./social-button/view": "./src/social-button/view.tsx",
     "./social-button/logic": "./src/social-button/logic.ts",

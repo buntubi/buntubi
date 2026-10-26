@@ -74,6 +74,8 @@ export interface Text {
     privacy: string;
     terms: string;
     homepage: string;
+    /** Above the fields a sign-in found missing, for an account that exists. */
+    profileMissing: string;
   };
   signIn: SignInLabels;
   signUp: SignUpLabels;
@@ -165,6 +167,7 @@ const fr: Text = {
     privacy: 'Confidentialité',
     terms: 'Conditions',
     homepage: 'Site',
+    profileMissing: 'Quelques informations sont nécessaires avant de continuer.',
   },
   signIn: {
     email: 'Adresse e-mail',
@@ -470,6 +473,7 @@ const en: Text = {
     privacy: 'Privacy',
     terms: 'Terms',
     homepage: 'Website',
+    profileMissing: 'A few details are needed before you continue.',
   },
   signIn: {
     email: 'Email address',

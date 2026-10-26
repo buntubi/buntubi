@@ -21,13 +21,33 @@ export const FIELD_MODES = ['hidden', 'optional', 'required'] as const;
 export type FieldMode = (typeof FIELD_MODES)[number];
 export const GENDERS = ['female', 'male', 'other'] as const;
 export type Gender = (typeof GENDERS)[number];
+/** What one of the platform's own profile fields holds. */
+export const PLATFORM_FIELD_TYPES = ['text', 'number', 'date', 'boolean', 'choice', 'choices'] as const;
+export type PlatformFieldType = (typeof PLATFORM_FIELD_TYPES)[number];
+
+/** One of the platform's own profile fields, as platform.toml declares it. */
+export interface PlatformField {
+  key: string;
+  type: PlatformFieldType;
+  mode: Exclude<FieldMode, 'hidden'>;
+  label: { fr: string; en: string };
+  /** For the two choice types. */
+  choices: { value: string; label: { fr: string; en: string } }[];
+}
+
+/** A value of a platform field: text and dates as strings, a number, a yes or no, a list of choices. */
+export type PlatformValue = string | number | boolean | string[];
 
 /** What the account home shows. */
 export interface AccountSummary {
   /** The profile fields the platform shows, and how firmly it asks; a hidden one is left out. */
   fields: Partial<Record<ProfileField, Exclude<FieldMode, 'hidden'>>>;
+  /** The platform's own fields people see, in its order. */
+  platform_fields: PlatformField[];
   /** The values of the fields shown, as `YYYY-MM-DD` for the birthdate; null when not set. */
   user: Partial<Record<ProfileField, string | null>> & {
+    /** Values for the platform's own fields, by key; a field without one is left out. */
+    platform_profile: Record<string, PlatformValue>;
     id: string;
     email: string;
     email_verified: boolean;
@@ -267,6 +287,8 @@ export interface ProfilePatch {
   nickname?: string;
   website?: string;
   zoneinfo?: string;
+  /** The platform's own fields by key; null or an empty value clears one, unless it is required. */
+  platform_profile?: Record<string, PlatformValue | null>;
 }
 
 /** A postal address, in the parts of the OIDC address claim. Empty strings when not set. */

@@ -29,7 +29,7 @@ import { createApi, type Redirect } from './host/api.js';
 import { lookOf, viewsOf } from '@buntubi/sdk/plugins';
 import { overrideViews } from '@buntubi/sdk/view';
 import { getPasskey } from '@buntubi/sdk/webauthn';
-import { PROFILE_FIELDS, type ProfileField } from '@buntubi/sdk/account';
+import { PROFILE_FIELDS, type PlatformField, type ProfileField } from '@buntubi/sdk/account';
 import builtUiPlugins from 'virtual:idp-ui-plugins';
 import { mountedUiPlugins } from '@buntubi/sdk/runtime';
 import { applyBrand } from './host/brand.js';
@@ -71,6 +71,8 @@ const socialButtons = () => (
   />
 );
 // The platform's terms to accept on this page, when it has some.
+// The platform's own fields this page asks for.
+const platformFields = (Array.isArray(props.platformFields) ? props.platformFields : []) as PlatformField[];
 const termsToAccept = (props.terms && typeof props.terms === 'object' ? props.terms : null) as TermsToAccept | null;
 const str = (key: string) => (typeof props[key] === 'string' ? (props[key] as string) : '');
 
@@ -158,10 +160,13 @@ const screens: Record<string, () => Screen> = {
               locale: config.locale,
               ...Object.fromEntries(signUpFields.map((field) => [field, input[field].trim()])),
               ...(termsToAccept ? { accept_terms: input.acceptTerms } : {}),
+              ...(input.platformProfile ? { platform_profile: input.platformProfile } : {}),
             })
           }
           schema={signUpSchema}
           terms={termsToAccept}
+          platformFields={platformFields}
+          locale={config.locale}
           fields={signUpFields}
           labels={t.signUp}
           messages={t.messages}
@@ -183,15 +188,19 @@ const screens: Record<string, () => Screen> = {
     body: () => (
       <idp-complete-profile
         action={(input) =>
-          api('POST', '/api/signup/complete', {
+          // The provider step after a social sign-in, or the sign-in that found a required field missing.
+          api('POST', str('action') || '/api/signup/complete', {
             ...Object.fromEntries(signUpFields.map((field) => [field, input[field].trim()])),
             ...(termsToAccept ? { accept_terms: input.acceptTerms } : {}),
+            ...(input.platformProfile ? { platform_profile: input.platformProfile } : {}),
           })
         }
         fields={signUpFields}
         terms={termsToAccept}
+        platformFields={platformFields}
+        locale={config.locale}
         email={str('email')}
-        labels={t.completeProfile}
+        labels={str('action') ? { ...t.completeProfile, intro: t.notes.profileMissing, submit: t.acceptTerms.submit } : t.completeProfile}
         messages={t.messages}
         onSuccess={(event) => follow(event.detail.result)}
       />

@@ -3,7 +3,12 @@ import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input, Textarea } from '@fluixi-ui/input';
-import { PROFILE_FIELDS } from '@buntubi/sdk/account';
+import { PROFILE_FIELDS, type PlatformValue } from '@buntubi/sdk/account';
+import { labelIn } from '../about-section/platform-field-input.js';
+
+/** A platform field's value as the console lists it: choices by value, a yes or no as written. */
+const shownValue = (value: PlatformValue | undefined) =>
+  value === undefined || value === null ? '' : Array.isArray(value) ? value.join(', ') : String(value);
 import { viewToken } from '../view.js';
 import type { UserProfileLogic } from './logic.js';
 import '@bambiste/countries/elements';
@@ -126,7 +131,7 @@ export const userProfileView = (p: UserProfileLogic) => (
           </div>
         </Form>
       </section>
-      <Show when={Object.keys(p.page()?.fields ?? {}).length > 0}>
+      <Show when={Object.keys(p.page()?.fields ?? {}).length > 0 || (p.page()?.platform_fields ?? []).length > 0}>
         <section class="card">
           <h2>{() => p.labels().profileFields}</h2>
           <ul>
@@ -135,6 +140,16 @@ export const userProfileView = (p: UserProfileLogic) => (
                 <li>
                   <span>{() => p.labels().fields[field]}</span>
                   <span class={() => (p.page()?.profile[field] ? '' : 'muted')}>{() => p.page()?.profile[field] || p.labels().notSet}</span>
+                </li>
+              )}
+            </For>
+            <For each={p.page()?.platform_fields ?? []}>
+              {(field) => (
+                <li>
+                  <span>{() => labelIn(field.label, p.locale())}</span>
+                  <span class={() => (shownValue(p.page()?.platform_profile[field.key]) ? '' : 'muted')}>
+                    {() => shownValue(p.page()?.platform_profile[field.key]) || p.labels().notSet}
+                  </span>
                 </li>
               )}
             </For>

@@ -11,6 +11,8 @@ import { PROFILE_FIELDS, type Gender, type ProfileField } from '@buntubi/sdk/acc
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
+import { platformForm, platformValuesOf } from '@idp/elements/about-section/platform-field-input';
+import type { PlatformField, PlatformValue } from '@buntubi/sdk/account';
 import { termsValidator, type TermsToAccept } from '../shared/terms-check.js';
 import '../shared/form.css';
 
@@ -21,6 +23,8 @@ export interface SignUp extends Record<ProfileField, string> {
   password: string;
   /** Ticked when the page has terms to accept. */
   acceptTerms: boolean;
+  /** The platform's own required fields, by key. */
+  platformProfile?: Record<string, PlatformValue | null>;
 }
 
 export interface SignUpLabels {
@@ -74,6 +78,9 @@ const props = {
   fields: prop.any<ProfileField[]>([]),
   /** The platform's terms to accept, when it has some. */
   terms: prop.any<TermsToAccept | null>(null),
+  /** The platform's own fields it requires, asked after the standard ones. */
+  platformFields: prop.any<PlatformField[]>([]),
+  locale: prop.string('en'),
 };
 
 export class IdpSignUp extends typedElement(props) {
@@ -104,9 +111,13 @@ export class IdpSignUp extends typedElement(props) {
       zoneinfo: profile('zoneinfo'),
       acceptTerms: createField(false, { validators: [termsValidator(() => this.terms, () => text('form.terms'))] }),
     });
+    const own = (this.platformFields ?? []).length ? platformForm(this.platformFields, {}, () => text('form.required')) : null;
     const { run, pending, error } = useElementAction('idp-sign-up', () => this.action, text);
 
-    const submit = (values: SignUp) => {
+    const submit = async (entered: SignUp) => {
+      const platformProfile = own ? await platformValuesOf(own, this.platformFields) : undefined;
+      if (platformProfile === null) return;
+      const values = { ...entered, ...(platformProfile ? { platformProfile } : {}) };
       this.emit('submit', values);
       if (!this.action) return;
       run(values).then(
@@ -117,6 +128,9 @@ export class IdpSignUp extends typedElement(props) {
 
     return {
       asked,
+      platform: () => this.platformFields ?? [],
+      platformForm: own,
+      locale: () => this.locale,
       terms: () => this.terms,
       error,
       form,

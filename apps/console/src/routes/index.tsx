@@ -4,7 +4,7 @@ import { useRouteData } from '@fluixi/start/router';
 import '@idp/elements/review-waiting';
 import '@idp/elements/stat-group';
 import '@idp/elements/sign-in-settings';
-import { t } from '../lib/i18n.js';
+import { locale, t } from '../lib/i18n.js';
 import { overviewStats, reviewWaitingLabels, signInSettingsLabels } from '../lib/labels.js';
 import { paths } from '../lib/paths.js';
 import '@idp/elements/page-header';
@@ -22,7 +22,7 @@ export default function OverviewPage() {
       <idp-page-header title={t('nav.overview')} />
       <idp-stat-group stats={overviewStats(data()?.overview ?? null)} />
       <idp-review-waiting reviews={data()?.reviews ?? []} href={paths.reviewPattern()} labels={reviewWaitingLabels()} />
-      <idp-sign-in-settings settings={data()?.overview?.sign_in ?? null} labels={signInSettingsLabels()} />
+      <idp-sign-in-settings settings={data()?.overview?.sign_in ?? null} locale={locale()} labels={signInSettingsLabels()} />
     </Stack>
   );
 }
