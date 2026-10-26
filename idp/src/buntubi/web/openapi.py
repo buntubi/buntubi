@@ -452,6 +452,8 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "disabled": BOOL,
             "created_at": TIME,
             "last_sign_in_at": MAYBE_TIME,
+            "terms_version": {**MAYBE_STRING, "description": "The platform terms this person accepted."},
+            "terms_accepted_at": MAYBE_TIME,
         }
     ),
     "AdminUserPage": obj(

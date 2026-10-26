@@ -22,7 +22,7 @@ from buntubi.db import db
 from buntubi.models import Client
 from buntubi.models.clients import GRANT_TYPES
 from buntubi.models.profile_fields import FIELD_MODES, STANDARD_FIELDS
-from buntubi.models.settings import SIGNUP_OPEN_SETTING, SOCIAL_PROVIDERS_SETTING
+from buntubi.models.settings import SIGNUP_OPEN_SETTING, SOCIAL_PROVIDERS_SETTING, TERMS_VERSION_SETTING
 from buntubi.plugins import SLUG
 from buntubi.services import audit, platform_settings, profile_fields, webhooks
 from buntubi.services import platform as p
@@ -115,6 +115,7 @@ class Access:
 
     social_providers: tuple[str, ...] | None = None
     signup_open: bool | None = None
+    terms_version: str | None = None
 
 
 def read_access(path: Path) -> Access:
@@ -129,7 +130,10 @@ def read_access(path: Path) -> Access:
     open_ = signup_table.get("open")
     if open_ is not None and not isinstance(open_, bool):
         raise SetupError("signup.open is true or false")
-    return Access(providers, open_)
+    terms = signup_table.get("terms_version")
+    if terms is not None and not (isinstance(terms, str) and 0 < len(terms) <= 64):
+        raise SetupError('signup.terms_version is a short string, such as "2026-10"')
+    return Access(providers, open_, terms)
 
 
 def apply_access(access: Access) -> list[str]:
@@ -141,6 +145,10 @@ def apply_access(access: Access) -> list[str]:
         changed.append("social.providers")
     if access.signup_open is not None and platform_settings.put(SIGNUP_OPEN_SETTING, access.signup_open):
         changed.append("signup.open")
+    if access.terms_version is not None and platform_settings.put(
+        TERMS_VERSION_SETTING, access.terms_version
+    ):
+        changed.append("signup.terms_version")
     if changed:
         audit.record("platform.access_changed", settings=changed)
     db().commit()

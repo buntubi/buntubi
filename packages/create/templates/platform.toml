@@ -29,6 +29,7 @@ secret = { file = "portal.env", key = "PORTAL_CLIENT_SECRET" }
 # Whether people can make an account; invited addresses always can.
 # [signup]
 # open = true
+# terms_version = "2026-10"     # asks people to accept the terms at IDP_BRAND_TERMS_URL
 
 # The profile fields asked of people: "hidden" (the default), "optional" or "required".
 # [profile]

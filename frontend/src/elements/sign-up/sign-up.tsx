@@ -11,6 +11,7 @@ import { PROFILE_FIELDS, type Gender, type ProfileField } from '@buntubi/sdk/acc
 import { useElementAction, type ElementAction } from '../shared/element-action.js';
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
+import { termsValidator, type TermsToAccept } from '../shared/terms-check.js';
 import '../shared/form.css';
 
 export interface SignUp extends Record<ProfileField, string> {
@@ -18,6 +19,8 @@ export interface SignUp extends Record<ProfileField, string> {
   familyName: string;
   email: string;
   password: string;
+  /** Ticked when the page has terms to accept. */
+  acceptTerms: boolean;
 }
 
 export interface SignUpLabels {
@@ -30,6 +33,8 @@ export interface SignUpLabels {
   pending: string;
   fields: Record<ProfileField, string>;
   genders: Record<Gender, string>;
+  acceptTerms: string;
+  termsLink: string;
 }
 
 export const signUpLabels: SignUpLabels = {
@@ -49,6 +54,8 @@ export const signUpLabels: SignUpLabels = {
     zoneinfo: 'Time zone',
   },
   genders: { female: 'Female', male: 'Male', other: 'Other' },
+  acceptTerms: 'I accept the {terms}',
+  termsLink: 'terms of use',
 };
 
 export interface SignUpEvents {
@@ -65,6 +72,8 @@ const props = {
   email: prop.string(''),
   /** The profile fields the platform requires, asked after the password. */
   fields: prop.any<ProfileField[]>([]),
+  /** The platform's terms to accept, when it has some. */
+  terms: prop.any<TermsToAccept | null>(null),
 };
 
 export class IdpSignUp extends typedElement(props) {
@@ -93,6 +102,7 @@ export class IdpSignUp extends typedElement(props) {
       nickname: profile('nickname'),
       website: profile('website'),
       zoneinfo: profile('zoneinfo'),
+      acceptTerms: createField(false, { validators: [termsValidator(() => this.terms, () => text('form.terms'))] }),
     });
     const { run, pending, error } = useElementAction('idp-sign-up', () => this.action, text);
 
@@ -107,6 +117,7 @@ export class IdpSignUp extends typedElement(props) {
 
     return {
       asked,
+      terms: () => this.terms,
       error,
       form,
       label,

@@ -11,9 +11,10 @@ import { useElementAction, type ElementAction } from '../shared/element-action.j
 import { messageReader, type Messages } from '../shared/messages.js';
 import { fieldValidator, type FormSchema } from '../shared/validators.js';
 import { CompleteProfileView } from './view.js';
+import { termsValidator, type TermsToAccept } from '../shared/terms-check.js';
 import '../shared/form.css';
 
-export type CompleteProfile = Record<ProfileField, string>;
+export type CompleteProfile = Record<ProfileField, string> & { acceptTerms: boolean };
 
 export interface CompleteProfileLabels {
   /** {email}: the address the account is made for. */
@@ -22,6 +23,8 @@ export interface CompleteProfileLabels {
   pending: string;
   fields: Record<ProfileField, string>;
   genders: Record<Gender, string>;
+  acceptTerms: string;
+  termsLink: string;
 }
 
 export const completeProfileLabels: CompleteProfileLabels = {
@@ -37,6 +40,8 @@ export const completeProfileLabels: CompleteProfileLabels = {
     zoneinfo: 'Time zone',
   },
   genders: { female: 'Female', male: 'Male', other: 'Other' },
+  acceptTerms: 'I accept the {terms}',
+  termsLink: 'terms of use',
 };
 
 export interface CompleteProfileEvents {
@@ -51,6 +56,8 @@ const props = {
   messages: prop.object<Messages>({}),
   fields: prop.any<ProfileField[]>([]),
   email: prop.string(''),
+  /** The platform's terms to accept, when it has some. */
+  terms: prop.any<TermsToAccept | null>(null),
 };
 
 export class IdpCompleteProfile extends typedElement(props) {
@@ -70,6 +77,7 @@ export class IdpCompleteProfile extends typedElement(props) {
       nickname: field('nickname'),
       website: field('website'),
       zoneinfo: field('zoneinfo'),
+      acceptTerms: createField(false, { validators: [termsValidator(() => this.terms, () => text('form.terms'))] }),
     });
     const { run, pending, error } = useElementAction('idp-complete-profile', () => this.action, text);
     const submit = (values: CompleteProfile) => {
@@ -80,7 +88,7 @@ export class IdpCompleteProfile extends typedElement(props) {
         () => {},
       );
     };
-    return { asked, error, form, intro: () => label().intro.replace('{email}', this.email), label, pending, submit };
+    return { asked, error, form, terms: () => this.terms, intro: () => label().intro.replace('{email}', this.email), label, pending, submit };
   }
 
   protected override render(): unknown {

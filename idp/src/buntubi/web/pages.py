@@ -29,6 +29,7 @@ from buntubi.services import (
     security_prompt,
     sessions,
     social,
+    terms,
 )
 from buntubi.web import ui_plugins
 
@@ -121,6 +122,13 @@ def _social_props() -> dict[str, Any]:
     }
 
 
+@bp.get("/terms/accept")
+def accept_terms() -> Any:
+    if sessions.pending("terms") is None or terms.current() is None:
+        return redirect(url_for("pages.signin"))
+    return shell("idp-accept-terms", terms=terms.current())
+
+
 @bp.get("/signin")
 def signin() -> str:
     # The address an app named for the person, if any, as the form's starting email.
@@ -137,6 +145,7 @@ def signup() -> str:
         fields=required,
         # Closed: the page says sign-up is by invitation; an invited address still goes through.
         signupOpen=social.signup_allowed(None),
+        terms=terms.current(),
         **_social_props(),
     )
 

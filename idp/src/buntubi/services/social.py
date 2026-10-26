@@ -27,7 +27,7 @@ from buntubi.config import get_settings
 from buntubi.db import db, utcnow
 from buntubi.models import Client, Identity, Invitation, User
 from buntubi.security.tokens import new_token
-from buntubi.services import audit, platform_settings, profile_fields, sessions
+from buntubi.services import audit, platform_settings, profile_fields, sessions, terms
 from buntubi.services.accounts import AccountError
 from buntubi.social import ExternalIdentity, Provider, ProviderError, Transaction
 
@@ -136,7 +136,8 @@ def finish(provider: Provider, args: dict[str, str], signed_in: User | None, loc
         return _refused(provider, "account_exists")
     if not signup_allowed(found.email):
         return _refused(provider, "signup_closed")
-    if any(mode == "required" for mode in profile_fields.shown().values()):
+    # Required fields or terms to accept: asked before the account is made.
+    if terms.current() is not None or any(mode == "required" for mode in profile_fields.shown().values()):
         session[_WAITING] = {**asdict(found), "at": time.time()}
         return Outcome(NEEDS_PROFILE, provider.id)
     return _create(found, {}, locale)
@@ -160,13 +161,17 @@ def complete(data: dict[str, Any], locale: str) -> Outcome:
     if found is None:
         raise AccountError("expired")
     values = profile_fields.check(data, signing_up=True)
+    accepted = terms.check(data)
     session.pop(_WAITING, None)
     provider = social.get(found.provider)
     if provider is None:
         raise AccountError("expired")
     if not signup_allowed(found.email):
         return _refused(provider, "signup_closed")
-    return _create(found, values, locale)
+    made = _create(found, values, locale)
+    if made.kind == SIGNED_IN and made.user is not None:
+        terms.record(made.user, accepted)
+    return made
 
 
 def identities_of(user: User) -> list[Identity]:

@@ -12,6 +12,8 @@ from buntubi.db import Base, IdMixin, utcnow
 # The social providers offered (a list of ids) and whether people may make an account (a bool).
 SOCIAL_PROVIDERS_SETTING = "social.providers"
 SIGNUP_OPEN_SETTING = "signup.open"
+# The version of the platform's terms people must accept; none set: nobody is asked.
+TERMS_VERSION_SETTING = "signup.terms_version"
 
 
 class PlatformSetting(IdMixin, Base):

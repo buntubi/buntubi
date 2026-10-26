@@ -434,3 +434,22 @@ def test_github_without_its_email_permission(app: Flask, browser: FlaskClient, f
     assert urlparse(round_trip(app.test_client(), fake, "github").location).path == "/account"
     fake.emails_status = 403
     assert urlparse(round_trip(app.test_client(), fake, "github").location).path == "/account"
+
+
+def test_a_provider_sign_up_accepts_the_terms_first(
+    app: Flask, browser: FlaskClient, fake: FakeProviders, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from buntubi.models.settings import TERMS_VERSION_SETTING
+
+    monkeypatch.setattr(get_settings(), "brand_terms_url", "https://platform.example/terms")
+    with app.app_context():
+        platform_settings.put(TERMS_VERSION_SETTING, "2026-10")
+        db().commit()
+    assert urlparse(round_trip(browser, fake, "google").location).path == "/signup/complete"
+    config = page_config(browser, "/signup/complete")
+    assert config["props"]["terms"]["version"] == "2026-10" and config["props"]["fields"] == []
+    assert api(browser, "POST", "/api/signup/complete", {}, config["csrf"]).json["error"] == "terms_required"
+    done = api(browser, "POST", "/api/signup/complete", {"accept_terms": True}, config["csrf"])
+    assert done.json["redirect"] == "/account"
+    user = user_by(app, "awa@gmail.test")
+    assert user is not None and user.terms_version == "2026-10"

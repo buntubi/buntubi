@@ -63,3 +63,6 @@ secret = { file = "../apps/portal/.env", key = "PORTAL_CLIENT_SECRET" }
 # sign-up with `signup = false` in its entry.
 # [signup]
 # open = true
+# The version of the terms people accept, with IDP_BRAND_TERMS_URL set: asked at sign-up, and at
+# the next sign-in of anyone who has not accepted this version.
+# terms_version = "2026-10"

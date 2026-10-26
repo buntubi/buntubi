@@ -159,6 +159,8 @@ def _user_json(user: User, last_sign_in: datetime | None = None) -> dict[str, An
         "disabled": user.disabled_at is not None,
         "created_at": user.created_at.isoformat(),
         "last_sign_in_at": last_sign_in.isoformat() if last_sign_in else None,
+        "terms_version": user.terms_version,
+        "terms_accepted_at": user.terms_accepted_at.isoformat() if user.terms_accepted_at else None,
     }
 
 

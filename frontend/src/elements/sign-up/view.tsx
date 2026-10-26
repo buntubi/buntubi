@@ -2,12 +2,13 @@
 import { For } from '@fluixi/core';
 import { Form, FormField } from '@fluixi-ui/form';
 import { ProfileFieldInput } from '@idp/elements/about-section/field-input';
+import { TermsCheck } from '../shared/terms-check.js';
 import { Input } from '@fluixi-ui/input';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '@buntubi/sdk/view';
 import type { SignUpLogic } from './sign-up.js';
 
-export const signUpView = ({ asked, error, form, label, pending, submit }: SignUpLogic) =>
+export const signUpView = ({ asked, error, form, label, pending, submit, terms }: SignUpLogic) =>
   (
       <Form form={form} onSubmit={submit} class="idp-form" novalidate>
         {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
@@ -45,6 +46,10 @@ export const signUpView = ({ asked, error, form, label, pending, submit }: SignU
             <ProfileFieldInput field={field} control={form.get(field)} label={label().fields[field]} genders={label().genders} />
           )}
         </For>
+        {() => {
+          const toAccept = terms();
+          return toAccept ? <TermsCheck control={form.get('acceptTerms')} terms={toAccept} labels={label()} /> : null;
+        }}
         <Button type="submit" variant="solid" data-part="submit" disabled={pending()}>
           {() => (pending() ? label().pending : label().submit)}
         </Button>

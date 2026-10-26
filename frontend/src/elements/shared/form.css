@@ -84,3 +84,11 @@ idp-social-buttons [part~='social-button'] button {
   font-size: 15px;
   gap: 8px;
 }
+/* A checkbox with its sentence beside it, the box on the first line. */
+.idp-form .idp-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+}

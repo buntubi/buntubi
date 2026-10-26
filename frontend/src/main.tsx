@@ -20,6 +20,8 @@ import './elements/organization-select/organization-select.js';
 import './elements/device-activate/device-activate.js';
 import './elements/mfa-verify/mfa-verify.js';
 import './elements/complete-profile/complete-profile.js';
+import './elements/accept-terms/accept-terms.js';
+import type { TermsToAccept } from './elements/shared/terms-check.js';
 import '@idp/elements/social-buttons';
 import type { AccountItem } from './elements/account-select/account-select.js';
 import type { OrganizationItem } from './elements/organization-select/organization-select.js';
@@ -68,6 +70,8 @@ const socialButtons = () => (
     loginHint={typeof props.email === 'string' ? props.email : ''}
   />
 );
+// The platform's terms to accept on this page, when it has some.
+const termsToAccept = (props.terms && typeof props.terms === 'object' ? props.terms : null) as TermsToAccept | null;
 const str = (key: string) => (typeof props[key] === 'string' ? (props[key] as string) : '');
 
 const go = (url: string) => window.location.assign(url);
@@ -153,9 +157,11 @@ const screens: Record<string, () => Screen> = {
               password: input.password,
               locale: config.locale,
               ...Object.fromEntries(signUpFields.map((field) => [field, input[field].trim()])),
+              ...(termsToAccept ? { accept_terms: input.acceptTerms } : {}),
             })
           }
           schema={signUpSchema}
+          terms={termsToAccept}
           fields={signUpFields}
           labels={t.signUp}
           messages={t.messages}
@@ -176,8 +182,14 @@ const screens: Record<string, () => Screen> = {
     key: 'completeProfile',
     body: () => (
       <idp-complete-profile
-        action={(input) => api('POST', '/api/signup/complete', input)}
+        action={(input) =>
+          api('POST', '/api/signup/complete', {
+            ...Object.fromEntries(signUpFields.map((field) => [field, input[field].trim()])),
+            ...(termsToAccept ? { accept_terms: input.acceptTerms } : {}),
+          })
+        }
         fields={signUpFields}
+        terms={termsToAccept}
         email={str('email')}
         labels={t.completeProfile}
         messages={t.messages}
@@ -189,6 +201,20 @@ const screens: Record<string, () => Screen> = {
         {t.links.signIn}
       </FooterLink>
     ),
+  }),
+
+  'idp-accept-terms': () => ({
+    key: 'acceptTerms',
+    body: () => (
+      <idp-accept-terms
+        action={(input) => api('POST', '/api/terms/accept', { accept_terms: input.acceptTerms })}
+        terms={termsToAccept}
+        labels={t.acceptTerms}
+        messages={t.messages}
+        onSuccess={(event) => follow(event.detail.result)}
+      />
+    ),
+    footer: () => <FooterLink href="/signin">{t.links.backToSignIn}</FooterLink>,
   }),
 
   'idp-verify-email': () => ({

@@ -12,6 +12,7 @@ import type { MfaVerifyLabels } from '../elements/mfa-verify/mfa-verify.js';
 import type { SecureAccountLabels } from '@idp/elements/secure-account/logic';
 import type { SocialButtonsLabels } from '@idp/elements/social-buttons/logic';
 import type { CompleteProfileLabels } from '../elements/complete-profile/complete-profile.js';
+import type { AcceptTermsLabels } from '../elements/accept-terms/accept-terms.js';
 import type { Messages } from '../elements/shared/messages.js';
 import type { Locale } from './config.js';
 
@@ -38,6 +39,7 @@ export interface Text {
     secureAccount: string;
     yourApps: string;
     completeProfile: string;
+    acceptTerms: string;
   };
   /** One line under some titles, keyed like `titles`. */
   subtitles: Partial<Record<keyof Text['titles'], string>>;
@@ -93,6 +95,7 @@ export interface Text {
     signupClosed: string;
   };
   completeProfile: CompleteProfileLabels;
+  acceptTerms: AcceptTermsLabels;
   scopes: Record<string, string>;
   messages: Messages;
 }
@@ -119,6 +122,7 @@ const fr: Text = {
     twoStep: 'Validation en deux étapes',
     secureAccount: 'Protégez votre compte',
     completeProfile: 'Encore une étape',
+    acceptTerms: 'Conditions d’utilisation',
     yourApps: 'Vos applications',
   },
   subtitles: {
@@ -189,6 +193,8 @@ const fr: Text = {
       zoneinfo: 'Fuseau horaire',
     },
     genders: { female: 'Femme', male: 'Homme', other: 'Autre' },
+    acceptTerms: 'J’accepte les {terms}',
+    termsLink: 'conditions d’utilisation',
   },
   verifyEmail: {
     sentTo: 'Nous avons envoyé un code à 6 chiffres à',
@@ -304,6 +310,15 @@ const fr: Text = {
       zoneinfo: 'Fuseau horaire',
     },
     genders: { female: 'Femme', male: 'Homme', other: 'Autre' },
+    acceptTerms: 'J’accepte les {terms}',
+    termsLink: 'conditions d’utilisation',
+  },
+  acceptTerms: {
+    intro: 'Les conditions d’utilisation ont changé depuis votre dernière acceptation. Lisez-les, puis acceptez pour continuer.',
+    acceptTerms: 'J’accepte les {terms}',
+    termsLink: 'conditions d’utilisation',
+    submit: 'Continuer',
+    pending: 'Un instant',
   },
   scopes: {
     openid: 'Vous identifier',
@@ -327,6 +342,7 @@ const fr: Text = {
     'form.date': 'Une date au format AAAA-MM-JJ.',
     'form.choice': 'Choisissez dans la liste.',
     'form.website': 'Une adresse qui commence par https://.',
+    'form.terms': 'Acceptez les conditions d’utilisation pour continuer.',
     'form.country': 'Deux lettres, par exemple SN ou FR.',
     'form.phone': 'Format international, par exemple +221771234567.',
     wrong_password: 'Mot de passe incorrect.',
@@ -362,6 +378,7 @@ const fr: Text = {
     unknown_field: 'Ce champ n’est pas proposé.',
     signup_closed: 'La création de compte se fait sur invitation.',
     expired: 'Cette étape a expiré. Recommencez la connexion.',
+    terms_required: 'Acceptez les conditions d’utilisation pour continuer.',
     last_way_in: 'Ajoutez un mot de passe ou une passkey avant de retirer votre seul moyen de connexion.',
     too_long: 'C’est trop long.',
     unsupported_picture: 'Choisissez une image JPEG, PNG ou WebP.',
@@ -410,6 +427,7 @@ const en: Text = {
     twoStep: 'Two-step sign-in',
     secureAccount: 'Protect your account',
     completeProfile: 'One more step',
+    acceptTerms: 'Terms of use',
     yourApps: 'Your apps',
   },
   subtitles: {
@@ -480,6 +498,8 @@ const en: Text = {
       zoneinfo: 'Time zone',
     },
     genders: { female: 'Female', male: 'Male', other: 'Other' },
+    acceptTerms: 'I accept the {terms}',
+    termsLink: 'terms of use',
   },
   verifyEmail: {
     sentTo: 'We sent a 6-digit code to',
@@ -595,6 +615,15 @@ const en: Text = {
       zoneinfo: 'Time zone',
     },
     genders: { female: 'Female', male: 'Male', other: 'Other' },
+    acceptTerms: 'I accept the {terms}',
+    termsLink: 'terms of use',
+  },
+  acceptTerms: {
+    intro: 'The terms of use have changed since you last accepted them. Read them, then accept to continue.',
+    acceptTerms: 'I accept the {terms}',
+    termsLink: 'terms of use',
+    submit: 'Continue',
+    pending: 'Continuing',
   },
   scopes: {
     openid: 'Know who you are',
@@ -618,6 +647,7 @@ const en: Text = {
     'form.date': 'A date as YYYY-MM-DD.',
     'form.choice': 'Pick one from the list.',
     'form.website': 'An address starting with https://.',
+    'form.terms': 'Accept the terms of use to continue.',
     'form.country': 'Two letters, such as SN or FR.',
     'form.phone': 'International format, such as +221771234567.',
     wrong_password: 'Wrong password.',
@@ -653,6 +683,7 @@ const en: Text = {
     unknown_field: 'This field is not offered.',
     signup_closed: 'Accounts are made by invitation.',
     expired: 'This step expired. Start signing in again.',
+    terms_required: 'Accept the terms of use to continue.',
     last_way_in: 'Add a password or a passkey before removing your only way in.',
     too_long: 'This is too long.',
     unsupported_picture: 'Pick a JPEG, PNG or WebP image.',

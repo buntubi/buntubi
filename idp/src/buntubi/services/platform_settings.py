@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from buntubi.db import db, utcnow
 from buntubi.models import PlatformSetting
-from buntubi.models.settings import SIGNUP_OPEN_SETTING, SOCIAL_PROVIDERS_SETTING
+from buntubi.models.settings import SIGNUP_OPEN_SETTING, SOCIAL_PROVIDERS_SETTING, TERMS_VERSION_SETTING
 
 
 def get(key: str, default: Any) -> Any:
@@ -37,3 +37,8 @@ def social_providers() -> list[str]:
 def signup_open() -> bool:
     """Open unless the deployment closed it."""
     return get(SIGNUP_OPEN_SETTING, True) is not False
+
+
+def terms_version() -> str | None:
+    value = get(TERMS_VERSION_SETTING, None)
+    return value if isinstance(value, str) and value else None

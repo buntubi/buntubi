@@ -50,6 +50,9 @@ class User(IdMixin, TimestampMixin, Base):
     nickname: Mapped[str | None] = mapped_column(String(80))
     website: Mapped[str | None] = mapped_column(String(500))
     zoneinfo: Mapped[str | None] = mapped_column(String(64))
+    # The platform terms this person accepted, and when (services/terms.py).
+    terms_version: Mapped[str | None] = mapped_column(String(64))
+    terms_accepted_at: Mapped[datetime | None]
     # "admin" opens the admin API. "superadmin", given only from the command line, also gives and
     # takes the admin role in the console, and the console cannot disable or demote it.
     roles: Mapped[list[str]] = mapped_column(ARRAY(String(32)), default=list)

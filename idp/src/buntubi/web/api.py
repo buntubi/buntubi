@@ -36,6 +36,7 @@ from buntubi.services import (
     security_prompt,
     sessions,
     social,
+    terms,
 )
 from buntubi.services.accounts import AccountError, NewAccount
 
@@ -82,7 +83,14 @@ def _signed_in(
 def complete_sign_in(
     user: User, methods: list[str], event: str, replaces: str | None = None, provider: str | None = None
 ) -> str:
-    """Starts the session and answers where to go: back to the app, or the account area."""
+    """
+    Starts the session and answers where to go: back to the app, or the account area. An account
+    yet to accept the platform's current terms is asked first, whatever way it signed in.
+    """
+    if terms.needed(user):
+        sessions.set_pending(user, methods, "terms", replaces=replaces, provider=provider)
+        db().commit()
+        return url_for("pages.accept_terms")
     sessions.start(user, methods, replaces=replaces)
     # `provider`: the social provider the first step went through; the client: the app whose
     # request this sign-in continues. Both for the security activity.
@@ -166,6 +174,7 @@ def sign_up() -> Response:
     data = _body()
     # Checked before the account exists, so a refusal reads the same for a known address.
     fields = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}, signing_up=True)
+    accepted = terms.check(data)
     # Closed for everyone but invited addresses; said the same way whether the address has an account.
     if not social.signup_allowed(_text(data, "email").strip().lower()):
         raise AccountError("signup_closed")
@@ -186,8 +195,22 @@ def sign_up() -> Response:
         db().commit()
         return jsonify(next="verify_email", email=made.user.email)
     profile_fields.store(made.user, fields)
+    terms.record(made.user, accepted)
     audit.record("sign_up", user=made.user)
     return _needs_verification(made.user, ["pwd"])
+
+
+@bp.post("/terms/accept")
+@limiter.limit("10 per minute")
+def accept_terms() -> Any:
+    """The platform's terms accepted at a sign-in that asked for them: the sign-in goes on."""
+    pending = sessions.pending("terms")
+    if pending is None:
+        return jsonify(error="no_pending_sign_in"), 400
+    terms.record(pending.user, terms.check(_body()))
+    return _signed_in(
+        pending.user, pending.methods, "sign_in", replaces=pending.replaces, provider=pending.provider
+    )
 
 
 @bp.post("/email/verify")

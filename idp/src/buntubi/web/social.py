@@ -16,7 +16,7 @@ from buntubi.db import db
 from buntubi.extensions import limiter
 from buntubi.models import User
 from buntubi.security import csrf
-from buntubi.services import login_hint, mfa, passkeys, profile_fields, sessions
+from buntubi.services import login_hint, mfa, passkeys, profile_fields, sessions, terms
 from buntubi.services import social as flow
 from buntubi.services.accounts import AccountError
 from buntubi.web import api, pages
@@ -80,7 +80,13 @@ def complete_page() -> Any:
     if found is None:
         return redirect(url_for("pages.signin"))
     required = [key for key, mode in profile_fields.shown().items() if mode == "required"]
-    return pages.shell("idp-complete-profile", fields=required, email=found.email, provider=found.provider)
+    return pages.shell(
+        "idp-complete-profile",
+        fields=required,
+        email=found.email,
+        provider=found.provider,
+        terms=terms.current(),
+    )
 
 
 @bp.post("/api/signup/complete")
