@@ -1,5 +1,6 @@
 /** Recent security activity: one row per event, what, from where, when; apart from the look. */
 import type { ActivityEntry, ActivityKind } from '@buntubi/sdk/account';
+import type { SocialIcon } from '../social-button/logic.js';
 
 export interface SecurityActivityLabels {
   title: string;
@@ -73,6 +74,8 @@ export type ActivityTone = 'ok' | 'warn' | 'info';
 
 export interface ActivityRow {
   key: string;
+  /** The provider's mark for a row about Google or GitHub, a shield for the rest. */
+  mark: SocialIcon;
   what: string;
   where: string;
   when: string;

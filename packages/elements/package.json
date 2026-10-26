@@ -345,6 +345,7 @@
   "peerDependencies": {
     "@bambiste/countries": "^0.2.1",
     "@buntubi/sdk": "workspace:*",
+    "@fluixi-ui/avatar": "^0.2.0-alpha.19",
     "@fluixi-ui/badge": "^0.2.0-alpha.19",
     "@fluixi-ui/button": "^0.2.0-alpha.19",
     "@fluixi-ui/checkbox": "^0.2.0-alpha.19",
@@ -369,6 +370,7 @@
   "devDependencies": {
     "@bambiste/countries": "^0.2.1",
     "@buntubi/sdk": "workspace:*",
+    "@fluixi-ui/avatar": "^0.2.0-alpha.19",
     "@fluixi-ui/badge": "^0.2.0-alpha.19",
     "@fluixi-ui/button": "^0.2.0-alpha.19",
     "@fluixi-ui/checkbox": "^0.2.0-alpha.19",

@@ -1,5 +1,8 @@
 /** The default look: a card with a table; it scrolls sideways on a phone rather than squeezing. */
 import { css, For, Show } from '@fluixi/core';
+import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
+import { BadgeAnchor, type BadgeTone } from '@fluixi-ui/badge';
+import type { ActivityTone } from './logic.js';
 import { viewToken } from '../view.js';
 import type { SecurityActivityLogic } from './logic.js';
 
@@ -15,13 +18,15 @@ const styles = css`
   th:first-child, td:first-child { padding-left: 18px; }
   th:last-child, td:last-child { padding-right: 18px; text-align: right; white-space: nowrap; }
   .what { display: flex; align-items: center; gap: 10px; color: var(--idp-text); font-weight: 500; }
-  .dot { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--tone); }
-  .ok { --tone: var(--idp-ok); }
-  .warn { --tone: var(--idp-warn); }
-  .info { --tone: var(--idp-accent); }
+  .what :deep([data-avatar]) { width: 30px; height: 30px; flex: none; background: var(--idp-surface-2); }
+  .what svg { width: 16px; height: 16px; }
+  .what svg path:not([fill]) { fill: var(--idp-muted); }
   .empty { margin: 0; padding: 18px; color: var(--idp-muted); }
   .advice { margin: 0; padding: 12px 18px; border-top: 1px solid var(--idp-border); color: var(--idp-muted); font-size: 12.5px; }
 `;
+
+// The indicator under each mark keeps the row's tone.
+const TONES: Record<ActivityTone, BadgeTone> = { ok: 'success', warn: 'warning', info: 'primary' };
 
 export const securityActivityView = (a: SecurityActivityLogic) => (
   <section part="activity" class="card" aria-labelledby="idp-activity-title">
@@ -46,7 +51,15 @@ export const securityActivityView = (a: SecurityActivityLogic) => (
                 <tr>
                   <td>
                     <span class="what">
-                      <span class={`dot ${row().tone}`} aria-hidden="true" />
+                      <BadgeAnchor dot placement="bottom-end" overlap="circular" tone={TONES[row().tone]} aria-hidden="true">
+                        <Avatar>
+                          <AvatarFallback>
+                            <svg viewBox={row().mark.viewBox} focusable="false">
+                              <For each={row().mark.paths}>{(path) => <path d={path.d} fill={path.fill} />}</For>
+                            </svg>
+                          </AvatarFallback>
+                        </Avatar>
+                      </BadgeAnchor>
                       {() => row().what}
                     </span>
                   </td>

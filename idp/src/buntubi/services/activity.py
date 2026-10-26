@@ -74,6 +74,7 @@ def recent(user: User, limit: int = 50) -> list[dict[str, Any]]:
                 "password": "pwd" in methods,
                 # The social provider of a sign-in, or of a provider linked or unlinked.
                 "provider": provider.label if provider else None,
+                "provider_id": provider.id if provider else None,
                 "name": details.get("name"),
                 "count": 1,
             }

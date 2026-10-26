@@ -236,6 +236,8 @@ export interface ActivityEntry {
   password: boolean;
   /** The social provider's name: of a sign-in through it, or of a provider linked or unlinked. */
   provider: string | null;
+  /** The same provider by id (`google`, `github`), to pick its mark. */
+  provider_id: string | null;
   /** The passkey's name, for passkey_added and passkey_removed. */
   name: string | null;
   /** Wrong passwords in a row from one address are one entry. */
