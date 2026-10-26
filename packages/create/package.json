@@ -1,6 +1,11 @@
 {
   "name": "create-buntubi",
   "version": "0.8.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buntubi/buntubi.git",
+    "directory": "packages/create"
+  },
   "description": "Start an identity provider on Buntubi, run with Docker",
   "license": "MIT",
   "type": "module",
