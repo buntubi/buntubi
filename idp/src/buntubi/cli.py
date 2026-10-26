@@ -390,6 +390,12 @@ def register(app: Flask) -> None:
             click.echo(f"profile   {key}")
         for key in access:
             click.echo(f"setting   {key}")
+        from buntubi.services import platform_settings
+
+        if platform_settings.terms_version() and not get_settings().brand_terms_url:
+            click.echo(
+                "warning   signup.terms_version is set but IDP_BRAND_TERMS_URL is empty: nobody is asked"
+            )
         for kind in ("added", "updated", "adopted", "restored", "deprecated"):
             for entry in getattr(catalogue, kind):
                 click.echo(f"{kind:<10}{entry}")
