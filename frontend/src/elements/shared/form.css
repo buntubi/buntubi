@@ -36,12 +36,17 @@
   font-size: 14px;
   line-height: 1.5;
 }
-.idp-form [data-part='submit'] {
+/* The social buttons above the form take the submit button's size, so the page lines up. */
+.idp-form [data-part='submit'],
+idp-social-buttons [part~='social-button'] button {
   width: 100%;
   height: 46px;
   margin-top: 4px;
   border-radius: 12px;
   font-size: 15px;
+}
+idp-social-buttons [part~='social-button'] button {
+  margin-top: 0;
 }
 .idp-form .idp-actions {
   display: flex;

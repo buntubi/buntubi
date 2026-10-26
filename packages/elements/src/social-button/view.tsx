@@ -7,7 +7,7 @@ import type { SocialButtonLogic } from './logic.js';
 export const socialButtonView = (b: SocialButtonLogic) => (
   <div part="social-button" data-provider={b.provider()} class="social">
     <style scoped>{`
-      .social, .social > * { width: 100%; }
+      .social > :deep(button) { width: 100%; justify-content: center; }
       .mark { display: inline-flex; margin-inline-end: 10px; }
       svg { width: 18px; height: 18px; }
       svg path:not([fill]) { fill: currentColor; }
