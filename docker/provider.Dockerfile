@@ -33,4 +33,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD python -c "import urllib.request,sys; sys.exit(urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=4).status != 200)"
 # WEB_CONCURRENCY sets the worker count (gunicorn reads it). Several workers need a shared
 # IDP_RATE_LIMIT_STORAGE and IDP_PLUGINS_SYNC_ON_START=false.
+# Threads, so a connection a browser opens and leaves idle cannot hold the only worker while an
+# app's server waits on the token endpoint. Gunicorn reads this whatever command a compose file gives.
+ENV GUNICORN_CMD_ARGS="--threads 8"
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "buntubi.app:create_app()"]
