@@ -3,6 +3,10 @@
   "private": true,
   "packageManager": "pnpm@10.10.0",
   "scripts": {
+    "setup": "./scripts/install.sh",
+    "dev": "./scripts/dev.sh",
+    "idp": "./scripts/idp.sh",
+    "migrate": "cd idp && ../.venv/bin/alembic upgrade head",
     "build": "pnpm -r run build",
     "typecheck": "pnpm -r --filter '!@idp/skin' exec tsc --noEmit -p .",
     "version": "changeset version && node scripts/sync-version.mjs && pnpm install --lockfile-only",

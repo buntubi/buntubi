@@ -223,7 +223,7 @@ products and scopes as code; entries added in the console are edited there.
 terminal, or from the images with Docker, with a ready deployment in `docker/example/`.
 
 ```bash
-./scripts/install.sh
+pnpm run setup        # ./scripts/install.sh
 ```
 
 The script runs every step below, skips the ones already done, and can be run again at any
@@ -250,23 +250,19 @@ time. With `--no-web` it sets up the provider only.
 `./scripts/reset-local.sh` empties the database first, then runs the install script. It refuses
 to run when the issuer in `idp/.env` is not a localhost address.
 
-The same steps by hand, from `idp/`:
+The same steps by hand, from the checkout's root. `pnpm idp` runs any provider command with
+`idp/.env` read (`scripts/idp.sh`), and the migrations read it too:
 
 ```bash
-alias idp='../.venv/bin/flask --app buntubi.app:create_app'
-../.venv/bin/alembic upgrade head      # with IDP_DATABASE_URL set
-idp keys generate
-idp admin create
-idp platform setup
+pnpm migrate
+pnpm idp keys generate
+pnpm idp admin create
+pnpm idp platform setup
 ```
 
-**Start the servers**, one terminal each:
-
-```bash
-cd idp && ../.venv/bin/flask --app buntubi.app:create_app run --port 5010
-cd apps/portal && pnpm dev
-cd apps/console && pnpm dev
-```
+**Start the servers**: `pnpm dev` (`scripts/dev.sh`) runs the provider on the port of
+`IDP_ISSUER`, the sign-in pages' rebuild, the portal and the console in one terminal, each line
+prefixed by its name. Ctrl+C stops them all; `pnpm dev --no-web` starts the provider only.
 
 **Two-step sign-in.** Sign in as the superadmin at http://localhost:5010/account and turn on
 two-step sign-in. The console at http://localhost:3420 opens after that.

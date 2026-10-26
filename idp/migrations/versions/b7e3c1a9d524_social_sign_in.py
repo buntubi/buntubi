@@ -27,7 +27,9 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_platform_settings")),
         sa.UniqueConstraint("key", name=op.f("uq_platform_settings_key")),
     )
-    op.add_column("clients", sa.Column("social_providers", postgresql.ARRAY(sa.String(length=32)), nullable=True))
+    op.add_column(
+        "clients", sa.Column("social_providers", postgresql.ARRAY(sa.String(length=32)), nullable=True)
+    )
     op.add_column("clients", sa.Column("signup_open", sa.Boolean(), server_default="true", nullable=False))
     op.add_column("identities", sa.Column("last_used_at", sa.DateTime(timezone=True), nullable=True))
 

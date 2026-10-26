@@ -17,15 +17,15 @@ Putting a deployment on a server (TLS, backups, key rotation) is in [operations]
 
 | Task | In a terminal | With Docker (from `docker/example/`) |
 |---|---|---|
-| First install | `./scripts/install.sh` | the first-run commands in `compose.yaml` |
-| Start | three terminals, below | `docker compose up -d` |
-| Stop | Ctrl+C in each | `docker compose down` (the data stays) |
-| A provider command | `idp <command>` from `idp/` | `docker compose exec provider flask <command>` |
-| Send webhooks | `idp webhooks deliver`, in its own terminal | the `webhooks` service, started with the rest |
+| First install | `pnpm run setup` | the first-run commands in `compose.yaml` |
+| Start | `pnpm dev` | `docker compose up -d` |
+| Stop | Ctrl+C | `docker compose down` (the data stays) |
+| A provider command | `pnpm idp <command>` | `docker compose exec provider flask <command>` |
+| Send webhooks | `pnpm idp webhooks deliver`, in its own terminal | the `webhooks` service, started with the rest |
 | The provider's log | its terminal | `docker compose logs -f provider` |
 | Settings | `idp/.env`, `apps/console/.env`, `apps/portal/.env` | `provider.env`, `console.env`, `portal.env` |
 | After changing settings | stop and start the program | B.4 |
-| Upgrade | `git pull`, then `./scripts/install.sh` | new `BUNTUBI_VERSION`, then the steps in B.5 |
+| Upgrade | `git pull`, then `pnpm run setup` | new `BUNTUBI_VERSION`, then the steps in B.5 |
 
 ## A. In a terminal, without Docker
 
@@ -47,10 +47,11 @@ Putting a deployment on a server (TLS, backups, key rotation) is in [operations]
 ### A.2 First install
 
 ```bash
-./scripts/install.sh
+pnpm run setup
 ```
 
-It creates the Python environment and the env files, creates the database and runs the
+That is `./scripts/install.sh` (`pnpm setup` without `run` is pnpm's own command). It creates
+the Python environment and the env files, creates the database and runs the
 migrations, makes the first signing key, builds the sign-in pages, asks for the superadmin and
 creates the platform's apps from `idp/platform.toml`. It can be run again at any time and skips
 what is done. The README lists each step. `./scripts/reset-local.sh` empties the database
@@ -58,23 +59,16 @@ first.
 
 ### A.3 Start for development
 
-One terminal each:
-
 ```bash
-# Provider: http://localhost:5010
-cd idp && ../.venv/bin/flask --app buntubi.app:create_app run --port 5010
-
-# Portal: http://localhost:3410
-cd apps/portal && pnpm dev
-
-# Console: http://localhost:3420
-cd apps/console && pnpm dev
+pnpm dev
 ```
 
-When working on the sign-in pages, a fourth: `cd frontend && pnpm dev`, which rebuilds them into
-the provider on every change (reload the page; the provider needs no restart).
+One terminal, each line prefixed by its program: the provider on the port of `IDP_ISSUER`
+(http://localhost:5010), the sign-in pages rebuilt into the provider on every change (reload the
+page; the provider needs no restart), the portal (http://localhost:3410) and the console
+(http://localhost:3420). Ctrl+C stops them all. `pnpm dev --no-web` starts the provider only.
 
-The provider reads `.env` from the folder it starts in: always start it from `idp/`.
+The provider reads `.env` from `idp/`; `pnpm dev` and `pnpm idp` start it there.
 
 ### A.4 Start as a server, without Docker
 
@@ -96,13 +90,12 @@ deployment needs are in [operations](operations.md).
 ### A.5 Every day
 
 ```bash
-cd idp
-alias idp='../.venv/bin/flask --app buntubi.app:create_app'
-idp users admins            # the admins, and whether they use two-step sign-in
-idp users delete 'someone@example.com' --yes
-idp platform setup          # again after adding an app to platform.toml
-idp plugins sync            # after changing the Python plugins
-idp prune                   # once a day: expired codes, tokens and old audit rows
+pnpm idp users admins       # the admins, and whether they use two-step sign-in
+pnpm idp users delete 'someone@example.com' --yes
+pnpm idp platform setup     # again after changing platform.toml
+pnpm idp plugins sync       # after changing the Python plugins
+pnpm idp prune              # once a day: expired codes, tokens and old audit rows
+pnpm migrate                # after pulling new migrations
 ```
 
 With `IDP_EMAIL_TEST_MODE=true` in `idp/.env`, no email is sent: each one, sign-up codes and

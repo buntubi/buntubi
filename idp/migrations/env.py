@@ -3,19 +3,27 @@
 import os
 
 from alembic import context
+from pydantic import ValidationError
 from sqlalchemy import create_engine
 
 from buntubi import models  # noqa: F401  (registers every table)
+from buntubi.config import get_settings
 from buntubi.db import Base
 
 config = context.config
 
 
 def database_url() -> str:
+    """IDP_DATABASE_URL from the environment, else idp/.env as the provider reads it."""
     url = os.environ.get("IDP_DATABASE_URL")
-    if not url:
-        raise RuntimeError("Set IDP_DATABASE_URL to run migrations.")
-    return url
+    if url:
+        return url
+    try:
+        return get_settings().database_url
+    except ValidationError:
+        raise RuntimeError(
+            "Set IDP_DATABASE_URL, or the provider's settings in idp/.env, to run migrations."
+        ) from None
 
 
 def run() -> None:

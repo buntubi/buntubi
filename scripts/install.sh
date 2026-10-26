@@ -75,9 +75,8 @@ with psycopg.connect(server, autocommit=True) as connection:
         connection.execute(f'create database "{url.database}"')
         print(f"Created {url.database}.")
 PY
-IDP_DATABASE_URL="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().database_url)')" \
-  "$root/.venv/bin/alembic" upgrade head 2>&1 | grep -v '^INFO' || true
-echo "Migrations at $(IDP_DATABASE_URL="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().database_url)')" "$root/.venv/bin/alembic" current 2>/dev/null | tail -1)."
+"$root/.venv/bin/alembic" upgrade head 2>&1 | grep -v '^INFO' || true
+echo "Migrations at $("$root/.venv/bin/alembic" current 2>/dev/null | tail -1)."
 
 step "Signing key"
 keys="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().signing_keys_dir)')"
@@ -133,7 +132,7 @@ if flask admin check; then
 elif [ -t 0 ]; then
   flask admin create
 else
-  echo "No superadmin, and no terminal to ask for one. Run: cd idp && ../.venv/bin/flask --app buntubi.app:create_app admin create" >&2
+  echo "No superadmin, and no terminal to ask for one. Run: pnpm idp admin create" >&2
   exit 1
 fi
 
@@ -143,10 +142,7 @@ flask platform setup
 issuer="$("$python" -c 'from buntubi.config import get_settings; print(get_settings().issuer)')"
 cat <<EOF
 
-Ready. Start the provider:
-  cd idp && ../.venv/bin/flask --app buntubi.app:create_app run --port 5010
-and, in two more terminals, the portal and the console:
-  pnpm --dir apps/portal dev
-  pnpm --dir apps/console dev
+Ready. Start the provider, the portal and the console:
+  pnpm dev
 Then sign in as the superadmin at $issuer/account and turn on two-step sign-in: the console needs it.
 EOF
