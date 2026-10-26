@@ -73,14 +73,19 @@ def _text(data: dict[str, Any], key: str, limit: int = 320) -> str:
     return value[:limit] if isinstance(value, str) else ""
 
 
-def _signed_in(user: User, methods: list[str], event: str, replaces: str | None = None) -> Response:
-    return jsonify(redirect=complete_sign_in(user, methods, event, replaces))
+def _signed_in(
+    user: User, methods: list[str], event: str, replaces: str | None = None, provider: str | None = None
+) -> Response:
+    return jsonify(redirect=complete_sign_in(user, methods, event, replaces, provider))
 
 
-def complete_sign_in(user: User, methods: list[str], event: str, replaces: str | None = None) -> str:
+def complete_sign_in(
+    user: User, methods: list[str], event: str, replaces: str | None = None, provider: str | None = None
+) -> str:
     """Starts the session and answers where to go: back to the app, or the account area."""
     sessions.start(user, methods, replaces=replaces)
-    audit.record(event, user=user, methods=methods)
+    # `provider`: the social provider the first step went through, for the security activity.
+    audit.record(event, user=user, methods=methods, provider=provider)
     # Organizations that invited this address before it had an account.
     for organization in platform.accept_invitations(user):
         audit.record("developer.member_joined", user=user, organization=str(organization.id))
@@ -234,7 +239,13 @@ def mfa_verify() -> Any:
         raise
     if method == "backup":
         audit.record("mfa_backup_code_used", user=pending.user, left=mfa.remaining_backup_codes(pending.user))
-    return _signed_in(pending.user, [*pending.methods, method, "mfa"], "sign_in", replaces=pending.replaces)
+    return _signed_in(
+        pending.user,
+        [*pending.methods, method, "mfa"],
+        "sign_in",
+        replaces=pending.replaces,
+        provider=pending.provider,
+    )
 
 
 @bp.get("/mfa")
@@ -574,7 +585,7 @@ def passkey_sign_in() -> Response:
         if pending.user.id != user.id:
             raise AccountError("passkey_other_account")
         methods = [*dict.fromkeys([*pending.methods, *passkeys.METHODS])]
-        return _signed_in(user, methods, "sign_in", replaces=pending.replaces)
+        return _signed_in(user, methods, "sign_in", replaces=pending.replaces, provider=pending.provider)
     # A step-up in progress for this person ends with the passkey as well as with a code.
     replaces = pending.replaces if pending is not None and pending.user.id == user.id else None
     return _signed_in(user, passkeys.METHODS, "sign_in", replaces=replaces)

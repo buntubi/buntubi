@@ -217,7 +217,9 @@ export type ActivityKind =
   | 'passkey_removed'
   | 'device_signed_out'
   | 'app_access_removed'
-  | 'data_exported';
+  | 'data_exported'
+  | 'provider_linked'
+  | 'provider_unlinked';
 
 export interface ActivityEntry {
   kind: ActivityKind;
@@ -230,6 +232,10 @@ export interface ActivityEntry {
   two_step: boolean;
   /** A sign-in with a passkey. */
   passkey: boolean;
+  /** A sign-in with the password. */
+  password: boolean;
+  /** The social provider's name: of a sign-in through it, or of a provider linked or unlinked. */
+  provider: string | null;
   /** The passkey's name, for passkey_added and passkey_removed. */
   name: string | null;
   /** Wrong passwords in a row from one address are one entry. */

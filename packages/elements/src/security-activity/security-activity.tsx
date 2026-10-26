@@ -21,7 +21,18 @@ const props = {
 };
 
 const WARN: ActivityKind[] = ['sign_in_failed', 'backup_code_used', 'mfa_disabled', 'password_reset_sent', 'signed_out_everywhere'];
-const INFO: ActivityKind[] = ['email_change_requested', 'signed_out_others', 'password_reset', 'passkey_added', 'passkey_removed', 'device_signed_out', 'app_access_removed', 'data_exported'];
+const INFO: ActivityKind[] = [
+  'email_change_requested',
+  'signed_out_others',
+  'password_reset',
+  'passkey_added',
+  'passkey_removed',
+  'device_signed_out',
+  'app_access_removed',
+  'data_exported',
+  'provider_linked',
+  'provider_unlinked',
+];
 
 const toneOf = (kind: ActivityKind): ActivityTone => (WARN.includes(kind) ? 'warn' : INFO.includes(kind) ? 'info' : 'ok');
 
@@ -29,8 +40,15 @@ export class IdpSecurityActivity extends typedElement(props) {
   protected override render(): unknown {
     const labels = () => ({ ...securityActivityLabels, ...this.labels, kinds: { ...securityActivityLabels.kinds, ...this.labels.kinds } });
     const what = (entry: ActivityEntry, l: SecurityActivityLabels) => {
+      if (entry.kind === 'sign_in' && entry.provider) {
+        return (entry.two_step ? l.signInWithTwoStep : l.signInWith).replace('{provider}', entry.provider);
+      }
       if (entry.kind === 'sign_in' && entry.passkey) return l.signInPasskey;
       if (entry.kind === 'sign_in' && entry.two_step) return l.signInTwoStep;
+      if (entry.kind === 'sign_in' && entry.password) return l.signInPassword;
+      if ((entry.kind === 'provider_linked' || entry.kind === 'provider_unlinked') && entry.provider) {
+        return l.withName.replace('{what}', l.kinds[entry.kind]).replace('{name}', entry.provider);
+      }
       if (entry.kind === 'sign_in_failed' && entry.count > 1) return l.wrongPasswords.replace('{n}', String(entry.count));
       const said = l.kinds[entry.kind];
       return entry.name ? l.withName.replace('{what}', said).replace('{name}', entry.name) : said;

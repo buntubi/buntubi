@@ -11,6 +11,11 @@ export interface SecurityActivityLabels {
   kinds: Record<ActivityKind, string>;
   signInTwoStep: string;
   signInPasskey: string;
+  signInPassword: string;
+  /** {provider}: Google, GitHub. */
+  signInWith: string;
+  /** {provider}, then the second step. */
+  signInWithTwoStep: string;
   /** {what} happened to the passkey called {name}. */
   withName: string;
   /** {n} is the number of tries in a row. */
@@ -48,9 +53,14 @@ export const securityActivityLabels: SecurityActivityLabels = {
     device_signed_out: 'A device signed out',
     app_access_removed: 'App access removed',
     data_exported: 'Copy of your data downloaded',
+    provider_linked: 'Account linked for sign-in',
+    provider_unlinked: 'Account unlinked from sign-in',
   },
-  signInTwoStep: 'Signed in with two-step',
+  signInTwoStep: 'Signed in with your password and two-step',
   signInPasskey: 'Signed in with a passkey',
+  signInPassword: 'Signed in with your password',
+  signInWith: 'Signed in with {provider}',
+  signInWithTwoStep: 'Signed in with {provider} and two-step',
   withName: '{what}: {name}',
   wrongPasswords: 'Wrong password, {n} tries',
   device: '{browser} on {system}',

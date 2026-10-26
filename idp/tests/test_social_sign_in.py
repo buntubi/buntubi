@@ -396,3 +396,24 @@ def test_the_callback_address_is_fixed_under_the_issuer(
     assert sent["scope"] == ["read:user user:email"]
     with app.app_context():
         assert db().scalar(select(Client)) is None
+
+
+def test_the_security_activity_names_the_provider(
+    app: Flask, browser: FlaskClient, fake: FakeProviders, outbox: list[mail.Message]
+) -> None:
+    from test_mfa import enable
+
+    csrf = sign_up(browser, outbox, email="awa@example.test")
+    round_trip(browser, fake, "github", start={"connect": "1"})
+    _, backups = enable(browser, csrf)
+    # Through the second step, the provider is kept for the sign-in's entry.
+    other = app.test_client()
+    assert urlparse(round_trip(other, fake, "github").location).path == "/mfa"
+    other_csrf = page_config(other, "/mfa")["csrf"]
+    assert api(other, "POST", "/api/mfa/verify", {"code": backups[0]}, other_csrf).status_code == 200
+    events = browser.get("/api/account/activity").json["events"]
+    by_github = next(e for e in events if e["kind"] == "sign_in" and e["provider"])
+    assert by_github["provider"] == "GitHub" and by_github["two_step"] and not by_github["password"]
+    assert next(e for e in events if e["kind"] == "provider_linked")["provider"] == "GitHub"
+    by_password = next(e for e in events if e["kind"] == "sign_in" and not e["provider"])
+    assert by_password["password"] is True

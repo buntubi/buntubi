@@ -5,6 +5,7 @@ from typing import Any
 
 from sqlalchemy import select
 
+from buntubi import social
 from buntubi.db import db, utcnow
 from buntubi.models import AuditEvent, User
 from buntubi.services import devices
@@ -33,6 +34,8 @@ KINDS = {
     "device_signed_out": "device_signed_out",
     "app_access_removed": "app_access_removed",
     "data_exported": "data_exported",
+    "identity_linked": "provider_linked",
+    "identity_unlinked": "provider_unlinked",
 }
 
 
@@ -57,7 +60,9 @@ def recent(user: User, limit: int = 50) -> list[dict[str, Any]]:
             continue
         if len(entries) == limit:
             break
-        methods = row.details.get("methods", []) if isinstance(row.details, dict) else []
+        details = row.details if isinstance(row.details, dict) else {}
+        methods = details.get("methods", [])
+        provider = social.get(str(details.get("provider") or ""))
         entries.append(
             {
                 "kind": kind,
@@ -66,7 +71,10 @@ def recent(user: User, limit: int = 50) -> list[dict[str, Any]]:
                 **devices.describe(row.user_agent),
                 "two_step": "mfa" in methods,
                 "passkey": "hwk" in methods,
-                "name": row.details.get("name") if isinstance(row.details, dict) else None,
+                "password": "pwd" in methods,
+                # The social provider of a sign-in, or of a provider linked or unlinked.
+                "provider": provider.label if provider else None,
+                "name": details.get("name"),
                 "count": 1,
             }
         )

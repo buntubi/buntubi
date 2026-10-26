@@ -68,7 +68,7 @@ def callback(provider_id: str) -> WerkzeugResponse:
         db().commit()
         return redirect(url_for("social.complete_page"))
     if outcome.kind == flow.SIGNED_IN and outcome.user is not None:
-        return redirect(_after_provider(outcome.user))
+        return redirect(_after_provider(outcome.user, provider.id))
     db().commit()
     where = f"{url_for('pages.account')}/security" if outcome.linking else url_for("pages.signin")
     return redirect(f"{where}?{urlencode({'social_error': outcome.kind, 'provider': provider.id})}")
@@ -90,7 +90,7 @@ def complete() -> Any:
     data = data if isinstance(data, dict) else {}
     outcome = flow.complete({k: v for k, v in data.items() if isinstance(k, str)}, pages.locale())
     if outcome.kind == flow.SIGNED_IN and outcome.user is not None:
-        return jsonify(redirect=_after_provider(outcome.user))
+        return jsonify(redirect=_after_provider(outcome.user, outcome.provider))
     db().commit()
     return jsonify(error=outcome.kind), 400
 
@@ -135,13 +135,13 @@ def _refused(error: AccountError) -> tuple[Response, int]:
     return jsonify(error=error.code), 400
 
 
-def _after_provider(user: User) -> str:
+def _after_provider(user: User, provider_id: str) -> str:
     """The second step when the account has one, else signed in; a provider never stands for it."""
     if mfa.is_enabled(user) or passkeys.list_for(user):
-        sessions.set_pending(user, METHODS, "mfa")
+        sessions.set_pending(user, METHODS, "mfa", provider=provider_id)
         db().commit()
         return url_for("pages.mfa_step")
-    return api.complete_sign_in(user, METHODS, "sign_in")
+    return api.complete_sign_in(user, METHODS, "sign_in", provider=provider_id)
 
 
 def _me() -> User:

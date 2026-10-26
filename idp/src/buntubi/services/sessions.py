@@ -145,11 +145,21 @@ class Pending:
     stage: str
     # A login this one takes over once done: the same person, signed in without the second factor.
     replaces: str | None = None
+    # The social provider the first step went through, for the audit trail.
+    provider: str | None = None
 
 
-def set_pending(user: User, methods: list[str], stage: str, replaces: str | None = None) -> None:
+def set_pending(
+    user: User, methods: list[str], stage: str, replaces: str | None = None, provider: str | None = None
+) -> None:
     session.pop(_EXISTING_SIGN_UP, None)
-    session[_PENDING] = {"user_id": str(user.id), "methods": methods, "stage": stage, "replaces": replaces}
+    session[_PENDING] = {
+        "user_id": str(user.id),
+        "methods": methods,
+        "stage": stage,
+        "replaces": replaces,
+        "provider": provider,
+    }
 
 
 def set_existing_sign_up(email: str) -> None:
@@ -180,7 +190,7 @@ def pending(stage: str | None = None) -> Pending | None:
     if user is None or user.disabled_at is not None:
         session.pop(_PENDING, None)
         return None
-    return Pending(user, list(value["methods"]), value["stage"], value.get("replaces"))
+    return Pending(user, list(value["methods"]), value["stage"], value.get("replaces"), value.get("provider"))
 
 
 def clear_pending() -> None:
