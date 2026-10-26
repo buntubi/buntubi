@@ -10,7 +10,7 @@
     "build": "pnpm -r run build",
     "typecheck": "pnpm -r --filter '!@idp/skin' exec tsc --noEmit -p .",
     "version": "changeset version && node scripts/sync-version.mjs && pnpm install --lockfile-only",
-    "release": "pnpm --filter @buntubi/sdk build && changeset publish",
+    "release": "pnpm --filter @buntubi/sdk --filter create-buntubi build && changeset publish",
     "images:dev": "node scripts/dev-images.mjs"
   },
   "devDependencies": {
