@@ -115,6 +115,7 @@ def test_products_group_scopes_and_apps_choose_them(app: Flask, outbox: list[mai
     assert identity["names"]["en"] == "Identity API" and identity["auth"] == ["oauth2", "oidc"]
     assert [s["name"] for s in identity["scopes"]] == [
         "address",
+        "app_data",
         "email",
         "offline_access",
         "openid",

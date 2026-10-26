@@ -515,6 +515,12 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             },
         }
     ),
+    "AppData": obj(
+        {
+            "data": {"type": "object", "description": "The app's own object about the person; {} when none."},
+            "updated_at": MAYBE_TIME,
+        }
+    ),
     "AdminOrganization": obj(
         {
             "id": STRING,
@@ -626,6 +632,7 @@ ORGANIZATIONS_READ: Security = [
 ORGANIZATIONS_MANAGE: Security = [{"oauth2": ["organizations:manage"]}, {"bearer": []}]
 # An app's own token (client credentials), never a person's.
 APP_ORGANIZATIONS: Security = [{"oauth2": ["organizations:read"]}, {"bearer": []}]
+APP_DATA: Security = [{"oauth2": ["app_data"]}, {"bearer": []}]
 
 
 def body(schema: dict[str, Any], media: str = "application/json") -> dict[str, Any]:
@@ -825,6 +832,38 @@ def _organization_paths() -> dict[str, dict[str, Any]]:
                 },
                 params=org,
             )
+        },
+        "/v1/app/users/{user_id}/data": {
+            "get": op(
+                "What the app keeps about this person",
+                "App data",
+                APP_DATA,
+                {"200": answer(ref("AppData"))},
+                params=["user_id"],
+            ),
+            "put": op(
+                "Replace it",
+                "App data",
+                APP_DATA,
+                {"200": answer(ref("AppData"))},
+                request=body({"type": "object", "description": "Any JSON object, at most 16 KiB."}),
+                params=["user_id"],
+            ),
+            "patch": op(
+                "Set some of its keys; a null value removes its key",
+                "App data",
+                APP_DATA,
+                {"200": answer(ref("AppData"))},
+                request=body({"type": "object"}),
+                params=["user_id"],
+            ),
+            "delete": op(
+                "Remove it",
+                "App data",
+                APP_DATA,
+                {"200": answer(obj({"removed": BOOL}))},
+                params=["user_id"],
+            ),
         },
         "/v1/organizations/{organization_id}/invitations/{invitation_id}": {
             "delete": op(

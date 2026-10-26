@@ -19,7 +19,16 @@ from buntubi.models import (
     TotpCredential,
     User,
 )
-from buntubi.services import backchannel, connected, passkeys, profile, retention, webhooks
+from buntubi.services import (
+    app_data,
+    backchannel,
+    connected,
+    passkeys,
+    profile,
+    profile_fields,
+    retention,
+    webhooks,
+)
 from buntubi.services.webhooks import Event
 
 
@@ -48,7 +57,12 @@ def export(user: User, here: set[Any]) -> dict[str, Any]:
             "roles": list(user.roles),
             "created_at": user.created_at.isoformat(),
             "password_changed_at": user.password_changed_at.isoformat() if user.password_changed_at else None,
+            **profile_fields.everything_of(user),
+            "terms_version": user.terms_version,
+            "terms_accepted_at": user.terms_accepted_at.isoformat() if user.terms_accepted_at else None,
         },
+        # What each app keeps about the person for itself.
+        "app_data": app_data.of_person(user),
         "pending_email": profile.pending_email(user),
         "developer_since": user.developer_since.isoformat() if user.developer_since else None,
         "linked_accounts": [

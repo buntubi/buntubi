@@ -10,6 +10,7 @@ from buntubi.models.account import (
     UsedChallenge,
     UserPicture,
 )
+from buntubi.models.app_data import AppUserData
 from buntubi.models.clients import Client
 from buntubi.models.grants import AccessTokenRecord, AuthorizationCode, Consent, LoginSession, RefreshToken
 from buntubi.models.platform import (
@@ -29,6 +30,7 @@ from buntubi.models.users import Identity, User
 from buntubi.models.webhooks import AppOrganization, OrganizationEventSequence, WebhookDelivery, WebhookEvent
 
 __all__ = [
+    "AppUserData",
     "ProfileValue",
     "PlatformSetting",
     "ProfileField",

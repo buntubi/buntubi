@@ -303,3 +303,15 @@ def _choice_values(field: PlatformField) -> list[str]:
     return [
         str(choice["value"]) for choice in field.choices if isinstance(choice, dict) and "value" in choice
     ]
+
+
+def everything_of(user: User) -> dict[str, Any]:
+    """Every profile value held for this person, shown or not, for the data export."""
+    standard = {
+        key: value for key, value in values_of(user, list(STANDARD_FIELDS)).items() if value is not None
+    }
+    own = {
+        row.key: row.value
+        for row in db().scalars(select(ProfileValue).where(ProfileValue.user_id == user.id))
+    }
+    return {**standard, "platform_profile": own}
