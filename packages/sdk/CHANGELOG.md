@@ -1,5 +1,23 @@
 # @buntubi/sdk
 
+## 0.8.0
+
+### Minor Changes
+
+- 342df57: A per-app JSON object about each person (up to 16 KiB) is available via `/v1/app/users/{user_id}/data` with GET, PUT, PATCH (merges keys) and DELETE, requiring a client-credentials token with the `app_data` scope and covering only people who consented to the app, or anyone for the platform's own apps. The data export lists each app's object by app name together with every profile value held and the accepted terms.
+- 6f9d73d: Each app can specify the profile fields it needs using `required_fields` in `platform.toml` or on the portal's sign-in card, and a user lacking those fields is prompted to provide them during sign-in or while already signed in, with `prompt=none` resulting in `interaction_required`. The SDK's `App` type includes the new `required_fields` and `required_fields_offered` properties.
+- 81b221c: `buntubi setup` sets up a project's database, signing key, first admin and apps from `platform.toml`, and can be safely re-run; `buntubi build` compiles plugin pages into `ui-plugins/`. `buntubi add plugin <id>` writes a Python provider and a TypeScript UI plugin into `plugins/<id>` and registers the id in `IDP_PLUGINS`.
+- 1a538f0: The SDK includes new types `PLATFORM_FIELD_TYPES`, `PlatformField`, `PlatformValue`, adds `platform_fields` to `AccountSummary` and `platform_profile` to `ProfilePatch`, and provider plugins can reject values using `Plugin.profile_field_refusal`.
+- 1a538f0: The platform exposes its own profile fields under `[[profile.fields]]` in `platform.toml`, supporting types text, number, date, boolean, choice, and choices with French and English labels, which are filled at sign-up, in the account area, or on the next sign-in if required, and apps read them via the `platform_profile` claim in the `platform_profile` scope.
+- 9d866c8: The provider keeps the standard OpenID Connect profile claims `birthdate`, `gender`, `middle_name`, `nickname`, `website`, and `zoneinfo`, each hidden (default), optional, or required as set in the `[profile]` section of `platform.toml`. Only required fields appear on the sign-up form, optional and required ones are editable in the account area, hidden ones are never released and shown ones are released under the `profile` scope. The SDK exports `PROFILE_FIELDS`, `FIELD_MODES`, `GENDERS`, and `aboutSchema`, and `AccountSummary.fields` and `ProfilePatch` carry the fields.
+- 0b4a9fa: The `authorize` endpoint accepts `prompt=create` to open sign-up when there is no session and to continue sign-in when a session exists, and discovery lists `create`. When `login_hint` contains an email address it pre-fills the email field on both sign-in and sign-up pages.
+- 522121f: Sign-in with Google (OpenID Connect) or GitHub is available when the corresponding `IDP_GOOGLE_*` or `IDP_GITHUB_*` variables are set and the provider appears in the `[social]` list in `platform.toml`. Each app can narrow the options via `social_providers`. The deployment's `[signup]` open flag controls whether new accounts can be created, while an app can disable sign-up on its own page with `signup = false` but invited addresses always remain allowed. A provider links to an existing account only from the account area and never by matching address, provider sign-in does not count as the second step, and required profile fields are requested before the account is created. UI plugin views replace buttons using `idp-social-button:<provider>` for a single provider, `idp-social-button` for each provider, or `idp-social-buttons` for the whole list, and the SDK adds `LinkedIdentity`, `SignInMethods`, `AccountService.unlinkIdentity`, `App.social_providers`, `App.signup_open`, and `AdminOverview.sign_in`.
+- 8a4ddf4: With `[signup] terms_version` in `platform.toml` and `IDP_BRAND_TERMS_URL` set, people accept the terms at sign-up by email or through Google or GitHub, and the version and date are kept on the account. An account that has not accepted the current version, whether created by an admin, invited, from before, or a new version, is asked at its next sign-in and the console shows the version accepted.
+
+### Patch Changes
+
+- 7716f67: `createUiPluginHost` takes `mount: false` for an app's development server, so no mounted plugin is loaded or served and a single log line appears when the folder contains plugins. `loadBrowserUiPlugins` skips a plugin that fails to load, logs a console error, and allows the page to start instead of stopping it.
+
 ## 0.7.0
 
 ### Minor Changes
