@@ -1,5 +1,6 @@
 """A person's recent security activity, read from the audit trail: what happened, from which browser, when."""
 
+import uuid
 from datetime import timedelta
 from typing import Any
 
@@ -7,7 +8,7 @@ from sqlalchemy import select
 
 from buntubi import social
 from buntubi.db import db, utcnow
-from buntubi.models import AuditEvent, User
+from buntubi.models import AuditEvent, Client, User
 from buntubi.services import devices
 
 DAYS = 30
@@ -34,6 +35,9 @@ KINDS = {
     "device_signed_out": "device_signed_out",
     "app_access_removed": "app_access_removed",
     "data_exported": "data_exported",
+    "sign_out": "signed_out",
+    # Signed out through an app's own logout (RP-initiated logout): the entry names the app.
+    "logout": "signed_out",
     "identity_linked": "provider_linked",
     "identity_unlinked": "provider_unlinked",
 }
@@ -75,8 +79,14 @@ def recent(user: User, limit: int = 50) -> list[dict[str, Any]]:
                 # The social provider of a sign-in, or of a provider linked or unlinked.
                 "provider": provider.label if provider else None,
                 "provider_id": provider.id if provider else None,
+                "app": _app_name(row.client_id),
                 "name": details.get("name"),
                 "count": 1,
             }
         )
     return entries
+
+
+def _app_name(client_id: uuid.UUID | None) -> str | None:
+    client = db().get(Client, client_id) if client_id else None
+    return client.name if client else None

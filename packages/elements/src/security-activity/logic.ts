@@ -17,6 +17,8 @@ export interface SecurityActivityLabels {
   signInWith: string;
   /** {provider}, then the second step. */
   signInWithTwoStep: string;
+  /** {app}: signed out through that app's own sign-out. */
+  signedOutFrom: string;
   /** {what} happened to the passkey called {name}. */
   withName: string;
   /** {n} is the number of tries in a row. */
@@ -56,12 +58,14 @@ export const securityActivityLabels: SecurityActivityLabels = {
     data_exported: 'Copy of your data downloaded',
     provider_linked: 'Account linked for sign-in',
     provider_unlinked: 'Account unlinked from sign-in',
+    signed_out: 'Signed out',
   },
   signInTwoStep: 'Signed in with your password and two-step',
   signInPasskey: 'Signed in with a passkey',
   signInPassword: 'Signed in with your password',
   signInWith: 'Signed in with {provider}',
   signInWithTwoStep: 'Signed in with {provider} and two-step',
+  signedOutFrom: 'Signed out from {app}',
   withName: '{what}: {name}',
   wrongPasswords: 'Wrong password, {n} tries',
   device: '{browser} on {system}',

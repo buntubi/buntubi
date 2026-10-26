@@ -1,5 +1,7 @@
 """The account area's security page: changing the password, and the recent activity."""
 
+from urllib.parse import urlencode
+
 from flask import Flask
 from flask.testing import FlaskClient
 
@@ -62,3 +64,26 @@ def test_activity_shows_sign_ins_and_groups_wrong_passwords(
     assert kinds[:3] == [("password_changed", 1), ("sign_in", 1), ("sign_in_failed", 3)]
     assert browser.get("/api/account/activity").json["events"][0]["browser"] == ""
     assert app.test_client().get("/api/account/activity").json["error"] == "not_signed_in"
+
+
+def test_activity_shows_sign_outs_and_the_app_that_signed_out(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    from test_flows import signed_in_tokens
+
+    tokens = signed_in_tokens(app, browser, outbox)
+    browser.get(
+        "/oauth/logout?"
+        + urlencode(
+            {"post_logout_redirect_uri": "http://localhost:9000/bye", "id_token_hint": tokens["id_token"]}
+        )
+    )
+    other = app.test_client()
+    assert _sign_in(other) == 200
+    csrf = page_config(other, "/account")["csrf"]
+    api(other, "DELETE", "/api/session", None, csrf)
+    again = app.test_client()
+    assert _sign_in(again) == 200
+    events = [e for e in again.get("/api/account/activity").json["events"] if e["kind"] == "signed_out"]
+    assert len(events) == 2
+    assert events[0]["app"] is None and events[1]["app"] == "Test app"

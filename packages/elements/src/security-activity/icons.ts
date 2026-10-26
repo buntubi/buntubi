@@ -35,6 +35,7 @@ const BY_KIND: Record<ActivityKind, string> = {
   data_exported: DOWNLOAD,
   provider_linked: LINK,
   provider_unlinked: LINK,
+  signed_out: SIGN_OUT,
 };
 
 /** The line icon for a row: a sign-in by how it was made, any other event by its kind. */

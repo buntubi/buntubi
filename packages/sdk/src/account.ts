@@ -219,7 +219,8 @@ export type ActivityKind =
   | 'app_access_removed'
   | 'data_exported'
   | 'provider_linked'
-  | 'provider_unlinked';
+  | 'provider_unlinked'
+  | 'signed_out';
 
 export interface ActivityEntry {
   kind: ActivityKind;
@@ -238,6 +239,8 @@ export interface ActivityEntry {
   provider: string | null;
   /** The same provider by id (`google`, `github`), to pick its mark. */
   provider_id: string | null;
+  /** The app an event went through: the one whose logout signed the person out. */
+  app: string | null;
   /** The passkey's name, for passkey_added and passkey_removed. */
   name: string | null;
   /** Wrong passwords in a row from one address are one entry. */

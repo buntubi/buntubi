@@ -48,6 +48,7 @@ export class IdpSecurityActivity extends typedElement(props) {
       if (entry.kind === 'sign_in' && entry.passkey) return l.signInPasskey;
       if (entry.kind === 'sign_in' && entry.two_step) return l.signInTwoStep;
       if (entry.kind === 'sign_in' && entry.password) return l.signInPassword;
+      if (entry.kind === 'signed_out' && entry.app) return l.signedOutFrom.replace('{app}', entry.app);
       if ((entry.kind === 'provider_linked' || entry.kind === 'provider_unlinked') && entry.provider) {
         return l.withName.replace('{what}', l.kinds[entry.kind]).replace('{name}', entry.provider);
       }
