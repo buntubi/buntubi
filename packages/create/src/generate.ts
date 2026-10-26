@@ -109,7 +109,7 @@ function envFiles(choices: Choices, secret: () => string): [string, Entry[]][] {
         ['IDP_PLUGINS', '[]', 'The provider plugins turned on, by id, in order; `buntubi add plugin` adds to it.'],
         ['IDP_GOOGLE_CLIENT_ID', '', 'Sign-in with Google: an OAuth client from Google Cloud, callback <issuer>/signin/google/callback; list google under [social] in platform.toml.'],
         ['IDP_GOOGLE_CLIENT_SECRET', '', ''],
-        ['IDP_GITHUB_CLIENT_ID', '', 'Sign-in with GitHub: an OAuth app, callback <issuer>/signin/github/callback.'],
+        ['IDP_GITHUB_CLIENT_ID', '', 'Sign-in with GitHub: an OAuth App, or a GitHub App with Email addresses read-only; callback <issuer>/signin/github/callback.'],
         ['IDP_GITHUB_CLIENT_SECRET', '', ''],
       ],
     ],
