@@ -42,19 +42,24 @@ export class IdpSecurityActivity extends typedElement(props) {
   protected override render(): unknown {
     const labels = () => ({ ...securityActivityLabels, ...this.labels, kinds: { ...securityActivityLabels.kinds, ...this.labels.kinds } });
     const what = (entry: ActivityEntry, l: SecurityActivityLabels) => {
-      if (entry.kind === 'sign_in' && entry.provider) {
-        return (entry.two_step ? l.signInWithTwoStep : l.signInWith).replace('{provider}', entry.provider);
-      }
-      if (entry.kind === 'sign_in' && entry.passkey) return l.signInPasskey;
-      if (entry.kind === 'sign_in' && entry.two_step) return l.signInTwoStep;
-      if (entry.kind === 'sign_in' && entry.password) return l.signInPassword;
+      const how = signIn(entry, l);
+      if (how !== null) return entry.app ? l.toApp.replace('{what}', how).replace('{app}', entry.app) : how;
       if (entry.kind === 'signed_out' && entry.app) return l.signedOutFrom.replace('{app}', entry.app);
+      if (entry.kind === 'sign_in_failed' && entry.count > 1) return l.wrongPasswords.replace('{n}', String(entry.count));
       if ((entry.kind === 'provider_linked' || entry.kind === 'provider_unlinked') && entry.provider) {
         return l.withName.replace('{what}', l.kinds[entry.kind]).replace('{name}', entry.provider);
       }
-      if (entry.kind === 'sign_in_failed' && entry.count > 1) return l.wrongPasswords.replace('{n}', String(entry.count));
       const said = l.kinds[entry.kind];
       return entry.name ? l.withName.replace('{what}', said).replace('{name}', entry.name) : said;
+    };
+    /** How a sign-in was made, in words; null for any other event. */
+    const signIn = (entry: ActivityEntry, l: SecurityActivityLabels): string | null => {
+      if (entry.kind !== 'sign_in') return null;
+      if (entry.provider) return (entry.two_step ? l.signInWithTwoStep : l.signInWith).replace('{provider}', entry.provider);
+      if (entry.passkey) return l.signInPasskey;
+      if (entry.two_step) return l.signInTwoStep;
+      if (entry.password) return l.signInPassword;
+      return l.kinds.sign_in;
     };
     const where = (entry: ActivityEntry, l: SecurityActivityLabels) => {
       const device =

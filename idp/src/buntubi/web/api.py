@@ -84,8 +84,9 @@ def complete_sign_in(
 ) -> str:
     """Starts the session and answers where to go: back to the app, or the account area."""
     sessions.start(user, methods, replaces=replaces)
-    # `provider`: the social provider the first step went through, for the security activity.
-    audit.record(event, user=user, methods=methods, provider=provider)
+    # `provider`: the social provider the first step went through; the client: the app whose
+    # request this sign-in continues. Both for the security activity.
+    audit.record(event, user=user, client=social.client_signing_in(), methods=methods, provider=provider)
     # Organizations that invited this address before it had an account.
     for organization in platform.accept_invitations(user):
         audit.record("developer.member_joined", user=user, organization=str(organization.id))

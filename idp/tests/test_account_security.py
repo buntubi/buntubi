@@ -87,3 +87,20 @@ def test_activity_shows_sign_outs_and_the_app_that_signed_out(
     events = [e for e in again.get("/api/account/activity").json["events"] if e["kind"] == "signed_out"]
     assert len(events) == 2
     assert events[0]["app"] is None and events[1]["app"] == "Test app"
+
+
+def test_a_sign_in_for_an_app_names_the_app(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message]
+) -> None:
+    from conftest import add_client, authorize_query, pkce
+
+    sign_up(browser, outbox)
+    add_client(app, first_party=True)
+    other = app.test_client()
+    _, challenge = pkce()
+    other.get("/oauth/authorize?" + urlencode(authorize_query(challenge)))
+    assert _sign_in(other) == 200
+    direct = app.test_client()
+    assert _sign_in(direct) == 200
+    sign_ins = [e for e in direct.get("/api/account/activity").json["events"] if e["kind"] == "sign_in"]
+    assert sign_ins[0]["app"] is None and sign_ins[1]["app"] == "Test app"

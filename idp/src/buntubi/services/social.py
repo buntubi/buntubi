@@ -68,7 +68,7 @@ def offered() -> list[Provider]:
     app the person is signing in to, when there is one.
     """
     listed = [p for pid in platform_settings.social_providers() if (p := social.get(pid)) and p.configured()]
-    client = _client_signing_in()
+    client = client_signing_in()
     if client is not None and client.social_providers is not None:
         return [p for p in listed if p.id in client.social_providers]
     return listed
@@ -79,7 +79,7 @@ def signup_allowed(email: str | None) -> bool:
     Whether someone may make an account here: the deployment's policy, narrowed by the app being
     signed in to. An address invited to an organization may always.
     """
-    client = _client_signing_in()
+    client = client_signing_in()
     if platform_settings.signup_open() and (client is None or client.signup_open):
         return True
     return email is not None and _invited(email)
@@ -287,7 +287,7 @@ def _valid(kept: Any, provider_id: str, state: str) -> bool:
     )
 
 
-def _client_signing_in() -> Client | None:
+def client_signing_in() -> Client | None:
     """The app the saved return address authorizes, if it is one."""
     path = sessions.return_to()
     if not path or not path.startswith("/oauth/authorize"):
