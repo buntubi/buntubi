@@ -21,20 +21,24 @@ export interface UiPluginIndex {
 }
 
 /**
- * Import every plugin in `index`, keeping its order (the first plugin's views win).
- *
- * @throws Error When an entry does not export the plugin its index names.
+ * Import every plugin in `index`, keeping its order (the first plugin's views win). One that
+ * fails to load, or does not export the plugin its index names, is left out with an error in the
+ * console: the page starts without it rather than not at all.
  */
 export async function loadBrowserUiPlugins(index: UiPluginIndex): Promise<IdpUiPlugin[]> {
-  return Promise.all(
-    index.plugins.map(async (entry) => {
-      const mod = (await import(/* @vite-ignore */ entry.browser)) as { plugin?: IdpUiPlugin };
-      if (mod.plugin?.id !== entry.id) {
-        throw new Error(`[buntubi] ${entry.browser} does not export the plugin "${entry.id}".`);
+  const loaded = await Promise.all(
+    index.plugins.map(async (entry): Promise<IdpUiPlugin | null> => {
+      try {
+        const mod = (await import(/* @vite-ignore */ entry.browser)) as { plugin?: IdpUiPlugin };
+        if (mod.plugin?.id !== entry.id) throw new Error(`${entry.browser} does not export the plugin "${entry.id}"`);
+        return mod.plugin;
+      } catch (error) {
+        console.error(`[buntubi] the UI plugin "${entry.id}" did not load, the page starts without it:`, error);
+        return null;
       }
-      return mod.plugin;
     }),
   );
+  return loaded.filter((plugin): plugin is IdpUiPlugin => plugin !== null);
 }
 
 /** The id of the script element that carries the index in the page the server renders. */

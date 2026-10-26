@@ -168,3 +168,22 @@ describe('createUiPluginHost', () => {
     await expect(host.load()).rejects.toThrow(/does not export the plugin "acme"/);
   });
 });
+
+describe('createUiPluginHost with mount: false', () => {
+  it('loads and serves nothing, and says once that the folder holds plugins', async () => {
+    mount('10-acme');
+    const warnings: unknown[] = [];
+    const original = console.warn;
+    console.warn = (...args: unknown[]) => warnings.push(args[0]);
+    try {
+      const host = createUiPluginHost({ dir, base: '/api/ui-plugins', mount: false });
+      expect(await host.load()).toEqual({ plugins: [], index: { plugins: [] } });
+      await host.load();
+      expect(await host.serve(new Request('http://app.test/api/ui-plugins/10-acme/browser/index.js'))).toBeNull();
+    } finally {
+      console.warn = original;
+    }
+    expect(warnings).toHaveLength(1);
+    expect(String(warnings[0])).toContain('acme');
+  });
+});

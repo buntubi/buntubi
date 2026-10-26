@@ -171,6 +171,10 @@ export interface UiPluginHost {
 
 /**
  * The plugins mounted in `dir`, published under `base` (the path the app routes to `serve`).
+ * With `mount: false` (an app's development server) none is loaded or served: a mounted plugin
+ * resolves the shared modules through the production build's import map, which a development
+ * server does not write, and plugins come in at build time there (`IDP_UI_PLUGINS`). A folder
+ * holding plugins then says so once in the log.
  *
  * @example
  * ```ts
@@ -179,9 +183,25 @@ export interface UiPluginHost {
  * export const GET = async (request: Request) => (await uiPluginHost.serve(request)) ?? new Response(null, { status: 404 });
  * ```
  */
-export function createUiPluginHost(options: { dir: string; base: string }): UiPluginHost {
+export function createUiPluginHost(options: { dir: string; base: string; mount?: boolean }): UiPluginHost {
   const dir = resolve(options.dir);
   const base = options.base.replace(/\/$/, '');
+  if (options.mount === false) {
+    let told = false;
+    return {
+      async load() {
+        const found = await readUiPlugins(dir).catch(() => []);
+        if (found.length && !told) {
+          told = true;
+          console.warn(
+            `[buntubi] ${dir} holds mounted UI plugins (${found.map((p) => p.manifest.id).join(', ')}), which load only in a production build (build, then start). In development, compose them with IDP_UI_PLUGINS.`,
+          );
+        }
+        return { plugins: [], index: { plugins: [] } };
+      },
+      serve: async () => null,
+    };
+  }
   let mounted: Promise<MountedUiPlugin[]> | null = null;
   let loaded: Promise<{ plugins: IdpUiPlugin[]; index: UiPluginIndex }> | null = null;
   const read = () => (mounted ??= readUiPlugins(dir));
