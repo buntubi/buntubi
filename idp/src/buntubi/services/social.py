@@ -131,7 +131,7 @@ def finish(provider: Provider, args: dict[str, str], signed_in: User | None, loc
         linked.last_used_at = utcnow()
         return Outcome(SIGNED_IN, provider.id, linked.user)
     if not found.email or not found.email_verified:
-        return _refused(provider, "no_verified_email")
+        return _refused(provider, "no_verified_email", detail=found.note)
     if db().scalar(select(User.id).where(User.email == found.email)) is not None:
         return _refused(provider, "account_exists")
     if not signup_allowed(found.email):

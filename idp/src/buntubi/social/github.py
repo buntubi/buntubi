@@ -61,7 +61,13 @@ class GitHub:
         user = get_json(f"{API}/user", headers)
         if not isinstance(user, dict) or not isinstance(user.get("id"), int):
             raise ProviderError("GitHub's user has no id")
-        emails = get_json(f"{API}/user/emails", headers)
+        # Without the addresses (a GitHub App lacking its Email addresses permission), someone already
+        # linked still signs in; a new account is refused as having no verified email.
+        note = None
+        try:
+            emails = get_json(f"{API}/user/emails", headers)
+        except ProviderError as error:
+            emails, note = None, str(error)
         primary: dict[str, object] | None = None
         if isinstance(emails, list):
             primary = next(
@@ -81,4 +87,5 @@ class GitHub:
             given_name=given[:100],
             family_name=family.strip()[:100],
             picture=str(user["avatar_url"])[:2048] if user.get("avatar_url") else None,
+            note=note,
         )

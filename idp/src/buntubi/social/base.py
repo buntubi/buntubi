@@ -28,6 +28,8 @@ class ExternalIdentity:
     given_name: str = ""
     family_name: str = ""
     picture: str | None = None
+    # Why a part the adapter asked for is missing (a refused email lookup), for the audit trail.
+    note: str | None = None
 
 
 @dataclass(frozen=True)

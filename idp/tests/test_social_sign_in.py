@@ -40,6 +40,8 @@ class FakeProviders:
             {"email": "awa@github.test", "primary": True, "verified": True}
         ]
         self.fail = False
+        # GitHub's answer to /user/emails: 403 is a GitHub App without its email permission.
+        self.emails_status = 200
 
     def id_token(self) -> str:
         now = int(time.time())
@@ -73,7 +75,7 @@ class FakeProviders:
         if url == "https://api.github.com/user":
             return _answer(url, self.github_user)
         if url == "https://api.github.com/user/emails":
-            return _answer(url, self.github_emails)
+            return _answer(url, self.github_emails, self.emails_status)
         return _answer(url, {}, 404)
 
     def post(self, url: str, **kwargs: Any) -> requests.Response:
@@ -417,3 +419,18 @@ def test_the_security_activity_names_the_provider(
     assert next(e for e in events if e["kind"] == "provider_linked")["provider"] == "GitHub"
     by_password = next(e for e in events if e["kind"] == "sign_in" and not e["provider"])
     assert by_password["password"] is True
+
+
+def test_github_without_its_email_permission(app: Flask, browser: FlaskClient, fake: FakeProviders) -> None:
+    fake.emails_status = 403
+    assert refusal(round_trip(browser, fake, "github")) == "no_verified_email"
+    with app.app_context():
+        from buntubi.models import AuditEvent
+
+        refused = db().scalar(select(AuditEvent).where(AuditEvent.event == "social_sign_in_refused"))
+        assert refused is not None and "403" in refused.details["detail"]
+    # Someone already linked does not need the address.
+    fake.emails_status = 200
+    assert urlparse(round_trip(app.test_client(), fake, "github").location).path == "/account"
+    fake.emails_status = 403
+    assert urlparse(round_trip(app.test_client(), fake, "github").location).path == "/account"
