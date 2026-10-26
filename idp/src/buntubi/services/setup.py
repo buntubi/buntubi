@@ -73,6 +73,8 @@ class AppSpec:
     # it lets people make an account. Left out, the app keeps what it has.
     social_providers: tuple[str, ...] | None = None
     signup_open: bool | None = None
+    # Profile fields the app needs (`required_fields`); left out, it keeps what it has.
+    required_fields: tuple[str, ...] | None = None
     # Which of `STATED` the file names: those win on an app that exists, the rest stay as they are.
     stated: frozenset[str] = frozenset()
 
@@ -286,6 +288,12 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
     signup_open = entry.get("signup")
     if signup_open is not None and not isinstance(signup_open, bool):
         raise SetupError(f"{where}: signup is true or false")
+    required_fields = entry.get("required_fields")
+    if required_fields is not None and not (
+        isinstance(required_fields, list)
+        and all(isinstance(k, str) and 0 < len(k) <= 64 for k in required_fields)
+    ):
+        raise SetupError(f"{where}: required_fields is a list of profile field keys")
     secret = entry.get("secret")
     target = None
     if secret is not None:
@@ -314,6 +322,7 @@ def _spec(entry: dict[str, Any], base: Path, where: str) -> AppSpec:
         look=look,
         social_providers=social_providers,
         signup_open=signup_open,
+        required_fields=tuple(required_fields) if required_fields is not None else None,
     )
 
 
@@ -352,6 +361,7 @@ def apply(
                 organization_usage=spec.organization_usage or "none",
                 social_providers=list(spec.social_providers) if spec.social_providers is not None else None,
                 signup_open=spec.signup_open is not False,
+                required_fields=list(spec.required_fields or ()),
             )
             db().add(client)
             secret = issue_client_secret(client) if confidential else None
@@ -369,6 +379,8 @@ def apply(
                 client.social_providers = list(spec.social_providers)
             if spec.signup_open is not None:
                 client.signup_open = spec.signup_open
+            if spec.required_fields is not None:
+                client.required_fields = list(spec.required_fields)
             for key in spec.stated:
                 value = getattr(spec, key)
                 setattr(client, key, list(value) if isinstance(value, tuple) else value)

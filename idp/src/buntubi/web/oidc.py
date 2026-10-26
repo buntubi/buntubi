@@ -25,7 +25,17 @@ from buntubi.oauth.grants import GRANT_TYPES_SUPPORTED
 from buntubi.oauth.server import authorization, key_ring, query_client, require_token, scopes_of
 from buntubi.security import csrf
 from buntubi.security.keys import ALGORITHM
-from buntubi.services import audit, consent, login_hint, mfa, passkeys, platform, session_check, sessions
+from buntubi.services import (
+    audit,
+    consent,
+    login_hint,
+    mfa,
+    passkeys,
+    platform,
+    profile_fields,
+    session_check,
+    sessions,
+)
 from buntubi.web import pages
 
 bp = Blueprint("oidc", __name__)
@@ -173,6 +183,14 @@ def authorize() -> Any:
         audit.record("authorize_blocked", user=login.user, client=grant.client)
         db().commit()
         return pages.blocked(grant.client)
+
+    # Profile fields this app needs, or the platform requires, that the person has yet to give.
+    if profile_fields.missing_required(login.user, grant.client):
+        if "none" in prompt:
+            return _error_redirect(grant, "interaction_required")
+        sessions.remember_return_to(_authorize_path(drop_prompt=True))
+        db().commit()
+        return redirect(url_for("pages.complete_missing_profile"))
 
     organization_id, answer = _organization_for(grant, login.user, prompt)
     if answer is not None:

@@ -6,7 +6,7 @@ import '@idp/elements/app-organizations';
 import '@idp/elements/app-sign-in';
 import '@idp/elements/app-settings';
 import { appRouteData, type AppPageData } from '../../../../../data/developer.js';
-import { errorText, t } from '../../../../../lib/i18n.js';
+import { errorText, locale, t } from '../../../../../lib/i18n.js';
 import { appOrganizationsLabels, appSettingsLabels, appSignInLabels, formMessages } from '../../../../../lib/labels.js';
 import '@idp/elements/page-header';
 
@@ -33,6 +33,7 @@ export default function SettingsPage() {
       <idp-app-sign-in
         app={data()?.app.app ?? null}
         canEdit={can(data()?.app, 'edit_apps')}
+        locale={locale()}
         labels={appSignInLabels()}
         describe={errorText}
       />

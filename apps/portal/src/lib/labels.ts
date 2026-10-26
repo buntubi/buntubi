@@ -233,6 +233,17 @@ export const appSignInLabels = (): AppSignInLabels => ({
   noneOffered: t('asi.noneOffered'),
   signup: t('asi.signup'),
   signupHelp: t('asi.signupHelp'),
+  profileFields: t('asi.profileFields'),
+  profileFieldsHelp: t('asi.profileFieldsHelp'),
+  noProfileFields: t('asi.noProfileFields'),
+  fields: {
+    birthdate: t('asi.field.birthdate'),
+    gender: t('asi.field.gender'),
+    middle_name: t('asi.field.middle_name'),
+    nickname: t('asi.field.nickname'),
+    website: t('asi.field.website'),
+    zoneinfo: t('asi.field.zoneinfo'),
+  },
   saved: t('st.saved'),
   error: t('error.generic'),
 });

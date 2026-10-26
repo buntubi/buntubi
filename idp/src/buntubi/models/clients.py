@@ -82,6 +82,9 @@ class Client(IdMixin, TimestampMixin, Base, ClientMixin):  # type: ignore[misc]
     social_providers: Mapped[list[str] | None] = mapped_column(ARRAY(String(32)))
     # Whether its sign-in page lets people make an account; only narrows the deployment's policy.
     signup_open: Mapped[bool] = mapped_column(default=True, server_default="true")
+    # Profile fields, standard or the platform's own, this app needs: asked of someone without
+    # them when they sign in to it or come to it signed in. Only fields the platform shows count.
+    required_fields: Mapped[list[str]] = mapped_column(ARRAY(String(64)), default=list, server_default="{}")
     # Where organization events go (services/webhooks.py), the secret that signs them (sealed:
     # it is read back to sign), and which: "linked" (the organizations the app works with) or
     # "all" (every organization, for the platform's own products).

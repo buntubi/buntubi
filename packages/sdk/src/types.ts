@@ -91,6 +91,10 @@ export interface App {
   signup_open: boolean;
   /** The providers the deployment offers, to choose from. */
   social_offered: { id: string; label: string }[];
+  /** Profile fields this app needs: asked of someone without them when they come to it. */
+  required_fields: string[];
+  /** The fields the platform shows, to choose from; a standard one has no label of its own. */
+  required_fields_offered: { key: string; label: { fr: string; en: string } | null }[];
   /** Where its organization events are posted; the signing secret is never read back. */
   webhook_url: string | null;
   webhook_events: WebhookScope;

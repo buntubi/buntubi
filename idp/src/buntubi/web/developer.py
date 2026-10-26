@@ -31,7 +31,7 @@ from buntubi.models import (
     WebhookDelivery,
 )
 from buntubi.oauth.server import require_token
-from buntubi.services import audit, mfa, platform_settings, webhooks
+from buntubi.services import audit, mfa, platform_settings, profile_fields, webhooks
 from buntubi.services import platform as p
 from buntubi.services.credentials import rotate_client_secret
 from buntubi.social import SocialProviderId
@@ -133,6 +133,8 @@ class AppPatch(BaseModel):
     social_providers: list[SocialProviderId] | None = Field(default=None, max_length=10)
     # Whether its sign-in lets people make an account; it cannot open what the deployment closed.
     signup_open: bool | None = None
+    # Profile fields the app needs, among those the platform shows (`required_fields_offered`).
+    required_fields: list[str] | None = Field(default=None, max_length=40)
     # null removes the webhook and its secret.
     webhook_url: WebhookUrl | None = None
     # An app hears of the organizations it works with; every organization is for the
@@ -255,6 +257,9 @@ def app_json(client: Client) -> dict[str, Any]:
         "organization_usage": client.organization_usage,
         "social_providers": client.social_providers,
         "signup_open": client.signup_open,
+        "required_fields": client.required_fields,
+        # The fields the platform shows, for the app to choose from; standard ones have no label.
+        "required_fields_offered": profile_fields.offered(),
         # What the deployment offers, for the app to choose from.
         "social_offered": [
             {"id": pid, "label": provider.label}
@@ -622,6 +627,12 @@ def update_app(client_id: str, me: User) -> Response:
         )
     if patch.signup_open is not None:
         client.signup_open = patch.signup_open
+    if patch.required_fields is not None:
+        offered_keys = {entry["key"] for entry in profile_fields.offered()}
+        unknown = sorted(set(patch.required_fields) - offered_keys)
+        if unknown:
+            raise p.PlatformError("unknown_profile_field", 422, fields=unknown)
+        client.required_fields = sorted(set(patch.required_fields))
     if patch.platforms is not None:
         client.platforms = sorted(set(patch.platforms))
     if patch.products is not None:

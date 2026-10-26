@@ -34,6 +34,8 @@ secret = { file = "../apps/portal/.env", key = "PORTAL_CLIENT_SECRET" }
 # scope = "openid profile email offline_access"
 # homepage_url = "http://localhost:3000/"
 # secret = { file = "../../my-product/.env.local", key = "AUTH_CLIENT_SECRET" }
+# Profile fields it needs, asked when someone without them comes to it (any field shown above).
+# required_fields = ["sector"]
 
 # A public client for trying the APIs from Postman, with PKCE:
 # [[apps]]
@@ -53,6 +55,18 @@ secret = { file = "../apps/portal/.env", key = "PORTAL_CLIENT_SECRET" }
 # nickname = "optional"
 # website = "optional"
 # zoneinfo = "optional"
+
+# The platform's own fields, in the order people see them; released as the platform_profile claim
+# under the platform_profile scope. type: text, number, date, boolean, choice or choices.
+# [[profile.fields]]
+# key = "sector"
+# type = "choice"
+# mode = "optional"
+# label = { fr = "Secteur d’activité", en = "Activity sector" }
+# choices = [
+#   { value = "retail", label = { fr = "Commerce", en = "Retail" } },
+#   { value = "health", label = { fr = "Santé", en = "Health" } },
+# ]
 
 # Social sign-in: the providers offered, once their client is set in the env (IDP_GOOGLE_*,
 # IDP_GITHUB_*). An app can narrow them with `social_providers = ["github"]` in its entry.

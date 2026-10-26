@@ -347,6 +347,15 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
                 "description": "The deployment's providers its sign-in offers; null offers every one.",
             },
             "signup_open": BOOL,
+            "required_fields": {
+                **STRINGS,
+                "description": "Profile fields the app needs, asked when missing.",
+            },
+            "required_fields_offered": {
+                "type": "array",
+                "description": "The profile fields the platform shows; its own carry their labels.",
+                "items": obj({"key": STRING, "label": {"anyOf": [LABELS, {"type": "null"}]}}),
+            },
             "social_offered": {
                 "type": "array",
                 "description": "The providers the deployment offers, to choose from.",

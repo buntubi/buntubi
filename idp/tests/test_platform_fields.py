@@ -7,6 +7,7 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 from sqlalchemy import select
+from test_developer_api import call, developer_token, new_organization
 
 from buntubi import plugins
 from buntubi.db import db
@@ -192,3 +193,53 @@ def test_a_plugin_can_refuse_a_value(
         ).status_code
         == 200
     )
+
+
+def test_an_app_asks_for_the_fields_it_needs(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message], tmp_path: Path
+) -> None:
+    from urllib.parse import parse_qs, urlencode, urlparse
+
+    from conftest import REDIRECT, add_client, authorize_query, pkce
+
+    _declare(app, tmp_path)
+    csrf = sign_up(browser, outbox)
+    add_client(app, first_party=True, required_fields=["sector"])
+    _, challenge = pkce()
+    # Signed in already: the authorization request stops for the field, silently refused with prompt=none.
+    silent = browser.get("/oauth/authorize?" + urlencode(authorize_query(challenge, prompt="none")))
+    assert parse_qs(urlparse(silent.location).query)["error"] == ["interaction_required"]
+    _, challenge = pkce()
+    asked = browser.get("/oauth/authorize?" + urlencode(authorize_query(challenge)))
+    assert urlparse(asked.location).path == "/profile/complete"
+    page = page_config(browser, "/profile/complete")
+    assert [f["key"] for f in page["props"]["platformFields"]] == ["sector"]
+    done = api(
+        browser, "POST", "/api/profile/complete", {"platform_profile": {"sector": "health"}}, page["csrf"]
+    )
+    assert done.status_code == 200 and done.json["redirect"].startswith("/oauth/authorize?")
+    assert browser.get(done.json["redirect"]).location.startswith(REDIRECT)
+    assert csrf
+
+
+def test_the_developer_api_sets_the_fields_an_app_needs(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message], tmp_path: Path
+) -> None:
+    _declare(app, tmp_path)
+    dev = developer_token(app, browser, outbox, "dev@example.test")
+    assert call(browser, dev, "POST", "/terms").json == {"developer": True}
+    organization_id = new_organization(browser, dev)
+    created = call(
+        browser,
+        dev,
+        "POST",
+        f"/organizations/{organization_id}/apps",
+        {"name": "Web", "redirect_uris": ["https://shop.example/cb"]},
+    )
+    client_id = created.json["app"]["client_id"]
+    offered = [entry["key"] for entry in created.json["app"]["required_fields_offered"]]
+    assert offered == ["sector", "team_size", "newsletter", "topics"]
+    changed = call(browser, dev, "PATCH", f"/apps/{client_id}", {"required_fields": ["sector"]})
+    assert changed.json["app"]["required_fields"] == ["sector"]
+    refused = call(browser, dev, "PATCH", f"/apps/{client_id}", {"required_fields": ["birthdate"]})
+    assert refused.status_code == 422 and refused.json["fields"] == ["birthdate"]

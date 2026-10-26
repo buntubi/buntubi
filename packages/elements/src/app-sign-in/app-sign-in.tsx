@@ -6,12 +6,15 @@ import { Developer, type AppPatch } from '@buntubi/sdk/developer';
 import type { App } from '@buntubi/sdk/types';
 import { freshest } from '../fresh.js';
 import { useView } from '../view.js';
+import { labelIn } from '../about-section/platform-field-input.js';
+import type { ProfileField } from '@buntubi/sdk/account';
 import { appSignInLabels, type AppSignInLabels, type AppSignInLogic } from './logic.js';
 import { AppSignInView } from './view.js';
 
 const props = {
   app: prop.object<App | null>(null),
   canEdit: prop.boolean(false),
+  locale: prop.string('en'),
   labels: prop.object<Partial<AppSignInLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
@@ -59,6 +62,16 @@ export class IdpAppSignIn extends typedElement(props) {
       },
       signupOpen: () => app.current()?.signup_open ?? true,
       setSignupOpen: (on) => save({ signup_open: on }),
+      fieldsOffered: () =>
+        (app.current()?.required_fields_offered ?? []).map((entry) => ({
+          key: entry.key,
+          label: entry.label ? labelIn(entry.label, this.locale) : (labels().fields[entry.key as ProfileField] ?? entry.key),
+        })),
+      needs: (key) => (app.current()?.required_fields ?? []).includes(key),
+      setNeeds: (key, on) => {
+        const current = app.current()?.required_fields ?? [];
+        save({ required_fields: on ? [...new Set([...current, key])] : current.filter((k) => k !== key) });
+      },
       canEdit: () => this.canEdit,
       busy,
       saved,

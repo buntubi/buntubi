@@ -39,6 +39,24 @@ export const appSignInView = (s: AppSignInLogic) => (
         </For>
       </Show>
     </div>
+    <div class="providers">
+      <h3>{() => s.labels().profileFields}</h3>
+      <Show when={s.fieldsOffered().length > 0} fallback={<p class="hint">{() => s.labels().noProfileFields}</p>}>
+        <p class="hint">{() => s.labels().profileFieldsHelp}</p>
+        <For each={s.fieldsOffered()}>
+          {(field) => (
+            <label class="check">
+              <Checkbox
+                checked={s.needs(field.key)}
+                disabled={!s.canEdit() || s.busy()}
+                onChange={(checked) => s.setNeeds(field.key, checked === true)}
+              />
+              {field.label}
+            </label>
+          )}
+        </For>
+      </Show>
+    </div>
     <div class="intro">
       <div class="setting">
         <h3>{() => s.labels().signup}</h3>

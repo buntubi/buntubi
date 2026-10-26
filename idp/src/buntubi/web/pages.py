@@ -124,11 +124,14 @@ def _social_props() -> dict[str, Any]:
 
 
 def _required_platform_fields(keys: list[str] | None = None) -> list[dict[str, Any]]:
-    """The platform's own required fields, as the forms draw them; only `keys` when given."""
+    """
+    The platform's own fields to ask, as the forms draw them: those it requires, or exactly `keys`
+    when given (missing ones an app may need, asked as required there).
+    """
     return [
-        field.as_json()
+        {**field.as_json(), "mode": "required"}
         for field in profile_fields.platform_fields()
-        if field.mode == "required" and (keys is None or field.key in keys)
+        if (field.key in keys if keys is not None else field.mode == "required")
     ]
 
 
@@ -136,12 +139,16 @@ def _required_platform_fields(keys: list[str] | None = None) -> list[dict[str, A
 def complete_missing_profile() -> Any:
     """The required fields a sign-in found missing, asked before it goes on."""
     pending = sessions.pending("profile")
-    if pending is None:
+    login = sessions.current()
+    user = pending.user if pending is not None else login.user if login is not None else None
+    if user is None:
         return redirect(url_for("pages.signin"))
-    missing = profile_fields.missing_required(pending.user)
+    missing = profile_fields.missing_required(user, social.client_signing_in())
+    if not missing and pending is None:
+        return redirect(sessions.take_return_to(url_for("pages.account")))
     return shell(
         "idp-complete-profile",
-        email=pending.user.email,
+        email=user.email,
         fields=[key for key in missing if key in STANDARD_FIELDS],
         platformFields=_required_platform_fields(missing),
         action="/api/profile/complete",

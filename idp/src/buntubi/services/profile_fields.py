@@ -18,7 +18,7 @@ from sqlalchemy import select
 
 from buntubi import plugins
 from buntubi.db import db, utcnow
-from buntubi.models import ProfileField, ProfileValue, User
+from buntubi.models import Client, ProfileField, ProfileValue, User
 from buntubi.models.profile_fields import FIELD_MODES, GENDERS, STANDARD_FIELDS
 from buntubi.services.accounts import AccountError
 
@@ -272,12 +272,31 @@ def platform_values(user: User) -> dict[str, Any]:
     return {key: found[key] for key in shown_keys if key in found}
 
 
-def missing_required(user: User) -> list[str]:
-    """The required fields, standard or the platform's own, this account has no value for."""
-    standard = [key for key, mode in shown().items() if mode == "required" and getattr(user, key) is None]
+def missing_required(user: User, client: Client | None = None) -> list[str]:
+    """
+    The fields this account has no value for, among those the platform requires and, with
+    `client`, those that app needs. A field the platform does not show is never asked.
+    """
+    needed = set(client.required_fields) if client is not None else set()
+    standard = [
+        key
+        for key, mode in shown().items()
+        if (mode == "required" or key in needed) and getattr(user, key) is None
+    ]
     have = platform_values(user)
-    own = [field.key for field in platform_fields() if field.mode == "required" and field.key not in have]
+    own = [
+        field.key
+        for field in platform_fields()
+        if (field.mode == "required" or field.key in needed) and field.key not in have
+    ]
     return standard + own
+
+
+def offered() -> list[dict[str, Any]]:
+    """The fields an app can ask for: every one the platform shows, the platform's with their labels."""
+    return [{"key": key, "label": None} for key in shown()] + [
+        {"key": field.key, "label": field.labels} for field in platform_fields()
+    ]
 
 
 def _choice_values(field: PlatformField) -> list[str]:

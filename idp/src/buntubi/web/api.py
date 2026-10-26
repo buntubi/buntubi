@@ -91,8 +91,9 @@ def complete_sign_in(
         sessions.set_pending(user, methods, "terms", replaces=replaces, provider=provider)
         db().commit()
         return url_for("pages.accept_terms")
-    # A required field this account lacks (it became required after the account was made).
-    if profile_fields.missing_required(user):
+    # A field this account lacks: the platform requires it (since after the account was made), or
+    # the app this sign-in continues to needs it.
+    if profile_fields.missing_required(user, social.client_signing_in()):
         sessions.set_pending(user, methods, "profile", replaces=replaces, provider=provider)
         db().commit()
         return url_for("pages.complete_missing_profile")
@@ -225,20 +226,26 @@ def accept_terms() -> Any:
 @limiter.limit("10 per minute")
 def complete_missing_profile() -> Any:
     """The required fields a sign-in asked for: stored, then the sign-in goes on."""
+    # Mid sign-in (its gate), or signed in already and on the way to an app that needs the fields.
     pending = sessions.pending("profile")
-    if pending is None:
+    login = sessions.current()
+    if pending is None and login is None:
         return jsonify(error="no_pending_sign_in"), 400
     data = _body()
-    user = pending.user
+    user = pending.user if pending is not None else login.user  # type: ignore[union-attr]
+    client = social.client_signing_in()
     profile_fields.store(user, profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}))
     own = data.get("platform_profile")
     profile_fields.store_platform(
         user, profile_fields.check_platform(own if isinstance(own, dict) else {}, user=user)
     )
     db().flush()
-    if still := profile_fields.missing_required(user):
+    if still := profile_fields.missing_required(user, client):
         raise AccountError(f"{still[0]}_required")
     audit.record("profile_updated", user=user, fields=sorted(data))
+    if pending is None:
+        db().commit()
+        return jsonify(redirect=sessions.take_return_to(url_for("pages.account")))
     return _signed_in(user, pending.methods, "sign_in", replaces=pending.replaces, provider=pending.provider)
 
 

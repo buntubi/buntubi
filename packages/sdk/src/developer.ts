@@ -29,6 +29,7 @@ export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'te
   scopes?: string[];
   social_providers?: string[] | null;
   signup_open?: boolean;
+  required_fields?: string[];
   homepage_url?: string | null;
   privacy_url?: string | null;
   terms_url?: string | null;
