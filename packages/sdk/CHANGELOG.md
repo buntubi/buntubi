@@ -1,5 +1,11 @@
 # @buntubi/sdk
 
+## 0.9.1
+
+### Patch Changes
+
+- 3a33606: The provider image includes Authlib 1.9.1 and dnspython 2.9.0, fixing the published advisories.
+
 ## 0.9.0
 
 ### Minor Changes
