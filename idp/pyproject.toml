@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
   "flask>=3.1",
   # Pinned to a minor: 1.8 moved the ID token hooks, and a silent change there drops `kid`.
-  "authlib>=1.8,<1.9",
+  "authlib>=1.9.1,<1.10",
   "sqlalchemy>=2.0.36",
   "alembic>=1.14",
   "psycopg[binary]>=3.2",
