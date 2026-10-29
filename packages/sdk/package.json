@@ -1,6 +1,6 @@
 {
   "name": "@buntubi/sdk",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Types, API clients, form schemas and the plugin helpers for building on the identity provider",
   "license": "MIT",
   "repository": {
