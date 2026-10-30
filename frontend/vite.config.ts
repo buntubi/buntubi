@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
   // fluixi-ui is linked from its own checkout, whose node_modules hold a published runtime; one
   // copy only, the one this app links, or two builds of @fluixi/reactive drive one graph.
   resolve: {
-    dedupe: ['@fluixi/core', '@fluixi/reactive', '@fluixi/jsx', '@fluixi/dom', '@fluixi/web-components', '@fluixi/start', '@buntubi/sdk'],
+    dedupe: ['@fluixi/core', '@fluixi/reactive', '@fluixi/jsx', '@fluixi/dom', '@fluixi/web-components', '@fluixi/start', '@buntubi/sdk', '@fluixi-ui/theme'],
   },
   base: '/static/idp/',
   build: {

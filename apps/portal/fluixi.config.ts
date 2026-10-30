@@ -12,4 +12,7 @@ export default defineConfig({
   adapter: nodeAdapter,
   // UI plugins mounted into the image load at run time and must use this portal's copies.
   share: [...SHARED_MODULES],
+  // One copy of each package that holds a context: a split install (a linked or packed framework)
+  // otherwise gives the shell's menu a different appearance context than the app's provider.
+  plugins: [{ name: 'idp-dedupe', config: () => ({ resolve: { dedupe: ['@fluixi/core', '@fluixi/dom', '@fluixi/reactive', '@fluixi-ui/theme'] } }) }],
 });

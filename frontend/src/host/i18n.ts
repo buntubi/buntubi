@@ -85,7 +85,7 @@ export interface Text {
   consent: ConsentLabels;
   accountSelect: AccountSelectLabels;
   organizationSelect: OrganizationSelectLabels;
-  theme: { theme: string; schemes: { light: string; dark: string; system: string } };
+  theme: { theme: string; schemes: { light: string; dark: string; system: string }; skins: { title: string; names: Record<string, string> } };
   deviceActivate: DeviceActivateLabels;
   mfaVerify: MfaVerifyLabels;
   secureAccount: SecureAccountLabels;
@@ -230,7 +230,7 @@ const fr: Text = {
     deny: 'Annuler',
     pending: 'Un instant',
   },
-  theme: { theme: 'Thème', schemes: { light: 'Clair', dark: 'Sombre', system: 'Système' } },
+  theme: { theme: 'Thème', schemes: { light: 'Clair', dark: 'Sombre', system: 'Système' }, skins: { title: 'Style', names: { soft: 'Doux', fluixi: 'Fluixi', material: 'Material', paper: 'Papier', glass: 'Verre' } } },
   accountSelect: {
     other: 'Utiliser un autre compte',
     signedIn: 'Connecté',
@@ -536,7 +536,7 @@ const en: Text = {
     deny: 'Cancel',
     pending: 'One moment',
   },
-  theme: { theme: 'Theme', schemes: { light: 'Light', dark: 'Dark', system: 'System' } },
+  theme: { theme: 'Theme', schemes: { light: 'Light', dark: 'Dark', system: 'System' }, skins: { title: 'Style', names: { soft: 'Soft', fluixi: 'Fluixi', material: 'Material', paper: 'Paper', glass: 'Glass' } } },
   accountSelect: {
     other: 'Use another account',
     signedIn: 'Signed in',

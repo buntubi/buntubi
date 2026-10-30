@@ -3,9 +3,10 @@
  * hands the elements their words and actions, and follows the provider's answers. Leaving a
  * screen is always a full page load, since the next step is the provider's to decide.
  */
-import { render, Show, ThemeProvider } from '@fluixi/core';
+import { render, Show } from '@fluixi/core';
 import { Alert } from '@fluixi-ui/alert';
-import { createDocumentScheme } from '@idp/theme/document';
+import { AppearanceProvider } from '@fluixi-ui/theme';
+import { signInAppearance } from '@idp/theme/appearance';
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
 import { Button } from '@fluixi-ui/button';
@@ -486,10 +487,11 @@ const look = lookOf(uiPlugins, config.brand.look);
 await Promise.all([look?.styles?.(), look?.aside?.load()]);
 if (root && screen) {
   render(() => {
-    // Inside the render, so a reload keeps the reader's choice (the account area's cookie).
-    const scheme = createDocumentScheme();
+    // Inside the render, so a reload keeps the reader's choices (the account area's cookies).
+    // A client's own skin is the only one its pages offer; otherwise the reader picks.
+    const appearance = signInAppearance(config.brand.skin, document.documentElement.dataset.ui);
     return (
-      <ThemeProvider themes={{ scheme }}>
+      <AppearanceProvider {...appearance}>
       <Page
         brand={config.brand}
         aside={look?.aside?.element}
@@ -504,12 +506,12 @@ if (root && screen) {
         heroTitle={config.brand.tagline ?? t.hero.title}
         heroText={t.hero.text}
         languageLabel={t.links.language}
-        theme={t.theme}
+        theme={appearance.skins.length > 1 ? t.theme : { ...t.theme, skins: undefined }}
         footer={screen.footer?.()}
       >
         {screen.body()}
       </Page>
-      </ThemeProvider>
+      </AppearanceProvider>
     );
   }, root);
 }

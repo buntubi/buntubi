@@ -16,7 +16,21 @@ export const DEFAULT_SKIN = softSkin.name;
 /** The cookie holding the visitor's skin, read by the provider's sign-in pages too. */
 export const SKIN_COOKIE = 'idp-skin';
 
-export const appearance: Omit<AppearanceProviderProps, 'children'> = {
+/**
+ * The sign-in pages' appearance: a client's own skin alone when it has one, else every skin with
+ * the one the server drew (the reader's or the platform's) first.
+ */
+export function signInAppearance(clientSkin: string | undefined, drawn: string | undefined): Appearance {
+  if (clientSkin) {
+    const own = SKINS.find((skin) => skin.name === clientSkin) ?? { name: clientSkin };
+    return { ...appearance, skins: [own], defaultSkin: own.name };
+  }
+  return { ...appearance, defaultSkin: drawn ?? DEFAULT_SKIN };
+}
+
+type Appearance = Omit<AppearanceProviderProps, 'children'> & { skins: readonly SkinDescriptor[] };
+
+export const appearance: Appearance = {
   skins: SKINS,
   defaultSkin: DEFAULT_SKIN,
   storagePrefix: 'idp',
