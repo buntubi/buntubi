@@ -3,17 +3,36 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     "./tokens.css": "./src/tokens.css",
-    "./document": "./src/document.ts"
+    "./fonts.css": "./src/fonts.css",
+    "./document": "./src/document.ts",
+    "./appearance": "./src/appearance.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.2.0",
+    "@fontsource-variable/geist-mono": "^5.2.0"
+  },
   "peerDependencies": {
+    "@fluixi-ui/skin-glass": "^0.1.0-alpha.0",
+    "@fluixi-ui/skin-material": "^0.3.0-alpha.12",
+    "@fluixi-ui/skin-paper": "^0.1.0-alpha.2",
+    "@fluixi-ui/skin-soft": "^0.1.0-alpha.10",
+    "@fluixi-ui/theme": "^0.1.0-alpha.10",
     "@fluixi/core": "^1.0.0-alpha.100"
   },
   "devDependencies": {
+    "@fluixi-ui/skin-glass": "^0.1.0-alpha.0",
+    "@fluixi-ui/skin-material": "^0.3.0-alpha.12",
+    "@fluixi-ui/skin-paper": "^0.1.0-alpha.2",
+    "@fluixi-ui/skin-soft": "^0.1.0-alpha.10",
+    "@fluixi-ui/theme": "^0.1.0-alpha.10",
     "@fluixi/core": "^1.0.0-alpha.100",
     "typescript": "^7.0.2"
   }

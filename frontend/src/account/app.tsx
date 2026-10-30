@@ -3,10 +3,11 @@
  * data comes from the provider's /api/account endpoints, with this page's session.
  */
 import '@idp/theme/tokens.css';
-import '@idp/skin/fonts.css';
-import '@idp/skin/styles.css';
+import '@idp/theme/fonts.css';
 import './account.css';
-import { render, Show, ThemeProvider } from '@fluixi/core';
+import { render, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
+import { AppearanceProvider } from '@fluixi-ui/theme';
 import { Link, Outlet, revalidate, Router, useLocation, useNavigate, useRouteData } from '@fluixi/core/router';
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
@@ -46,7 +47,7 @@ import '@idp/elements/password-section';
 import '@idp/elements/security-activity';
 import '@idp/elements/two-step-section';
 import { Shell, type Crumb } from '@idp/shell/shell';
-import { createDocumentScheme } from '@idp/theme/document';
+import { appearance } from '@idp/theme/appearance';
 import type { Api, Redirect } from '../host/api.js';
 import type { PageConfig } from '../host/config.js';
 import type { Text } from '../host/i18n.js';
@@ -304,12 +305,12 @@ export function mountAccount(root: HTMLElement, context: Context): void {
       <Stack gap={5}>
         <idp-page-header title={w.emailConfirm.title} />
         <Show when={result()} fallback={<p>{w.emailConfirm.working}</p>}>
-          <section class="account-card" role="status">
+          <Card class="account-card" role="status">
             <Show when={result()?.email} fallback={<p class="account-alert">{result()?.error}</p>}>
               <p>{w.emailConfirm.done.replace('{email}', result()?.email ?? '')}</p>
             </Show>
             <Link href={paths.info()}>{w.emailConfirm.back}</Link>
-          </section>
+          </Card>
         </Show>
       </Stack>
     );
@@ -463,13 +464,12 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     },
   ];
   render(() => {
-    // Made inside the render: the scheme keeps the page's attribute in step only from there,
-    // so made outside it a reload lost the reader's choice.
-    const scheme = createDocumentScheme();
+    // Inside the render, so the choices stay in step with the page's attributes after a reload.
+    // The server drew the page in the platform's skin or the reader's: that is the default here.
     return (
-      <ThemeProvider themes={{ scheme }}>
+      <AppearanceProvider {...appearance} defaultSkin={document.documentElement.dataset.ui ?? appearance.defaultSkin}>
         <Router routes={routes as never} />
-      </ThemeProvider>
+      </AppearanceProvider>
     );
   }, root);
 }

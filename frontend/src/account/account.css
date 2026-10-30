@@ -1,7 +1,7 @@
-/* The two-step card keeps its sign-in look until the Security page is rebuilt. */
-.account-card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 12px; max-width: 560px; }
+/* The email confirmation's card: fluixi-ui's Card, laid out here. */
+.account-card { padding: 18px 20px; display: grid; gap: 12px; max-width: 560px; }
 .account-card h2 { margin: 0; font-size: 15px; font-weight: 600; }
 
-/* The account area's page: the portal's ground, type and colours. */
-html[data-ui='idp'] body { margin: 0; background: var(--idp-bg); color: var(--idp-text); font-family: var(--idp-font); -webkit-font-smoothing: antialiased; }
+/* The account area's page: the portal's ground and type. */
+html[data-account] body { background: var(--flx-ui-color-bg-subtle); font-family: var(--idp-font); }
 .account-alert { margin: 0; color: var(--idp-bad); }

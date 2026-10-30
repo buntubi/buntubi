@@ -450,6 +450,16 @@ export const reviewSubmissionLabels = (): ReviewSubmissionLabels => ({
 export const shellLabels = (): ShellLabels => ({
   theme: t('shell.theme'),
   schemes: { light: t('shell.light'), dark: t('shell.dark'), system: t('shell.system') },
+  skins: {
+    title: t('shell.skin'),
+    names: {
+      soft: t('shell.skin.soft'),
+      fluixi: t('shell.skin.fluixi'),
+      material: t('shell.skin.material'),
+      paper: t('shell.skin.paper'),
+      glass: t('shell.skin.glass'),
+    },
+  },
   navigation: t('shell.navigation'),
   language: t('nav.language'),
   signOut: t('nav.signOut'),

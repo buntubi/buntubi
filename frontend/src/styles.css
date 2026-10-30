@@ -1,10 +1,11 @@
-/* Layer order first, then fluixi-ui's tokens and the skins a client can pick with `data-ui`.
-   Without one the page keeps the neutral default look. */
+/* Layer order first, then fluixi-ui's tokens and every skin the platform offers, each active under
+   its own `data-ui` (the server writes it: the client's, the reader's choice, or the default). */
 @layer flx.reset, flx.base, flx.tokens, flx.components, flx.skin, flx.fx;
 @import '@fluixi-ui/tokens/tokens.css';
 @import '@fluixi-ui/skin-paper/styles.css';
 @import '@fluixi-ui/skin-soft/styles.css';
 @import '@fluixi-ui/skin-material/styles.css';
+@import '@fluixi-ui/skin-glass/styles.css';
 
 :root {
   color-scheme: light dark;
@@ -19,49 +20,31 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Neutral ink by default: the hero, the buttons and the links share it. A client's brand
-   (brand.ts sets --idp-brand, and --idp-brand-dark for dark pages) takes its place. */
+/* The skin's colours, unless a client gives its brand (brand.ts sets --idp-brand, --idp-brand-dark
+   for dark pages, and data-brand): then the hero, the buttons and the links wear it. */
 :root {
-  --idp-hero: var(--idp-brand, #161615);
-  --idp-hero-fg: var(--idp-brand-fg, #fafaf9);
+  --idp-hero: var(--idp-brand, var(--flx-ui-color-primary));
+  --idp-hero-fg: var(--idp-brand-fg, var(--flx-ui-color-primary-fg));
 }
-html:not([data-ui='idp']) {
-  --flx-ui-color-primary: var(--idp-brand, var(--flx-ui-color-fg));
-  --flx-ui-color-primary-fg: var(--idp-brand-fg, var(--flx-ui-color-bg));
+html[data-brand] {
+  --flx-ui-color-primary: var(--idp-brand);
+  --flx-ui-color-primary-fg: var(--idp-brand-fg);
   /* The steps fluixi-ui derives from the primary (hovered menu rows, pressed buttons) follow it. */
   --flx-ui-color-primary-hover: color-mix(in srgb, var(--flx-ui-color-primary) 88%, var(--flx-ui-color-bg));
   --flx-ui-color-primary-active: var(--flx-ui-color-primary);
   --flx-ui-color-primary-subtle: color-mix(in srgb, var(--flx-ui-color-primary) 9%, transparent);
+  --flx-ui-color-primary-text: var(--flx-ui-color-primary);
 }
-/* The account pages' theme derives its colours from --idp-accent. */
-html[data-ui='idp'] {
-  --idp-accent: var(--idp-brand, #5b5bd6);
-  --idp-accent-fg: var(--idp-brand-fg, #ffffff);
-}
-/* Dark when chosen, or when the OS is and nothing was chosen (the tokens do the same): a brand
-   too dark to read there gives way to its light ink. */
-[data-theme='dark'] {
-  --idp-hero: var(--idp-brand, #222220);
-}
-html[data-theme='dark']:not([data-ui='idp']) {
-  --flx-ui-color-primary: var(--idp-brand-dark, var(--flx-ui-color-fg));
-  --flx-ui-color-primary-fg: var(--idp-brand-dark-fg, var(--flx-ui-color-bg));
-}
-html[data-ui='idp'][data-theme='dark'] {
-  --idp-accent: var(--idp-brand-dark, #5b5bd6);
-  --idp-accent-fg: var(--idp-brand-dark-fg, #ffffff);
+/* Dark when chosen, or when the OS is and nothing was chosen: a brand too dark to read there
+   gives way to its light ink. */
+html[data-brand][data-theme='dark'] {
+  --flx-ui-color-primary: var(--idp-brand-dark);
+  --flx-ui-color-primary-fg: var(--idp-brand-dark-fg);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --idp-hero: var(--idp-brand, #222220);
-  }
-  html:not([data-theme]):not([data-ui='idp']) {
-    --flx-ui-color-primary: var(--idp-brand-dark, var(--flx-ui-color-fg));
-    --flx-ui-color-primary-fg: var(--idp-brand-dark-fg, var(--flx-ui-color-bg));
-  }
-  html[data-ui='idp']:not([data-theme]) {
-    --idp-accent: var(--idp-brand-dark, #5b5bd6);
-    --idp-accent-fg: var(--idp-brand-dark-fg, #ffffff);
+  html[data-brand]:not([data-theme]) {
+    --flx-ui-color-primary: var(--idp-brand-dark);
+    --flx-ui-color-primary-fg: var(--idp-brand-dark-fg);
   }
 }
 

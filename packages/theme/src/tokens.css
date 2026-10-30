@@ -1,82 +1,39 @@
 /*
- * The portal's design tokens. Every element reads these, never a raw colour, so a deployment
- * restyles everything by overriding them, and a brand only sets --idp-accent.
- * Light by default; [data-theme='dark'] on <html> switches (the colour scheme writes it).
+ * The colours, radii and shadows come from the active fluixi-ui skin (soft by default): the
+ * --idp-* names below only point at its tokens, so a skin, a palette or the dark scheme reaches
+ * every element. They go as each element moves to fluixi-ui's components and tokens; new code
+ * reads --flx-ui-* directly.
  */
 :root {
-  --idp-accent: #5b5bd6;
-  --idp-accent-fg: #ffffff;
-  --idp-accent-ink: var(--idp-accent);
-  --idp-accent-soft: color-mix(in srgb, var(--idp-accent) 12%, transparent);
+  --idp-accent: var(--flx-ui-color-primary);
+  --idp-accent-fg: var(--flx-ui-color-primary-fg);
+  --idp-accent-ink: var(--flx-ui-color-primary-text);
+  --idp-accent-soft: var(--flx-ui-color-primary-subtle);
 
-  --idp-bg: #f7f7f8;
-  --idp-surface: #ffffff;
-  --idp-surface-2: #f2f2f4;
-  --idp-border: #e6e6ea;
-  --idp-border-2: #d6d6dc;
-  --idp-text: #111216;
-  --idp-muted: #5f636d;
+  --idp-bg: var(--flx-ui-color-bg-subtle);
+  --idp-surface: var(--flx-ui-color-bg);
+  --idp-surface-2: var(--flx-ui-color-bg-muted);
+  --idp-border: var(--flx-ui-color-border);
+  --idp-border-2: var(--flx-ui-color-border-strong);
+  --idp-text: var(--flx-ui-color-fg);
+  --idp-muted: var(--flx-ui-color-fg-muted);
 
-  --idp-ok: #15803d;
-  --idp-warn: #b45309;
-  --idp-bad: #b91c1c;
-  --idp-info: #1d4ed8;
+  --idp-ok: var(--flx-ui-color-success-text);
+  --idp-warn: var(--flx-ui-color-warning-text);
+  --idp-bad: var(--flx-ui-color-danger-text);
+  --idp-info: var(--flx-ui-color-primary-text);
 
-  --idp-radius: 12px;
-  --idp-radius-sm: 8px;
-  --idp-shadow: 0 1px 2px rgb(16 18 22 / 0.04);
+  --idp-radius: var(--flx-ui-radius-lg);
+  --idp-radius-sm: var(--flx-ui-radius-md);
+  --idp-shadow: var(--flx-ui-shadow-sm);
   --idp-font: 'Geist Variable', 'Geist', ui-sans-serif, system-ui, sans-serif;
   --idp-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
   --idp-sidebar: 256px;
   --idp-rail: 60px;
-
-  color-scheme: light;
-}
-
-[data-theme='dark'] {
-  --idp-accent-ink: color-mix(in srgb, var(--idp-accent) 55%, white);
-  --idp-bg: #0a0b0d;
-  --idp-surface: #111215;
-  --idp-surface-2: #1a1c20;
-  --idp-border: #24262c;
-  --idp-border-2: #34373f;
-  --idp-text: #edeef0;
-  --idp-muted: #9a9fa9;
-  --idp-ok: #4ade80;
-  --idp-warn: #fbbf24;
-  --idp-bad: #f87171;
-  --idp-info: #60a5fa;
-  --idp-shadow: none;
-  color-scheme: dark;
-}
-
-/* fluixi-ui components follow the same tokens. */
-:root,
-[data-theme='dark'] {
-  --flx-ui-color-primary: var(--idp-accent);
-  --flx-ui-color-primary-hover: color-mix(in srgb, var(--idp-accent) 88%, black);
-  --flx-ui-color-primary-active: color-mix(in srgb, var(--idp-accent) 78%, black);
-  --flx-ui-color-primary-fg: var(--idp-accent-fg);
-  --flx-ui-color-primary-subtle: var(--idp-accent-soft);
-  --flx-ui-color-primary-text: var(--idp-accent-ink);
-  --flx-ui-color-bg: var(--idp-surface);
-  --flx-ui-color-bg-subtle: var(--idp-surface-2);
-  --flx-ui-color-bg-muted: var(--idp-surface-2);
-  --flx-ui-color-fg: var(--idp-text);
-  --flx-ui-color-fg-muted: var(--idp-muted);
-  --flx-ui-color-border: var(--idp-border);
-  --flx-ui-color-border-strong: var(--idp-border-2);
-  --flx-ui-color-focus-ring: color-mix(in srgb, var(--idp-accent) 45%, transparent);
-  --flx-ui-color-danger: var(--idp-bad);
-  /* The surface: white on the light theme's red, dark on the dark theme's lighter red. */
-  --flx-ui-color-danger-fg: var(--idp-surface);
-  --flx-ui-color-danger-subtle: color-mix(in srgb, var(--idp-bad) 10%, transparent);
-  --flx-ui-color-success: var(--idp-ok);
-  --flx-ui-color-warning: var(--idp-warn);
 }
 
 html {
-  background: var(--idp-bg);
-  color: var(--idp-text);
+  background: var(--flx-ui-color-bg-subtle);
+  color: var(--flx-ui-color-fg);
   font-family: var(--idp-font);
 }

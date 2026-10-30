@@ -1,13 +1,19 @@
-/** The colour scheme, picked from a menu (light, dark, system): the same control in every frame. */
-import { For, useColorScheme } from '@fluixi/core';
+/**
+ * The colour scheme, picked from a menu (light, dark, system), and the skin when the page offers
+ * several: the same control in every frame.
+ */
+import { For, Show, useColorScheme } from '@fluixi/core';
 import type { ComponentChild } from '@fluixi/dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@fluixi-ui/dropdown-menu';
+import { useAppearance } from '@fluixi-ui/theme';
 import { icons } from './icons.js';
 
 export const SCHEMES = ['light', 'dark', 'system'] as const;
@@ -16,6 +22,8 @@ export type Scheme = (typeof SCHEMES)[number];
 export interface ThemeToggleLabels {
   theme: string;
   schemes: Record<Scheme, string>;
+  /** The skin section's title and each skin's name by its `data-ui` value. Left out, no skin section. */
+  skins?: { title: string; names: Record<string, string> };
 }
 
 const ICON: Record<Scheme, string> = { light: icons.sun, dark: icons.moon, system: icons.monitor };
@@ -55,8 +63,29 @@ export function ThemeToggle(props: { labels: ThemeToggleLabels }): ComponentChil
               </DropdownMenuRadioItem>
             )}
           </For>
+          <Show when={props.labels.skins}>
+            {(skins: NonNullable<ThemeToggleLabels['skins']>) => <SkinChoices labels={skins} />}
+          </Show>
         </DropdownMenuContent>
       </DropdownMenuPortal>
     </DropdownMenu>
+  );
+}
+
+/** The skins the appearance provider offers; rendered only under one. */
+function SkinChoices(props: { labels: NonNullable<ThemeToggleLabels['skins']> }): ComponentChild {
+  const appearance = useAppearance();
+  return (
+    <>
+      <DropdownMenuSeparator />
+      <DropdownMenuLabel>{props.labels.title}</DropdownMenuLabel>
+      <For each={[...appearance.skin.options]}>
+        {(choice) => (
+          <DropdownMenuRadioItem checked={appearance.skin.value() === choice} onSelect={() => appearance.skin.set(choice)}>
+            {() => props.labels.names[choice] ?? choice}
+          </DropdownMenuRadioItem>
+        )}
+      </For>
+    </>
   );
 }

@@ -8,6 +8,9 @@ from urllib.parse import urlsplit
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# fluixi-ui's predefined skins, the `data-ui` values every page offers (@idp/theme's SKINS).
+SKINS = ("soft", "fluixi", "material", "paper", "glass")
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="IDP_", env_file=".env", extra="ignore")
@@ -21,6 +24,8 @@ class Settings(BaseSettings):
     brand_support_email: str = ""
     brand_privacy_url: str = ""
     brand_terms_url: str = ""
+    # The skin a reader sees until they pick another; a client's own skin wins on its sign-in pages.
+    brand_skin: str = "soft"
     # The issuer: the provider's public origin, exactly as clients see it. No trailing slash.
     issuer: str
     database_url: str
@@ -105,6 +110,13 @@ class Settings(BaseSettings):
     # Folder of UI plugins built with buntubi-ui-plugin (one subfolder each), whose browser halves
     # the sign-in pages load at run time. Unset: none.
     ui_plugins_dir: Path | None = None
+
+    @field_validator("brand_skin")
+    @classmethod
+    def _known_skin(cls, value: str) -> str:
+        if value not in SKINS:
+            raise ValueError(f"expected one of {', '.join(SKINS)}")
+        return value
 
     @field_validator("brand_accent")
     @classmethod

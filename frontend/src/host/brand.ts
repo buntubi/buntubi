@@ -1,6 +1,6 @@
 /**
- * A client's accent colour, as variables the stylesheet maps onto the primary tokens, the account
- * theme's accent and the hero, per scheme (styles.css). The skin is the page's `data-ui`, set by
+ * A client's accent colour, as variables the stylesheet maps onto the primary tokens and the hero,
+ * per scheme (styles.css). The skin is the page's `data-ui`, set by
  * the server; the logo and name are drawn by the page.
  */
 import type { Brand } from './config.js';
@@ -18,6 +18,7 @@ export function applyBrand(brand: Brand): void {
   root.setProperty('--idp-brand-fg', readableOn(brand.accent));
   root.setProperty('--idp-brand-dark', onDark);
   root.setProperty('--idp-brand-dark-fg', readableOn(onDark));
+  document.documentElement.dataset.brand = '';
 }
 
 /** WCAG relative luminance, 0 (black) to 1 (white). */

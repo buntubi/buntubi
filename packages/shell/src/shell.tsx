@@ -10,11 +10,9 @@ import '@idp/elements/sidebar';
 import type { SidebarContext, SidebarGroup, SidebarLabels } from '@idp/elements/sidebar/logic';
 import '@idp/elements/user-menu';
 import { markOf } from './brand.js';
-import { ThemeToggle, type Scheme } from './theme-toggle.js';
+import { ThemeToggle, type ThemeToggleLabels } from './theme-toggle.js';
 
-export interface ShellLabels {
-  theme: string;
-  schemes: Record<Scheme, string>;
+export interface ShellLabels extends ThemeToggleLabels {
   navigation: string;
   language: string;
   signOut: string;

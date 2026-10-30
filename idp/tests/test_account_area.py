@@ -2,9 +2,11 @@
 
 from urllib.parse import quote
 
+import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
+from buntubi.config import Settings, get_settings
 from buntubi.services import mail
 
 from conftest import page_config, sign_up
@@ -66,3 +68,22 @@ def test_the_page_is_drawn_in_the_saved_scheme(
     assert "data-theme" not in browser.get("/account").get_data(as_text=True).split(">", 2)[1]
     browser.set_cookie("idp-scheme", "not json")
     assert browser.get("/account").status_code == 200
+
+
+def test_the_page_is_drawn_in_the_saved_skin(
+    app: Flask, browser: FlaskClient, outbox: list[mail.Message], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    sign_up(browser, outbox)
+    assert 'data-ui="soft" data-account' in browser.get("/account").get_data(as_text=True)
+    monkeypatch.setattr(get_settings(), "brand_skin", "paper")
+    assert 'data-ui="paper"' in browser.get("/signin").get_data(as_text=True)
+    browser.set_cookie("idp-skin", quote('{"v":1,"value":"glass","createdAt":1}'))
+    assert 'data-ui="glass"' in browser.get("/account").get_data(as_text=True)
+    # Only a skin the platform offers: anything else falls back to its default.
+    browser.set_cookie("idp-skin", quote('{"v":1,"value":"idp"}'))
+    assert 'data-ui="paper"' in browser.get("/account").get_data(as_text=True)
+
+
+def test_the_default_skin_is_one_the_platform_offers() -> None:
+    with pytest.raises(ValueError, match="one of soft"):
+        Settings(brand_skin="idp")

@@ -1,6 +1,9 @@
 import '@idp/theme/tokens.css';
-import '@idp/skin/fonts.css';
-import '@idp/skin/styles.css';
+import '@idp/theme/fonts.css';
+import '@fluixi-ui/skin-soft/styles.css';
+import '@fluixi-ui/skin-material/styles.css';
+import '@fluixi-ui/skin-paper/styles.css';
+import '@fluixi-ui/skin-glass/styles.css';
 import './styles.css';
 import App from './app.js';
 import { renderRequestAsync, renderToBodyStream } from '@fluixi/server';

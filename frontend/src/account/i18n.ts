@@ -5,7 +5,7 @@ const fr = {
   product: 'Compte',
   nav: { home: 'Accueil', info: 'Informations personnelles', security: 'Sécurité', devices: 'Appareils', apps: 'Applications connectées', data: 'Données et compte' },
   sidebar: { collapse: 'Réduire le menu', expand: 'Déplier le menu', search: 'Rechercher', navigation: 'Navigation' },
-  shell: { theme: 'Thème', schemes: { light: 'Clair', dark: 'Sombre', system: 'Système' }, navigation: 'Fil d’Ariane', language: 'English', signOut: 'Se déconnecter', account: 'Compte' },
+  shell: { theme: 'Thème', schemes: { light: 'Clair', dark: 'Sombre', system: 'Système' }, skins: { title: 'Style', names: { soft: 'Doux', fluixi: 'Fluixi', material: 'Material', paper: 'Papier', glass: 'Verre' } }, navigation: 'Fil d’Ariane', language: 'English', signOut: 'Se déconnecter', account: 'Compte' },
   switcher: {
     menu: 'Comptes',
     signedInHere: 'Connectés sur ce navigateur',
@@ -355,7 +355,7 @@ const en: Words = {
   product: 'Account',
   nav: { home: 'Home', info: 'Personal info', security: 'Security', devices: 'Devices', apps: 'Connected apps', data: 'Data and account' },
   sidebar: { collapse: 'Collapse menu', expand: 'Expand menu', search: 'Search', navigation: 'Navigation' },
-  shell: { theme: 'Theme', schemes: { light: 'Light', dark: 'Dark', system: 'System' }, navigation: 'Breadcrumb', language: 'Français', signOut: 'Sign out', account: 'Account' },
+  shell: { theme: 'Theme', schemes: { light: 'Light', dark: 'Dark', system: 'System' }, skins: { title: 'Style', names: { soft: 'Soft', fluixi: 'Fluixi', material: 'Material', paper: 'Paper', glass: 'Glass' } }, navigation: 'Breadcrumb', language: 'Français', signOut: 'Sign out', account: 'Account' },
   switcher: {
     menu: 'Accounts',
     signedInHere: 'Signed in on this browser',

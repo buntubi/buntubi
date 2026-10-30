@@ -15,7 +15,7 @@ from werkzeug.wrappers import Response
 
 from buntubi import plugins
 from buntubi import social as social_sign_in
-from buntubi.config import get_settings
+from buntubi.config import SKINS, get_settings
 from buntubi.db import db
 from buntubi.models import UserPicture
 from buntubi.models.profile_fields import STANDARD_FIELDS
@@ -65,31 +65,40 @@ def _brand() -> dict[str, Any]:
     )
 
 
-# Where every provider page keeps the reader's light or dark choice (@idp/theme's schemeKey).
+# Where every provider page keeps the reader's choices (@idp/theme's cookie names).
 SCHEME_COOKIE = "idp-scheme"
+SKIN_COOKIE = "idp-skin"
 
 
-def _scheme() -> str | None:
-    """The saved light or dark choice, so the page is drawn in it before any script runs."""
+def _saved(cookie: str, allowed: tuple[str, ...]) -> str | None:
+    """A choice the reader saved, so the page is drawn in it before any script runs."""
     try:
         # Written by the browser URL-encoded.
-        saved = json.loads(unquote(request.cookies.get(SCHEME_COOKIE, "")))
+        saved = json.loads(unquote(request.cookies.get(cookie, "")))
     except ValueError:
         return None
     value = saved.get("value") if isinstance(saved, dict) else saved
-    return value if value in ("light", "dark") else None
+    return value if value in allowed else None
+
+
+def _skin(brand: dict[str, Any], account: bool) -> str:
+    """A client's own skin on its sign-in pages, else the reader's choice, else the platform's."""
+    if not account and isinstance(brand.get("skin"), str):
+        return str(brand["skin"])
+    return _saved(SKIN_COOKIE, SKINS) or get_settings().brand_skin
 
 
 def shell(element: str, *, account: bool = False, **props: Any) -> str:
+    brand = _brand()
     config = {
         "element": element,
-        # The account area wears the platform's own look, whichever app the person came from.
+        # The account area wears the platform's skin or the reader's, whichever app they came from.
         "account": account,
         "locale": locale(),
         "csrf": csrf.token(),
         # The session the page is opened for: requests declare it, and a switch since is refused.
         "session": sessions.current_id(),
-        "brand": _brand(),
+        "brand": brand,
         # The platform's own policies, linked under its pages.
         "links": {
             key: value for key, value in get_settings().brand().items() if key in ("privacy_url", "terms_url")
@@ -101,7 +110,8 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         "shell.html",
         config=config,
         locale=config["locale"],
-        scheme=_scheme(),
+        scheme=_saved(SCHEME_COOKIE, ("light", "dark")),
+        skin=_skin(brand, account),
         import_map=plugins.import_map,
         ui_plugin_index=plugins.index() if plugins.plugins else None,
     )

@@ -24,7 +24,12 @@
     "@fluixi-ui/popover": "^0.2.0-alpha.19",
     "@fluixi-ui/primitives": "^0.2.0-alpha.9",
     "@fluixi-ui/select": "^0.2.0-alpha.21",
+    "@fluixi-ui/skin-glass": "^0.1.0-alpha.0",
+    "@fluixi-ui/skin-material": "^0.3.0-alpha.12",
+    "@fluixi-ui/skin-paper": "^0.1.0-alpha.2",
+    "@fluixi-ui/skin-soft": "^0.1.0-alpha.10",
     "@fluixi-ui/switch": "^0.2.0-alpha.19",
+    "@fluixi-ui/theme": "^0.1.0-alpha.10",
     "@fluixi-ui/toggle": "^0.2.0-alpha.19",
     "@fluixi-ui/toggle-group": "^0.2.0-alpha.19",
     "@fluixi-ui/tokens": "^0.4.0-alpha.18",
@@ -46,7 +51,6 @@
     "@fluixi/web-components": "^1.0.0-alpha.100",
     "@idp/elements": "workspace:*",
     "@idp/shell": "workspace:*",
-    "@idp/skin": "workspace:*",
     "@idp/theme": "workspace:*"
   },
   "devDependencies": {
