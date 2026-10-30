@@ -1,5 +1,6 @@
 /** The default look: the fields, the forgotten-password link, then the passkey button. */
 import { Show } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
@@ -8,8 +9,8 @@ import type { SignInLogic } from './logic.js';
 
 export const signInView = (s: SignInLogic) => (
   <Form form={s.form} onSubmit={s.submit} class="idp-form" novalidate>
-    {() => (s.error() ? <p class="idp-alert" role="alert">{s.error()}</p> : null)}
-    {() => (s.passkeyError() ? <p class="idp-alert" role="alert">{s.passkeyError()}</p> : null)}
+    {() => (s.error() ? <Alert variant="danger" class="idp-alert">{s.error()}</Alert> : null)}
+    {() => (s.passkeyError() ? <Alert variant="danger" class="idp-alert">{s.passkeyError()}</Alert> : null)}
     <FormField control={s.form.get('email')} label={() => s.labels().email}>
       {(b) => (
         <Input type="email" name="email" autocomplete="username webauthn" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />

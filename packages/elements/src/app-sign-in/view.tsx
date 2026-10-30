@@ -1,14 +1,15 @@
 /** The default look: one card, a checkbox per provider the deployment offers, then the sign-up switch. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { Checkbox } from '@fluixi-ui/checkbox';
 import { Switch } from '@fluixi-ui/switch';
 import { viewToken } from '../view.js';
 import type { AppSignInLogic } from './logic.js';
 
 export const appSignInView = (s: AppSignInLogic) => (
-  <div part="sign-in" class="card">
+  <Card part="sign-in" class="card">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 14px; }
+      .card { padding: 18px 20px; display: grid; gap: 14px; }
       h2, h3 { margin: 0; font-size: 15px; font-weight: 600; }
       h3 { font-size: 13px; }
       .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
@@ -77,7 +78,7 @@ export const appSignInView = (s: AppSignInLogic) => (
         {() => s.error()}
       </p>
     </Show>
-  </div>
+  </Card>
 );
 
 export const AppSignInView = viewToken<AppSignInLogic>('idp-app-sign-in', appSignInView);

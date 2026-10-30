@@ -1,6 +1,7 @@
 /** The default look, after the board: the title with the add button, then one row per passkey. */
 import { css, For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { infoStyles } from '../info-shared/styles.js';
@@ -25,7 +26,7 @@ const styles = css`
 const KEY = 'M8 11a4 4 0 1 1 3.9-4.9M12 7h9l-2 2 2 2-2 2M3 21v-2a4 4 0 0 1 4-4h3';
 
 export const passkeysSectionView = (k: PasskeysSectionLogic) => (
-  <section part="passkeys" class="card" aria-labelledby="idp-passkeys-title">
+  <Card part="passkeys" class="card" aria-labelledby="idp-passkeys-title" role="region">
     <style scoped>{`${infoStyles}${styles}`}</style>
     <div class="head">
       <div>
@@ -142,7 +143,7 @@ export const passkeysSectionView = (k: PasskeysSectionLogic) => (
         {() => k.notice()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const PasskeysSectionView = viewToken<PasskeysSectionLogic>('idp-passkeys-section', passkeysSectionView);

@@ -55,6 +55,7 @@ export const sidebarView = (s: SidebarLogic) => {
         .sub { color: var(--idp-muted); font-weight: 500; }
         .brand-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .sidebar :deep(.back) { display: flex; align-items: center; gap: 8px; padding: 2px 8px; color: var(--idp-muted); font-size: 13px; text-decoration: none; }
+        .switch { display: flex; align-items: center; gap: 10px; width: 100%; height: auto; padding: 8px 10px; justify-content: flex-start; text-align: left; }
         .context { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--idp-border); border-radius: 10px; background: var(--idp-surface-2); }
         .context-mark { flex: none; width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--idp-accent-soft); color: var(--idp-accent-ink); font-size: 12px; font-weight: 700; }
         .context-text { display: flex; flex-direction: column; min-width: 0; }
@@ -124,7 +125,7 @@ export const sidebarView = (s: SidebarLogic) => {
             >
               {(switcher: SidebarSwitcher) => (
                 <DropdownMenu placement="bottom-start">
-                  <DropdownMenuTrigger data-switcher="" part="context" title={context.name} aria-label={`${switcher.label}: ${context.name}`}>
+                  <DropdownMenuTrigger class="switch" data-variant="outline" data-tone="neutral" data-switcher="" part="context" title={context.name} aria-label={`${switcher.label}: ${context.name}`}>
                     <span class="context-mark">{context.mark}</span>
                     <span class="context-text">
                       <span class="context-name">{context.name}</span>

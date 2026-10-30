@@ -1,21 +1,21 @@
 /** The default look: a grid row, the role as a select, access with its editor below, two-step as a dot. */
 import { For, Show } from '@fluixi/core';
+import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
 import { Button } from '@fluixi-ui/button';
+import { Chip } from '@fluixi-ui/chip';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
-import { Toggle } from '@fluixi-ui/toggle';
 import type { Position } from '@buntubi/sdk/roles';
 import { POSITIONS, positionOf } from '../team/logic.js';
 import { viewToken } from '../view.js';
 import type { MemberRowLogic } from './logic.js';
 
-const CHECK = 'M5 12.5l4.5 4.5L19 7.5';
 
 export const memberRowView = (m: MemberRowLogic) => (
   <div part="member" class="member" role="row">
     <style scoped>{`
       .member { display: grid; grid-template-columns: minmax(0, 1.4fr) 150px minmax(0, 1fr) 90px auto; gap: 12px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
       .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
-      .initials { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--idp-muted); background: var(--idp-surface-2); }
+      .initials { flex: none; width: 30px; height: 30px; font-size: 11px; font-weight: 600; }
       .names { display: grid; min-width: 0; }
       .name { font-weight: 500; }
       .you { color: var(--idp-muted); font-weight: 400; margin-left: 6px; font-size: 12px; }
@@ -31,7 +31,7 @@ export const memberRowView = (m: MemberRowLogic) => (
       @media (max-width: 860px) { .member { grid-template-columns: minmax(0, 1fr) auto; } .access, .two { grid-column: 1; } }
     `}</style>
     <span role="cell" class="who">
-      <span class="initials" aria-hidden="true">{() => m.initials()}</span>
+      <Avatar class="initials" aria-hidden="true"><AvatarFallback>{() => m.initials()}</AvatarFallback></Avatar>
       <span class="names">
         <span class="name">
           {() => m.member()?.name || m.member()?.email}
@@ -86,14 +86,9 @@ export const memberRowView = (m: MemberRowLogic) => (
         <div class="chips">
           <For each={m.choices()} by={(choice) => choice.client_id}>
             {(choice) => (
-              <Toggle data-choice="chip" pressed={choice().picked} onChange={() => m.toggle(choice().client_id)}>
-                <span data-tick="" aria-hidden="true">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <path d={CHECK} />
-                  </svg>
-                </span>
+              <Chip checkbox checked={choice().picked} onChange={() => m.toggle(choice().client_id)}>
                 {() => choice().name}
-              </Toggle>
+              </Chip>
             )}
           </For>
         </div>

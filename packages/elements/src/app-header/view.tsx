@@ -1,11 +1,14 @@
 /** The default look: a large tinted mark, the name with its stage, the meta line, the action at the end. */
 import { Show } from '@fluixi/core';
+import { Avatar, AvatarFallback, AvatarImage } from '@fluixi-ui/avatar';
+import { Badge } from '@fluixi-ui/badge';
 import { useNavigation } from '@buntubi/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
+import { type Tone } from '../tone.js';
 import { viewToken } from '../view.js';
 import type { AppHeaderLogic } from './logic.js';
 
-const TONE = { live: 'var(--idp-ok)', in_review: 'var(--idp-info)', changes_requested: 'var(--idp-warn)', draft: 'var(--idp-muted)' } as const;
+const TONE = { live: 'success', in_review: 'info', changes_requested: 'warning', draft: 'neutral' } as const satisfies Record<string, Tone>;
 
 export const appHeaderView = (a: AppHeaderLogic) => {
   const navigate = useNavigation().go;
@@ -13,34 +16,34 @@ export const appHeaderView = (a: AppHeaderLogic) => {
     <header part="app-header" class="head">
       <style scoped>{`
         .head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; }
-        .mark { width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; font-weight: 700; color: var(--idp-warn); background: color-mix(in srgb, var(--idp-warn) 16%, var(--idp-surface)); overflow: hidden; }
-        .mark img { width: 100%; height: 100%; object-fit: cover; }
+        .mark { width: 52px; height: 52px; border-radius: 12px; font-size: 22px; font-weight: 700; }
         .title { display: grid; gap: 6px; min-width: 0; }
         .name { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
         h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
-        .pill { display: inline-flex; align-items: center; gap: 6px; padding: 1px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--tone); background: color-mix(in srgb, var(--tone) 13%, transparent); }
-        .pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
         .meta { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--idp-muted); font-size: 13px; }
         code { color: var(--idp-text); font-size: 12.5px; }
         .actions { display: grid; justify-items: end; gap: 6px; }
         .alert { margin: 0; color: var(--idp-bad); font-size: 12.5px; max-width: 320px; text-align: right; }
         @media (max-width: 720px) { .head { grid-template-columns: auto minmax(0, 1fr); } .actions { grid-column: 1 / -1; justify-items: start; } .alert { text-align: left; } }
       `}</style>
-      <span class="mark" aria-hidden="true">
-        <Show when={a.logo()} fallback={a.mark()}>
-          <img src={a.logo()} alt="" />
+      <Avatar class="mark" aria-hidden="true">
+        <Show when={a.logo()} fallback={<AvatarFallback>{() => a.mark()}</AvatarFallback>}>
+          <AvatarImage src={a.logo()} alt="" />
         </Show>
-      </span>
+      </Avatar>
       <div class="title">
         <div class="name">
           <h1>{() => a.name()}</h1>
-          <span class="pill" style={() => `--tone: ${TONE[a.stage()]}`}>
+          <Badge tone={TONE[a.stage()]}>
+            <span class="dot" />
             {() => a.stageLabel()}
-          </span>
+          </Badge>
           <Show when={a.firstParty()}>
-            <span class="pill" style="--tone: var(--idp-accent)" title={() => a.labels().firstPartyHelp}>
+            <Badge tone="primary" title={() => a.labels().firstPartyHelp}>
+              <span class="dot" />
               {() => a.labels().firstParty}
-            </span>
+            </Badge>
           </Show>
         </div>
         <p class="meta">

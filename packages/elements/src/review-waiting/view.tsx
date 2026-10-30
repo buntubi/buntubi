@@ -1,12 +1,13 @@
 /** The default look: a card, a heading, the waiting apps divided by rules. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { ReviewWaitingLogic } from './logic.js';
 
 export const reviewWaitingView = (r: ReviewWaitingLogic) => (
-  <section part="waiting" class="card" aria-labelledby="idp-review-waiting-title">
+  <Card part="waiting" class="card" aria-labelledby="idp-review-waiting-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 6px; }
+      .card { padding: 18px 20px; display: grid; gap: 6px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .list > :deep(idp-waiting-app + idp-waiting-app) { border-top: 1px solid var(--idp-border); }
@@ -28,7 +29,7 @@ export const reviewWaitingView = (r: ReviewWaitingLogic) => (
         </For>
       </div>
     </Show>
-  </section>
+  </Card>
 );
 
 export const ReviewWaitingView = viewToken<ReviewWaitingLogic>('idp-review-waiting', reviewWaitingView);

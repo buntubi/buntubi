@@ -1,4 +1,5 @@
 /** The default look: a selectable card, the tick and the scope's name, its state on the right. */
+import { Badge } from '@fluixi-ui/badge';
 import { Toggle } from '@fluixi-ui/toggle';
 import { viewToken } from '../view.js';
 import { STATE_TONE } from '../permission-legend/logic.js';
@@ -13,7 +14,7 @@ export const scopeCardView = (c: ScopeCardLogic) => (
       .body { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 6px 12px; }
       .top { display: flex; align-items: center; gap: 8px; min-width: 0; }
       code { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
-      .badge { flex: none; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--tone); background: color-mix(in srgb, var(--tone) 13%, transparent); }
+      .badge { flex: none; }
       .text { grid-column: 2; color: var(--idp-muted); font-size: 13px; }
     `}</style>
     <span class="body">
@@ -24,9 +25,9 @@ export const scopeCardView = (c: ScopeCardLogic) => (
       </span>
       <span class="top">
         <code>{() => c.name()}</code>
-        <span class="badge" style={() => `--tone: ${STATE_TONE[c.state()]}`}>
+        <Badge class="badge" tone={STATE_TONE[c.state()]}>
           {() => c.stateLabel()}
-        </span>
+        </Badge>
       </span>
       <span class="text">{() => c.text()}</span>
     </span>

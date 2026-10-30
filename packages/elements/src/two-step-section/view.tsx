@@ -1,6 +1,8 @@
 /** The default look, after the board: the state with its button, the app and codes rows, then the current step. */
 import { css, For, Match, Show, Switch } from '@fluixi/core';
+import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { infoStyles } from '../info-shared/styles.js';
@@ -38,14 +40,14 @@ const icon = (path: string, warn: () => boolean) => (
 );
 
 export const twoStepSectionView = (t: TwoStepSectionLogic) => (
-  <section part="two-step" class="card" aria-labelledby="idp-two-step-title">
+  <Card part="two-step" class="card" aria-labelledby="idp-two-step-title" role="region">
     <style scoped>{`${infoStyles}${styles}`}</style>
     <div class="head">
       <div>
         <span class="title">
           <h2 id="idp-two-step-title">{() => t.labels().title}</h2>
-          <Show when={t.enabled()} fallback={<span class="pill warn">{() => t.labels().off}</span>}>
-            <span class="pill ok">{() => t.labels().on}</span>
+          <Show when={t.enabled()} fallback={<Badge tone="warning"><span class="dot" />{() => t.labels().off}</Badge>}>
+            <Badge tone="success"><span class="dot" />{() => t.labels().on}</Badge>
           </Show>
         </span>
         <span class="muted">{() => (t.enabled() ? t.labels().aboutOn : t.labels().aboutOff)}</span>
@@ -145,7 +147,7 @@ export const twoStepSectionView = (t: TwoStepSectionLogic) => (
         {() => t.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const TwoStepSectionView = viewToken<TwoStepSectionLogic>('idp-two-step-section', twoStepSectionView);

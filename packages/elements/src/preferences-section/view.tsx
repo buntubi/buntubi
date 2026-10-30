@@ -1,5 +1,6 @@
 /** The default look: the language as a segmented choice, the country as a searchable list with flags. */
 import { Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { infoStyles } from '../info-shared/styles.js';
 import { viewToken } from '../view.js';
 import type { PreferencesSectionLogic } from './logic.js';
@@ -8,7 +9,7 @@ import '@bambiste/countries/elements';
 import type {} from '../bambiste-jsx.js';
 
 export const preferencesSectionView = (p: PreferencesSectionLogic) => (
-  <section part="preferences" class="card" aria-labelledby="idp-preferences-title">
+  <Card part="preferences" class="card" aria-labelledby="idp-preferences-title" role="region">
     <style scoped>{`${infoStyles}
       .choice { flex: 1; min-width: 200px; display: grid; gap: 4px; justify-items: start; }
       bc-country-select { width: 100%; max-width: 420px; }
@@ -55,7 +56,7 @@ export const preferencesSectionView = (p: PreferencesSectionLogic) => (
         {() => p.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const PreferencesSectionView = viewToken<PreferencesSectionLogic>('idp-preferences-section', preferencesSectionView);

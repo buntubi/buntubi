@@ -1,12 +1,13 @@
 /** The default look: a row per provider with its state, then sign-up and the profile fields. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { infoStyles } from '../info-shared/styles.js';
 import { viewToken } from '../view.js';
 import type { SignInSettingsLogic } from './logic.js';
 
 export const signInSettingsView = (s: SignInSettingsLogic) => (
   <Show when={s.settings()}>
-    <section part="sign-in-settings" class="card" aria-labelledby="idp-sign-in-settings-title">
+    <Card part="sign-in-settings" class="card" aria-labelledby="idp-sign-in-settings-title" role="region">
       <style scoped>{`${infoStyles}
         .about { margin: 0; padding: 0 18px 14px; font-size: 13px; }
         .state[data-on] { color: var(--idp-ok); }
@@ -33,7 +34,7 @@ export const signInSettingsView = (s: SignInSettingsLogic) => (
         <span class="label">{() => s.labels().profileFields}</span>
         <span class="value">{() => (s.fields().length ? s.fields().join(', ') : s.labels().noFields)}</span>
       </div>
-    </section>
+    </Card>
   </Show>
 );
 

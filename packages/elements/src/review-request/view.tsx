@@ -2,6 +2,7 @@
 import { For, Show } from '@fluixi/core';
 import { useNavigation } from '@buntubi/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { ReviewRequestLogic } from './logic.js';
 
@@ -10,9 +11,9 @@ const TONE = { draft: 'var(--idp-border-2)', in_review: 'var(--idp-info)', chang
 export const reviewRequestView = (r: ReviewRequestLogic) => {
   const navigate = useNavigation().go;
   return (
-    <section part="review-request" class="card" style={() => `--tone: ${TONE[r.stage()]}`} aria-labelledby="idp-review-request-title">
+    <Card part="review-request" class="card" style={() => `--tone: ${TONE[r.stage()]}`} aria-labelledby="idp-review-request-title" role="region">
       <style scoped>{`
-        .card { border: 1px solid color-mix(in srgb, var(--tone) 55%, var(--idp-border)); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px 22px; display: grid; gap: 14px; }
+        .card { --flx-ui-card-border: 1px solid color-mix(in srgb, var(--tone) 55%, var(--flx-ui-color-border)); padding: 20px 22px; display: grid; gap: 14px; }
         .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
         h2 { margin: 0; font-size: 16px; font-weight: 600; }
         .date { color: var(--idp-muted); font-size: 13px; }
@@ -54,7 +55,7 @@ export const reviewRequestView = (r: ReviewRequestLogic) => {
           </Button>
         </div>
       </Show>
-    </section>
+    </Card>
   );
 };
 

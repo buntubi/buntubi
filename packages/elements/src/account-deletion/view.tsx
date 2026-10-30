@@ -1,29 +1,29 @@
 /** The default look, after the board: a red-edged card, what stops the deletion, then the confirmation. */
 import { css, Show } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { AccountDeletionLogic } from './logic.js';
 
 const styles = css`
-  .card { display: grid; gap: 12px; padding: 18px; border: 1px solid color-mix(in srgb, var(--idp-bad) 40%, var(--idp-border)); border-radius: var(--idp-radius); background: var(--idp-surface); }
+  .card { --flx-ui-card-border: 1px solid color-mix(in srgb, var(--flx-ui-color-danger) 40%, var(--flx-ui-color-border)); display: grid; gap: 12px; padding: 18px; }
   h2 { margin: 0; font-size: 15px; font-weight: 600; }
   .about { margin: 0; max-width: 640px; color: var(--idp-muted); font-size: 13px; }
-  .block { display: flex; gap: 12px; padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--idp-warn) 9%, var(--idp-surface)); font-size: 13px; }
-  .block::before { content: ''; width: 8px; height: 8px; margin-top: 6px; flex: none; border-radius: 50%; background: var(--idp-warn); }
   .block a { color: var(--idp-accent-ink); font-weight: 500; text-decoration: none; }
   .fields { display: grid; gap: 12px; max-width: 380px; }
   .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
 `;
 
 export const accountDeletionView = (d: AccountDeletionLogic) => (
-  <section part="account-deletion" class="card" aria-labelledby="idp-deletion-title">
+  <Card part="account-deletion" class="card" aria-labelledby="idp-deletion-title" role="region">
     <style scoped>{`${styles}`}</style>
     <h2 id="idp-deletion-title">{() => d.labels().title}</h2>
     <p class="about">{() => d.labels().about}</p>
     <Show when={d.owned()}>
-      <div class="block" role="note">
+      <Alert class="block" variant="warning" role="note">
         <span>
           {() => d.labels().owns.replace('{names}', d.owned())} {() => d.labels().ownsAfter}{' '}
           <Show when={d.portalHref()} fallback={<>{() => d.labels().portal}</>}>
@@ -31,12 +31,12 @@ export const accountDeletionView = (d: AccountDeletionLogic) => (
           </Show>
           .
         </span>
-      </div>
+      </Alert>
     </Show>
     <Show when={d.lastAdmin()}>
-      <div class="block" role="note">
+      <Alert class="block" variant="warning" role="note">
         <span>{() => d.labels().lastAdmin}</span>
-      </div>
+      </Alert>
     </Show>
     <Show when={!d.blocked()}>
       <Form form={d.form} onSubmit={(values) => d.remove(values)} novalidate>
@@ -62,7 +62,7 @@ export const accountDeletionView = (d: AccountDeletionLogic) => (
         </div>
       </Form>
     </Show>
-  </section>
+  </Card>
 );
 
 export const AccountDeletionView = viewToken<AccountDeletionLogic>('idp-account-deletion', accountDeletionView);

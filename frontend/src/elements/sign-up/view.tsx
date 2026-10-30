@@ -1,5 +1,6 @@
 /** The default look of idp-sign-up. */
 import { For } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
 import { Form, FormField } from '@fluixi-ui/form';
 import { ProfileFieldInput } from '@idp/elements/about-section/field-input';
 import { TermsCheck } from '../shared/terms-check.js';
@@ -12,7 +13,7 @@ import type { SignUpLogic } from './sign-up.js';
 export const signUpView = ({ asked, error, form, label, locale, pending, platform, platformForm, submit, terms }: SignUpLogic) =>
   (
       <Form form={form} onSubmit={submit} class="idp-form" novalidate>
-        {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
+        {() => (error() ? <Alert variant="danger" class="idp-alert">{error()}</Alert> : null)}
         <div class="idp-row">
           <FormField control={form.get('givenName')} label={() => label().givenName}>
             {(b) => (

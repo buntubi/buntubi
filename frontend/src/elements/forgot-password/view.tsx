@@ -1,4 +1,5 @@
 /** The default look of idp-forgot-password. */
+import { Alert } from '@fluixi-ui/alert';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Button } from '@fluixi-ui/button';
@@ -14,7 +15,7 @@ export const forgotPasswordView = ({ error, form, label, pending, sent, submit }
       ) : (
         <Form form={form} onSubmit={submit} class="idp-form" novalidate>
           <p class="idp-note">{() => label().intro}</p>
-          {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
+          {() => (error() ? <Alert variant="danger" class="idp-alert">{error()}</Alert> : null)}
           <FormField control={form.get('email')} label={() => label().email}>
             {(b) => (
               <Input type="email" name="email" autocomplete="email" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />

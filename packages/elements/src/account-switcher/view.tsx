@@ -1,5 +1,6 @@
 /** The default look: the avatar and name as a pill, the accounts in a popover under it. */
 import { For, Show } from '@fluixi/core';
+import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
 import { Button } from '@fluixi-ui/button';
 import { Popover, PopoverContent, PopoverPortal, PopoverTrigger } from '@fluixi-ui/popover';
 import { viewToken } from '../view.js';
@@ -9,10 +10,9 @@ export const accountSwitcherView = (a: AccountSwitcherLogic) => (
   <div part="account-switcher" class="switcher">
   <Popover placement="bottom-end" offset={8}>
     <style scoped>{`
-      /* The trigger and the popover's content are components: their elements carry no scope. */
-      .switcher :deep(.pill) { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px 0 4px; border: 1px solid var(--idp-border); border-radius: 999px; background: var(--idp-surface); color: var(--idp-text); font: inherit; cursor: pointer; }
-      .switcher :deep(.pill:hover) { background: var(--idp-surface-2); }
-      .mark { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700; color: var(--idp-accent-ink); background: var(--idp-accent-soft); }
+      /* The trigger wears fluixi-ui's outline button; the view sets only its shape and layout. */
+      .switcher :deep(.pill) { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px 0 4px; border-radius: 999px; }
+      .mark { flex: none; width: 28px; height: 28px; font-size: 11.5px; font-weight: 700; }
       .who { font-size: 13px; font-weight: 500; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       /* The popover draws the surface; the panel only lays out what is in it. */
       .panel { width: 320px; max-width: calc(100vw - 48px); display: grid; gap: 4px; }
@@ -30,8 +30,8 @@ export const accountSwitcherView = (a: AccountSwitcherLogic) => (
       .actions > :deep(button) { justify-content: flex-start; width: 100%; gap: 10px; }
       .alert { margin: 0; padding: 4px 10px; color: var(--idp-bad); font-size: 12.5px; }
     `}</style>
-    <PopoverTrigger class="pill" aria-label={`${a.labels().menu}: ${a.current()?.name || a.current()?.email || ''}`}>
-      <span class="mark" aria-hidden="true">{() => (a.current() ? a.initials(a.current()!) : '')}</span>
+    <PopoverTrigger class="pill" data-variant="outline" data-tone="neutral" aria-label={`${a.labels().menu}: ${a.current()?.name || a.current()?.email || ''}`}>
+      <Avatar class="mark" aria-hidden="true"><AvatarFallback>{() => (a.current() ? a.initials(a.current()!) : '')}</AvatarFallback></Avatar>
       <span class="who">{() => a.current()?.name || a.current()?.email || ''}</span>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="m6 9 6 6 6-6" />
@@ -44,7 +44,7 @@ export const accountSwitcherView = (a: AccountSwitcherLogic) => (
         <For each={a.accounts()} by={(entry) => entry.id}>
           {(entry) => (
             <div class="row" data-current={() => (entry().current ? '' : undefined)}>
-              <span class="mark" aria-hidden="true">{() => a.initials(entry())}</span>
+              <Avatar class="mark" aria-hidden="true"><AvatarFallback>{() => a.initials(entry())}</AvatarFallback></Avatar>
               <span class="names">
                 <span class="name">{() => entry().name || entry().email}</span>
                 <span class="email">{() => entry().email}</span>

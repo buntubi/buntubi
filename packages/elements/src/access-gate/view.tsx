@@ -1,6 +1,7 @@
 /** The gate's default look: a centred card with the reason and its way out. */
 import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { AccessGateLogic } from './logic.js';
 
@@ -8,13 +9,13 @@ export const accessGateView = (g: AccessGateLogic) => (
   <main part="gate" class="gate">
     <style scoped>{`
       .gate { min-height: 100vh; display: grid; place-items: center; padding: 32px 24px; box-sizing: border-box; }
-      .card { max-width: 480px; display: grid; gap: 14px; }
+      .card { max-width: 480px; padding: 28px; display: grid; gap: 14px; }
       h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
       p { margin: 0; color: var(--idp-muted); line-height: 1.55; }
       .links { display: flex; flex-wrap: wrap; gap: 20px; }
       a { color: var(--idp-accent-ink); font-weight: 500; text-decoration: none; }
     `}</style>
-    <div class="card">
+    <Card class="card">
       <h1>{() => g.labels().titles[g.reason()]}</h1>
       <p>{() => g.labels().texts[g.reason()]}</p>
       <Show when={g.reason() === 'signed_out'}>
@@ -36,7 +37,7 @@ export const accessGateView = (g: AccessGateLogic) => (
           <a href={() => g.signOutHref()}>{() => g.labels().signOut}</a>
         </div>
       </Show>
-    </div>
+    </Card>
   </main>
 );
 

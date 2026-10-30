@@ -1,5 +1,6 @@
 /** The review queue's default look: one row per app, its scopes, its wait, and the way in. */
 import { For, Show } from '@fluixi/core';
+import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
 import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { ReviewQueueLogic } from './logic.js';
@@ -14,7 +15,7 @@ export const reviewQueueView = (q: ReviewQueueLogic) => (
       td { padding: 12px 18px; border-bottom: 1px solid var(--idp-border); vertical-align: middle; }
       tr:last-child td { border-bottom: 0; }
       .app { display: flex; align-items: center; gap: 12px; }
-      .mark { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-weight: 600; background: var(--idp-accent-soft); color: var(--idp-accent-ink); flex: none; }
+      .mark { width: 32px; height: 32px; border-radius: 9px; font-weight: 600; flex: none; }
       .names { display: flex; flex-direction: column; }
       .id, .meta { font-size: 12px; color: var(--idp-muted); }
       .id { font-family: var(--idp-mono); }
@@ -42,7 +43,7 @@ export const reviewQueueView = (q: ReviewQueueLogic) => (
                 <tr part="row">
                   <td>
                     <span class="app">
-                      <span class="mark">{() => row().name.slice(0, 1).toUpperCase()}</span>
+                      <Avatar class="mark"><AvatarFallback>{() => row().name.slice(0, 1).toUpperCase()}</AvatarFallback></Avatar>
                       <span class="names">
                         <span>{() => row().name}</span>
                         <span class="id">{() => row().client_id}</span>

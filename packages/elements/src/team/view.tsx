@@ -1,5 +1,6 @@
 /** The default look: the organization's mark, name and counts beside the tabs, then the tab's card. */
 import { Show } from '@fluixi/core';
+import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
 import { viewToken } from '../view.js';
 import type { TeamLogic } from './logic.js';
 
@@ -9,14 +10,14 @@ export const teamView = (t: TeamLogic) => (
       .team { display: grid; gap: 20px; }
       .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; }
       .org { display: flex; align-items: center; gap: 16px; }
-      .mark { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; font-weight: 700; color: var(--idp-ok); background: color-mix(in srgb, var(--idp-ok) 14%, var(--idp-surface)); }
+      .mark { width: 48px; height: 48px; border-radius: 12px; font-size: 20px; font-weight: 700; }
       .names { display: grid; gap: 2px; }
       h1 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
       .counts { color: var(--idp-muted); }
     `}</style>
     <div class="head">
       <div class="org">
-        <span class="mark" aria-hidden="true">{() => t.mark()}</span>
+        <Avatar class="mark" aria-hidden="true"><AvatarFallback>{() => t.mark()}</AvatarFallback></Avatar>
         <span class="names">
           <h1>{() => t.name()}</h1>
           <span class="counts">{() => t.counts()}</span>

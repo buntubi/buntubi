@@ -1,12 +1,13 @@
 /** The default look: a card with a heading and one attention item per entry. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { NeedsAttentionLogic } from './logic.js';
 
 export const needsAttentionView = (n: NeedsAttentionLogic) => (
-  <section part="attention" class="card" aria-labelledby="idp-attention-title">
+  <Card part="attention" class="card" aria-labelledby="idp-attention-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 10px 10px; display: grid; gap: 6px; align-content: start; }
+      .card { padding: 18px 10px 10px; display: grid; gap: 6px; align-content: start; }
       h2 { margin: 0; padding: 0 10px 4px; font-size: 15px; font-weight: 600; }
       .empty { margin: 0; padding: 4px 10px 10px; color: var(--idp-muted); font-size: 13px; }
       .card > :deep(idp-attention-item) { display: block; }
@@ -17,7 +18,7 @@ export const needsAttentionView = (n: NeedsAttentionLogic) => (
         {(item) => <idp-attention-item title={item().title} text={item().text} href={item().href} tone={item().tone} />}
       </For>
     </Show>
-  </section>
+  </Card>
 );
 
 export const NeedsAttentionView = viewToken<NeedsAttentionLogic>('idp-needs-attention', needsAttentionView);

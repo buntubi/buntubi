@@ -1,15 +1,16 @@
 /** The default look: a card, the title and Create key, the form when asked for, one row per key. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { ApiKeysLogic } from './logic.js';
 
 export const apiKeysView = (k: ApiKeysLogic) => (
-  <section part="api-keys" class="card" aria-labelledby="idp-api-keys-title">
+  <Card part="api-keys" class="card" aria-labelledby="idp-api-keys-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px; display: grid; gap: 14px; align-content: start; }
+      .card { padding: 20px; display: grid; gap: 14px; align-content: start; }
       .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       p { margin: 0; color: var(--idp-muted); font-size: 13px; }
@@ -73,7 +74,7 @@ export const apiKeysView = (k: ApiKeysLogic) => (
         {() => k.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const ApiKeysView = viewToken<ApiKeysLogic>('idp-api-keys', apiKeysView);

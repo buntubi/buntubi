@@ -1,4 +1,5 @@
 /** The default look of idp-verify-email. */
+import { Alert } from '@fluixi-ui/alert';
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Button } from '@fluixi-ui/button';
 import { CODE_LENGTH } from './verify-email.js';
@@ -18,7 +19,7 @@ export const verifyEmailView = ({ askAgain, code, label, problem, resend, resent
         <p class="idp-note">
           {() => label().sentTo} <strong>{() => email()}</strong>
         </p>
-        {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
+        {() => (problem() ? <Alert variant="danger" class="idp-alert">{problem()}</Alert> : null)}
         {() => (resent() ? <p class="idp-note" role="status">{label().resent}</p> : null)}
         <PinInput
           class="idp-code"

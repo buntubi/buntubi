@@ -1,5 +1,6 @@
 /** The default look: the icon in a tinted tile, the name with its pill, the why, the button. */
 import { Show } from '@fluixi/core';
+import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
 import { rowStyles } from '../info-shared/rows.js';
 import { viewToken } from '../view.js';
@@ -18,7 +19,7 @@ export const secureOptionView = (o: SecureOptionLogic) => (
         <span class="title">
           {() => o.title()}
           <Show when={o.badge()}>
-            <span class="pill ok">{() => o.badge()}</span>
+            <Badge tone="success">{() => o.badge()}</Badge>
           </Show>
         </span>
         <span class="sub">{() => o.text()}</span>

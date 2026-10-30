@@ -1,11 +1,12 @@
 /** The default look, after the board: title, what the file holds, the button and the last copy. */
 import { css, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { DataExportLogic } from './logic.js';
 
 const styles = css`
-  .card { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
+  .card { display: grid; gap: 12px; padding: 18px; }
   h2 { margin: 0; font-size: 15px; font-weight: 600; }
   .about { margin: 0; max-width: 640px; color: var(--idp-muted); font-size: 13px; }
   .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
@@ -14,7 +15,7 @@ const styles = css`
 `;
 
 export const dataExportView = (d: DataExportLogic) => (
-  <section part="data-export" class="card" aria-labelledby="idp-export-title">
+  <Card part="data-export" class="card" aria-labelledby="idp-export-title" role="region">
     <style scoped>{`${styles}`}</style>
     <h2 id="idp-export-title">{() => d.labels().title}</h2>
     <p class="about">{() => d.labels().about}</p>
@@ -29,7 +30,7 @@ export const dataExportView = (d: DataExportLogic) => (
         {() => d.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const DataExportView = viewToken<DataExportLogic>('idp-data-export', dataExportView);

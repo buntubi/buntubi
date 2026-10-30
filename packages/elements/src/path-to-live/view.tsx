@@ -1,14 +1,15 @@
 /** The default look: a card, the marks joined by a rule, each label under its mark. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { PathToLiveLogic } from './logic.js';
 
 const CHECK = 'M5 12.5l4.5 4.5L19 7.5';
 
 export const pathToLiveView = (p: PathToLiveLogic) => (
-  <section part="path" class="card" aria-labelledby="idp-path-title">
+  <Card part="path" class="card" aria-labelledby="idp-path-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px 22px; display: grid; gap: 18px; }
+      .card { padding: 20px 22px; display: grid; gap: 18px; }
       .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .position { color: var(--idp-muted); font-size: 13px; }
@@ -49,7 +50,7 @@ export const pathToLiveView = (p: PathToLiveLogic) => (
         )}
       </For>
     </ol>
-  </section>
+  </Card>
 );
 
 export const PathToLiveView = viewToken<PathToLiveLogic>('idp-path-to-live', pathToLiveView);

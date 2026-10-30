@@ -1,4 +1,5 @@
 /** The default look of idp-reset-password. */
+import { Alert } from '@fluixi-ui/alert';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Button } from '@fluixi-ui/button';
@@ -8,7 +9,7 @@ import type { ResetPasswordLogic } from './reset-password.js';
 export const resetPasswordView = ({ error, form, label, password, pending, submit }: ResetPasswordLogic) =>
   (
       <Form form={form} onSubmit={submit} class="idp-form" novalidate>
-        {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
+        {() => (error() ? <Alert variant="danger" class="idp-alert">{error()}</Alert> : null)}
         <FormField control={form.get('password')} label={() => label().password} description={() => label().passwordHint}>
           {(b) => (
             <Input type="password" name="password" autocomplete="new-password" value={b.value()} onInput={b.onInput} onBlur={b.onBlur} />

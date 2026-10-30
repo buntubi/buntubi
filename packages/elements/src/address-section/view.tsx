@@ -1,6 +1,7 @@
 /** The default look: the address by lines in one row; the form with the street over the city, the region and the country. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input, Textarea } from '@fluixi-ui/input';
 import { infoStyles } from '../info-shared/styles.js';
@@ -10,7 +11,7 @@ import '@bambiste/countries/elements';
 import type {} from '../bambiste-jsx.js';
 
 export const addressSectionView = (a: AddressSectionLogic) => (
-  <section part="address" class="card" aria-labelledby="idp-address-title">
+  <Card part="address" class="card" aria-labelledby="idp-address-title" role="region">
     <style scoped>{`${infoStyles}
       .lines { display: grid; gap: 2px; }
       .city { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px; }
@@ -100,7 +101,7 @@ export const addressSectionView = (a: AddressSectionLogic) => (
         {() => a.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const AddressSectionView = viewToken<AddressSectionLogic>('idp-address-section', addressSectionView);

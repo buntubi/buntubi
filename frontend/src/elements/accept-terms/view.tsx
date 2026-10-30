@@ -1,4 +1,5 @@
 /** The default look of idp-accept-terms: why it is asked, the box with the terms linked, then continue. */
+import { Alert } from '@fluixi-ui/alert';
 import { Form } from '@fluixi-ui/form';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '@buntubi/sdk/view';
@@ -8,7 +9,7 @@ import type { AcceptTermsLogic } from './accept-terms.js';
 export const acceptTermsView = ({ error, form, label, pending, submit, terms }: AcceptTermsLogic) => (
   <Form form={form} onSubmit={submit} class="idp-form" novalidate>
     <p class="idp-note">{() => label().intro}</p>
-    {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
+    {() => (error() ? <Alert variant="danger" class="idp-alert">{error()}</Alert> : null)}
     {() => {
       const toAccept = terms();
       return toAccept ? <TermsCheck control={form.get('acceptTerms')} terms={toAccept} labels={label()} /> : null;

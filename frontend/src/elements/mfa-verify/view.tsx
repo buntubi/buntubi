@@ -1,5 +1,6 @@
 /** The default look of idp-mfa-verify. */
 import { Show } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Input } from '@fluixi-ui/input';
 import { Button } from '@fluixi-ui/button';
@@ -21,7 +22,7 @@ export const mfaVerifyView = ({ askPasskey, backup, canPasskey, code, hasCode, l
           fallback={
             <>
               <p class="idp-note">{() => (canPasskey() ? label().passkeyIntro : label().passkeyUnavailable)}</p>
-              {() => (passkey.error() ? <p class="idp-alert" role="alert">{passkey.error()}</p> : null)}
+              {() => (passkey.error() ? <Alert variant="danger" class="idp-alert">{passkey.error()}</Alert> : null)}
               <Show when={canPasskey()}>
                 <Button type="button" variant="solid" data-part="passkey" disabled={passkey.pending()} onPress={askPasskey}>
                   {() => (passkey.pending() ? label().passkeyPending : label().usePasskey)}
@@ -31,7 +32,7 @@ export const mfaVerifyView = ({ askPasskey, backup, canPasskey, code, hasCode, l
           }
         >
           <p class="idp-note">{() => (backup() ? label().backupIntro : label().intro)}</p>
-          {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
+          {() => (problem() ? <Alert variant="danger" class="idp-alert">{problem()}</Alert> : null)}
           <Show
             when={backup()}
             fallback={

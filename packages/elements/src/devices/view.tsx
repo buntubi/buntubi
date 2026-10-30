@@ -1,6 +1,7 @@
 /** The default look, after the board: the summary and the sign-out-all button over a card of rows. */
 import { css, For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { DevicesLogic } from './logic.js';
 
@@ -8,7 +9,7 @@ const styles = css`
   .devices { display: grid; gap: 14px; }
   .bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
   .muted { color: var(--idp-muted); font-size: 13px; }
-  .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); overflow: clip; }
+  
   .card > :deep(idp-device) { display: block; }
   .card > :deep(idp-device + idp-device) { border-top: 1px solid var(--idp-border); }
   .note { margin: 0; color: var(--idp-muted); font-size: 12.5px; }
@@ -31,11 +32,11 @@ export const devicesView = (d: DevicesLogic) => (
         {() => d.error()}
       </p>
     </Show>
-    <section class="card" aria-label={d.labels().title}>
+    <Card class="card" aria-label={d.labels().title}>
       <For each={d.devices()} by={(device) => device.id}>
         {(device) => <idp-device device={device()} locale={d.locale()} labels={d.labels().device} describe={d.describe()} />}
       </For>
-    </section>
+    </Card>
     <p class="note">{() => d.labels().note}</p>
   </div>
 );

@@ -1,5 +1,6 @@
 /** The default look of idp-complete-profile: a line naming the account, then the fields. */
 import { For } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
 import { Form } from '@fluixi-ui/form';
 import { Button } from '@fluixi-ui/button';
 import { viewToken } from '@buntubi/sdk/view';
@@ -11,7 +12,7 @@ import type { CompleteProfileLogic } from './complete-profile.js';
 export const completeProfileView = ({ asked, error, form, intro, label, locale, pending, platform, platformForm, submit, terms }: CompleteProfileLogic) => (
   <Form form={form} onSubmit={submit} class="idp-form" novalidate>
     <p class="idp-note">{intro}</p>
-    {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
+    {() => (error() ? <Alert variant="danger" class="idp-alert">{error()}</Alert> : null)}
     <For each={asked()}>
       {(field) => <ProfileFieldInput field={field} control={form.get(field)} label={label().fields[field]} genders={label().genders} />}
     </For>

@@ -1,6 +1,8 @@
 /** The default look: the profile form and the account facts side by side, then organizations and access. */
 import { For, Show } from '@fluixi/core';
+import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input, Textarea } from '@fluixi-ui/input';
 import { PROFILE_FIELDS, type PlatformValue } from '@buntubi/sdk/account';
@@ -20,7 +22,7 @@ export const userProfileView = (p: UserProfileLogic) => (
     <style scoped>{`
       .profile { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; align-items: start; }
       .column { display: grid; gap: 16px; min-width: 0; }
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 14px; min-width: 0; }
+      .card { padding: 18px 20px; display: grid; gap: 14px; min-width: 0; }
       h2 { margin: 0; font-size: 14px; font-weight: 600; }
       .fields { display: grid; gap: 14px; }
       .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -28,10 +30,6 @@ export const userProfileView = (p: UserProfileLogic) => (
       dl { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 20px; font-size: 13.5px; }
       dt { color: var(--idp-muted); }
       dd { margin: 0; min-width: 0; overflow-wrap: anywhere; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-      .tag { padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; background: var(--idp-surface-2); color: var(--idp-muted); }
-      .tag[data-tone='ok'] { color: var(--idp-ok); background: color-mix(in srgb, var(--idp-ok) 12%, transparent); }
-      .tag[data-tone='warn'] { color: var(--idp-warn); background: color-mix(in srgb, var(--idp-warn) 14%, transparent); }
-      .tag[data-tone='accent'] { color: var(--idp-accent-ink); background: color-mix(in srgb, var(--idp-accent) 12%, transparent); }
       ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
       li { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13.5px; }
       .muted { margin: 0; color: var(--idp-muted); font-size: 13px; }
@@ -42,7 +40,7 @@ export const userProfileView = (p: UserProfileLogic) => (
       @media (max-width: 900px) { .profile { grid-template-columns: minmax(0, 1fr); } .row { grid-template-columns: 1fr; } }
     `}</style>
     <div class="column">
-      <section class="card">
+      <Card class="card">
         <h2>{() => p.labels().profile}</h2>
         <Form form={p.form} onSubmit={(values) => p.save(values)} novalidate>
           <div class="fields">
@@ -130,9 +128,9 @@ export const userProfileView = (p: UserProfileLogic) => (
             </div>
           </div>
         </Form>
-      </section>
+      </Card>
       <Show when={Object.keys(p.page()?.fields ?? {}).length > 0 || (p.page()?.platform_fields ?? []).length > 0}>
-        <section class="card">
+        <Card class="card">
           <h2>{() => p.labels().profileFields}</h2>
           <ul>
             <For each={PROFILE_FIELDS.filter((field) => p.page()?.fields[field])}>
@@ -154,9 +152,9 @@ export const userProfileView = (p: UserProfileLogic) => (
               )}
             </For>
           </ul>
-        </section>
+        </Card>
       </Show>
-      <section class="card">
+      <Card class="card">
         <h2>{() => p.labels().identities}</h2>
         <Show when={p.page()?.identities.length} fallback={<p class="muted">{() => p.labels().noIdentity}</p>}>
           <ul>
@@ -170,8 +168,8 @@ export const userProfileView = (p: UserProfileLogic) => (
             </For>
           </ul>
         </Show>
-      </section>
-      <section class="card">
+      </Card>
+      <Card class="card">
         <h2>{() => p.labels().organizations}</h2>
         <Show when={p.page()?.organizations.length} fallback={<p class="muted">{() => p.labels().noOrganization}</p>}>
           <ul>
@@ -182,27 +180,27 @@ export const userProfileView = (p: UserProfileLogic) => (
                     {org.name}
                     <Show when={org.platform}>
                       {' '}
-                      <span class="tag" data-tone="accent">{() => p.labels().platform}</span>
+                      <Badge tone="primary">{() => p.labels().platform}</Badge>
                     </Show>
                   </span>
-                  <span class="tag">{() => p.labels().roles[org.role]}</span>
+                  <Badge>{() => p.labels().roles[org.role]}</Badge>
                 </li>
               )}
             </For>
           </ul>
         </Show>
-      </section>
+      </Card>
     </div>
     <div class="column">
-      <section class="card">
+      <Card class="card">
         <h2>{() => p.labels().account}</h2>
         <dl>
           <dt>{() => p.labels().email}</dt>
           <dd>
             {() => p.user()?.email ?? ''}
-            <span class="tag" data-tone={() => (p.user()?.email_verified ? 'ok' : 'warn')}>
+            <Badge tone={p.user()?.email_verified ? 'success' : 'warning'}>
               {() => (p.user()?.email_verified ? p.labels().verified : p.labels().unverified)}
-            </span>
+            </Badge>
           </dd>
           <dt>{() => p.labels().signedUp}</dt>
           <dd>{() => p.date(p.user()?.created_at)}</dd>
@@ -223,8 +221,8 @@ export const userProfileView = (p: UserProfileLogic) => (
             }
           </dd>
         </dl>
-      </section>
-      <section class="card">
+      </Card>
+      <Card class="card">
         <h2>{() => p.labels().security}</h2>
         <Show
           when={!p.user()?.superadmin && !p.self()}
@@ -281,7 +279,7 @@ export const userProfileView = (p: UserProfileLogic) => (
             {() => p.error()}
           </p>
         </Show>
-      </section>
+      </Card>
     </div>
   </div>
 );

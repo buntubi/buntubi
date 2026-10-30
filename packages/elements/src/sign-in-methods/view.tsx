@@ -1,6 +1,7 @@
 /** The default look: one row per linked provider with its mark, then a button per provider left to link. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { infoStyles } from '../info-shared/styles.js';
 import { SOCIAL_ICONS } from '../social-button/icons.js';
 import { viewToken } from '../view.js';
@@ -8,7 +9,7 @@ import type { SignInMethodsLogic } from './logic.js';
 import '../social-button/social-button.js';
 
 export const signInMethodsView = (m: SignInMethodsLogic) => (
-  <section part="sign-in-methods" class="card" aria-labelledby="idp-sign-in-methods-title">
+  <Card part="sign-in-methods" class="card" aria-labelledby="idp-sign-in-methods-title" role="region">
     <style scoped>{`${infoStyles}
       .mark { width: 18px; height: 18px; flex: none; }
       .mark path:not([fill]) { fill: currentColor; }
@@ -53,7 +54,7 @@ export const signInMethodsView = (m: SignInMethodsLogic) => (
         {() => m.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const SignInMethodsView = viewToken<SignInMethodsLogic>('idp-sign-in-methods', signInMethodsView);

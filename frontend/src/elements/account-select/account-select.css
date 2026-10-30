@@ -4,7 +4,7 @@
   padding: 0;
   list-style: none;
   border: 1px solid var(--flx-ui-color-border);
-  border-radius: 12px;
+  border-radius: var(--flx-ui-radius-lg);
   overflow: hidden;
 }
 .idp-accounts > li + li {
@@ -38,9 +38,9 @@
   color: var(--tone);
   background: color-mix(in srgb, var(--tone) 16%, transparent);
 }
-.idp-account-avatar[data-tone='ok'] { --tone: var(--flx-ui-color-success, #15803d); }
-.idp-account-avatar[data-tone='info'] { --tone: #1d4ed8; }
-.idp-account-avatar[data-tone='warn'] { --tone: var(--flx-ui-color-warning, #b45309); }
+.idp-account-avatar[data-tone='ok'] { --tone: var(--flx-ui-color-success-text); }
+.idp-account-avatar[data-tone='info'] { --tone: var(--flx-ui-color-primary-text); }
+.idp-account-avatar[data-tone='warn'] { --tone: var(--flx-ui-color-warning-text); }
 .idp-account-avatar img {
   width: 100%;
   height: 100%;

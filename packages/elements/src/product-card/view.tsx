@@ -1,22 +1,25 @@
 /** The default look: a selectable card, the tick and name on top with the review badge at the end. */
 import { For } from '@fluixi/core';
+import { Badge } from '@fluixi-ui/badge';
 import { Toggle } from '@fluixi-ui/toggle';
+import { type Tone } from '../tone.js';
 import { viewToken } from '../view.js';
 import type { ProductCardLogic } from './logic.js';
 
 const CHECK = 'M5 12.5l4.5 4.5L19 7.5';
-const TONE = { none: 'var(--idp-ok)', review: 'var(--idp-warn)', restricted: 'var(--idp-bad)' } as const;
+const TONE = { none: 'success', review: 'warning', restricted: 'danger' } as const satisfies Record<string, Tone>;
 
 export const productCardView = (p: ProductCardLogic) => (
-  <Toggle part="product" data-choice="card" class="product" pressed={p.selected()} onChange={() => p.toggle()}>
+  <Toggle part="product" data-choice="card" data-card="" class="product" pressed={p.selected()} onChange={() => p.toggle()}>
     <style scoped>{`
-      .product { height: 100%; box-sizing: border-box; }
+      .product { display: block; width: 100%; height: 100%; box-sizing: border-box; padding: 18px; text-align: left; }
+      [data-tick] { width: 16px; height: 16px; box-sizing: border-box; display: grid; place-items: center; border: 1.5px solid var(--flx-ui-color-border-strong); border-radius: var(--flx-ui-radius-sm); color: transparent; }
+      .product[data-state='on'] [data-tick] { border-color: var(--flx-ui-color-primary); background: var(--flx-ui-color-primary); color: var(--flx-ui-color-primary-fg); }
       .body { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 4px 14px; align-items: start; }
       .body > [data-tick] { margin-top: 2px; }
       .main { display: grid; gap: 8px; }
       .top { display: flex; align-items: center; gap: 8px; }
       .name { font-weight: 600; flex: 1; }
-      .badge { padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--tone); background: color-mix(in srgb, var(--tone) 13%, transparent); }
       .text { color: var(--idp-muted); font-size: 13px; }
       .scopes { display: flex; flex-wrap: wrap; gap: 6px; }
       code { font-size: 11.5px; padding: 2px 7px; border-radius: 6px; background: var(--idp-surface-2); border: 1px solid var(--idp-border); }
@@ -31,9 +34,7 @@ export const productCardView = (p: ProductCardLogic) => (
       <span class="main">
         <span class="top">
           <span class="name">{() => p.name()}</span>
-          <span class="badge" style={() => `--tone: ${TONE[p.approval()]}`}>
-            {() => p.approvalLabel()}
-          </span>
+          <Badge tone={TONE[p.approval()]}>{() => p.approvalLabel()}</Badge>
         </span>
         <span class="text">{() => p.text()}</span>
         <span class="scopes">

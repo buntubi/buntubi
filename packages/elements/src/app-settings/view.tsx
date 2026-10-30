@@ -1,6 +1,7 @@
 /** The basic information's default look: one card, the fields two by two. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
@@ -10,9 +11,9 @@ const TYPES: Partial<Record<SettingsField, string>> = { homepage_url: 'url', pri
 
 export const appSettingsView = (s: AppSettingsLogic) => (
   <Form form={s.form} onSubmit={(values) => s.save(values)} novalidate>
-  <div part="settings" class="card">
+  <Card part="settings" class="card">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 16px; }
+      .card { padding: 18px 20px; display: grid; gap: 16px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .intro { display: grid; gap: 4px; }
@@ -77,7 +78,7 @@ export const appSettingsView = (s: AppSettingsLogic) => (
         {() => s.error()}
       </p>
     </Show>
-  </div>
+  </Card>
   </Form>
 );
 

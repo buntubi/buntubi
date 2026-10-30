@@ -1,13 +1,14 @@
 /** The default look: a card, the title, the tiles in a wrapping row. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { AppLauncherLogic } from './logic.js';
 
 export const appLauncherView = (l: AppLauncherLogic) => (
   <Show when={l.apps().length}>
-    <section part="apps" class="card" aria-labelledby="idp-app-launcher-title">
+    <Card part="apps" class="card" aria-labelledby="idp-app-launcher-title" role="region">
       <style scoped>{`
-        .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 16px 18px; display: grid; gap: 12px; }
+        .card { padding: 16px 18px; display: grid; gap: 12px; }
         h2 { margin: 0; font-size: 15px; font-weight: 600; }
         .tiles { display: flex; flex-wrap: wrap; gap: 10px; }
         .tile { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--idp-border); border-radius: 10px; color: var(--idp-text); text-decoration: none; font-weight: 500; }
@@ -30,7 +31,7 @@ export const appLauncherView = (l: AppLauncherLogic) => (
           )}
         </For>
       </div>
-    </section>
+    </Card>
   </Show>
 );
 

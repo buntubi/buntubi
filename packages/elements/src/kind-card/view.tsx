@@ -4,9 +4,9 @@ import { viewToken } from '../view.js';
 import type { KindCardLogic } from './logic.js';
 
 export const kindCardView = (k: KindCardLogic) => (
-  <Toggle part="kind" data-choice="card" class="kind" pressed={k.selected()} onChange={() => k.choose()}>
+  <Toggle part="kind" data-choice="card" data-card="" class="kind" pressed={k.selected()} onChange={() => k.choose()}>
     <style scoped>{`
-      .kind { height: 100%; box-sizing: border-box; }
+      .kind { display: block; width: 100%; height: 100%; box-sizing: border-box; padding: 18px; text-align: left; }
       .body { display: grid; gap: 6px; justify-items: start; }
       .icon { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; margin-bottom: 4px; color: var(--idp-accent-ink); background: color-mix(in srgb, var(--idp-accent) 10%, transparent); }
       .title { font-weight: 600; }

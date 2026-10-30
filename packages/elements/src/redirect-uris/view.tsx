@@ -1,15 +1,16 @@
 /** The default look: a card, one row per address with Remove, the field to add, Save at the end. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { RedirectUrisLogic } from './logic.js';
 
 export const redirectUrisView = (r: RedirectUrisLogic) => (
-  <section part="redirects" class="card" aria-labelledby="idp-redirects-title">
+  <Card part="redirects" class="card" aria-labelledby="idp-redirects-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px; display: grid; gap: 14px; }
+      .card { padding: 20px; display: grid; gap: 14px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       p { margin: 0; color: var(--idp-muted); font-size: 13px; }
       ul { list-style: none; margin: 0; padding: 0; }
@@ -76,7 +77,7 @@ export const redirectUrisView = (r: RedirectUrisLogic) => (
         {() => r.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const RedirectUrisView = viewToken<RedirectUrisLogic>('idp-redirect-uris', redirectUrisView);

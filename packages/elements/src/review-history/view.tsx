@@ -1,12 +1,13 @@
 /** The default look: a card with a heading and the entries down a timeline. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { ReviewHistoryLogic } from './logic.js';
 
 export const reviewHistoryView = (h: ReviewHistoryLogic) => (
-  <section part="review-history" class="card" aria-labelledby="idp-review-history-title">
+  <Card part="review-history" class="card" aria-labelledby="idp-review-history-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px 22px 6px; display: grid; gap: 16px; }
+      .card { padding: 20px 22px 6px; display: grid; gap: 16px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .list > :deep(idp-history-entry) { display: block; }
       .empty { margin: 0 0 14px; color: var(--idp-muted); }
@@ -28,7 +29,7 @@ export const reviewHistoryView = (h: ReviewHistoryLogic) => (
         </For>
       </div>
     </Show>
-  </section>
+  </Card>
 );
 
 export const ReviewHistoryView = viewToken<ReviewHistoryLogic>('idp-review-history', reviewHistoryView);

@@ -1,6 +1,7 @@
 /** The catalog's default look: a card per product, then the form for a new one. */
 import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
+import { Chip } from '@fluixi-ui/chip';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
@@ -54,19 +55,13 @@ export const productCatalogView = (c: ProductCatalogLogic) => {
         <Show when={entry.scopes.length} fallback={<span class="muted">{() => c.labels().noScopes}</span>}>
           <For each={entry.scopes}>
             {(scope) => (
-              <span class="chip">
+              <Chip
+                removeLabel={c.labels().removeScope.replace('{scope}', scope)}
+                disabled={c.busy() === scope}
+                onRemove={() => c.removeScope(scope)}
+              >
                 <code>{scope}</code>
-                <Button
-                  variant="ghost"
-                  tone="neutral"
-                  size="sm"
-                  aria-label={() => c.labels().removeScope.replace('{scope}', scope)}
-                  disabled={c.busy() === scope}
-                  onPress={() => c.removeScope(scope)}
-                >
-                  ×
-                </Button>
-              </span>
+              </Chip>
             )}
           </For>
         </Show>
@@ -103,8 +98,6 @@ export const productCatalogView = (c: ProductCatalogLogic) => {
         .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         .muted { color: var(--idp-muted); font-size: 13px; }
         .scopes { display: flex; flex-wrap: wrap; gap: 6px; }
-        .chip { display: inline-flex; align-items: center; gap: 2px; padding-left: 8px; border: 1px solid var(--idp-border); border-radius: 7px; background: var(--idp-surface-2); }
-        .chip code { color: var(--idp-text); }
         .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
         .field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; }
         .alert { margin: 0; padding: 10px 12px; border-radius: var(--idp-radius-sm); background: color-mix(in srgb, var(--idp-bad) 10%, transparent); color: var(--idp-bad); }

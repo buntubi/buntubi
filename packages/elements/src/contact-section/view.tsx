@@ -1,6 +1,9 @@
 /** The default look: the email row with its state, the change form or the waiting notice, then the phone. */
 import { Show } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
+import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { infoStyles } from '../info-shared/styles.js';
@@ -26,7 +29,7 @@ const Messages = (props: { p: ContactSectionLogic }) => (
 );
 
 export const contactSectionView = (p: ContactSectionLogic) => (
-  <section part="contact" class="card" aria-labelledby="idp-contact-title">
+  <Card part="contact" class="card" aria-labelledby="idp-contact-title" role="region">
     <style scoped>{`${infoStyles}
       bc-phone-input { max-width: 420px; }
     `}</style>
@@ -35,8 +38,8 @@ export const contactSectionView = (p: ContactSectionLogic) => (
       <span class="label">{() => p.labels().email}</span>
       <span class="value">
         <span>{() => p.email()}</span>
-        <Show when={p.verified()} fallback={<span class="pill warn">{() => p.labels().unverified}</span>}>
-          <span class="pill ok">{() => p.labels().verified}</span>
+        <Show when={p.verified()} fallback={<Badge tone="warning"><span class="dot" />{() => p.labels().unverified}</Badge>}>
+          <Badge tone="success"><span class="dot" />{() => p.labels().verified}</Badge>
         </Show>
       </span>
       <Show when={p.editing() !== 'email'}>
@@ -46,14 +49,14 @@ export const contactSectionView = (p: ContactSectionLogic) => (
       </Show>
     </div>
     <Show when={p.pendingEmail()}>
-      <div class="notice" role="status">
+      <Alert class="notice" variant="warning" role="status">
         <span>
           {() => p.labels().pending} <strong>{() => p.pendingEmail()}</strong>. {() => p.labels().pendingHint}
         </span>
         <Button variant="ghost" tone="neutral" size="sm" disabled={p.busy()} onPress={() => void p.cancelChange()}>
           {() => p.labels().cancelChange}
         </Button>
-      </div>
+      </Alert>
     </Show>
     <Show when={p.editing() === 'email'}>
       <Form form={p.emailForm} onSubmit={(values) => p.requestChange(values)} novalidate>
@@ -144,7 +147,7 @@ export const contactSectionView = (p: ContactSectionLogic) => (
     <Show when={!p.editing()}>
       <Messages p={p} />
     </Show>
-  </section>
+  </Card>
 );
 
 export const ContactSectionView = viewToken<ContactSectionLogic>('idp-contact-section', contactSectionView);

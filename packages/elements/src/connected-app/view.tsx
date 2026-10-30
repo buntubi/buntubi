@@ -1,5 +1,6 @@
 /** The default look, after the board: the app, what it may see, and removing its access in place. */
 import { css, For, Show } from '@fluixi/core';
+import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
 import { rowStyles } from '../info-shared/rows.js';
 import { viewToken } from '../view.js';
@@ -29,7 +30,7 @@ export const connectedAppView = (a: ConnectedAppLogic) => (
         <span class="title">
           {() => a.name()}
           <Show when={a.platform()}>
-            <span class="pill quiet">{() => a.platform()}</span>
+            <Badge>{() => a.platform()}</Badge>
           </Show>
         </span>
         <span class="sub">{() => a.detail()}</span>

@@ -1,12 +1,12 @@
 /** The default look: a card with the icon row, then the fields, two to a row where they pair. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
+import { Chip } from '@fluixi-ui/chip';
 import { Input, Textarea } from '@fluixi-ui/input';
-import { Toggle } from '@fluixi-ui/toggle';
 import { viewToken } from '../view.js';
 import type { AppInfoFormLogic, InfoField } from './logic.js';
 
 const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
-const CHECK = 'M5 12.5l4.5 4.5L19 7.5';
 const PAIRS: [InfoField, InfoField][] = [
   ['homepage_url', 'category'],
   ['privacy_url', 'terms_url'],
@@ -20,9 +20,9 @@ export const appInfoFormView = (f: AppInfoFormLogic) => {
     </label>
   );
   return (
-    <section part="info" class="card" aria-labelledby="idp-app-info-title">
+    <Card part="info" class="card" aria-labelledby="idp-app-info-title" role="region">
       <style scoped>{`
-        .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 24px; display: grid; gap: 16px; }
+        .card { padding: 24px; display: grid; gap: 16px; }
         h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
         .icon-row { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 14px; align-items: center; }
         .tile { width: 58px; height: 58px; box-sizing: border-box; border-radius: 12px; border: 1.5px dashed var(--idp-border-2); display: grid; place-items: center; color: var(--idp-muted); overflow: hidden; }
@@ -79,19 +79,14 @@ export const appInfoFormView = (f: AppInfoFormLogic) => {
         <div class="chips">
           <For each={f.platforms()} by={(entry) => entry.platform}>
             {(entry) => (
-              <Toggle data-choice="chip" pressed={entry().selected} onChange={() => f.toggle(entry().platform)}>
-                <span data-tick="" aria-hidden="true">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <path d={CHECK} />
-                  </svg>
-                </span>
+              <Chip checkbox checked={entry().selected} onChange={() => f.toggle(entry().platform)}>
                 {() => entry().label}
-              </Toggle>
+              </Chip>
             )}
           </For>
         </div>
       </fieldset>
-    </section>
+    </Card>
   );
 };
 

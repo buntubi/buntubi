@@ -1,6 +1,7 @@
 /** The default look: completed items as slim cards, then the permissions and instructions cards, then submit. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Textarea } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { ReviewSubmissionLogic } from './logic.js';
@@ -12,8 +13,8 @@ export const reviewSubmissionView = (s: ReviewSubmissionLogic) => (
       .done { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); }
       .done strong { font-weight: 600; }
       .ok { color: var(--idp-ok); font-size: 13px; font-weight: 500; }
-      .card { display: grid; gap: 14px; padding: 20px; border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
-      .card[data-open] { border-color: color-mix(in srgb, var(--idp-warn) 45%, var(--idp-border)); }
+      .card { display: grid; gap: 14px; padding: 20px; }
+      .card[data-open] { --flx-ui-card-border: 1px solid color-mix(in srgb, var(--flx-ui-color-warning) 45%, var(--flx-ui-color-border)); }
       .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .count { font-size: 13px; font-weight: 500; color: var(--idp-warn); }
@@ -37,7 +38,7 @@ export const reviewSubmissionView = (s: ReviewSubmissionLogic) => (
       )}
     </For>
     <Show when={s.waiting().length} fallback={<p class="muted">{() => s.labels().noReviewNeeded}</p>}>
-      <section class="card" data-open={() => (s.allExplained() ? undefined : '')} aria-labelledby="idp-submission-permissions">
+      <Card class="card" data-open={() => (s.allExplained() ? undefined : '')} aria-labelledby="idp-submission-permissions">
         <div class="head">
           <h2 id="idp-submission-permissions">{() => s.labels().permissions}</h2>
           <span class="count">{() => s.explainedLine()}</span>
@@ -58,14 +59,14 @@ export const reviewSubmissionView = (s: ReviewSubmissionLogic) => (
             )}
           </For>
         </div>
-      </section>
-      <section class="card" aria-labelledby="idp-submission-instructions">
+      </Card>
+      <Card class="card" aria-labelledby="idp-submission-instructions" role="region">
         <h2 id="idp-submission-instructions">{() => s.labels().instructions}</h2>
         <label>
           <span class="hint">{() => s.labels().instructionsHint}</span>
           <Textarea rows={4} value={() => s.instructions()} onInput={(event: Event) => s.editInstructions((event.target as HTMLTextAreaElement).value)} />
         </label>
-      </section>
+      </Card>
       <Show when={s.canSubmit()}>
         <div class="foot">
           <Button variant="solid" disabled={s.busy() || !s.allExplained()} onPress={() => void s.submit()}>

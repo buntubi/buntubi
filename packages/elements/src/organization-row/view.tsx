@@ -1,5 +1,7 @@
 /** The default look: a table row; the organization, owner, counts, scopes, status, then the action. */
 import { For, Show } from '@fluixi/core';
+import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
+import { Badge } from '@fluixi-ui/badge';
 import { Link } from '../link.js';
 import { Button } from '@fluixi-ui/button';
 import { Form, FormField } from '@fluixi-ui/form';
@@ -12,9 +14,8 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
     <style scoped>{`
       .organization { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr) 84px 100px minmax(0, 1.2fr) 110px 110px; gap: 12px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--idp-border); font-size: 13.5px; }
       .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
-      .mark { flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--idp-accent-ink); background: var(--idp-accent-soft); }
+      .mark { flex: none; width: 30px; height: 30px; border-radius: 8px; font-size: 11px; font-weight: 700; }
       .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
-      .tag { flex: none; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--idp-accent-ink); background: color-mix(in srgb, var(--idp-accent) 12%, transparent); }
       /* Link is a component: its <a> carries no scope, so :deep. */
       .number > :deep(a) { color: inherit; text-decoration: underline; text-decoration-color: var(--idp-border-2); text-underline-offset: 3px; }
       .number > :deep(a:hover) { color: var(--idp-accent-ink); }
@@ -33,10 +34,10 @@ export const organizationRowView = (r: OrganizationRowLogic) => (
       @media (max-width: 960px) { .organization { grid-template-columns: minmax(0, 1fr) auto; } .organization > [role='cell']:not(.who):not(.action) { grid-column: 1; } .action { grid-row: 1; grid-column: 2; } .editor { grid-template-columns: 1fr; } }
     `}</style>
     <span role="cell" class="who">
-      <span class="mark" aria-hidden="true">{() => r.initials()}</span>
+      <Avatar class="mark" aria-hidden="true"><AvatarFallback>{() => r.initials()}</AvatarFallback></Avatar>
       <span class="name">{() => r.organization()?.name ?? ''}</span>
       <Show when={r.organization()?.platform}>
-        <span class="tag" title={() => r.labels().platformHelp}>{() => r.labels().platform}</span>
+        <Badge tone="primary" title={() => r.labels().platformHelp}>{() => r.labels().platform}</Badge>
       </Show>
     </span>
     <span role="cell" class="muted">{() => r.organization()?.owner?.email ?? ''}</span>

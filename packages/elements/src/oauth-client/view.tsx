@@ -2,13 +2,13 @@
 import { For, Show } from '@fluixi/core';
 import { Link } from '../link.js';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { OAuthClientLogic } from './logic.js';
 
 export const oauthClientView = (c: OAuthClientLogic) => (
-  <section part="oauth-client" class="card" aria-labelledby="idp-oauth-client-title">
+  <Card part="oauth-client" class="card" aria-labelledby="idp-oauth-client-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
       .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       h3 { margin: 0; font-size: 14px; font-weight: 600; }
@@ -96,7 +96,7 @@ export const oauthClientView = (c: OAuthClientLogic) => (
         </p>
       </Show>
     </div>
-  </section>
+  </Card>
 );
 
 export const OAuthClientView = viewToken<OAuthClientLogic>('idp-oauth-client', oauthClientView);

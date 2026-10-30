@@ -1,14 +1,15 @@
 /** The default look: one card, the choice as a select, what it means under it. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
 import type { OrganizationUsage } from '@buntubi/sdk/types';
 import { viewToken } from '../view.js';
 import { USAGES, type AppOrganizationsLogic } from './logic.js';
 
 export const appOrganizationsView = (s: AppOrganizationsLogic) => (
-  <div part="organizations" class="card">
+  <Card part="organizations" class="card">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 14px; }
+      .card { padding: 18px 20px; display: grid; gap: 14px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
       .intro { display: grid; gap: 4px; }
@@ -47,7 +48,7 @@ export const appOrganizationsView = (s: AppOrganizationsLogic) => (
         {() => s.error()}
       </p>
     </Show>
-  </div>
+  </Card>
 );
 
 export const AppOrganizationsView = viewToken<AppOrganizationsLogic>('idp-app-organizations', appOrganizationsView);

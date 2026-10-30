@@ -1,6 +1,7 @@
 /** The default look: a card, the fields stacked, the sensitivity as a segmented choice. */
 import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import type { Sensitivity } from '@buntubi/sdk/types';
@@ -11,9 +12,9 @@ import '../segmented/segmented.js';
 const DOT = { public: 'var(--idp-ok)', sensitive: 'var(--idp-warn)', restricted: 'var(--idp-bad)' } as const;
 
 export const scopeFormView = (f: ScopeFormLogic) => (
-  <section part="scope-form" class="card">
+  <Card part="scope-form" class="card">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 12px; }
+      .card { padding: 18px 20px; display: grid; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .fields { display: grid; gap: 12px; max-width: 560px; }
       .alert { margin: 0; color: var(--idp-bad); font-size: 13px; }
@@ -56,7 +57,7 @@ export const scopeFormView = (f: ScopeFormLogic) => (
         </div>
       </div>
     </Form>
-  </section>
+  </Card>
 );
 
 export const ScopeFormView = viewToken<ScopeFormLogic>('idp-scope-form', scopeFormView);

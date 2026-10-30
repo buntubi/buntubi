@@ -1,4 +1,5 @@
 /** The default look of idp-device-activate. */
+import { Alert } from '@fluixi-ui/alert';
 import { PinInput } from '@fluixi-ui/pin-input';
 import { Button } from '@fluixi-ui/button';
 import { clean, CODE_LENGTH } from './device-activate.js';
@@ -9,7 +10,7 @@ export const deviceActivateView = ({ code, decide, label, pending, problem }: De
   (
       <div class="idp-form">
         <p class="idp-note">{() => label().intro}</p>
-        {() => (problem() ? <p class="idp-alert" role="alert">{problem()}</p> : null)}
+        {() => (problem() ? <Alert variant="danger" class="idp-alert">{problem()}</Alert> : null)}
         <PinInput
           class="idp-code"
           type="alphanumeric"

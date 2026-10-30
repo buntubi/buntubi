@@ -1,12 +1,12 @@
 /** The default look: a card; title and the sensitivity filter, the column headings, the rows. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { ScopeListLogic } from './logic.js';
 
 export const scopeListView = (l: ScopeListLogic) => (
-  <section part="scopes" class="card" aria-labelledby="idp-scopes-title">
+  <Card part="scopes" class="card" aria-labelledby="idp-scopes-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); overflow: clip; }
       .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) 120px 110px; gap: 12px; padding: 10px 20px; border-top: 1px solid var(--idp-border); color: var(--idp-muted); font-size: 12.5px; font-weight: 500; background: var(--idp-surface-2); position: sticky; top: calc(var(--idp-topbar, 0px) + var(--idp-head, 0px)); z-index: 1; }
@@ -33,7 +33,7 @@ export const scopeListView = (l: ScopeListLogic) => (
         </div>
       </Show>
     </div>
-  </section>
+  </Card>
 );
 
 export const ScopeListView = viewToken<ScopeListLogic>('idp-scope-list', scopeListView);

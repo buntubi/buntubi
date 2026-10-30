@@ -1,13 +1,14 @@
 /** The default look: a card, one line per stage with its scopes. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { AppScopesLogic } from './logic.js';
 
 export const appScopesView = (a: AppScopesLogic) => (
-  <section part="scopes" class="card" aria-labelledby="idp-app-scopes-title">
+  <Card part="scopes" class="card" aria-labelledby="idp-app-scopes-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px 22px; display: grid; gap: 14px; align-content: start; }
+      .card { padding: 20px 22px; display: grid; gap: 14px; align-content: start; }
       .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
       .head :deep(a) { font-size: 13px; font-weight: 500; color: var(--idp-accent-ink); text-decoration: none; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
@@ -42,7 +43,7 @@ export const appScopesView = (a: AppScopesLogic) => (
         )}
       </For>
     </dl>
-  </section>
+  </Card>
 );
 
 export const AppScopesView = viewToken<AppScopesLogic>('idp-app-scopes', appScopesView);

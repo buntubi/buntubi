@@ -1,6 +1,7 @@
 /** The default look: the title and last change with the button, then the form under it. */
 import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Checkbox } from '@fluixi-ui/checkbox';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
@@ -9,7 +10,7 @@ import { viewToken } from '../view.js';
 import type { PasswordSectionLogic } from './logic.js';
 
 export const passwordSectionView = (p: PasswordSectionLogic) => (
-  <section part="password" class="card" aria-labelledby="idp-password-title">
+  <Card part="password" class="card" aria-labelledby="idp-password-title" role="region">
     <style scoped>{`${infoStyles}
       .head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 18px; }
       .head > div { flex: 1; min-width: 220px; display: grid; gap: 2px; }
@@ -69,7 +70,7 @@ export const passwordSectionView = (p: PasswordSectionLogic) => (
         {() => p.notice()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const PasswordSectionView = viewToken<PasswordSectionLogic>('idp-password-section', passwordSectionView);

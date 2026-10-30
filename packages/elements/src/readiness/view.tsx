@@ -3,15 +3,17 @@ import { For, Show } from '@fluixi/core';
 import { useNavigation } from '@buntubi/sdk/navigation';
 import { Link } from '../link.js';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { ReadinessLogic } from './logic.js';
 
 export const readinessView = (r: ReadinessLogic) => {
   const navigate = useNavigation().go;
   return (
-    <section part="readiness" class="card">
+    <Card part="readiness" class="card">
       <style scoped>{`
-        .card { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface-2); }
+        /* A sheet inside the page's panel: the muted ground, no lift. */
+        .card { --flx-ui-card-bg: var(--flx-ui-color-bg-muted); --flx-ui-card-shadow: none; display: grid; gap: 12px; padding: 16px; }
         .top { display: flex; align-items: center; gap: 12px; }
         .ring { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; }
         .ring span { width: 42px; height: 42px; border-radius: 50%; background: var(--idp-surface-2); display: grid; place-items: center; font-size: 13px; font-weight: 600; }
@@ -63,7 +65,7 @@ export const readinessView = (r: ReadinessLogic) => {
         </div>
         <span class="muted">{() => r.labels().note}</span>
       </Show>
-    </section>
+    </Card>
   );
 };
 

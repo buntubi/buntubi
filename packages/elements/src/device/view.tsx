@@ -1,5 +1,6 @@
 /** The default look: the device's icon, its name, address and last use, and its sign-out button. */
 import { Show } from '@fluixi/core';
+import { Badge } from '@fluixi-ui/badge';
 import { Button } from '@fluixi-ui/button';
 import { rowStyles } from '../info-shared/rows.js';
 import { viewToken } from '../view.js';
@@ -21,7 +22,7 @@ export const deviceView = (d: DeviceLogic) => (
         <span class="title">
           {() => d.name()}
           <Show when={d.here()}>
-            <span class="pill ok">{() => d.labels().here}</span>
+            <Badge tone="success">{() => d.labels().here}</Badge>
           </Show>
         </span>
         <Show when={d.network()}>

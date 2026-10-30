@@ -1,6 +1,7 @@
 /** The default look: one row per field shown; the form with each field in the same order. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form } from '@fluixi-ui/form';
 import { infoStyles } from '../info-shared/styles.js';
 import { viewToken } from '../view.js';
@@ -10,7 +11,7 @@ import type { AboutSectionLogic } from './logic.js';
 
 export const aboutSectionView = (a: AboutSectionLogic) => (
   <Show when={a.shown().length > 0 || a.platform().length > 0}>
-    <section part="about" class="card" aria-labelledby="idp-about-title">
+    <Card part="about" class="card" aria-labelledby="idp-about-title" role="region">
       <style scoped>{`${infoStyles}
         .buttons { padding: 0 18px 14px; }
         .edit .buttons { padding: 0; }
@@ -105,7 +106,7 @@ export const aboutSectionView = (a: AboutSectionLogic) => (
           {() => a.notice()}
         </p>
       </Show>
-    </section>
+    </Card>
   </Show>
 );
 

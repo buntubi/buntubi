@@ -1,5 +1,6 @@
 /** The default look: a card, the note as a warm callout, then one ruled row per check. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { Link } from '../link.js';
 import { viewToken } from '../view.js';
 import type { LaunchChecklistLogic } from './logic.js';
@@ -8,9 +9,9 @@ const CHECK = 'M5 12.5l4.5 4.5L19 7.5';
 const WARNING = 'M12 3 2 20h20L12 3zM12 10v4M12 17h.01';
 
 export const launchChecklistView = (c: LaunchChecklistLogic) => (
-  <section part="checklist" class="card" aria-labelledby="idp-checklist-title">
+  <Card part="checklist" class="card" aria-labelledby="idp-checklist-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px 22px; display: grid; gap: 16px; align-content: start; }
+      .card { padding: 20px 22px; display: grid; gap: 16px; align-content: start; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .note { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 4px 12px; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--idp-warn) 45%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--idp-warn) 9%, var(--idp-surface)); }
       .note svg { color: var(--idp-warn); margin-top: 1px; }
@@ -63,7 +64,7 @@ export const launchChecklistView = (c: LaunchChecklistLogic) => (
         )}
       </For>
     </ul>
-  </section>
+  </Card>
 );
 
 export const LaunchChecklistView = viewToken<LaunchChecklistLogic>('idp-launch-checklist', launchChecklistView);

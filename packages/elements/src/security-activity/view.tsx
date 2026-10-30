@@ -2,12 +2,12 @@
 import { css, For, Show } from '@fluixi/core';
 import { Avatar, AvatarFallback } from '@fluixi-ui/avatar';
 import { BadgeAnchor, type BadgeTone } from '@fluixi-ui/badge';
+import { Card } from '@fluixi-ui/card';
 import type { ActivityTone } from './logic.js';
 import { viewToken } from '../view.js';
 import type { SecurityActivityLogic } from './logic.js';
 
 const styles = css`
-  .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--idp-border); }
   h2 { margin: 0; font-size: 15px; font-weight: 600; }
   .muted { color: var(--idp-muted); font-size: 12.5px; }
@@ -30,7 +30,7 @@ const styles = css`
 const TONES: Record<ActivityTone, BadgeTone> = { ok: 'success', warn: 'warning', info: 'primary' };
 
 export const securityActivityView = (a: SecurityActivityLogic) => (
-  <section part="activity" class="card" aria-labelledby="idp-activity-title">
+  <Card part="activity" class="card" aria-labelledby="idp-activity-title" role="region">
     <style scoped>{`${styles}`}</style>
     <div class="head">
       <h2 id="idp-activity-title">{() => a.labels().title}</h2>
@@ -83,7 +83,7 @@ export const securityActivityView = (a: SecurityActivityLogic) => (
       </div>
     </Show>
     <p class="advice">{() => a.labels().advice}</p>
-  </section>
+  </Card>
 );
 
 export const SecurityActivityView = viewToken<SecurityActivityLogic>('idp-security-activity', securityActivityView);

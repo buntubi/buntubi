@@ -1,12 +1,12 @@
 /** The default look: a card, the title and progress over the lines. */
 import { For } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { AccountCheckLogic } from './logic.js';
 
 export const accountCheckView = (c: AccountCheckLogic) => (
-  <section part="account-check" class="card" aria-labelledby="idp-account-check-title">
+  <Card part="account-check" class="card" aria-labelledby="idp-account-check-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
       .head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .summary { color: var(--idp-muted); font-size: 13px; }
@@ -42,7 +42,7 @@ export const accountCheckView = (c: AccountCheckLogic) => (
         )}
       </For>
     </div>
-  </section>
+  </Card>
 );
 
 export const AccountCheckView = viewToken<AccountCheckLogic>('idp-account-check', accountCheckView);

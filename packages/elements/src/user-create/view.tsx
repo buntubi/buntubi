@@ -1,6 +1,7 @@
 /** The default look: a card, the person's fields, then how they get in. */
 import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
@@ -8,9 +9,9 @@ import type { CreateMode, UserCreateLogic } from './logic.js';
 import '../segmented/segmented.js';
 
 export const userCreateView = (f: UserCreateLogic) => (
-  <section part="user-create" class="card">
+  <Card part="user-create" class="card">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px 22px; display: grid; gap: 16px; max-width: 640px; }
+      .card { padding: 20px 22px; display: grid; gap: 16px; max-width: 640px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .fields { display: grid; gap: 14px; }
       .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -80,7 +81,7 @@ export const userCreateView = (f: UserCreateLogic) => (
         </div>
       </div>
     </Form>
-  </section>
+  </Card>
 );
 
 export const UserCreateView = viewToken<UserCreateLogic>('idp-user-create', userCreateView);

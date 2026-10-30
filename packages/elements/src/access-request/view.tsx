@@ -2,15 +2,16 @@
 import { For, Show } from '@fluixi/core';
 import { useNavigation } from '@buntubi/sdk/navigation';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { AccessRequestLogic } from './logic.js';
 
 export const accessRequestView = (r: AccessRequestLogic) => {
   const navigate = useNavigation().go;
   return (
-    <section part="access-request" class="card" aria-labelledby="idp-access-request-title">
+    <Card part="access-request" class="card" aria-labelledby="idp-access-request-title" role="region">
       <style scoped>{`
-        .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px; display: grid; gap: 14px; }
+        .card { padding: 20px; display: grid; gap: 14px; }
         h2 { margin: 0; font-size: 15px; font-weight: 600; }
         p { margin: 0; font-size: 13px; color: var(--idp-muted); line-height: 1.5; }
         .summary { color: var(--idp-text); font-size: 14px; }
@@ -67,7 +68,7 @@ export const accessRequestView = (r: AccessRequestLogic) => {
         </p>
       </Show>
       <p>{() => r.labels().sandboxNote}</p>
-    </section>
+    </Card>
   );
 };
 

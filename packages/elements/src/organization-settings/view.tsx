@@ -1,6 +1,7 @@
 /** The organization settings' default look: a form card, then the deletion set apart. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
@@ -12,8 +13,8 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
   <div part="organization-settings" class="settings">
     <style scoped>{`
       .settings { display: grid; gap: 16px; }
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 18px 20px; display: grid; gap: 16px; }
-      .danger { border-color: color-mix(in srgb, var(--idp-bad) 40%, var(--idp-border)); }
+      .card { padding: 18px 20px; display: grid; gap: 16px; }
+      .danger { --flx-ui-card-border: 1px solid color-mix(in srgb, var(--flx-ui-color-danger) 40%, var(--flx-ui-color-border)); }
       .intro { display: grid; gap: 4px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .hint { margin: 0; color: var(--idp-muted); font-size: 13px; }
@@ -34,7 +35,7 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
       </p>
     </Show>
     <Form form={o.form} onSubmit={(values) => o.save(values)} novalidate>
-      <div class="card" part="details">
+      <Card class="card" part="details">
         <div class="intro">
           <h2>{() => o.labels().title}</h2>
           <p class="hint">{() => o.labels().intro}</p>
@@ -74,10 +75,10 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
             </Show>
           </div>
         </Show>
-      </div>
+      </Card>
     </Form>
     <Show when={o.canDelete()}>
-      <section class="card danger" part="danger" aria-labelledby="idp-org-danger">
+      <Card class="card danger" part="danger" aria-labelledby="idp-org-danger" role="region">
         <div class="intro">
           <h2 id="idp-org-danger">{() => o.labels().danger}</h2>
           <p class="hint">{() => o.labels().dangerText}</p>
@@ -91,7 +92,7 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
             {() => o.labels().delete}
           </Button>
         </div>
-      </section>
+      </Card>
     </Show>
   </div>
 );

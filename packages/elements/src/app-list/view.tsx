@@ -1,12 +1,12 @@
 /** The default look: a card, the title and the filter, the column heads, one row element per app. */
 import { For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { AppListLogic } from './logic.js';
 
 export const appListView = (l: AppListLogic) => (
-  <section part="list" class="list" aria-labelledby="idp-app-list-title">
+  <Card part="list" class="list" aria-labelledby="idp-app-list-title" role="region">
     <style scoped>{`
-      .list { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
       .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 18px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .columns { display: grid; grid-template-columns: minmax(0, 1.6fr) 160px minmax(0, 1fr); gap: 16px; padding: 10px 18px; border-top: 1px solid var(--idp-border); color: var(--idp-muted); font-size: 12.5px; font-weight: 500; }
@@ -44,7 +44,7 @@ export const appListView = (l: AppListLogic) => (
         </For>
       </div>
     </Show>
-  </section>
+  </Card>
 );
 
 export const AppListView = viewToken<AppListLogic>('idp-app-list', appListView);

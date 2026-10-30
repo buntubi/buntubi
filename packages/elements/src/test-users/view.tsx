@@ -1,15 +1,16 @@
 /** The default look: a card, the intro, one ruled row per tester, the field to add one. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { viewToken } from '../view.js';
 import type { TestUsersLogic } from './logic.js';
 
 export const testUsersView = (t: TestUsersLogic) => (
-  <section part="test-users" class="card" aria-labelledby="idp-test-users-title">
+  <Card part="test-users" class="card" aria-labelledby="idp-test-users-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); padding: 20px; display: grid; gap: 12px; }
+      .card { padding: 20px; display: grid; gap: 12px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       p { margin: 0; color: var(--idp-muted); font-size: 13px; }
       ul { list-style: none; margin: 0; padding: 0; }
@@ -68,7 +69,7 @@ export const testUsersView = (t: TestUsersLogic) => (
         {() => t.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const TestUsersView = viewToken<TestUsersLogic>('idp-test-users', testUsersView);

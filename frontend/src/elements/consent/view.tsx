@@ -1,5 +1,6 @@
 /** The default look of idp-consent. */
 import { For, Show } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
 import { Button } from '@fluixi-ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@fluixi-ui/avatar';
 import { initials } from '../shared/initials.js';
@@ -39,7 +40,7 @@ export const consentView = ({ answering, decide, error, label, pending, clientLo
         <p class="idp-note">
           {() => label().signedInAs} <strong>{() => userEmail()}</strong>
         </p>
-        {() => (error() ? <p class="idp-alert" role="alert">{error()}</p> : null)}
+        {() => (error() ? <Alert variant="danger" class="idp-alert">{error()}</Alert> : null)}
         <div class="idp-actions">
           <Button type="button" variant="outline" disabled={pending()} onPress={() => decide(false)}>
             {() => (pending() && answering() === false ? label().pending : label().deny)}

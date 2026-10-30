@@ -1,11 +1,12 @@
 /** The default look: a card of apps, then the note on the platform's own. */
 import { css, For, Show } from '@fluixi/core';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { ConnectedAppsLogic } from './logic.js';
 
 const styles = css`
   .apps { display: grid; gap: 14px; }
-  .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); overflow: clip; }
+  
   .card > :deep(idp-connected-app) { display: block; }
   .card > :deep(idp-connected-app + idp-connected-app) { border-top: 1px solid var(--idp-border); }
   .empty { margin: 0; padding: 18px; color: var(--idp-muted); }
@@ -15,7 +16,7 @@ const styles = css`
 export const connectedAppsView = (c: ConnectedAppsLogic) => (
   <div part="connected-apps" class="apps">
     <style scoped>{`${styles}`}</style>
-    <section class="card" aria-label={c.labels().title}>
+    <Card class="card" aria-label={c.labels().title}>
       <Show when={c.apps().length} fallback={<p class="empty">{() => c.labels().empty}</p>}>
         <For each={c.apps()} by={(app) => app.id}>
           {(app) => (
@@ -30,7 +31,7 @@ export const connectedAppsView = (c: ConnectedAppsLogic) => (
           )}
         </For>
       </Show>
-    </section>
+    </Card>
     <Show when={c.note()}>
       <p class="note">{() => c.note()}</p>
     </Show>

@@ -1,6 +1,7 @@
 /** The default look: a card, the photo row, then the name row or its form. */
 import { Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { infoStyles } from '../info-shared/styles.js';
@@ -8,7 +9,7 @@ import { viewToken } from '../view.js';
 import type { ProfileSectionLogic } from './logic.js';
 
 export const profileSectionView = (p: ProfileSectionLogic) => (
-  <section part="profile" class="card" aria-labelledby="idp-profile-title">
+  <Card part="profile" class="card" aria-labelledby="idp-profile-title" role="region">
     <style scoped>{`${infoStyles}
       .avatar { width: 44px; height: 44px; flex: none; border-radius: 50%; overflow: hidden; display: grid; place-items: center; font-weight: 700; color: var(--idp-accent-ink); background: var(--idp-accent-soft); }
       .avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -78,7 +79,7 @@ export const profileSectionView = (p: ProfileSectionLogic) => (
         {() => p.error()}
       </p>
     </Show>
-  </section>
+  </Card>
 );
 
 export const ProfileSectionView = viewToken<ProfileSectionLogic>('idp-profile-section', profileSectionView);

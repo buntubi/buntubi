@@ -4,6 +4,7 @@
  */
 import { css, Match, Show, Switch } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { viewToken } from '../view.js';
 import type { SecureAccountLogic } from './logic.js';
 
@@ -13,7 +14,7 @@ const PHONE = 'M7 2h10v20H7zM11 18h2';
 const styles = css`
   .secure { display: grid; gap: 16px; }
   .intro { margin: 0; color: var(--idp-muted); font-size: 14px; line-height: 1.55; }
-  .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); overflow: clip; }
+  
   .card > :deep(idp-secure-option) { display: block; }
   .card > :deep(idp-secure-option + idp-secure-option) { border-top: 1px solid var(--idp-border); }
   .later { display: grid; gap: 6px; justify-items: center; text-align: center; }
@@ -42,7 +43,7 @@ export const secureAccountView = (s: SecureAccountLogic) => (
     <Switch>
       <Match when={s.step() === 'choose'}>
         <p class="intro">{() => s.labels().intro}</p>
-        <div class="card">
+        <Card class="card">
           <Show when={s.passkeys()}>
             <idp-secure-option
               icon={KEY}
@@ -62,7 +63,7 @@ export const secureAccountView = (s: SecureAccountLogic) => (
             busy={s.busy()}
             onChoose={() => s.setUpApp()}
           />
-        </div>
+        </Card>
         <Show when={s.error()}>
           <p class="alert" role="alert">
             {() => s.error()}
@@ -88,7 +89,7 @@ export const secureAccountView = (s: SecureAccountLogic) => (
       <Match when={s.step() === 'another'}>
         {done(s)}
         <p class="intro">{() => s.labels().another}</p>
-        <div class="card">
+        <Card class="card">
           <Show
             when={s.other() === 'passkey'}
             fallback={
@@ -111,7 +112,7 @@ export const secureAccountView = (s: SecureAccountLogic) => (
               onChoose={() => void s.addPasskey()}
             />
           </Show>
-        </div>
+        </Card>
         <Show when={s.error()}>
           <p class="alert" role="alert">
             {() => s.error()}

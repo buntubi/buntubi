@@ -4,6 +4,7 @@
  * screen is always a full page load, since the next step is the provider's to decide.
  */
 import { render, Show, ThemeProvider } from '@fluixi/core';
+import { Alert } from '@fluixi-ui/alert';
 import { createDocumentScheme } from '@idp/theme/document';
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
@@ -58,9 +59,9 @@ const socialRefusal = () => {
   if (!code) return null;
   const provider = typeof props.socialProvider === 'string' ? props.socialProvider : '';
   return (
-    <p class="idp-alert" role="alert">
+    <Alert variant="danger" class="idp-alert">
       {(t.social.refusals[code] ?? t.messages.generic ?? '').replace('{provider}', provider)}
-    </p>
+    </Alert>
   );
 };
 const socialButtons = () => (

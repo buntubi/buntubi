@@ -1,6 +1,7 @@
 /** The default look: a card, title and Invite member, the invite form when open, the rows, the role cards. */
 import { For, Show } from '@fluixi/core';
 import { Button } from '@fluixi-ui/button';
+import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
@@ -11,9 +12,8 @@ import type { MembersLogic } from './logic.js';
 import '../invitation-row/invitation-row.js';
 
 export const membersView = (m: MembersLogic) => (
-  <section part="members" class="card" aria-labelledby="idp-members-title">
+  <Card part="members" class="card" aria-labelledby="idp-members-title" role="region">
     <style scoped>{`
-      .card { border: 1px solid var(--idp-border); border-radius: var(--idp-radius); background: var(--idp-surface); box-shadow: var(--idp-shadow); }
       .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px; }
       h2 { margin: 0; font-size: 15px; font-weight: 600; }
       .invite { display: grid; grid-template-columns: minmax(0, 1fr) 210px auto auto; gap: 8px; align-items: start; padding: 14px 20px; border-top: 1px solid var(--idp-border); background: var(--idp-surface-2); }
@@ -133,7 +133,7 @@ export const membersView = (m: MembersLogic) => (
         {(position) => <idp-role-card name={m.labels().roles[position].name} text={m.labels().roles[position].text} />}
       </For>
     </div>
-  </section>
+  </Card>
 );
 
 export const MembersView = viewToken<MembersLogic>('idp-members', membersView);

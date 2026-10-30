@@ -1,5 +1,6 @@
 /** The default look: tinted pills with a dot, in a wrapping row. */
 import { For } from '@fluixi/core';
+import { toneColor } from '../tone.js';
 import { viewToken } from '../view.js';
 import { STATE_TONE, type PermissionLegendLogic } from './logic.js';
 
@@ -11,7 +12,7 @@ export const permissionLegendView = (l: PermissionLegendLogic) => (
       li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
     `}</style>
     <For each={l.entries()} by={(entry) => entry.state}>
-      {(entry) => <li style={() => `--tone: ${STATE_TONE[entry().state]}`}>{() => entry().label}</li>}
+      {(entry) => <li style={() => `--tone: ${toneColor(STATE_TONE[entry().state])}`}>{() => entry().label}</li>}
     </For>
   </ul>
 );
