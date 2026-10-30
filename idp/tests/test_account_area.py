@@ -87,3 +87,4 @@ def test_the_page_is_drawn_in_the_saved_skin(
 def test_the_default_skin_is_one_the_platform_offers() -> None:
     with pytest.raises(ValueError, match="one of soft"):
         Settings(brand_skin="idp")
+    assert Settings(brand_skin="").brand_skin == "soft"

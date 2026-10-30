@@ -114,6 +114,9 @@ class Settings(BaseSettings):
     @field_validator("brand_skin")
     @classmethod
     def _known_skin(cls, value: str) -> str:
+        # Left empty in a copied .env: the default.
+        if not value:
+            return SKINS[0]
         if value not in SKINS:
             raise ValueError(f"expected one of {', '.join(SKINS)}")
         return value
