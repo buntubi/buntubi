@@ -150,7 +150,7 @@ Each part has its own README with its layout, settings and commands.
 | `apps/console/` | The owner console, port 3420 |
 | `packages/elements/` | The custom elements the portal and console are built from |
 | `packages/sdk/` | Types, services and the Vite plugin shared by the apps and by UI plugins |
-| `packages/shell/`, `packages/skin/`, `packages/theme/` | Layout, skin and colours of the apps |
+| `packages/shell/`, `packages/theme/` | Layout of the apps, and their skins, colours and fonts |
 | `docs/running.md` | Starting everything from a terminal or with Docker, and every day after |
 | `docs/operations.md` | A deployment on a server: first deploy, upgrades, keys, backups |
 | `docs/webhooks.md` | Organization events for the products: what they carry, checking them, setting them up |
