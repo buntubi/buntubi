@@ -123,8 +123,10 @@ def jwks() -> Response:
 
 @bp.get("/.well-known/brand.json")
 def brand() -> Response:
-    """Name, accent, logo and contact links of the platform, for the portal and the console."""
-    response = jsonify(get_settings().brand())
+    """Name, accent, logo, contact links and default skin of the platform, for the portal and
+    the console."""
+    settings = get_settings()
+    response = jsonify({**settings.brand(), "skin": settings.brand_skin})
     response.cache_control.max_age = 300
     response.cache_control.public = True
     return response

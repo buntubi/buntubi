@@ -26,6 +26,7 @@ def test_brand_json_lists_the_fields_that_are_set(branded: None, browser: FlaskC
         "name": "Kora",
         "accent": "#5b5bd6",
         "terms_url": "https://kora.example/terms",
+        "skin": "soft",
     }
     assert response.cache_control.public
 
@@ -36,7 +37,15 @@ def test_sign_in_falls_back_to_the_platform_brand(branded: None, browser: FlaskC
 
 def test_an_unset_brand_is_empty(browser: FlaskClient) -> None:
     get_settings.cache_clear()
-    assert browser.get("/.well-known/brand.json").get_json() == {}
+    # The skin is always there: the platform's default, soft unless a deployment sets one.
+    assert browser.get("/.well-known/brand.json").get_json() == {"skin": "soft"}
+
+
+def test_brand_json_carries_the_platform_skin(browser: FlaskClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("IDP_BRAND_SKIN", "paper")
+    get_settings.cache_clear()
+    assert browser.get("/.well-known/brand.json").get_json()["skin"] == "paper"
+    get_settings.cache_clear()
 
 
 def test_accent_must_be_a_hex_colour(monkeypatch: pytest.MonkeyPatch) -> None:

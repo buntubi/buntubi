@@ -349,4 +349,6 @@ export interface Brand {
   support_email?: string;
   privacy_url?: string;
   terms_url?: string;
+  /** The skin the console and portal open in until a person picks another (`IDP_BRAND_SKIN`). */
+  skin?: string;
 }

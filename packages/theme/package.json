@@ -10,7 +10,8 @@
     "./tokens.css": "./src/tokens.css",
     "./fonts.css": "./src/fonts.css",
     "./document": "./src/document.ts",
-    "./appearance": "./src/appearance.ts"
+    "./appearance": "./src/appearance.ts",
+    "./platform-skin": "./src/platform-skin.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
