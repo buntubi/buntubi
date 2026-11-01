@@ -84,6 +84,16 @@ def test_the_page_is_drawn_in_the_saved_skin(
     assert 'data-ui="paper"' in browser.get("/account").get_data(as_text=True)
 
 
+def test_the_pages_share_choices_on_the_cookie_domain(
+    browser: FlaskClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    assert page_config(browser, "/signin")["cookieDomain"] is None
+    monkeypatch.setattr(get_settings(), "cookie_domain", "example.com")
+    assert page_config(browser, "/signin")["cookieDomain"] == "example.com"
+    with pytest.raises(ValueError, match="without scheme"):
+        Settings(cookie_domain="https://example.com")
+
+
 def test_the_default_skin_is_one_the_platform_offers() -> None:
     with pytest.raises(ValueError, match="one of soft"):
         Settings(brand_skin="idp")

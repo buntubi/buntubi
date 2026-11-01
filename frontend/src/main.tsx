@@ -491,7 +491,7 @@ if (root && screen) {
     // A client's own skin is the only one its pages offer; otherwise the reader picks.
     const appearance = signInAppearance(config.brand.skin, document.documentElement.dataset.ui);
     return (
-      <AppearanceProvider {...appearance}>
+      <AppearanceProvider {...appearance} cookieDomain={config.cookieDomain ?? undefined}>
       <Page
         brand={config.brand}
         aside={look?.aside?.element}

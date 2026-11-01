@@ -99,6 +99,8 @@ def shell(element: str, *, account: bool = False, **props: Any) -> str:
         # The session the page is opened for: requests declare it, and a switch since is refused.
         "session": sessions.current_id(),
         "brand": brand,
+        # Where the reader's appearance choices are kept, shared with the console and the portal.
+        "cookieDomain": get_settings().cookie_domain or None,
         # The platform's own policies, linked under its pages.
         "links": {
             key: value for key, value in get_settings().brand().items() if key in ("privacy_url", "terms_url")

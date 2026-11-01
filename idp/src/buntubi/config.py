@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     brand_terms_url: str = ""
     # The skin a reader sees until they pick another; a client's own skin wins on its sign-in pages.
     brand_skin: str = "soft"
+    # The parent domain the appearance choices (skin, light or dark, accent) are kept for, such as
+    # example.com, so the provider, the console and the portal on its subdomains share them. Empty:
+    # each site keeps its own. The session cookies are not affected.
+    cookie_domain: str = ""
     # The issuer: the provider's public origin, exactly as clients see it. No trailing slash.
     issuer: str
     database_url: str
@@ -110,6 +114,13 @@ class Settings(BaseSettings):
     # Folder of UI plugins built with buntubi-ui-plugin (one subfolder each), whose browser halves
     # the sign-in pages load at run time. Unset: none.
     ui_plugins_dir: Path | None = None
+
+    @field_validator("cookie_domain")
+    @classmethod
+    def _bare_domain(cls, value: str) -> str:
+        if value and not re.fullmatch(r"\.?[a-z0-9-]+(\.[a-z0-9-]+)*", value):
+            raise ValueError("expected a domain such as example.com, without scheme or port")
+        return value
 
     @field_validator("brand_skin")
     @classmethod

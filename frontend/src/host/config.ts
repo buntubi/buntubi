@@ -21,6 +21,8 @@ export interface PageConfig {
   brand: Brand;
   /** The platform's own policies. */
   links?: { privacy_url?: string; terms_url?: string };
+  /** The parent domain the appearance choices are kept for (IDP_COOKIE_DOMAIN). */
+  cookieDomain?: string | null;
   props: Record<string, unknown>;
 }
 

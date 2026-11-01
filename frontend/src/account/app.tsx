@@ -467,7 +467,11 @@ export function mountAccount(root: HTMLElement, context: Context): void {
     // Inside the render, so the choices stay in step with the page's attributes after a reload.
     // The server drew the page in the platform's skin or the reader's: that is the default here.
     return (
-      <AppearanceProvider {...appearance} defaultSkin={document.documentElement.dataset.ui ?? appearance.defaultSkin}>
+      <AppearanceProvider
+        {...appearance}
+        defaultSkin={document.documentElement.dataset.ui ?? appearance.defaultSkin}
+        cookieDomain={config.cookieDomain ?? undefined}
+      >
         <Router routes={routes as never} />
       </AppearanceProvider>
     );

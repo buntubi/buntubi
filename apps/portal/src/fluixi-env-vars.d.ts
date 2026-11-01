@@ -5,6 +5,7 @@ declare module '@fluixi/start/env' {
   interface PublicEnv {
     IDP_URL: string;
     APP_URL: string;
+    IDP_COOKIE_DOMAIN: string;
   }
   interface ServerEnv {
     PORTAL_CLIENT_ID: string;
