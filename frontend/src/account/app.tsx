@@ -16,6 +16,7 @@ import { Navigation, type NavigationOptions } from '@buntubi/sdk/navigation';
 import { Grid, Stack } from '@fluixi-ui/layout';
 import {
   Account,
+  ACCOUNT_PAGES,
   type AccountActivity,
   type AccountClosing,
   type AccountService,
@@ -65,13 +66,13 @@ const ICONS = {
 
 /** The account area's addresses, built in one place. */
 const paths = {
-  home: () => '/account',
-  info: () => '/account/info',
+  home: () => ACCOUNT_PAGES.home,
+  info: () => ACCOUNT_PAGES.info,
   emailConfirm: () => '/account/email/confirm',
-  security: () => '/account/security',
-  devices: () => '/account/devices',
-  apps: () => '/account/apps',
-  data: () => '/account/data',
+  security: () => ACCOUNT_PAGES.security,
+  devices: () => ACCOUNT_PAGES.devices,
+  apps: () => ACCOUNT_PAGES.apps,
+  data: () => ACCOUNT_PAGES.data,
   signIn: () => '/signin',
 } as const;
 

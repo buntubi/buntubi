@@ -4,6 +4,21 @@
  */
 import { injectionToken } from '@fluixi/di';
 
+/** The account area's pages, at the provider's address: where people change what they hold there. */
+export const ACCOUNT_PAGES = {
+  home: '/account',
+  /** Name, contact and the profile fields, the time zone among them. */
+  info: '/account/info',
+  security: '/account/security',
+  devices: '/account/devices',
+  apps: '/account/apps',
+  data: '/account/data',
+} as const;
+export type AccountPage = keyof typeof ACCOUNT_PAGES;
+
+/** A page of the account area at `issuer`: for a product's "change it in your account" link. */
+export const accountUrl = (issuer: string, page: AccountPage = 'home') => new URL(ACCOUNT_PAGES[page], issuer).toString();
+
 /** An account signed in on this browser. */
 export interface BrowserAccount {
   /** The login session's id, which switching and signing out name. */
