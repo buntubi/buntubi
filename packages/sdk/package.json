@@ -129,6 +129,11 @@
       "types": "./src/project/compose.ts",
       "development": "./src/project/compose.ts",
       "default": "./dist/project/compose.js"
+    },
+    "./appearance": {
+      "types": "./src/appearance.ts",
+      "development": "./src/appearance.ts",
+      "default": "./dist/appearance.js"
     }
   },
   "bin": {
@@ -249,6 +254,10 @@
       "./project": {
         "types": "./dist/project/compose.d.ts",
         "default": "./dist/project/compose.js"
+      },
+      "./appearance": {
+        "types": "./dist/appearance.d.ts",
+        "default": "./dist/appearance.js"
       }
     }
   },

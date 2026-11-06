@@ -47,6 +47,8 @@ import '@idp/elements/sign-in-methods';
 import '@idp/elements/password-section';
 import '@idp/elements/security-activity';
 import '@idp/elements/two-step-section';
+import { AppearanceSync } from '@idp/shell/appearance';
+import type { AppearanceState } from '@buntubi/sdk/appearance';
 import { Shell, type Crumb } from '@idp/shell/shell';
 import { appearance } from '@idp/theme/appearance';
 import type { Api, Redirect } from '../host/api.js';
@@ -473,6 +475,10 @@ export function mountAccount(root: HTMLElement, context: Context): void {
         defaultSkin={document.documentElement.dataset.ui ?? appearance.defaultSkin}
         cookieDomain={config.cookieDomain ?? undefined}
       >
+        <AppearanceSync
+          load={() => api<AppearanceState>('GET', '/api/account/appearance')}
+          save={(changes) => api<AppearanceState>('PATCH', '/api/account/appearance', changes)}
+        />
         <Router routes={routes as never} />
       </AppearanceProvider>
     );

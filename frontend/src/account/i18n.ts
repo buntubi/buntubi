@@ -5,7 +5,7 @@ const fr = {
   product: 'Compte',
   nav: { home: 'Accueil', info: 'Informations personnelles', security: 'Sécurité', devices: 'Appareils', apps: 'Applications connectées', data: 'Données et compte' },
   sidebar: { collapse: 'Réduire le menu', expand: 'Déplier le menu', search: 'Rechercher', navigation: 'Navigation' },
-  shell: { theme: 'Thème', schemes: { light: 'Clair', dark: 'Sombre', system: 'Système' }, skins: { title: 'Style', names: { soft: 'Doux', fluixi: 'Fluixi', material: 'Material', paper: 'Papier', glass: 'Verre' } }, navigation: 'Fil d’Ariane', language: 'English', signOut: 'Se déconnecter', account: 'Compte' },
+  shell: { theme: 'Thème', schemes: { light: 'Clair', dark: 'Sombre', system: 'Système' }, appearance: { open: 'Apparence…', dialog: { title: 'Apparence', description: 'S’applique tout de suite, ici et dans vos produits. Enregistré sur votre compte.', done: 'Terminé', lockedNote: 'Choisi par votre organisation', controls: { skin: 'Style', scheme: 'Mode', system: 'Système', light: 'Clair', dark: 'Sombre', accent: 'Couleur', transparency: 'Transparence', opacity: 'Opacité du verre', backdrop: 'Fond', corner: 'Coins' }, names: { default: 'Du style', round: 'Arrondis', solid: 'Opaque', medium: 'Moyen', liquid: 'Liquide', ultra: 'Ultra', soft: 'Doux', fluixi: 'Fluixi', material: 'Material', paper: 'Papier', glass: 'Verre', graphite: 'Graphite', tahoe: 'Tahoe', silk: 'Soie', lagoon: 'Lagon', ember: 'Braise', frost: 'Givre' } } }, skins: { title: 'Style', names: { soft: 'Doux', fluixi: 'Fluixi', material: 'Material', paper: 'Papier', glass: 'Verre' } }, navigation: 'Fil d’Ariane', language: 'English', signOut: 'Se déconnecter', account: 'Compte' },
   switcher: {
     menu: 'Comptes',
     signedInHere: 'Connectés sur ce navigateur',
@@ -355,7 +355,7 @@ const en: Words = {
   product: 'Account',
   nav: { home: 'Home', info: 'Personal info', security: 'Security', devices: 'Devices', apps: 'Connected apps', data: 'Data and account' },
   sidebar: { collapse: 'Collapse menu', expand: 'Expand menu', search: 'Search', navigation: 'Navigation' },
-  shell: { theme: 'Theme', schemes: { light: 'Light', dark: 'Dark', system: 'System' }, skins: { title: 'Style', names: { soft: 'Soft', fluixi: 'Fluixi', material: 'Material', paper: 'Paper', glass: 'Glass' } }, navigation: 'Breadcrumb', language: 'Français', signOut: 'Sign out', account: 'Account' },
+  shell: { theme: 'Theme', schemes: { light: 'Light', dark: 'Dark', system: 'System' }, appearance: { open: 'Appearance…', dialog: { title: 'Appearance', description: 'Applies at once, here and in your products. Saved to your account.', done: 'Done', lockedNote: 'Set by your organization', controls: { skin: 'Style', scheme: 'Mode', system: 'System', light: 'Light', dark: 'Dark', accent: 'Accent', transparency: 'Transparency', opacity: 'Glass opacity', backdrop: 'Backdrop', corner: 'Corners' }, names: { default: 'Default', round: 'Round', solid: 'Solid', medium: 'Medium', liquid: 'Liquid', ultra: 'Ultra', soft: 'Soft', fluixi: 'Fluixi', material: 'Material', paper: 'Paper', glass: 'Glass', graphite: 'Graphite', tahoe: 'Tahoe', silk: 'Silk', lagoon: 'Lagoon', ember: 'Ember', frost: 'Frost' } } }, skins: { title: 'Style', names: { soft: 'Soft', fluixi: 'Fluixi', material: 'Material', paper: 'Paper', glass: 'Glass' } }, navigation: 'Breadcrumb', language: 'Français', signOut: 'Sign out', account: 'Account' },
   switcher: {
     menu: 'Accounts',
     signedInHere: 'Signed in on this browser',
