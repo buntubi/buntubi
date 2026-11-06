@@ -75,6 +75,7 @@ export interface WebhookMemberAppearance {
   rim_glow?: number;
   light?: 'diagonal' | 'vertical';
   hover?: 'off' | 'on';
+  cards?: 'solid' | 'glass';
 }
 
 export interface WebhookMemberProfile {

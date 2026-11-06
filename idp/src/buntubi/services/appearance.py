@@ -17,6 +17,7 @@ TRANSPARENCY_PRESETS = ("solid", "medium", "liquid", "ultra")
 OPACITY_RANGE = (0.2, 1.0)
 LIGHTS = ("diagonal", "vertical")
 HOVERS = ("off", "on")
+CARDS = ("solid", "glass")
 # The glass rim's variables, each a number held to its range (fluixi-ui's RIM_RANGES).
 RIM_RANGES = {"rim_opacity": (0.0, 1.0), "rim_width": (0.4, 3.0), "rim_glow": (0.0, 1.0)}
 AXES = (
@@ -31,6 +32,7 @@ AXES = (
     "rim_glow",
     "light",
     "hover",
+    "cards",
 )
 _NAME = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
 
@@ -52,6 +54,8 @@ def clean(axis: str, value: Any) -> Any:
     if axis == "light" and value in LIGHTS:
         return value
     if axis == "hover" and value in HOVERS:
+        return value
+    if axis == "cards" and value in CARDS:
         return value
     if axis in RIM_RANGES:
         low, high = RIM_RANGES[axis]

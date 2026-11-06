@@ -34,5 +34,7 @@ export const appearance: Appearance = {
   skins: SKINS,
   defaultSkin: DEFAULT_SKIN,
   storagePrefix: 'idp',
+  // Cards are glass under the glass skin, so the choice of transparency and backdrop shows on them.
+  defaultCards: 'glass',
   colorScheme: { storageKey: schemeKey, themeColor: { light: '#f7f7f8', dark: '#0a0b0d' } },
 };

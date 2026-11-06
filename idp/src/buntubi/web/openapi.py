@@ -626,6 +626,7 @@ _APPEARANCE = {
     "rim_glow": {"type": "number", "minimum": 0, "maximum": 1},
     "light": {"type": "string", "enum": ["diagonal", "vertical"]},
     "hover": {"type": "string", "enum": ["off", "on"]},
+    "cards": {"type": "string", "enum": ["solid", "glass"]},
 }
 RESPONSE_SCHEMAS["AppearanceChoices"] = obj(_APPEARANCE)
 RESPONSE_SCHEMAS["AppearanceState"] = obj(

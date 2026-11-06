@@ -5,7 +5,7 @@
  * `useAppearance()`) to `read` and `apply`; nothing here depends on a UI library.
  */
 
-export const APPEARANCE_AXES = ['skin', 'scheme', 'accent', 'corner', 'transparency', 'backdrop', 'rim_opacity', 'rim_width', 'rim_glow', 'light', 'hover'] as const;
+export const APPEARANCE_AXES = ['skin', 'scheme', 'accent', 'corner', 'transparency', 'backdrop', 'rim_opacity', 'rim_width', 'rim_glow', 'light', 'hover', 'cards'] as const;
 export type AppearanceAxis = (typeof APPEARANCE_AXES)[number];
 
 /** One value per axis; an axis left out is the deployment's default. */
@@ -24,6 +24,8 @@ export interface AppearanceChoices {
   /** How the glass rim catches light, and whether the light follows the pointer. */
   light?: 'diagonal' | 'vertical';
   hover?: 'off' | 'on';
+  /** Whether cards, tables and the like are glass at rest. */
+  cards?: 'solid' | 'glass';
 }
 
 /** What the provider answers: what applies, the person's own choices, and the locked axes. */

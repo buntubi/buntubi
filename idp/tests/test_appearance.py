@@ -40,7 +40,14 @@ def test_a_person_sets_checks_and_clears_their_choices(
         browser,
         "PATCH",
         "/api/account/appearance",
-        {"rim_opacity": 0.9, "rim_width": 1.6, "rim_glow": 0.65, "light": "vertical", "hover": "on"},
+        {
+            "rim_opacity": 0.9,
+            "rim_width": 1.6,
+            "rim_glow": 0.65,
+            "light": "vertical",
+            "hover": "on",
+            "cards": "glass",
+        },
         csrf,
     )
     assert rim.json["appearance"]["rim_width"] == 1.6 and rim.json["appearance"]["hover"] == "on"
@@ -54,6 +61,7 @@ def test_a_person_sets_checks_and_clears_their_choices(
         {"rim_glow": -1},
         {"rim_opacity": "bright"},
         {"light": "sideways"},
+        {"cards": "frosted"},
         {"hover": True},
     ):
         assert api(browser, "PATCH", "/api/account/appearance", bad, csrf).status_code == 400, bad

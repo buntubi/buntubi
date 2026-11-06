@@ -8,7 +8,7 @@
 import { Show, onMount } from '@fluixi/core';
 import type { ComponentChild } from '@fluixi/dom';
 import { effect, signal } from '@fluixi/reactive/signal';
-import { AccentPicker, BackdropSelect, ColorSchemePicker, CornerPicker, DEFAULT_APPEARANCE_LABELS, HoverPicker, LightPicker, RimControl, SkinSelect, TransparencyControl, type AppearanceLabels } from '@fluixi-ui/appearance';
+import { AccentPicker, BackdropSelect, CardsPicker, ColorSchemePicker, CornerPicker, DEFAULT_APPEARANCE_LABELS, HoverPicker, LightPicker, RimControl, SkinSelect, TransparencyControl, type AppearanceLabels } from '@fluixi-ui/appearance';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from '@fluixi-ui/dialog';
 import { useAppearance } from '@fluixi-ui/theme';
 import { createAppearanceSync, type AppearanceAxis, type AppearanceChoices, type AppearanceState } from '@buntubi/sdk/appearance';
@@ -94,6 +94,9 @@ export function AppearanceDialog(props: AppearanceDialogProps): ComponentChild {
               <Field axis="light" title={label('glassLight')}>
                 <LightPicker label={label('glassLight')} names={props.labels.names} />
               </Field>
+              <Field axis="cards" title={label('glassCards')}>
+                <CardsPicker label={label('glassCards')} names={props.labels.names} />
+              </Field>
               <Field axis="hover" title={label('glassHover')}>
                 <HoverPicker label={label('glassHover')} names={props.labels.names} />
               </Field>
@@ -139,6 +142,7 @@ export function AppearanceSync(props: AppearanceSyncProps): ComponentChild {
       ...Object.fromEntries(RIM_KEYS.filter((key) => appearance.rim.custom(key)).map((key) => [`rim_${key}`, appearance.rim.value(key)])),
       light: appearance.light.value(),
       hover: appearance.hover.value(),
+      cards: appearance.cards.value(),
     };
   };
   const apply = (choices: AppearanceChoices) => {
@@ -155,6 +159,7 @@ export function AppearanceSync(props: AppearanceSyncProps): ComponentChild {
     }
     if (choices.light) appearance.light.set(choices.light);
     if (choices.hover) appearance.hover.set(choices.hover);
+    if (choices.cards) appearance.cards.set(choices.cards);
   };
   const sync = createAppearanceSync({ load: props.load, save: props.save, read, apply, onError: props.onError });
   onMount(() => {
