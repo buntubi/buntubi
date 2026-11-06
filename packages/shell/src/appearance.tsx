@@ -8,10 +8,12 @@
 import { Show, onMount } from '@fluixi/core';
 import type { ComponentChild } from '@fluixi/dom';
 import { effect, signal } from '@fluixi/reactive/signal';
-import { AccentPicker, BackdropSelect, ColorSchemePicker, CornerPicker, DEFAULT_APPEARANCE_LABELS, SkinSelect, TransparencyControl, type AppearanceLabels } from '@fluixi-ui/appearance';
+import { AccentPicker, BackdropSelect, ColorSchemePicker, CornerPicker, DEFAULT_APPEARANCE_LABELS, HoverPicker, LightPicker, RimControl, SkinSelect, TransparencyControl, type AppearanceLabels } from '@fluixi-ui/appearance';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from '@fluixi-ui/dialog';
 import { useAppearance } from '@fluixi-ui/theme';
 import { createAppearanceSync, type AppearanceAxis, type AppearanceChoices, type AppearanceState } from '@buntubi/sdk/appearance';
+
+const RIM_KEYS = ['opacity', 'width', 'glow'] as const;
 
 /** The axes the deployment locks, once the account has answered. */
 const locked = signal<readonly AppearanceAxis[]>([]);
@@ -38,11 +40,12 @@ export interface AppearanceDialogProps {
 export function AppearanceDialog(props: AppearanceDialogProps): ComponentChild {
   const appearance = useAppearance();
   const label = (key: keyof AppearanceLabels) => props.labels.controls?.[key] ?? DEFAULT_APPEARANCE_LABELS[key];
-  const free = (axis: AppearanceAxis) => !locked().includes(axis);
-  const Field = (field: { axis: AppearanceAxis; title: string; children: ComponentChild }) => (
+  // A field is offered while none of its axes is locked.
+  const free = (axes: AppearanceAxis[]) => axes.every((axis) => !locked().includes(axis));
+  const Field = (field: { axis: AppearanceAxis | AppearanceAxis[]; title: string; children: ComponentChild }) => (
     <div class="field">
       <span class="field-title">{field.title}</span>
-      <Show when={free(field.axis)} fallback={<span class="field-locked">{props.labels.lockedNote}</span>}>
+      <Show when={free([field.axis].flat())} fallback={<span class="field-locked">{props.labels.lockedNote}</span>}>
         {field.children}
       </Show>
     </div>
@@ -79,6 +82,19 @@ export function AppearanceDialog(props: AppearanceDialogProps): ComponentChild {
             <Show when={appearance.supportsTransparency()}>
               <Field axis="transparency" title={label('transparency')}>
                 <TransparencyControl label={label('transparency')} sliderLabel={label('opacity')} names={props.labels.names} />
+              </Field>
+            </Show>
+            <Show when={appearance.supportsRim()}>
+              <Field axis={['rim_opacity', 'rim_width', 'rim_glow']} title={label('rim')}>
+                <RimControl label={label('rim')} labels={props.labels.controls} />
+              </Field>
+            </Show>
+            <Show when={appearance.supportsLight()}>
+              <Field axis="light" title={label('glassLight')}>
+                <LightPicker label={label('glassLight')} names={props.labels.names} />
+              </Field>
+              <Field axis="hover" title={label('glassHover')}>
+                <HoverPicker label={label('glassHover')} names={props.labels.names} />
               </Field>
             </Show>
             <Show when={appearance.backdrops().length > 0}>
@@ -118,6 +134,10 @@ export function AppearanceSync(props: AppearanceSyncProps): ComponentChild {
       corner: appearance.corner.value(),
       transparency: appearance.transparency.custom() ? appearance.transparency.opacity() : appearance.transparency.preset(),
       ...(backdrop ? { backdrop } : {}),
+      // A rim value only while one is chosen: left alone, it is the skin's own and not the person's.
+      ...Object.fromEntries(RIM_KEYS.filter((key) => appearance.rim.custom(key)).map((key) => [`rim_${key}`, appearance.rim.value(key)])),
+      light: appearance.light.value(),
+      hover: appearance.hover.value(),
     };
   };
   const apply = (choices: AppearanceChoices) => {
@@ -128,6 +148,12 @@ export function AppearanceSync(props: AppearanceSyncProps): ComponentChild {
     if (typeof choices.transparency === 'number') appearance.transparency.setOpacity(choices.transparency);
     else if (choices.transparency) appearance.transparency.setPreset(choices.transparency as Parameters<typeof appearance.transparency.setPreset>[0]);
     if (choices.backdrop) appearance.backdrop.set(choices.backdrop);
+    for (const key of RIM_KEYS) {
+      const value = choices[`rim_${key}` as const];
+      if (typeof value === 'number') appearance.rim.set(key, value);
+    }
+    if (choices.light) appearance.light.set(choices.light);
+    if (choices.hover) appearance.hover.set(choices.hover);
   };
   const sync = createAppearanceSync({ load: props.load, save: props.save, read, apply, onError: props.onError });
   onMount(() => {

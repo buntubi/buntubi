@@ -36,12 +36,25 @@ def test_a_person_sets_checks_and_clears_their_choices(
         "transparency": 0.5,
         "backdrop": "tahoe",
     }
+    rim = api(
+        browser,
+        "PATCH",
+        "/api/account/appearance",
+        {"rim_opacity": 0.9, "rim_width": 1.6, "rim_glow": 0.65, "light": "vertical", "hover": "on"},
+        csrf,
+    )
+    assert rim.json["appearance"]["rim_width"] == 1.6 and rim.json["appearance"]["hover"] == "on"
     for bad in (
         {"skin": "neon"},
         {"transparency": 0.05},
         {"transparency": True},
         {"corner": "sharp"},
         {"colour": "red"},
+        {"rim_width": 9},
+        {"rim_glow": -1},
+        {"rim_opacity": "bright"},
+        {"light": "sideways"},
+        {"hover": True},
     ):
         assert api(browser, "PATCH", "/api/account/appearance", bad, csrf).status_code == 400, bad
     cleared = api(browser, "PATCH", "/api/account/appearance", {"transparency": None}, csrf)

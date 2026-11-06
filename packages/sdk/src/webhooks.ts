@@ -70,6 +70,11 @@ export interface WebhookMemberAppearance {
   /** A preset (solid, medium, liquid, ultra) or an exact opacity from 0.2 to 1. */
   transparency?: string | number;
   backdrop?: string;
+  rim_opacity?: number;
+  rim_width?: number;
+  rim_glow?: number;
+  light?: 'diagonal' | 'vertical';
+  hover?: 'off' | 'on';
 }
 
 export interface WebhookMemberProfile {

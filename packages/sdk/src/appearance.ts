@@ -5,7 +5,7 @@
  * `useAppearance()`) to `read` and `apply`; nothing here depends on a UI library.
  */
 
-export const APPEARANCE_AXES = ['skin', 'scheme', 'accent', 'corner', 'transparency', 'backdrop'] as const;
+export const APPEARANCE_AXES = ['skin', 'scheme', 'accent', 'corner', 'transparency', 'backdrop', 'rim_opacity', 'rim_width', 'rim_glow', 'light', 'hover'] as const;
 export type AppearanceAxis = (typeof APPEARANCE_AXES)[number];
 
 /** One value per axis; an axis left out is the deployment's default. */
@@ -17,6 +17,13 @@ export interface AppearanceChoices {
   /** A preset (solid, medium, liquid, ultra) or an exact opacity from 0.2 to 1. */
   transparency?: string | number;
   backdrop?: string;
+  /** The glass rim: opacity 0 to 1, width 0.4 to 3 px, glow 0 to 1. */
+  rim_opacity?: number;
+  rim_width?: number;
+  rim_glow?: number;
+  /** How the glass rim catches light, and whether the light follows the pointer. */
+  light?: 'diagonal' | 'vertical';
+  hover?: 'off' | 'on';
 }
 
 /** What the provider answers: what applies, the person's own choices, and the locked axes. */

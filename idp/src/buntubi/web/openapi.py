@@ -621,6 +621,11 @@ _APPEARANCE = {
     "corner": {"type": "string", "enum": ["default", "round"]},
     "transparency": {"oneOf": [STRING, {"type": "number", "minimum": 0.2, "maximum": 1}]},
     "backdrop": STRING,
+    "rim_opacity": {"type": "number", "minimum": 0, "maximum": 1},
+    "rim_width": {"type": "number", "minimum": 0.4, "maximum": 3},
+    "rim_glow": {"type": "number", "minimum": 0, "maximum": 1},
+    "light": {"type": "string", "enum": ["diagonal", "vertical"]},
+    "hover": {"type": "string", "enum": ["off", "on"]},
 }
 RESPONSE_SCHEMAS["AppearanceChoices"] = obj(_APPEARANCE)
 RESPONSE_SCHEMAS["AppearanceState"] = obj(

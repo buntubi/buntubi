@@ -6,6 +6,8 @@ describe('appearanceChanges', () => {
     expect(appearanceChanges({ skin: 'soft', corner: 'round' }, { skin: 'glass' }, [])).toEqual({ skin: 'glass', corner: null });
     expect(appearanceChanges({ skin: 'soft' }, { skin: 'glass', corner: 'round' }, ['corner'])).toEqual({ skin: 'glass' });
     expect(appearanceChanges({ transparency: 0.5 }, { transparency: 0.5 }, [])).toEqual({});
+    // The glass rim and light: a rim value cleared goes back as null, a locked one is left out.
+    expect(appearanceChanges({ rim_width: 1.6, light: 'vertical' }, { rim_glow: 0.4, light: 'vertical', hover: 'on' }, ['hover'])).toEqual({ rim_width: null, rim_glow: 0.4 });
   });
 });
 

@@ -15,7 +15,23 @@ SCHEMES = ("system", "light", "dark")
 CORNERS = ("default", "round")
 TRANSPARENCY_PRESETS = ("solid", "medium", "liquid", "ultra")
 OPACITY_RANGE = (0.2, 1.0)
-AXES = ("skin", "scheme", "accent", "corner", "transparency", "backdrop")
+LIGHTS = ("diagonal", "vertical")
+HOVERS = ("off", "on")
+# The glass rim's variables, each a number held to its range (fluixi-ui's RIM_RANGES).
+RIM_RANGES = {"rim_opacity": (0.0, 1.0), "rim_width": (0.4, 3.0), "rim_glow": (0.0, 1.0)}
+AXES = (
+    "skin",
+    "scheme",
+    "accent",
+    "corner",
+    "transparency",
+    "backdrop",
+    "rim_opacity",
+    "rim_width",
+    "rim_glow",
+    "light",
+    "hover",
+)
 _NAME = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
 
 
@@ -33,6 +49,14 @@ def clean(axis: str, value: Any) -> Any:
         return value
     if axis == "corner" and value in CORNERS:
         return value
+    if axis == "light" and value in LIGHTS:
+        return value
+    if axis == "hover" and value in HOVERS:
+        return value
+    if axis in RIM_RANGES:
+        low, high = RIM_RANGES[axis]
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and low <= value <= high:
+            return round(float(value), 2)
     if axis in ("accent", "backdrop") and isinstance(value, str) and _NAME.match(value):
         return value
     if axis == "transparency":
