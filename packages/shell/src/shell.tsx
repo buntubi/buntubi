@@ -57,12 +57,12 @@ export function Shell(props: ShellProps): ComponentChild {
         .shell { display: flex; min-height: 100vh; }
         /* The column takes the page's height, so its border and background run to the end of a
            long page; the inside sticks to the viewport. */
-        .column { flex: none; background: var(--idp-surface); border-right: 1px solid var(--idp-border); }
+        .column { flex: none; background: var(--idp-surface); -webkit-backdrop-filter: var(--idp-surface-filter, none); backdrop-filter: var(--idp-surface-filter, none); border-right: 1px solid var(--idp-border); }
         .side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; }
         .side > :deep(idp-sidebar) { flex: 1; min-height: 0; overflow-y: auto; }
         .foot { padding: 10px 12px 14px; border-top: 1px solid var(--idp-border); }
         .main { flex: 1; min-width: 0; display: flex; flex-direction: column; --idp-topbar: 58px; }
-        header { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 12px; height: var(--idp-topbar); box-sizing: border-box; padding: 12px 28px; border-bottom: 1px solid var(--idp-border); background: var(--idp-surface); }
+        header { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 12px; height: var(--idp-topbar); box-sizing: border-box; padding: 12px 28px; border-bottom: 1px solid var(--idp-border); background: var(--idp-surface); -webkit-backdrop-filter: var(--idp-surface-filter, none); backdrop-filter: var(--idp-surface-filter, none); }
         .crumbs { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--idp-muted); font-size: 13px; }
         .crumbs :deep(a) { color: var(--idp-muted); text-decoration: none; }
         .crumbs :deep(a:hover) { color: var(--idp-text); }

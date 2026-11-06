@@ -32,8 +32,20 @@
   --idp-rail: 60px;
 }
 
-html {
+/* Glass paints its canvas (its light, or the backdrop chosen) on <html> and makes surfaces glass,
+   following the transparency chosen: the page's own background steps aside. */
+:root[data-ui='glass'] {
+  --idp-bg: transparent;
+  --idp-surface: var(--flx-ui-glass-bg);
+  --idp-surface-2: var(--flx-ui-glass-bg-subtle);
+  --idp-surface-filter: var(--flx-ui-glass-filter);
+}
+
+html:not([data-ui='glass']) {
   background: var(--flx-ui-color-bg-subtle);
+}
+
+html {
   color: var(--flx-ui-color-fg);
   font-family: var(--idp-font);
 }
