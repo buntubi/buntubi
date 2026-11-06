@@ -49,7 +49,8 @@ Buntubi-Signature: t=1792133000,v1=5f2c...e81
   organization; `member.id` is the membership, `member.user_id` the person, the same value as the
   `sub` of their tokens.
 - `member.profile` holds the person's `name` and the profile fields the platform shows
-  (`zoneinfo`, ...), as the profile claims give them. Only first-party apps receive it, in the
+  (`zoneinfo`, ...), as the profile claims give them, and `appearance`, the person's own display
+  choices (skin, scheme, accent, corner, transparency, backdrop; a deployment applies its locks). Only first-party apps receive it, in the
   events and in `/v1/app/organizations`: a third-party app hears of an organization because its
   admin allowed it, not each member, so it reads a person's profile from `userinfo`, with that
   person's consent. A third-party app still receives `member.updated`, without `profile`.

@@ -61,10 +61,22 @@ export interface WebhookMember {
   profile?: WebhookMemberProfile;
 }
 
+/** A person's own appearance choices, by axis; an axis left out takes the deployment's. */
+export interface WebhookMemberAppearance {
+  skin?: string;
+  scheme?: 'system' | 'light' | 'dark';
+  accent?: string;
+  corner?: 'default' | 'round';
+  /** A preset (solid, medium, liquid, ultra) or an exact opacity from 0.2 to 1. */
+  transparency?: string | number;
+  backdrop?: string;
+}
+
 export interface WebhookMemberProfile {
   name: string | null;
   zoneinfo?: string | null;
-  [field: string]: string | null | undefined;
+  appearance?: WebhookMemberAppearance;
+  [field: string]: string | null | WebhookMemberAppearance | undefined;
 }
 
 export interface WebhookInvitation {

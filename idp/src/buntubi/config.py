@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     brand_terms_url: str = ""
     # The skin a reader sees until they pick another; a client's own skin wins on its sign-in pages.
     brand_skin: str = "soft"
+    # The appearance choices the deployment sets, per axis (skin, scheme, accent, corner,
+    # transparency, backdrop): `{"corner": {"default": "round", "locked": true}}`, as JSON. A locked
+    # axis cannot be changed by a person; a default stands until they choose. See services/appearance.
+    appearance: str = ""
     # The parent domain the appearance choices (skin, light or dark, accent) are kept for, such as
     # example.com, so the provider, the console and the portal on its subdomains share them. Empty:
     # each site keeps its own. The session cookies are not affected.
@@ -120,6 +124,14 @@ class Settings(BaseSettings):
     def _bare_domain(cls, value: str) -> str:
         if value and not re.fullmatch(r"\.?[a-z0-9-]+(\.[a-z0-9-]+)*", value):
             raise ValueError("expected a domain such as example.com, without scheme or port")
+        return value
+
+    @field_validator("appearance")
+    @classmethod
+    def _known_appearance(cls, value: str) -> str:
+        from buntubi.services.appearance import parse_rules
+
+        parse_rules(value)
         return value
 
     @field_validator("brand_skin")

@@ -2,9 +2,10 @@
 
 import uuid
 from datetime import date, datetime
+from typing import Any
 
 from sqlalchemy import ForeignKey, String, UniqueConstraint
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from buntubi.db import Base, IdMixin, TimestampMixin
@@ -32,6 +33,9 @@ class User(IdMixin, TimestampMixin, Base):
     given_name: Mapped[str] = mapped_column(String(100), default="")
     family_name: Mapped[str] = mapped_column(String(100), default="")
     locale: Mapped[str] = mapped_column(String(10), default="fr")
+    # The person's own appearance choices, by axis (services/appearance); an axis left out takes the
+    # deployment's.
+    appearance: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
     picture: Mapped[str | None] = mapped_column(String(2048))
     # Two-letter ISO 3166 code, and a phone number in E.164.
     country: Mapped[str | None] = mapped_column(String(2))

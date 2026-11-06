@@ -23,6 +23,7 @@ from buntubi.security.tokens import normalize_user_code
 from buntubi.services import (
     accounts,
     activity,
+    appearance,
     audit,
     closing,
     connected,
@@ -524,6 +525,32 @@ def update_profile() -> Response:
         webhooks.profile_changed(user)
     db().commit()
     return jsonify(updated=sorted(fields))
+
+
+@bp.get("/account/appearance")
+def get_appearance() -> Response:
+    """The appearance in force for the signed-in person, their own choices, and what is locked."""
+    user = _me()
+    return jsonify(
+        appearance=appearance.effective(user), own=user.appearance or {}, locked=appearance.locks()
+    )
+
+
+@bp.patch("/account/appearance")
+def update_appearance() -> Response:
+    """Sets the axes sent (null clears one); a locked axis is refused."""
+    user = _me()
+    try:
+        changed = appearance.store(user, appearance.check(_body()))
+    except appearance.AppearanceError as error:
+        raise AccountError(str(error)) from error
+    if changed:
+        audit.record("appearance_updated", user=user)
+        webhooks.profile_changed(user)
+    db().commit()
+    return jsonify(
+        appearance=appearance.effective(user), own=user.appearance or {}, locked=appearance.locks()
+    )
 
 
 @bp.post("/account/picture")

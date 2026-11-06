@@ -85,7 +85,8 @@ class MemberData(TypedDict, total=False):
     # Their name and the profile fields the platform shows (`zoneinfo`...), as the profile claims
     # give them. First-party apps only: a third-party app hears of an organization because its
     # admin allowed it, not each member, and reads a profile with the person's own consent.
-    profile: dict[str, str | None]
+    # The appearance choices are nested by axis: {"skin": "glass", "transparency": 0.5}.
+    profile: dict[str, Any]
 
 
 class InvitationData(TypedDict):
@@ -219,11 +220,16 @@ def link(client_id: uuid.UUID, organization_id: uuid.UUID) -> None:
     )
 
 
-def profile_of(user: Any) -> dict[str, str | None]:
-    """The member's profile as the `profile` claims carry it: the name and the fields shown."""
+def profile_of(user: Any) -> dict[str, Any]:
+    """The member's profile as the `profile` claims carry it: the name, the fields shown, and the
+    person's own appearance choices (the deployment's locks are applied where they are shown)."""
     from buntubi.services import profile_fields  # profile_fields reaches the services through plugins
 
-    return {"name": user.name or None, **profile_fields.values_of(user, profile_fields.shown())}
+    return {
+        "name": user.name or None,
+        **profile_fields.values_of(user, profile_fields.shown()),
+        **({"appearance": dict(user.appearance)} if user.appearance else {}),
+    }
 
 
 def member_data(member: OrganizationMember) -> MemberData:
