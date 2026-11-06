@@ -22,13 +22,15 @@ export interface ProfileFieldInputProps {
   label: string;
   description?: string;
   genders: Record<Gender, string>;
+  /** Offered as a choice to empty an optional field; left out, the field cannot be emptied. */
+  noneLabel?: string;
 }
 
 export function ProfileFieldInput(props: ProfileFieldInputProps) {
   const field = props.field;
   const label = () => props.label;
   const description = () => props.description ?? '';
-  if (field === 'zoneinfo') return <TimeZoneField control={props.control} label={props.label} description={props.description} />;
+  if (field === 'zoneinfo') return <TimeZoneField control={props.control} label={props.label} description={props.description} noneLabel={props.noneLabel} />;
   if (field === 'gender') {
     const options = [...GENDERS];
     const text = (value: string) => props.genders[value as Gender] ?? '';

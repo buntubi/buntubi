@@ -23,7 +23,7 @@ export function TimeZoneField(props: TimeZoneFieldProps) {
   return (
     <FormField control={props.control} label={label} description={() => props.description ?? ''}>
       {(b) => (
-        <Select value={b.value()} labels={text} disabled={props.disabled} onChange={(value: string) => b.onChange(value)}>
+        <Select value={b.value()} labels={text} placeholder={props.noneLabel} disabled={props.disabled} onChange={(value: string) => b.onChange(value)}>
           <SelectTrigger aria-label={label}>
             <SelectValue />
           </SelectTrigger>

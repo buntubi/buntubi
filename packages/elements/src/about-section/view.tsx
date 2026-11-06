@@ -66,6 +66,7 @@ export const aboutSectionView = (a: AboutSectionLogic) => (
                     label={a.labels().fields[field]}
                     description={a.labels().hints[field] ?? (a.mode(field) === 'required' ? a.labels().required : '')}
                     genders={a.labels().genders}
+                    noneLabel={a.mode(field) === 'required' ? undefined : a.labels().none}
                   />
                 )}
               </For>
