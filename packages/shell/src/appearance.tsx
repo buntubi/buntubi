@@ -53,15 +53,16 @@ export function AppearanceDialog(props: AppearanceDialogProps): ComponentChild {
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <style scoped>{`
-        .body { display: grid; gap: 16px; margin-top: 12px; }
+        /* The body scrolls inside a dialog of fixed height; the title and the button stay in view. */
+        .body { display: grid; align-content: start; gap: 16px; margin-top: 12px; overflow-y: auto; min-height: 0; flex: 1; padding-inline-end: 4px; }
         .field { display: grid; gap: 8px; }
         .field-title { font-size: 13px; font-weight: 500; }
         .field-locked { font-size: 13px; color: var(--flx-ui-color-fg-muted); }
-        .footer { display: flex; justify-content: flex-end; margin-top: 16px; }
+        .footer { display: flex; justify-content: flex-end; margin-top: 16px; flex: none; }
       `}</style>
       <DialogPortal>
         <DialogOverlay />
-        <DialogContent>
+        <DialogContent style="display: flex; flex-direction: column; height: min(85vh, 720px); overflow: hidden">
           <DialogTitle>{props.labels.title}</DialogTitle>
           <DialogDescription>{props.labels.description}</DialogDescription>
           <div class="body">
