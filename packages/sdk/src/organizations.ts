@@ -25,6 +25,8 @@ export interface OrganizationMembership {
   name: string;
   description: string;
   support_email: string | null;
+  /** An IANA time zone (`Africa/Dakar`): its deadlines and schedules, and its members' default. */
+  time_zone: string | null;
   suspended: boolean;
   role: Role;
   created_at: string;
@@ -98,12 +100,12 @@ export function organizationsClient(options: OrganizationsClientOptions) {
   return {
     /** The person's organizations; only the token's when it names one. */
     list: async () => (await call<{ items: OrganizationMembership[] }>('GET', base)).data.items,
-    create: async (input: { name: string; description?: string; support_email?: string | null }) =>
+    create: async (input: { name: string; description?: string; support_email?: string | null; time_zone?: string | null }) =>
       (await call<{ organization: OrganizationMembership }>('POST', base, input)).data.organization,
     /** One the person is in, a guest's too. */
     get: async (organization: string) =>
       (await call<{ organization: OrganizationMembership }>('GET', at(organization))).data.organization,
-    update: async (organization: string, patch: { name?: string; description?: string; support_email?: string | null }) =>
+    update: async (organization: string, patch: { name?: string; description?: string; support_email?: string | null; time_zone?: string | null }) =>
       (await call<{ organization: OrganizationMembership }>('PATCH', at(organization), patch)).data.organization,
     remove: async (organization: string) => {
       await call('DELETE', at(organization));

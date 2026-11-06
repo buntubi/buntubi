@@ -11,6 +11,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import timedelta
 from urllib.parse import urlsplit
+from zoneinfo import available_timezones
 
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from sqlalchemy import delete, func, select, update
@@ -208,7 +209,18 @@ def writable(organization: Organization) -> Organization:
     return organization
 
 
-def create_organization(user: User, name: str, description: str, support_email: str | None) -> Organization:
+def checked_time_zone(zone: str | None) -> str | None:
+    """An IANA time zone, or none; anything else is refused."""
+    if zone is None or zone == "":
+        return None
+    if zone not in available_timezones():
+        raise PlatformError("invalid_time_zone", 400)
+    return zone
+
+
+def create_organization(
+    user: User, name: str, description: str, support_email: str | None, time_zone: str | None = None
+) -> Organization:
     owned = db().scalar(
         select(func.count())
         .select_from(OrganizationMember)
@@ -220,6 +232,7 @@ def create_organization(user: User, name: str, description: str, support_email: 
         name=name,
         description=description,
         support_email=normalize_email(support_email) if support_email else None,
+        time_zone=checked_time_zone(time_zone),
     )
     organization.members.append(OrganizationMember(user_id=user.id, role="owner"))
     db().add(organization)
@@ -244,6 +257,7 @@ def update_organization(
     name: str | None = None,
     description: str | None = None,
     support_email: str | None | object = UNCHANGED,
+    time_zone: str | None | object = UNCHANGED,
 ) -> Organization:
     """Changes what was given; the member needs the settings ability, the organization must run."""
     if not can(member, "settings"):
@@ -255,6 +269,8 @@ def update_organization(
         organization.description = description
     if support_email is not UNCHANGED:
         organization.support_email = str(support_email).lower() if support_email else None
+    if time_zone is not UNCHANGED:
+        organization.time_zone = checked_time_zone(time_zone)  # type: ignore[arg-type]
     webhooks.organization_changed(organization, Event.ORGANIZATION_UPDATED)
     return organization
 

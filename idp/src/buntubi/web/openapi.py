@@ -206,6 +206,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "name": STRING,
             "description": STRING,
             "support_email": MAYBE_STRING,
+            "time_zone": MAYBE_STRING,
             "suspended": BOOL,
             "platform": BOOL,
             "role": ROLE,
@@ -273,6 +274,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "name": STRING,
             "description": STRING,
             "support_email": MAYBE_STRING,
+            "time_zone": MAYBE_STRING,
             "suspended": BOOL,
             "role": ROLE,
             "created_at": TIME,
@@ -528,6 +530,7 @@ RESPONSE_SCHEMAS: dict[str, dict[str, Any]] = {
             "owner": {"anyOf": [obj({"id": STRING, "email": STRING}), {"type": "null"}]},
             "members": INT,
             "support_email": MAYBE_STRING,
+            "time_zone": MAYBE_STRING,
             "approved_scopes": STRINGS,
             "apps": INT,
             "platform": BOOL,
@@ -611,7 +614,7 @@ _APP_REVIEW = {
 }
 RESPONSE_SCHEMAS["AppReview"] = obj(_APP_REVIEW, [key for key in _APP_REVIEW if key != "decided_by"])
 
-_EVENT_ORGANIZATION = {"id": STRING, "name": STRING, "suspended": BOOL}
+_EVENT_ORGANIZATION = {"id": STRING, "name": STRING, "suspended": BOOL, "time_zone": MAYBE_STRING}
 RESPONSE_SCHEMAS["EventOrganization"] = obj(_EVENT_ORGANIZATION)
 RESPONSE_SCHEMAS["AppOrganization"] = obj({**_EVENT_ORGANIZATION, "sequence": INT})
 RESPONSE_SCHEMAS["EventMember"] = obj({"id": STRING, "user_id": STRING, "email": STRING, "role": STRING})

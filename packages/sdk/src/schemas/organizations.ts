@@ -11,6 +11,8 @@ export const organizationSchema = z.object({
   name: z.string().trim().min(1, 'form.required').max(80, 'form.tooLong'),
   description: z.string().max(500, 'form.tooLong'),
   support_email: optionalEmail,
+  /** An IANA name, or '' for none; the provider checks the name. */
+  time_zone: z.string().max(64, 'form.tooLong'),
 });
 
 export type OrganizationInput = z.infer<typeof organizationSchema>;

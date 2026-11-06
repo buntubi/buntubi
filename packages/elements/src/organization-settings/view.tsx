@@ -4,6 +4,7 @@ import { Button } from '@fluixi-ui/button';
 import { Card } from '@fluixi-ui/card';
 import { Form, FormField } from '@fluixi-ui/form';
 import { Input } from '@fluixi-ui/input';
+import { TimeZoneField } from '../time-zone-field.js';
 import { viewToken } from '../view.js';
 import type { OrganizationSettingsLogic } from './logic.js';
 
@@ -44,23 +45,36 @@ export const organizationSettingsView = (o: OrganizationSettingsLogic) => (
           <For each={o.fields()}>
             {(field) => (
               <div class="field" data-wide={field === 'description' ? '' : undefined}>
-                <FormField
-                  control={o.form.get(field)}
-                  label={() => o.labels().fields[field]}
-                  description={() => o.labels().hints[field] ?? ''}
-                  required={field === 'name'}
+                <Show
+                  when={field === 'time_zone'}
+                  fallback={
+                    <FormField
+                      control={o.form.get(field)}
+                      label={() => o.labels().fields[field]}
+                      description={() => o.labels().hints[field] ?? ''}
+                      required={field === 'name'}
+                    >
+                      {(b) => (
+                        <Input
+                          type={field === 'support_email' ? 'email' : 'text'}
+                          name={field}
+                          value={b.value()}
+                          disabled={!o.canEdit()}
+                          onInput={b.onInput}
+                          onBlur={b.onBlur}
+                        />
+                      )}
+                    </FormField>
+                  }
                 >
-                  {(b) => (
-                    <Input
-                      type={field === 'support_email' ? 'email' : 'text'}
-                      name={field}
-                      value={b.value()}
-                      disabled={!o.canEdit()}
-                      onInput={b.onInput}
-                      onBlur={b.onBlur}
-                    />
-                  )}
-                </FormField>
+                  <TimeZoneField
+                    control={o.form.get('time_zone')}
+                    label={o.labels().fields.time_zone}
+                    description={o.labels().hints.time_zone}
+                    noneLabel={o.labels().noZone}
+                    disabled={!o.canEdit()}
+                  />
+                </Show>
               </div>
             )}
           </For>

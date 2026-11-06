@@ -77,10 +77,12 @@ def setup(app: Flask, outbox: list[mail.Message]) -> dict[str, str]:
 def test_an_app_reads_the_organizations_it_hears_of(browser: FlaskClient, setup: dict[str, str]) -> None:
     listed = as_app(browser, "sync", "/v1/app/organizations")
     assert listed.status_code == 200, listed.json
-    assert listed.json["items"] == [{"id": setup["acme"], "name": "ACME", "suspended": False, "sequence": 2}]
+    assert listed.json["items"] == [
+        {"id": setup["acme"], "name": "ACME", "suspended": False, "time_zone": None, "sequence": 2}
+    ]
 
     one = as_app(browser, "sync", f"/v1/app/organizations/{setup['acme']}").json
-    assert one["organization"] == {"id": setup["acme"], "name": "ACME", "suspended": False}
+    assert one["organization"] == {"id": setup["acme"], "name": "ACME", "suspended": False, "time_zone": None}
     assert [(m["email"], m["role"]) for m in one["members"]] == [
         ("awa@example.test", "owner"),
         ("omar@example.test", "member"),

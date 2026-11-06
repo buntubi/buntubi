@@ -680,6 +680,7 @@ def _organization_json(organization: Organization) -> dict[str, Any]:
         "owner": {"id": str(owner.id), "email": owner.email} if owner else None,
         "members": len(organization.members),
         "support_email": organization.support_email,
+        "time_zone": organization.time_zone,
         "approved_scopes": organization.approved_scopes,
         "apps": _count(Client, Client.organization_id == organization.id),
         "platform": organization.is_platform,

@@ -39,10 +39,10 @@ export type AppPatch = Partial<Omit<NewApp, 'homepage_url' | 'privacy_url' | 'te
 export interface DeveloperService {
   /** Makes the account a developer: the terms, accepted once. */
   acceptTerms(): Promise<void>;
-  createOrganization(input: { name: string; support_email?: string }): Promise<Organization>;
+  createOrganization(input: { name: string; support_email?: string; time_zone?: string }): Promise<Organization>;
   updateOrganization(input: {
     organization: string;
-    patch: { name?: string; description?: string; support_email?: string | null };
+    patch: { name?: string; description?: string; support_email?: string | null; time_zone?: string | null };
   }): Promise<Organization>;
   /** Removes the organization and everything in it: its apps, keys, members and test users. */
   deleteOrganization(organization: string): Promise<void>;

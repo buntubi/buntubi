@@ -71,6 +71,7 @@ class OrganizationData(TypedDict):
     id: str
     name: str
     suspended: bool
+    time_zone: str | None
 
 
 class MemberData(TypedDict):
@@ -220,7 +221,10 @@ def member_data(member: OrganizationMember) -> MemberData:
 
 def organization_data(organization: Any) -> OrganizationData:
     return OrganizationData(
-        id=str(organization.id), name=organization.name, suspended=organization.is_suspended
+        id=str(organization.id),
+        name=organization.name,
+        suspended=organization.is_suspended,
+        time_zone=organization.time_zone,
     )
 
 

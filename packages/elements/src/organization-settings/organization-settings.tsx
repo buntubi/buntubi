@@ -52,6 +52,7 @@ export class IdpOrganizationSettings extends typedElement(props) {
       name: createField(stored(start, 'name'), { validators: [check('name')] }),
       description: createField(stored(start, 'description'), { validators: [check('description')] }),
       support_email: createField(stored(start, 'support_email'), { validators: [check('support_email')] }),
+      time_zone: createField(stored(start, 'time_zone'), { validators: [check('time_zone')] }),
     });
     const confirmation = signal('');
     const busy = signal<string | null>(null);
@@ -77,6 +78,7 @@ export class IdpOrganizationSettings extends typedElement(props) {
                 name: values.name.trim(),
                 description: values.description.trim(),
                 support_email: values.support_email.trim() || null,
+                time_zone: values.time_zone || null,
               },
             }),
           );

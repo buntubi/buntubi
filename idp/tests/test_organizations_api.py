@@ -3,6 +3,7 @@ The organizations API products call as the signed-in person (`/v1/organizations`
 as the developer portal, two scopes, and a token bound to one organization reaches that one only.
 """
 
+import uuid
 from typing import Any
 
 import pytest
@@ -12,7 +13,7 @@ from sqlalchemy import select
 from test_organization_tokens import join, organization, tokens_for
 
 from buntubi.db import db
-from buntubi.models import ApiProduct, Scope
+from buntubi.models import ApiProduct, Scope, WebhookEvent
 from buntubi.services import mail
 
 from conftest import add_client, sign_up
@@ -115,6 +116,47 @@ def test_a_person_runs_an_organization_end_to_end(
     assert roles == {"awa@example.test": "admin", "omar@example.test": "owner"}
     assert call(browser, token, "POST", f"/organizations/{org}/leave").status_code == 200
     assert call(browser, token, "GET", f"/organizations/{org}").status_code == 404
+
+
+def test_an_organization_keeps_a_time_zone_its_apps_hear_of(
+    app: Flask, browser: FlaskClient, awa: str
+) -> None:
+    token = bearer(browser, awa)
+    created = call(browser, token, "POST", "/organizations", {"name": "ACME", "time_zone": "Africa/Dakar"})
+    assert created.json["organization"]["time_zone"] == "Africa/Dakar"
+    org = created.json["organization"]["id"]
+    refused = call(browser, token, "PATCH", f"/organizations/{org}", {"time_zone": "Mars/Olympus"})
+    assert refused.status_code == 400 and refused.json["error"] == "invalid_time_zone"
+    moved = call(browser, token, "PATCH", f"/organizations/{org}", {"time_zone": "Europe/Paris"})
+    assert moved.json["organization"]["time_zone"] == "Europe/Paris"
+    # Left out, it stays; null clears it.
+    assert (
+        call(browser, token, "PATCH", f"/organizations/{org}", {"name": "ACME Studio"}).json["organization"][
+            "time_zone"
+        ]
+        == "Europe/Paris"
+    )
+    assert (
+        call(browser, token, "PATCH", f"/organizations/{org}", {"time_zone": None}).json["organization"][
+            "time_zone"
+        ]
+        is None
+    )
+    with app.app_context():
+        events = (
+            db()
+            .scalars(
+                select(WebhookEvent)
+                .where(WebhookEvent.organization_id == uuid.UUID(org))
+                .order_by(WebhookEvent.sequence)
+            )
+            .all()
+        )
+        assert [e.data["organization"]["time_zone"] for e in events if e.type == "organization.updated"] == [
+            "Europe/Paris",
+            "Europe/Paris",
+            None,
+        ]
 
 
 def test_the_rules_are_the_providers(

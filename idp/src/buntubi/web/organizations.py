@@ -95,6 +95,7 @@ def organization_json(member: OrganizationMember) -> dict[str, Any]:
         "name": organization.name,
         "description": organization.description,
         "support_email": organization.support_email,
+        "time_zone": organization.time_zone,
         "suspended": organization.is_suspended,
         "role": member.role,
         "created_at": organization.created_at.isoformat(),
@@ -140,7 +141,7 @@ def create_organization(me: User) -> tuple[Response, int]:
     if _bound() is not None:
         raise p.PlatformError("organization_bound", 403)
     data = parse(OrganizationIn)
-    organization = p.create_organization(me, data.name, data.description, data.support_email)
+    organization = p.create_organization(me, data.name, data.description, data.support_email, data.time_zone)
     audit.record("organizations.created", user=me, organization=str(organization.id))
     db().commit()
     return jsonify(organization=organization_json(organization.members[0])), 201
@@ -163,6 +164,7 @@ def update_organization(organization_id: str, me: User) -> Response:
         patch.name,
         patch.description,
         patch.support_email if "support_email" in patch.model_fields_set else p.UNCHANGED,
+        patch.time_zone if "time_zone" in patch.model_fields_set else p.UNCHANGED,
     )
     audit.record("organizations.updated", user=me, organization=organization_id)
     db().commit()

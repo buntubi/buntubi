@@ -48,6 +48,8 @@ class Organization(IdMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(80))
     description: Mapped[str] = mapped_column(String(500), default="")
     support_email: Mapped[str | None] = mapped_column(String(320))
+    # An IANA name: its deadlines and schedules, and the zone of members who chose none.
+    time_zone: Mapped[str | None] = mapped_column(String(64))
     suspended_at: Mapped[datetime | None]
     suspended_reason: Mapped[str | None] = mapped_column(String(500))
     # Sensitive scopes the platform owner approved for this organization, in a review: its live apps and

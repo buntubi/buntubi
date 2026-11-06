@@ -355,8 +355,9 @@ export const teamLabels = (): TeamLabels => ({
 export const organizationSettingsLabels = (): OrganizationSettingsLabels => ({
   title: t('os.title'),
   intro: t('os.intro'),
-  fields: { name: t('os.name'), description: t('os.description'), support_email: t('os.supportEmail') },
-  hints: { support_email: t('os.supportHint') },
+  fields: { name: t('os.name'), description: t('os.description'), support_email: t('os.supportEmail'), time_zone: t('os.timeZone') },
+  hints: { support_email: t('os.supportHint'), time_zone: t('os.timeZoneHint') },
+  noZone: t('os.noZone'),
   save: t('common.save'),
   saved: t('st.saved'),
   danger: t('os.danger'),

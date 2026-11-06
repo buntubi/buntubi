@@ -5,6 +5,7 @@ import { Input } from '@fluixi-ui/input';
 import { Select, SelectContent, SelectItem, SelectPortal, SelectTrigger, SelectValue } from '@fluixi-ui/select';
 import { GENDERS, type Gender, type ProfileField } from '@buntubi/sdk/account';
 import type { FieldControl } from '../field.js';
+import { TimeZoneField } from '../time-zone-field.js';
 
 const AUTOCOMPLETE: Record<ProfileField, string> = {
   birthdate: 'bday',
@@ -23,15 +24,14 @@ export interface ProfileFieldInputProps {
   genders: Record<Gender, string>;
 }
 
-const zoneLabel = (zone: string) => zone.replaceAll('_', ' ');
-
 export function ProfileFieldInput(props: ProfileFieldInputProps) {
   const field = props.field;
   const label = () => props.label;
   const description = () => props.description ?? '';
-  if (field === 'gender' || field === 'zoneinfo') {
-    const options = field === 'gender' ? [...GENDERS] : Intl.supportedValuesOf('timeZone');
-    const text = (value: string) => (field === 'gender' ? (props.genders[value as Gender] ?? '') : zoneLabel(value));
+  if (field === 'zoneinfo') return <TimeZoneField control={props.control} label={props.label} description={props.description} />;
+  if (field === 'gender') {
+    const options = [...GENDERS];
+    const text = (value: string) => props.genders[value as Gender] ?? '';
     return (
       <FormField control={props.control} label={label} description={description}>
         {(b) => (

@@ -3,14 +3,16 @@ import type { ReactiveForm } from '@fluixi-ui/form';
 import type { FieldControl } from '../field.js';
 import type { OrganizationInput } from '@buntubi/sdk/schemas/organizations';
 
-export type OrganizationField = 'name' | 'description' | 'support_email';
-export const ORGANIZATION_FIELDS: OrganizationField[] = ['name', 'support_email', 'description'];
+export type OrganizationField = 'name' | 'description' | 'support_email' | 'time_zone';
+export const ORGANIZATION_FIELDS: OrganizationField[] = ['name', 'support_email', 'time_zone', 'description'];
 
 export interface OrganizationSettingsLabels {
   title: string;
   intro: string;
   fields: Record<OrganizationField, string>;
   hints: Partial<Record<OrganizationField, string>>;
+  /** The time zone choice for none. */
+  noZone: string;
   save: string;
   saved: string;
   danger: string;
@@ -24,8 +26,12 @@ export interface OrganizationSettingsLabels {
 export const organizationSettingsLabels: OrganizationSettingsLabels = {
   title: 'Organization',
   intro: 'How the organization appears to the people who sign in to its apps.',
-  fields: { name: 'Name', description: 'Description', support_email: 'Support email' },
-  hints: { support_email: 'Shown on consent screens; required before an app goes live.' },
+  fields: { name: 'Name', description: 'Description', support_email: 'Support email', time_zone: 'Time zone' },
+  hints: {
+    support_email: 'Shown on consent screens; required before an app goes live.',
+    time_zone: 'Its deadlines and schedules run in it, and members who chose no zone see it.',
+  },
+  noZone: 'Not set',
   save: 'Save',
   saved: 'Saved',
   danger: 'Delete the organization',

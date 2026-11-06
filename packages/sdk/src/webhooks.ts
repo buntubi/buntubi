@@ -41,6 +41,8 @@ export interface WebhookOrganization {
   id: string;
   name: string;
   suspended: boolean;
+  /** An IANA time zone (`Africa/Dakar`): its deadlines and schedules, and its members' default. */
+  time_zone: string | null;
 }
 
 export interface WebhookMember {

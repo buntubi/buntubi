@@ -77,12 +77,15 @@ class OrganizationIn(BaseModel):
     name: str = Name
     description: str = Field(default="", max_length=500)
     support_email: EmailStr | None = None
+    # An IANA name, checked by the service.
+    time_zone: str | None = Field(default=None, max_length=64)
 
 
 class OrganizationPatch(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=80)
     description: str | None = Field(default=None, max_length=500)
     support_email: EmailStr | None = None
+    time_zone: str | None = Field(default=None, max_length=64)
 
 
 Kind = Literal["consumer", "business", "web", "mobile", "backend", "internal"]
@@ -184,6 +187,7 @@ def organization_json(member: OrganizationMember) -> dict[str, Any]:
         "name": organization.name,
         "description": organization.description,
         "support_email": organization.support_email,
+        "time_zone": organization.time_zone,
         "suspended": organization.is_suspended,
         "platform": organization.is_platform,
         "role": member.role,
@@ -357,7 +361,7 @@ def list_organizations(me: User) -> Response:
 @developer()
 def create_organization(me: User) -> tuple[Response, int]:
     data = parse(OrganizationIn)
-    organization = p.create_organization(me, data.name, data.description, data.support_email)
+    organization = p.create_organization(me, data.name, data.description, data.support_email, data.time_zone)
     audit.record("developer.organization_created", user=me, organization=str(organization.id))
     db().commit()
     return jsonify(organization=organization_json(organization.members[0])), 201
@@ -388,6 +392,7 @@ def update_organization(organization_id: str, me: User) -> Response:
         patch.name,
         patch.description,
         patch.support_email if "support_email" in patch.model_fields_set else p.UNCHANGED,
+        patch.time_zone if "time_zone" in patch.model_fields_set else p.UNCHANGED,
     )
     db().commit()
     return jsonify(organization=organization_json(member))

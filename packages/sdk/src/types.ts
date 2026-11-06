@@ -31,6 +31,8 @@ export interface Organization {
   name: string;
   description: string;
   support_email: string | null;
+  /** An IANA time zone (`Africa/Dakar`): its deadlines and schedules, and its members' default. */
+  time_zone: string | null;
   suspended: boolean;
   /** The platform's own organization: its members are the admins. */
   platform: boolean;
@@ -155,6 +157,8 @@ export interface AdminOrganization {
   owner: { id: string; email: string } | null;
   members: number;
   support_email: string | null;
+  /** An IANA time zone (`Africa/Dakar`): its deadlines and schedules, and its members' default. */
+  time_zone: string | null;
   approved_scopes: string[];
   apps: number;
   /** The platform's own organization: its members are the admins. */
