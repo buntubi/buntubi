@@ -32,7 +32,8 @@ import type { LaunchChecklistLabels } from '@idp/elements/launch-checklist/logic
 import type { PathToLiveLabels } from '@idp/elements/path-to-live/logic';
 import type { PermissionsLabels } from '@idp/elements/permissions/logic';
 import type { SidebarLabels } from '@idp/elements/sidebar/logic';
-import { t } from './i18n.js';
+import { APPEARANCE_WORDS } from '@idp/shell/appearance-words';
+import { locale, t } from './i18n.js';
 
 export const sidebarLabels = (): SidebarLabels => ({
   product: t('shell.developers'),
@@ -461,6 +462,7 @@ export const shellLabels = (): ShellLabels => ({
       glass: t('shell.skin.glass'),
     },
   },
+  appearance: APPEARANCE_WORDS[locale()],
   navigation: t('shell.navigation'),
   language: t('nav.language'),
   signOut: t('nav.signOut'),

@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@fluixi-ui/dropdown-menu';
+import { Button } from '@fluixi-ui/button';
 import { useAppearance } from '@fluixi-ui/theme';
 import { AppearanceDialog, type AppearanceDialogLabels } from './appearance.js';
 import { icons } from './icons.js';
@@ -84,6 +85,13 @@ export function ThemeToggle(props: { labels: ThemeToggleLabels }): ComponentChil
         </DropdownMenuContent>
       </DropdownMenuPortal>
     </DropdownMenu>
+    <Show when={props.labels.appearance}>
+      {(entry: NonNullable<ThemeToggleLabels['appearance']>) => (
+        <Button variant="outline" tone="neutral" size="sm" aria-label={entry.open} title={entry.open} onPress={() => dialog.set(true)}>
+          <Icon path={icons.palette} />
+        </Button>
+      )}
+    </Show>
     <Show when={props.labels.appearance}>
       {(entry: NonNullable<ThemeToggleLabels['appearance']>) => (
         <AppearanceDialog labels={entry.dialog} open={dialog()} onOpenChange={(open) => dialog.set(open)} />

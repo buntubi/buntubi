@@ -12,7 +12,8 @@
     "./theme-toggle": "./src/theme-toggle.tsx",
     "./public-frame": "./src/public-frame.tsx",
     "./sticky-head": "./src/sticky-head.tsx",
-    "./appearance": "./src/appearance.tsx"
+    "./appearance": "./src/appearance.tsx",
+    "./appearance-words": "./src/appearance-words.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

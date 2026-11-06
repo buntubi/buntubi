@@ -23,7 +23,8 @@ import type { ReviewDecisionLabels } from '@idp/elements/review-decision/logic';
 import type { ReviewQueueLabels } from '@idp/elements/review-queue/logic';
 import type { SidebarLabels } from '@idp/elements/sidebar/logic';
 import type { ShellLabels } from '@idp/shell/shell';
-import { t } from './i18n.js';
+import { APPEARANCE_WORDS } from '@idp/shell/appearance-words';
+import { locale, t } from './i18n.js';
 import { paths } from './paths.js';
 
 export const sidebarLabels = (): SidebarLabels => ({
@@ -47,6 +48,7 @@ export const shellLabels = (): ShellLabels => ({
       glass: t('shell.skin.glass'),
     },
   },
+  appearance: APPEARANCE_WORDS[locale()],
   navigation: t('shell.navigation'),
   language: t('nav.language'),
   signOut: t('nav.signOut'),
