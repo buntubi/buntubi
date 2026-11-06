@@ -14,7 +14,7 @@ import time
 import uuid
 from datetime import timedelta
 from enum import StrEnum
-from typing import Any, TypedDict
+from typing import Any, Required, TypedDict
 from urllib.parse import urlsplit
 
 import certifi
@@ -63,6 +63,8 @@ class Event(StrEnum):
     ORGANIZATION_DELETED = "organization.deleted"
     MEMBER_ADDED = "member.added"
     MEMBER_ROLE_CHANGED = "member.role_changed"
+    # The person changed their name or a profile field the platform shows.
+    MEMBER_UPDATED = "member.updated"
     MEMBER_REMOVED = "member.removed"
     INVITATION_ACCEPTED = "invitation.accepted"
 
@@ -74,12 +76,16 @@ class OrganizationData(TypedDict):
     time_zone: str | None
 
 
-class MemberData(TypedDict):
-    id: str
+class MemberData(TypedDict, total=False):
+    id: Required[str]
     # The person's id: the `sub` of their tokens, which a product keys its own data by.
-    user_id: str
-    email: str
-    role: str
+    user_id: Required[str]
+    email: Required[str]
+    role: Required[str]
+    # Their name and the profile fields the platform shows (`zoneinfo`...), as the profile claims
+    # give them. First-party apps only: a third-party app hears of an organization because its
+    # admin allowed it, not each member, and reads a profile with the person's own consent.
+    profile: dict[str, str | None]
 
 
 class InvitationData(TypedDict):
@@ -213,10 +219,39 @@ def link(client_id: uuid.UUID, organization_id: uuid.UUID) -> None:
     )
 
 
+def profile_of(user: Any) -> dict[str, str | None]:
+    """The member's profile as the `profile` claims carry it: the name and the fields shown."""
+    from buntubi.services import profile_fields  # profile_fields reaches the services through plugins
+
+    return {"name": user.name or None, **profile_fields.values_of(user, profile_fields.shown())}
+
+
 def member_data(member: OrganizationMember) -> MemberData:
     return MemberData(
-        id=str(member.id), user_id=str(member.user_id), email=member.user.email, role=member.role
+        id=str(member.id),
+        user_id=str(member.user_id),
+        email=member.user.email,
+        role=member.role,
+        profile=profile_of(member.user),
     )
+
+
+def for_app(data: Any, client: Client) -> Any:
+    """`data` as `client` may read it: members' profiles go to first-party apps only."""
+    if client.first_party:
+        return data
+    if isinstance(data, dict):
+        return {key: for_app(value, client) for key, value in data.items() if key != "profile"}
+    if isinstance(data, list):
+        return [for_app(item, client) for item in data]
+    return data
+
+
+def profile_changed(user: Any) -> None:
+    """The person's name or a shown profile field changed: each of their organizations hears of it."""
+    members = db().scalars(select(OrganizationMember).where(OrganizationMember.user_id == user.id))
+    for member in members:
+        member_changed(member, Event.MEMBER_UPDATED)
 
 
 def organization_data(organization: Any) -> OrganizationData:
@@ -241,15 +276,15 @@ def member_changed(member: OrganizationMember, type: Event, **data: Any) -> Webh
 # ── Sending ───────────────────────────────────────────────────────────────────────────────────
 
 
-def body_of(event: WebhookEvent) -> bytes:
-    """The event as the products receive it, compact JSON; the signature covers these bytes."""
+def body_of(event: WebhookEvent, client: Client) -> bytes:
+    """The event as `client` receives it, compact JSON; the signature covers these bytes."""
     payload = {
         "id": str(event.id),
         "type": event.type,
         "created_at": event.created_at.isoformat(),
         "organization_id": str(event.organization_id),
         "sequence": event.sequence,
-        "data": event.data,
+        "data": for_app(event.data, client),
     }
     return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
 
@@ -280,7 +315,7 @@ def _send(delivery: WebhookDelivery) -> None:
             delivery.status, delivery.last_error = "failed", "address_not_allowed"
             return
         address = addresses[0]
-    body = body_of(event)
+    body = body_of(event, client)
     stamp = int(time.time())
     headers = {
         "Content-Type": "application/json",

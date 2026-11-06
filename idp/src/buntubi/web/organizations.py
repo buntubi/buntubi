@@ -330,6 +330,6 @@ def app_organization(app: Client, organization_id: str) -> Response:
     )
     return jsonify(
         organization=webhooks.organization_data(organization),
-        members=[webhooks.member_data(m) for m in members],
+        members=[webhooks.for_app(webhooks.member_data(m), app) for m in members],
         sequence=sequence,
     )

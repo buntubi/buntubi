@@ -617,7 +617,16 @@ RESPONSE_SCHEMAS["AppReview"] = obj(_APP_REVIEW, [key for key in _APP_REVIEW if 
 _EVENT_ORGANIZATION = {"id": STRING, "name": STRING, "suspended": BOOL, "time_zone": MAYBE_STRING}
 RESPONSE_SCHEMAS["EventOrganization"] = obj(_EVENT_ORGANIZATION)
 RESPONSE_SCHEMAS["AppOrganization"] = obj({**_EVENT_ORGANIZATION, "sequence": INT})
-RESPONSE_SCHEMAS["EventMember"] = obj({"id": STRING, "user_id": STRING, "email": STRING, "role": STRING})
+RESPONSE_SCHEMAS["EventMember"] = obj(
+    {
+        "id": STRING,
+        "user_id": STRING,
+        "email": STRING,
+        "role": STRING,
+        "profile": {"type": "object", "additionalProperties": MAYBE_STRING},
+    },
+    ["id", "user_id", "email", "role"],
+)
 
 # ── Operations ────────────────────────────────────────────────────────────────────────────────
 

@@ -31,6 +31,8 @@ export const WEBHOOK_EVENTS = {
   OrganizationDeleted: 'organization.deleted',
   MemberAdded: 'member.added',
   MemberRoleChanged: 'member.role_changed',
+  /** The person changed their name or a profile field the platform shows. */
+  MemberUpdated: 'member.updated',
   MemberRemoved: 'member.removed',
   InvitationAccepted: 'invitation.accepted',
 } as const;
@@ -52,6 +54,17 @@ export interface WebhookMember {
   user_id: string;
   email: string;
   role: Role;
+  /**
+   * Their name and the profile fields the platform shows (`zoneinfo`...), as the profile claims
+   * give them. First-party apps only: a third-party app reads a profile with the person's consent.
+   */
+  profile?: WebhookMemberProfile;
+}
+
+export interface WebhookMemberProfile {
+  name: string | null;
+  zoneinfo?: string | null;
+  [field: string]: string | null | undefined;
 }
 
 export interface WebhookInvitation {
@@ -69,6 +82,7 @@ export interface WebhookEventData {
   'organization.deleted': { organization: WebhookOrganization };
   'member.added': { member: WebhookMember };
   'member.role_changed': { member: WebhookMember; previous_role: Role };
+  'member.updated': { member: WebhookMember };
   'member.removed': { member: WebhookMember };
   'invitation.accepted': { invitation: WebhookInvitation };
 }

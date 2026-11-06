@@ -17,12 +17,13 @@ heard of the organization when it was deleted, though its links go with it.
 | Event | When | `data` |
 |---|---|---|
 | `organization.created` | an organization is made | `organization`, `owner` |
-| `organization.updated` | its name, description or support email changes | `organization` |
+| `organization.updated` | its name, description, support email or time zone changes | `organization` |
 | `organization.suspended` | an admin suspends it | `organization` |
 | `organization.restored` | an admin lifts the suspension | `organization` |
 | `organization.deleted` | it is deleted, by its owner or with its last account | `organization` |
 | `member.added` | someone joins: added, invited and signed up, or made an admin of the platform | `member` |
 | `member.role_changed` | someone's organization role changes, an ownership transfer included | `member`, `previous_role` |
+| `member.updated` | someone changes their name or a profile field the platform shows | `member` |
 | `member.removed` | someone leaves, is removed, or deletes their account | `member` |
 | `invitation.accepted` | an invited address signs up; a `member.added` follows | `invitation` |
 
@@ -44,8 +45,14 @@ Buntubi-Signature: t=1792133000,v1=5f2c...e81
  "role":"admin"},"previous_role":"member"}}
 ```
 
-- `organization.id`, `name`, `suspended` describe an organization; `member.id` is the membership,
-  `member.user_id` the person, the same value as the `sub` of their tokens.
+- `organization.id`, `name`, `suspended` and `time_zone` (an IANA name, or null) describe an
+  organization; `member.id` is the membership, `member.user_id` the person, the same value as the
+  `sub` of their tokens.
+- `member.profile` holds the person's `name` and the profile fields the platform shows
+  (`zoneinfo`, ...), as the profile claims give them. Only first-party apps receive it, in the
+  events and in `/v1/app/organizations`: a third-party app hears of an organization because its
+  admin allowed it, not each member, so it reads a person's profile from `userinfo`, with that
+  person's consent. A third-party app still receives `member.updated`, without `profile`.
 - `sequence` numbers the events of one organization from 1, without gaps.
 
 ## Checking a request

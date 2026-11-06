@@ -87,7 +87,8 @@ def test_an_app_reads_the_organizations_it_hears_of(browser: FlaskClient, setup:
         ("awa@example.test", "owner"),
         ("omar@example.test", "member"),
     ]
-    assert set(one["members"][0]) == {"id", "user_id", "email", "role"}
+    # A first-party app reads its members' profiles (test_member_profile_events: the others do not).
+    assert set(one["members"][0]) == {"id", "user_id", "email", "role", "profile"}
     assert one["sequence"] == 2
 
 

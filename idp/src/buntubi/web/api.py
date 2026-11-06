@@ -37,6 +37,7 @@ from buntubi.services import (
     sessions,
     social,
     terms,
+    webhooks,
 )
 from buntubi.services.accounts import AccountError, NewAccount
 
@@ -234,7 +235,10 @@ def complete_missing_profile() -> Any:
     data = _body()
     user = pending.user if pending is not None else login.user  # type: ignore[union-attr]
     client = social.client_signing_in()
-    profile_fields.store(user, profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS}))
+    extra = profile_fields.check({k: v for k, v in data.items() if k in STANDARD_FIELDS})
+    profile_fields.store(user, extra)
+    if extra:
+        webhooks.profile_changed(user)
     own = data.get("platform_profile")
     profile_fields.store_platform(
         user, profile_fields.check_platform(own if isinstance(own, dict) else {}, user=user)
@@ -515,6 +519,9 @@ def update_profile() -> Response:
         profile_fields.store_platform(user, platform)
         fields.update({f"platform_profile.{key}": "" for key in platform})
     audit.record("profile_updated", user=user, fields=sorted(fields))
+    # What apps hold of a member: the name (from given and family names) and the profile fields.
+    if extra or {"given_name", "family_name"} & fields.keys():
+        webhooks.profile_changed(user)
     db().commit()
     return jsonify(updated=sorted(fields))
 
