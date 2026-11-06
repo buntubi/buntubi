@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# The provider, the sign-in pages' build, the portal and the console in one terminal, each line
-# prefixed by its name; Ctrl-C stops them all. The provider listens on IDP_ISSUER's port.
-# With --no-web, the provider only.
+# The provider and its webhook delivery, the sign-in pages' build, the portal and the console in
+# one terminal, each line prefixed by its name; Ctrl-C stops them all. The provider listens on
+# IDP_ISSUER's port. With --no-web, the provider and its delivery only.
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 web=1
@@ -45,6 +45,8 @@ run() {
   ("$@" 2>&1 | sed -l "s/^/[$name] /") &
 }
 PYTHONUNBUFFERED=1 run provider "$root/.venv/bin/flask" --app buntubi.app:create_app run --port "$port"
+# Organization events reach the apps as they do in production, where it is its own process too.
+PYTHONUNBUFFERED=1 run webhooks "$root/.venv/bin/flask" --app buntubi.app:create_app webhooks deliver
 if [ "$web" = 1 ]; then
   run pages pnpm --dir "$root/frontend" dev
   run portal pnpm --dir "$root/apps/portal" dev
