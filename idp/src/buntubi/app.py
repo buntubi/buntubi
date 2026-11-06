@@ -18,6 +18,7 @@ from buntubi.web import (
     admin,
     api,
     app_data,
+    appearance,
     developer,
     oidc,
     openapi,
@@ -70,6 +71,7 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.register_blueprint(admin.bp)
     app.register_blueprint(developer.bp)
     app.register_blueprint(organizations.bp)
+    app.register_blueprint(appearance.bp)
     app.register_blueprint(app_data.bp)
     app.register_blueprint(openapi.bp)
     _init_plugins(app, settings)

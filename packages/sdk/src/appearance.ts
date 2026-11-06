@@ -106,3 +106,34 @@ export function createAppearanceSync(options: AppearanceSyncOptions): Appearance
     },
   };
 }
+
+/** A refusal from the provider's appearance API: `code` is its error (`corner_locked`, `invalid_skin`, ...). */
+export class AppearanceApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string,
+  ) {
+    super(`the identity provider answered ${status} ${code}`);
+    this.name = 'AppearanceApiError';
+  }
+}
+
+/** The provider's `/v1/appearance`, for a first-party app acting for the signed-in person (scope `appearance`). */
+export function appearanceClient(options: { issuer: string; accessToken: () => string; fetch?: typeof fetch }) {
+  const call = async (method: 'GET' | 'PATCH', body?: unknown): Promise<AppearanceState> => {
+    const response = await (options.fetch ?? fetch)(new URL('/v1/appearance', options.issuer), {
+      method,
+      headers: { authorization: `Bearer ${options.accessToken()}`, ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
+    if (!response.ok) {
+      const failure = (await response.json().catch(() => ({}))) as { error?: string };
+      throw new AppearanceApiError(response.status, failure.error ?? 'error');
+    }
+    return (await response.json()) as AppearanceState;
+  };
+  return {
+    get: () => call('GET'),
+    update: (changes: Partial<Record<AppearanceAxis, unknown>>) => call('PATCH', changes),
+  };
+}

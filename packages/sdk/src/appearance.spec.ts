@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { appearanceChanges, createAppearanceSync, type AppearanceChoices, type AppearanceState } from './appearance.js';
+import { appearanceChanges, appearanceClient, AppearanceApiError, createAppearanceSync, type AppearanceChoices, type AppearanceState } from './appearance.js';
 
 describe('appearanceChanges', () => {
   it('names the axes that differ, clears one that went, and leaves locked ones alone', () => {
@@ -61,5 +61,21 @@ describe('createAppearanceSync', () => {
     sync.changed();
     await vi.advanceTimersByTimeAsync(1000);
     expect(attempts).toBe(2);
+  });
+});
+
+describe('appearanceClient', () => {
+  it('sends the person\'s token and says why a change was refused', async () => {
+    const seen: { url: string; method?: string; auth?: string; body?: string }[] = [];
+    const answer = (status: number, json: unknown) => async (url: URL | RequestInfo, init?: RequestInit) => {
+      seen.push({ url: String(url), method: init?.method, auth: (init?.headers as Record<string, string>).authorization, body: init?.body as string | undefined });
+      return new Response(JSON.stringify(json), { status });
+    };
+    const ok = appearanceClient({ issuer: 'https://id.example.test', accessToken: () => 'tok', fetch: answer(200, { appearance: { skin: 'glass' }, own: {}, locked: [] }) as typeof fetch });
+    expect((await ok.update({ skin: 'glass' })).appearance).toEqual({ skin: 'glass' });
+    expect(seen[0]).toEqual({ url: 'https://id.example.test/v1/appearance', method: 'PATCH', auth: 'Bearer tok', body: '{"skin":"glass"}' });
+    const refused = appearanceClient({ issuer: 'https://id.example.test', accessToken: () => 'tok', fetch: answer(400, { error: 'corner_locked' }) as typeof fetch });
+    await expect(refused.update({ corner: 'round' })).rejects.toMatchObject({ status: 400, code: 'corner_locked' });
+    await expect(refused.get()).rejects.toBeInstanceOf(AppearanceApiError);
   });
 });

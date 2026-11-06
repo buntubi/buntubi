@@ -614,6 +614,19 @@ _APP_REVIEW = {
 }
 RESPONSE_SCHEMAS["AppReview"] = obj(_APP_REVIEW, [key for key in _APP_REVIEW if key != "decided_by"])
 
+_APPEARANCE = {
+    "skin": STRING,
+    "scheme": {"type": "string", "enum": ["system", "light", "dark"]},
+    "accent": STRING,
+    "corner": {"type": "string", "enum": ["default", "round"]},
+    "transparency": {"oneOf": [STRING, {"type": "number", "minimum": 0.2, "maximum": 1}]},
+    "backdrop": STRING,
+}
+RESPONSE_SCHEMAS["AppearanceChoices"] = obj(_APPEARANCE)
+RESPONSE_SCHEMAS["AppearanceState"] = obj(
+    {"appearance": ref("AppearanceChoices"), "own": ref("AppearanceChoices"), "locked": STRINGS}
+)
+
 _EVENT_ORGANIZATION = {"id": STRING, "name": STRING, "suspended": BOOL, "time_zone": MAYBE_STRING}
 RESPONSE_SCHEMAS["EventOrganization"] = obj(_EVENT_ORGANIZATION)
 RESPONSE_SCHEMAS["AppOrganization"] = obj({**_EVENT_ORGANIZATION, "sequence": INT})
@@ -722,7 +735,30 @@ def with_secret(key: str, name: str, secret: str) -> dict[str, Any]:
 
 def paths() -> dict[str, dict[str, Any]]:
     d, a, oidc = "Developer API", "Admin API", "OAuth and OpenID Connect"
-    return {**_organization_paths(), **_paths(d, a, oidc)}
+    return {**_organization_paths(), **_appearance_paths(), **_paths(d, a, oidc)}
+
+
+def _appearance_paths() -> dict[str, dict[str, Any]]:
+    """The person's appearance for the platform's own products (web/appearance.py)."""
+    scope: Security = [{"oauth2": ["appearance"]}, {"bearer": []}]
+    state = {"200": answer(ref("AppearanceState"))}
+    return {
+        "/v1/appearance": {
+            "get": op(
+                "The person's appearance, in force and their own choices (first-party apps)",
+                "Appearance API",
+                scope,
+                state,
+            ),
+            "patch": op(
+                "Change the person's appearance; null clears an axis (first-party apps)",
+                "Appearance API",
+                scope,
+                state,
+                request=body(ref("AppearanceChoices")),
+            ),
+        }
+    }
 
 
 def _organization_paths() -> dict[str, dict[str, Any]]:

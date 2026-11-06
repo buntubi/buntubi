@@ -119,3 +119,18 @@ def effective(user: Any) -> dict[str, Any]:
 
 def locks() -> list[str]:
     return sorted(axis for axis, rule in rules().items() if rule["locked"])
+
+
+def state(user: Any) -> dict[str, Any]:
+    """What an app or a page shows of the person's appearance: in force, their own, and the locks."""
+    return {"appearance": effective(user), "own": dict(user.appearance or {}), "locked": locks()}
+
+
+def update(user: Any, data: dict[str, Any]) -> dict[str, Any]:
+    """Applies a request: checked, stored, and told to the person's organizations when it changed."""
+    from buntubi.services import audit, webhooks  # the services import each other through plugins
+
+    if store(user, check(data)):
+        audit.record("appearance_updated", user=user)
+        webhooks.profile_changed(user)
+    return state(user)
