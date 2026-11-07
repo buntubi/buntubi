@@ -1,5 +1,19 @@
 # @buntubi/sdk
 
+## 0.10.0
+
+### Minor Changes
+
+- 4e69631: `ACCOUNT_PAGES` lists the account area's pages and `accountUrl(issuer, page)` returns a product's "change it in your account" link, with `info` holding the profile fields and the time zone.
+- fba7379: `WebhookMemberProfile.appearance` holds the person's own skin, scheme, accent, corner, transparency and backdrop choices in member events for first-party apps.
+- 2672d9b: `appearanceClient({ issuer, accessToken })` has `get` and `update`, for a first-party app acting for the signed-in person with the `appearance` scope. A refusal throws `AppearanceApiError`.
+- e6bc47a: Appearance gains `cards` (`solid` or `glass`: whether cards and surfaces are glass at rest), in the choices, the member profile and the sync.
+- 168469e: New entry `@buntubi/sdk/appearance`. `createAppearanceSync` loads the account's choices into the page, then saves the axes a person changes after a short wait, never the look the page started with.
+- 5b1242c: Appearance and member profile appearance gain glass rim options `rim_opacity`, `rim_width`, `rim_glow`, light (`diagonal` or `vertical`) and hover (`off` or `on`).
+- 9d13996: `WEBHOOK_EVENTS.MemberUpdated` (`member.updated`) is the event the provider sends to each organization of a person who changes their name or a displayed profile field. First-party apps receive the updated name and fields in `WebhookMember.profile`, while third-party apps receive the event without that profile data.
+- 1807f94: Organization, OrganizationMembership, AdminOrganization and WebhookOrganization expose a `time_zone` that can be an IANA name or null, and `createOrganization` and `updateOrganization` accept this value (null clears it); `organizationSchema` checks its length and the provider checks the name.
+- d4cb7b7: Provider image pages, console and portal offer the fluixi-ui skins soft, fluixi, material, paper and glass, switched from the theme menu and kept in the `idp-skin` cookie, with soft as the default and `IDP_BRAND_SKIN` changing it; a client brand skin still applies on its own sign-in pages. Panels, labels and alerts use fluixi-ui components, so each skin fully restyles them.
+
 ## 0.9.1
 
 ### Patch Changes
