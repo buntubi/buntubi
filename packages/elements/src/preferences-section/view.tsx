@@ -1,5 +1,6 @@
 /** The default look: the language as a segmented choice, the country as a searchable list with flags. */
 import { Show } from '@fluixi/core';
+import { Button } from '@fluixi-ui/button';
 import { Card } from '@fluixi-ui/card';
 import { infoStyles } from '../info-shared/styles.js';
 import { viewToken } from '../view.js';
@@ -46,6 +47,18 @@ export const preferencesSectionView = (p: PreferencesSectionLogic) => (
         <span class="muted">{() => p.labels().countryHint}</span>
       </span>
     </div>
+    <Show when={p.appearanceSummary()}>
+      <div class="row">
+        <span class="label">{() => p.labels().appearance}</span>
+        <span class="choice">
+          <span>{() => p.appearanceSummary()}</span>
+          <span class="muted">{() => p.labels().appearanceHint}</span>
+        </span>
+        <Button variant="outline" onPress={() => p.openAppearance()}>
+          {() => p.labels().appearanceChange}
+        </Button>
+      </div>
+    </Show>
     <Show when={p.notice()}>
       <p class="done" role="status">
         {() => p.notice()}

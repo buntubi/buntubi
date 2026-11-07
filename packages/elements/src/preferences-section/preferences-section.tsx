@@ -15,6 +15,8 @@ import { PreferencesSectionView } from './view.js';
 const props = {
   locale: prop.string('fr'),
   country: prop.string(''),
+  /** The appearance as it is, in words; empty hides the appearance row. */
+  appearance: prop.string(''),
   labels: prop.object<Partial<PreferencesSectionLabels>>({}),
   describe: prop.any<((error: unknown) => string) | undefined>(undefined),
 };
@@ -55,6 +57,8 @@ export class IdpPreferencesSection extends typedElement(props) {
       busy,
       notice,
       error,
+      appearanceSummary: () => this.appearance ?? '',
+      openAppearance: () => this.emit('appearance', {}),
     };
     return useView(PreferencesSectionView)(logic);
   }

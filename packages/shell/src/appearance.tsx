@@ -15,6 +15,10 @@ import { createAppearanceSync, type AppearanceAxis, type AppearanceChoices, type
 
 const RIM_KEYS = ['opacity', 'width', 'glow'] as const;
 
+/** Whether the dialog is open: shared, so a row on a page opens the dialog the theme menu holds. */
+export const appearanceDialogOpen = signal(false);
+export const openAppearanceDialog = () => appearanceDialogOpen.set(true);
+
 /** The axes the deployment locks, once the account has answered. */
 const locked = signal<readonly AppearanceAxis[]>([]);
 
@@ -24,6 +28,8 @@ export interface AppearanceDialogLabels {
   done: string;
   /** Shown in place of a control the deployment locks. */
   lockedNote: string;
+  /** The close button's name. */
+  close: string;
   /** fluixi-ui's control labels and names, in the page's language. */
   controls?: Partial<AppearanceLabels>;
   names?: Record<string, string>;
@@ -56,6 +62,10 @@ export function AppearanceDialog(props: AppearanceDialogProps): ComponentChild {
         /* The body scrolls inside a dialog of fixed height; the title and the button stay in view. */
         .body { display: grid; align-content: start; gap: 16px; margin-top: 12px; overflow-y: auto; min-height: 0; flex: 1; padding-inline-end: 4px; }
         .field { display: grid; gap: 8px; }
+        .head { display: flex; align-items: flex-start; gap: 12px; flex: none; }
+        .titles { flex: 1; display: grid; gap: 3px; }
+        .titles :deep(h2) { margin: 0; font-size: 17px; font-weight: 600; }
+        .titles :deep(p) { margin: 0; font-size: 13px; color: var(--flx-ui-color-fg-muted); }
         .field-title { font-size: 13px; font-weight: 500; }
         .field-locked { font-size: 13px; color: var(--flx-ui-color-fg-muted); }
         .footer { display: flex; justify-content: flex-end; margin-top: 16px; flex: none; }
@@ -63,8 +73,17 @@ export function AppearanceDialog(props: AppearanceDialogProps): ComponentChild {
       <DialogPortal>
         <DialogOverlay />
         <DialogContent style="display: flex; flex-direction: column; height: min(85vh, 720px); overflow: hidden">
-          <DialogTitle>{props.labels.title}</DialogTitle>
-          <DialogDescription>{props.labels.description}</DialogDescription>
+          <div class="head">
+            <div class="titles">
+              <DialogTitle>{props.labels.title}</DialogTitle>
+              <DialogDescription>{props.labels.description}</DialogDescription>
+            </div>
+            <DialogClose data-variant="ghost" data-tone="neutral" data-size="sm" aria-label={props.labels.close} title={props.labels.close}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+              </DialogClose>
+          </div>
           <div class="body">
             <Field axis="skin" title={label('skin')}>
               <SkinSelect label={label('skin')} names={props.labels.names} />

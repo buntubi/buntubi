@@ -127,6 +127,9 @@ const fr = {
       error: 'Une erreur est survenue. Réessayez.',
     },
     preferences: {
+      appearance: 'Apparence',
+      appearanceHint: 'Style, mode, couleur et options du verre. Gardé sur votre compte.',
+      appearanceChange: 'Modifier',
       title: 'Préférences',
       language: 'Langue',
       languageHint: 'Les pages et les e-mails de votre compte l’utilisent.',
@@ -477,6 +480,9 @@ const en: Words = {
       error: 'Something went wrong. Try again.',
     },
     preferences: {
+      appearance: 'Appearance',
+      appearanceHint: 'Style, mode, colour and the glass options. Kept on your account.',
+      appearanceChange: 'Change',
       title: 'Preferences',
       language: 'Language',
       languageHint: 'Pages and emails from your account use it.',

@@ -3,7 +3,6 @@
  * several: the same control in every frame.
  */
 import { For, Show, useColorScheme } from '@fluixi/core';
-import { signal } from '@fluixi/reactive/signal';
 import type { ComponentChild } from '@fluixi/dom';
 import {
   DropdownMenu,
@@ -17,7 +16,7 @@ import {
 } from '@fluixi-ui/dropdown-menu';
 import { Button } from '@fluixi-ui/button';
 import { useAppearance } from '@fluixi-ui/theme';
-import { AppearanceDialog, type AppearanceDialogLabels } from './appearance.js';
+import { AppearanceDialog, appearanceDialogOpen, type AppearanceDialogLabels } from './appearance.js';
 import { icons } from './icons.js';
 
 export const SCHEMES = ['light', 'dark', 'system'] as const;
@@ -43,7 +42,7 @@ const Icon = (props: { path: string }) => (
 export function ThemeToggle(props: { labels: ThemeToggleLabels }): ComponentChild {
   const scheme = useColorScheme();
   const current = () => scheme.value() as Scheme;
-  const dialog = signal(false);
+  const dialog = appearanceDialogOpen;
   return (
     <>
     <DropdownMenu placement="bottom-end">

@@ -7,7 +7,7 @@ import '@idp/theme/fonts.css';
 import './account.css';
 import { render, Show } from '@fluixi/core';
 import { Card } from '@fluixi-ui/card';
-import { AppearanceProvider } from '@fluixi-ui/theme';
+import { AppearanceProvider, useAppearance } from '@fluixi-ui/theme';
 import { Link, Outlet, revalidate, Router, useLocation, useNavigate, useRouteData } from '@fluixi/core/router';
 import type { ComponentChild } from '@fluixi/dom';
 import { signal } from '@fluixi/reactive/signal';
@@ -47,7 +47,8 @@ import '@idp/elements/sign-in-methods';
 import '@idp/elements/password-section';
 import '@idp/elements/security-activity';
 import '@idp/elements/two-step-section';
-import { AppearanceSync } from '@idp/shell/appearance';
+import { AppearanceSync, openAppearanceDialog } from '@idp/shell/appearance';
+import { APPEARANCE_WORDS } from '@idp/shell/appearance-words';
 import type { AppearanceState } from '@buntubi/sdk/appearance';
 import { Shell, type Crumb } from '@idp/shell/shell';
 import { appearance } from '@idp/theme/appearance';
@@ -239,6 +240,13 @@ export function mountAccount(root: HTMLElement, context: Context): void {
   }
 
   function Info(): ComponentChild {
+    const look = useAppearance();
+    // The skin and the mode, in words: what the Appearance row shows beside its button.
+    const appearanceSummary = () => {
+      const { names, controls } = APPEARANCE_WORDS[config.locale === 'en' ? 'en' : 'fr'].dialog;
+      const scheme = { light: controls?.light, dark: controls?.dark, system: controls?.system }[look.scheme.value() as 'light' | 'dark' | 'system'];
+      return `${names?.[look.skin.value()] ?? look.skin.value()}, ${(scheme ?? '').toLowerCase()}`;
+    };
     const data = useRouteData<AccountSummary>();
     const user = () => data()?.user;
     return (
@@ -288,6 +296,8 @@ export function mountAccount(root: HTMLElement, context: Context): void {
             country={user()?.country ?? ''}
             labels={w.info.preferences}
             describe={describe}
+            appearance={appearanceSummary()}
+            onAppearance={openAppearanceDialog}
             onLanguage={(event) => window.location.assign(`?lang=${event.detail.locale}`)}
           />
         </Show>
