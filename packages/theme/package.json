@@ -21,20 +21,20 @@
     "@fontsource-variable/geist-mono": "^5.2.0"
   },
   "peerDependencies": {
-    "@fluixi-ui/skin-glass": "^0.1.0-alpha.3",
+    "@fluixi-ui/skin-glass": "^0.1.0-alpha.4",
     "@fluixi-ui/skin-material": "^0.3.0-alpha.13",
     "@fluixi-ui/skin-paper": "^0.1.0-alpha.3",
     "@fluixi-ui/skin-soft": "^0.1.0-alpha.11",
-    "@fluixi-ui/theme": "^0.1.0-alpha.14",
-    "@fluixi/core": "^1.0.0-alpha.107"
+    "@fluixi-ui/theme": "^0.1.0-alpha.15",
+    "@fluixi/core": "^1.0.0-alpha.108"
   },
   "devDependencies": {
-    "@fluixi-ui/skin-glass": "^0.1.0-alpha.3",
+    "@fluixi-ui/skin-glass": "^0.1.0-alpha.4",
     "@fluixi-ui/skin-material": "^0.3.0-alpha.13",
     "@fluixi-ui/skin-paper": "^0.1.0-alpha.3",
     "@fluixi-ui/skin-soft": "^0.1.0-alpha.11",
-    "@fluixi-ui/theme": "^0.1.0-alpha.14",
-    "@fluixi/core": "^1.0.0-alpha.107",
+    "@fluixi-ui/theme": "^0.1.0-alpha.15",
+    "@fluixi/core": "^1.0.0-alpha.108",
     "typescript": "^7.0.2"
   }
 }

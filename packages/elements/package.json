@@ -364,13 +364,13 @@
     "@fluixi-ui/switch": "^0.2.0-alpha.23",
     "@fluixi-ui/toggle": "^0.2.0-alpha.23",
     "@fluixi-ui/toggle-group": "^0.2.0-alpha.23",
-    "@fluixi/core": "^1.0.0-alpha.107",
-    "@fluixi/di": "^1.0.0-alpha.107",
-    "@fluixi/dom": "^1.0.0-alpha.107",
+    "@fluixi/core": "^1.0.0-alpha.108",
+    "@fluixi/di": "^1.0.0-alpha.108",
+    "@fluixi/dom": "^1.0.0-alpha.108",
     "@fluixi/forms": "^1.0.0-alpha.100",
-    "@fluixi/jsx": "^1.0.0-alpha.107",
-    "@fluixi/reactive": "^1.0.0-alpha.107",
-    "@fluixi/web-components": "^1.0.0-alpha.107"
+    "@fluixi/jsx": "^1.0.0-alpha.108",
+    "@fluixi/reactive": "^1.0.0-alpha.108",
+    "@fluixi/web-components": "^1.0.0-alpha.108"
   },
   "devDependencies": {
     "@bambiste/countries": "^0.2.1",
@@ -393,13 +393,13 @@
     "@fluixi-ui/switch": "^0.2.0-alpha.23",
     "@fluixi-ui/toggle": "^0.2.0-alpha.23",
     "@fluixi-ui/toggle-group": "^0.2.0-alpha.23",
-    "@fluixi/core": "^1.0.0-alpha.107",
-    "@fluixi/di": "^1.0.0-alpha.107",
-    "@fluixi/dom": "^1.0.0-alpha.107",
+    "@fluixi/core": "^1.0.0-alpha.108",
+    "@fluixi/di": "^1.0.0-alpha.108",
+    "@fluixi/dom": "^1.0.0-alpha.108",
     "@fluixi/forms": "^1.0.0-alpha.100",
-    "@fluixi/jsx": "^1.0.0-alpha.107",
-    "@fluixi/reactive": "^1.0.0-alpha.107",
-    "@fluixi/web-components": "^1.0.0-alpha.107",
+    "@fluixi/jsx": "^1.0.0-alpha.108",
+    "@fluixi/reactive": "^1.0.0-alpha.108",
+    "@fluixi/web-components": "^1.0.0-alpha.108",
     "typescript": "^7.0.2"
   }
 }

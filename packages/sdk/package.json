@@ -146,14 +146,14 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "@fluixi/di": "^1.0.0-alpha.107",
-    "@fluixi/vite-plugin": "^1.0.0-alpha.107",
+    "@fluixi/di": "^1.0.0-alpha.108",
+    "@fluixi/vite-plugin": "^1.0.0-alpha.108",
     "vite": ">=8",
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@fluixi/di": "^1.0.0-alpha.107",
-    "@fluixi/vite-plugin": "^1.0.0-alpha.107",
+    "@fluixi/di": "^1.0.0-alpha.108",
+    "@fluixi/vite-plugin": "^1.0.0-alpha.108",
     "@types/node": "^22.0.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.2",
