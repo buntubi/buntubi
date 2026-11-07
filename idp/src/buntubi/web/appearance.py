@@ -31,7 +31,7 @@ def get_appearance(me: User) -> Response:
 
 @bp.patch("/appearance")
 @person("appearance")
-def update_appearance(me: User) -> Response:
+def update_appearance(me: User) -> Response | tuple[Response, int]:
     _first_party()
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
